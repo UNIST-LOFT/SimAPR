@@ -38,6 +38,14 @@ class OperatorType(Enum):
   LT = 3
   ALL_1 = 4
 
+class EnvVarMode(Enum):
+  basic = 0
+  record_it = 1
+  record_all_1 = 2
+  collect_neg = 3
+  collect_pos = 4
+  cond_syn = 5
+
 class PassFail:
   def __init__(self) -> None:
     self.pass_count = 0
@@ -193,16 +201,53 @@ class ProfileElement:
     self.function = function
     self.variable = variable
     self.value = value
+    self.critical_value = 0
   def __hash__(self) -> int:
     return hash(f"{self.function}/{self.variable}")
   def __eq__(self, other) -> bool:
     return self.function == other.function and self.variable == other.variable
 
 class Profile:
-  def __init__(self, profile: str) -> None:
-    pass
+  def __init__(self, state: 'MSVState', profile: str) -> None:
+    self.profile_critical = set()
+    self.profile_set = set()
+    state.msv_logger.debug(f"Profile: {profile}")
+    profile_meta_filename = f"/tmp/{profile}_profile.log"
+    with open(profile_meta_filename, "r") as pm:
+      for line in pm.readlines():
+        if line.startswith("#"):
+          continue
+        line = line.strip()
+        if line == "":
+          continue
+        profile_file = f"/tmp/{profile}_{line}_profile.log"
+        with open(profile_file, "r") as p:
+          for line in p.readlines():
+            if line.startswith("#"):
+              continue
+            line = line.strip()
+            if line == "":
+              continue
+            line_split = line.split("=")
+            if len(line_split) != 2:
+              continue
+            var = line_split[0].strip()
+            value = line_split[1].strip()
+            profile_elem = ProfileElement(line, var, value)
+            self.profile_set.add(profile_elem)
   def get_diff(self, other: 'Profile') -> PassFail:
-    pass
+    origin_new = self.profile_set - other.profile_set
+    new_origin = other.profile_set - self.profile_set
+    not_changed = self.profile_set & other.profile_set
+    critical_pf = PassFail()
+    on = len(origin_new)
+    critical_pf.update(True, on)
+    no = len(new_origin)
+    critical_pf.update(True, no)
+    nc = len(not_changed)
+    critical_pf.update(False, nc)
+    return critical_pf
+
 
 class Condition:
   def __init__(self, state: 'MSVState', patch: List['PatchInfo']):
@@ -214,6 +259,27 @@ class Condition:
     pass
   def parse_values() -> None:
     pass
+
+class MSVEnvVar:
+  def __init__(self) -> None:
+    pass
+  @staticmethod
+  def get_new_env(state: 'MSVState', patch: List['PatchInfo'], test: int, mode: EnvVarMode = EnvVarMode.basic) -> Dict[str, str]:
+    new_env = os.environ.copy()
+    new_env["__PID"] = f"{test}-{patch[0].switch_info.switch_number}-{patch[0].case_info.case_number}"
+    for patch_info in patch:
+      sw = patch_info.switch_info.switch_number
+      cs = patch_info.case_info.case_number
+      new_env[f"__SWITCH{sw}"] = str(cs)
+      new_env["IS_NEG"] = "RUN"
+      new_env["TMP_FILE"] = f"/tmp/{sw}-{cs}"
+      if patch_info.is_condition:
+        new_env[f"__{sw}_{cs}__OPERATOR"] = str(patch_info.operator_info.operator_type.value)
+        if patch_info.has_var:
+          new_env[f"__{sw}_{cs}__VARIABLE"] = str(patch_info.variable_info.variable)
+          new_env[f"__{sw}_{cs}__CONSTANT"] = str(patch_info.constant_info.constant_value)
+    return new_env
+
 
 class PatchInfo:
   def __init__(self, case_info: CaseInfo, op_info: OperatorInfo, var_info: VariableInfo, con_info: ConstantInfo) -> None:
@@ -316,6 +382,7 @@ class MSVState:
   selected_test: List[int]
   negative_test: List[int]
   positive_test: List[int]
+  profile_map: Dict[int, Profile]
   def __init__(self) -> None:
     self.mode = MSVMode.guided
     self.cycle = 0
@@ -336,5 +403,5 @@ class MSVState:
     self.patch_info_list = list()
     self.negative_test = list()
     self.positive_test = list()
-
+    self.profile_map = dict()
 
