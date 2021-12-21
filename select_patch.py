@@ -1,10 +1,16 @@
 from core import *
 
  
+def remove_patch(state: MSVState) -> None:
+  pass
+
+
 def select_patch_prophet(state:MSVState) -> List[PatchInfo]:
   cs = state.switch_case_map["0-0"]
   patch = PatchInfo(cs, None, None, None)
-  
+  while True:
+    priority: Tuple[str, int, float] = state.priority_list[0]
+    break
   return patch
 
 
