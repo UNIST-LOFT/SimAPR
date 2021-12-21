@@ -11,6 +11,7 @@ import logging
 from enum import Enum
 
 from core import *
+import select_patch
 
 
 class MSV:
@@ -30,18 +31,7 @@ class MSV:
 
   def save_result(self, selected_patch: List[PatchInfo]) -> None:
     pass
-  
-  def select_patch_prophet(self) -> List[PatchInfo]:
-    cs = self.state.switch_case_map["0-0"]
-    patch = PatchInfo(cs, None, None, None)
-    return [patch]
 
-  def select_patch(self, mode: MSVMode) -> List[PatchInfo]:
-    if mode == MSVMode.prophet:
-      return self.select_patch_prophet()
-    cs = self.state.switch_case_map["0-0"]
-    patch = PatchInfo(cs, None, None, None)
-    return [patch]
   
   # Run one test with selected_patch (which can be multiple patches)
   def run_test(self, selected_patch: List[PatchInfo], selected_test: int) -> bool:
@@ -83,8 +73,10 @@ class MSV:
   def run(self) -> None:
     self.initialize()
     while self.is_alive():
-      tm = time.time()
-      patch = self.select_patch(self.state.mode)
-      run_result = self.run_test(patch, 1)
-      #self.run_positive_test(patch, self.state.positive_test)
-      self.update_result(patch, run_result, 1)
+      for neg in self.state.negative_test:
+        tm = time.time()
+        patch = select_patch.select_patch(self.state, self.state.mode, self.state.use_multi_line)
+        run_result = self.run_test(patch, neg)
+        #self.run_positive_test(patch, self.state.positive_test)
+        self.update_result(patch, run_result, 1)
+      

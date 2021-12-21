@@ -15,9 +15,10 @@ from typing import List, Dict, Tuple
 class MSVMode(Enum):
   prophet = 1
   guided = 2
-  original = 3
-  positive = 4
-  validation = 5
+  random = 3
+  original = 4
+  positive = 5
+  validation = 6
 
 class PatchType(Enum):
   TightenConditionKind = 0
@@ -376,7 +377,7 @@ class MSVState:
   cycle_limit: int
   max_parallel_cpu: int
   patch_info_map: Dict[str, FileInfo]  # fine_name: str -> FileInfo
-  patch_info_list: List[FileInfo]
+  patch_info_list: List[FileInfo]      # Root of tree of patch data structure
   switch_case_map: Dict[str, CaseInfo] # f"{switch_number}-{case_number}" -> SwitchCase
   selected_patch: List[PatchInfo]
   selected_test: List[int]
