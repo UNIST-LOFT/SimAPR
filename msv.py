@@ -37,7 +37,7 @@ class MSV:
   def run_test(self, selected_patch: List[PatchInfo], selected_test: int) -> bool:
     self.state.cycle += 1
     # set arguments
-    self.state.msv_logger.info(f"@{self.state.cycle} Test [{selected_test}]  with {PatchInfo.list_to_str(selected_patch)}")
+    self.state.msv_logger.warning(f"@{self.state.cycle} Test [{selected_test}]  with {PatchInfo.list_to_str(selected_patch)}")
     args = self.state.args + [str(selected_test)]
     args = args[0:1] + ['-i', selected_patch[0].to_str()] + args[1:]
     self.state.msv_logger.debug(' '.join(args))
@@ -48,9 +48,14 @@ class MSV:
     so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
     result_str = so.decode('utf-8').strip()
     if result_str == "":
+      self.state.msv_logger.info("Result: FAIL")
       return False
     self.state.msv_logger.debug(result_str)
-    return int(result_str) == selected_test
+    result = (int(result_str) == selected_test)
+    if result:
+      self.state.msv_logger.warning("Result: PASS")
+    else:
+      self.state.msv_logger.warning(f"Result: FAIL")
   
   # Run multiple positive tests in parallel
   def run_positive_test(self, selected_patch: List[PatchInfo], selected_test: List[int]) -> bool:

@@ -79,6 +79,7 @@ def set_logger(state: MSVState) -> logging.Logger:
   logger.addHandler(fh)
   logger.addHandler(ch)
   logger.info('Logger is set')
+  logger.warning(f"MSV-SEARCH: {' '.join(state.original_args)}")
   return logger
 
 
@@ -88,18 +89,24 @@ def read_info(state: MSVState) -> None:
     #file_map = state.patch_info_map
     file_list = state.patch_info_list
     for file in info['rules']:
+      if len(file['lines']) == 0:
+        continue
       file_info = FileInfo(file['file_name'])
       file_list.append(file_info)
       #file_map[file_info.file_name] = file_info
       #line_map = file_info.line_info_map
       line_list = file_info.line_info_list
       for line in file['lines']:
+        if len(line['switches']) == 0:
+          continue
         line_info = LineInfo(file_info, int(line['line']))
         line_list.append(line_info)
         #line_map[line_info.line_number] = line_info
         #switch_map = line_info.switch_info_map
         switch_list = line_info.switch_info_list
         for switches in line['switches']:
+          if len(switches['types']) == 0:
+            continue
           switch_info = SwitchInfo(line_info, int(switches['switch']))
           switch_list.append(switch_info)
           #switch_map[switch_info.switch_number] = switch_info
