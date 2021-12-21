@@ -78,7 +78,6 @@ class PassFail:
 class FileInfo:
   def __init__(self, file_name: str) -> None:
     self.file_name = file_name
-    self.line_info_map = dict()
     self.line_info_list: List[LineInfo] = list()
     self.pf = PassFail()
     self.critical_pf = PassFail()
@@ -91,7 +90,6 @@ class FileInfo:
 class LineInfo:
   def __init__(self, parent: FileInfo, line_number: int) -> None:
     self.line_number = line_number
-    self.switch_info_map = dict()
     self.switch_info_list: List[SwitchInfo] = list()
     self.parent = parent
     self.pf = PassFail()
@@ -106,7 +104,6 @@ class SwitchInfo:
   def __init__(self, parent: LineInfo, switch_number: int) -> None:
     self.switch_number = switch_number
     self.parent = parent
-    self.type_info_map = dict()
     self.type_info_list: List[TypeInfo] = list()
     self.pf = PassFail()
     self.critical_pf = PassFail()
@@ -120,7 +117,6 @@ class TypeInfo:
   def __init__(self, parent: SwitchInfo, patch_type: PatchType) -> None:
     self.patch_type = patch_type
     self.parent = parent
-    self.case_info_map = dict()
     self.case_info_list: List[CaseInfo] = list()
     self.pf = PassFail()
     self.critical_pf = PassFail()
@@ -136,7 +132,6 @@ class CaseInfo:
     self.parent = parent
     self.is_condition = is_condition
     self.var_count: int = 0
-    self.operator_info_map = dict()
     self.operator_info_list: List[OperatorInfo] = list()
     self.pf = PassFail()
     self.critical_pf = PassFail()
@@ -150,7 +145,6 @@ class OperatorInfo:
   def __init__(self, parent: CaseInfo, operator_type: OperatorType) -> None:
     self.operator_type = operator_type
     self.parent = parent
-    self.variable_info_map = dict()
     self.variable_info_list: List[VariableInfo] = list()
     self.pf = PassFail()
     self.critical_pf = PassFail()
@@ -165,7 +159,6 @@ class VariableInfo:
     self.variable_name = variable_name
     self.variable = variable
     self.parent = parent
-    self.constant_info_map = dict()
     self.constant_info_list: List[ConstantInfo] = list()
     self.pf = PassFail()
     self.critical_pf = PassFail()

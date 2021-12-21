@@ -86,30 +86,24 @@ def set_logger(state: MSVState) -> logging.Logger:
 def read_info(state: MSVState) -> None:
   with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
     info = json.load(f)
-    #file_map = state.patch_info_map
     file_list = state.patch_info_list
     for file in info['rules']:
       if len(file['lines']) == 0:
         continue
       file_info = FileInfo(file['file_name'])
       file_list.append(file_info)
-      #file_map[file_info.file_name] = file_info
-      #line_map = file_info.line_info_map
       line_list = file_info.line_info_list
       for line in file['lines']:
         if len(line['switches']) == 0:
           continue
         line_info = LineInfo(file_info, int(line['line']))
         line_list.append(line_info)
-        #line_map[line_info.line_number] = line_info
-        #switch_map = line_info.switch_info_map
         switch_list = line_info.switch_info_list
         for switches in line['switches']:
           if len(switches['types']) == 0:
             continue
           switch_info = SwitchInfo(line_info, int(switches['switch']))
           switch_list.append(switch_info)
-          #switch_map[switch_info.switch_number] = switch_info
           types = switches['types']
           type_list = switch_info.type_info_list
           for t in PatchType:
@@ -119,13 +113,11 @@ def read_info(state: MSVState) -> None:
               type_info = TypeInfo(switch_info, t)
               type_list.append(type_info)
               switch_info.type_info_map[t.value] = type_info
-              #case_map = type_info.case_info_map
               case_list = type_info.case_info_list
               for c in types[t.value]:
                 is_condition = t.value <= PatchType.IfExitKind.value
                 case_info = CaseInfo(type_info, int(c), is_condition)
                 case_list.append(case_info)
-                #case_map[case_info.case_number] = case_info
                 state.switch_case_map[f"{switch_info.switch_number}-{case_info.case_number}"] = case_info
     for priority in info['priority']:
       temp_file: str = priority["file"]
