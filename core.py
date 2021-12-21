@@ -135,6 +135,7 @@ class CaseInfo:
     self.case_number = case_number
     self.parent = parent
     self.is_condition = is_condition
+    self.var_count: int = 0
     self.operator_info_map = dict()
     self.operator_info_list: List[OperatorInfo] = list()
     self.pf = PassFail()
@@ -384,6 +385,7 @@ class MSVState:
   negative_test: List[int]
   positive_test: List[int]
   profile_map: Dict[int, Profile]
+  priority_list: List[Tuple[str, int, float]]  # (file_name, line_number, score)
   def __init__(self) -> None:
     self.mode = MSVMode.guided
     self.cycle = 0
@@ -405,4 +407,4 @@ class MSVState:
     self.negative_test = list()
     self.positive_test = list()
     self.profile_map = dict()
-
+    self.priority_list = list()

@@ -4,7 +4,8 @@ from core import *
 def select_patch_prophet(state:MSVState) -> List[PatchInfo]:
   cs = state.switch_case_map["0-0"]
   patch = PatchInfo(cs, None, None, None)
-  return [patch]
+  
+  return patch
 
 
 def select_patch_guided(state: MSVState, mode: MSVMode) -> List[PatchInfo]:
