@@ -1,0 +1,167 @@
+#!/usr/bin/env python3
+import os
+import sys
+import subprocess
+import json
+import time
+import hashlib
+import getopt
+from dataclasses import dataclass
+import logging
+from enum import Enum
+
+from core import *
+
+from msv import MSV
+
+
+def parse_args(argv: list) -> MSVState:
+  longopts = ["help", "outdir=", "workdir=", "timeout=", "msvpath=", "time-limit=", "cycle-limit=",
+              "mode=", "max-parallel-cpu=",
+              "use-condition-synthesis", "use-fl", "use-hierarchical-selection=", "use-pass-test",
+              "use-multi-line=", "prev-result", "sub-node=", "main-node"]
+  opts, args = getopt.getopt(argv[1:], "ho:w:p:t:m:c:j:T:E:M:S:", longopts)
+  state = MSVState()
+  state.original_args = argv
+  state.args = args  # After --
+  sub_dir = ""
+  for o, a in opts:
+    if o in ['-h', '--help']:
+      print("Usage: msv-search [options] <file>")
+      exit(1)
+    elif o in ['-o', '--outdir']:
+      state.out_dir = a
+    elif o in ['-t', '--timeout']:
+      state.timeout = int(a)
+    elif o in ['-w', '--workdir']:
+      state.work_dir = a
+    elif o in ['-p', '--msvpath']:
+      state.msv_path = a
+    elif o in ['-c', '--correct-patch']:
+      state.cycle_limit = int(a)
+    elif o in ['-m', '--mode']:
+      state.mode = MSVMode[a.lower()]
+    elif o in ['-S', '--sub-node']:
+      sub_dir = a
+    elif o in ['-j', '--max-parallel-cpu']:
+      state.max_parallel_cpu = int(a)
+    elif o in ['-T', '--time-limit']:
+      state.time_limit = int(a)
+    elif o in ['-E', '--cycle-limit']:
+      state.cycle_limit = int(a)
+    elif o in ['--use-condition-synthesis']:
+      state.use_condition_synthesis = True
+    elif o in ['--use-fl']:
+      state.use_fl = True
+    elif o in ['--use-hierarchical-selection']:
+      state.use_hierarchical_selection = int(a)
+    elif o in ['--pass-test']:
+      state.use_pass_test = True
+    elif o in ['--use-multi-line']:
+      state.use_multi_line = int(a)
+  if sub_dir != "":
+    state.out_dir = os.path.join(state.out_dir, sub_dir)
+  if not os.path.exists(state.out_dir):
+    os.makedirs(state.out_dir)
+  return state
+
+
+def set_logger(state: MSVState) -> logging.Logger:
+  logger = logging.getLogger('msv-search')
+  logger.setLevel(logging.DEBUG)
+  fh = logging.FileHandler(os.path.join(state.out_dir, 'msv-search.log'))
+  fh.setLevel(logging.DEBUG)
+  ch = logging.StreamHandler()
+  ch.setLevel(logging.INFO)
+  formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s')
+  fh.setFormatter(formatter)
+  ch.setFormatter(formatter)
+  logger.addHandler(fh)
+  logger.addHandler(ch)
+  logger.info('Logger is set')
+  return logger
+
+
+def read_info(state: MSVState) -> None:
+  with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
+    info = json.load(f)
+    #file_map = state.patch_info_map
+    file_list = state.patch_info_list
+    for file in info['rules']:
+      file_info = FileInfo(file['file_name'])
+      file_list.append(file_info)
+      #file_map[file_info.file_name] = file_info
+      #line_map = file_info.line_info_map
+      line_list = file_info.line_info_list
+      for line in file['lines']:
+        line_info = LineInfo(file_info, int(line['line']))
+        line_list.append(line_info)
+        #line_map[line_info.line_number] = line_info
+        #switch_map = line_info.switch_info_map
+        switch_list = line_info.switch_info_list
+        for switches in line['switches']:
+          switch_info = SwitchInfo(line_info, int(switches['switch']))
+          switch_list.append(switch_info)
+          #switch_map[switch_info.switch_number] = switch_info
+          types = switches['types']
+          type_list = switch_info.type_info_list
+          for t in PatchType:
+            if t == PatchType.Original:
+              continue
+            if len(types[t.value]) > 0:
+              type_info = TypeInfo(switch_info, t)
+              type_list.append(type_info)
+              switch_info.type_info_map[t.value] = type_info
+              #case_map = type_info.case_info_map
+              case_list = type_info.case_info_list
+              for c in types[t.value]:
+                is_condition = t.value <= PatchType.IfExitKind.value
+                case_info = CaseInfo(type_info, int(c), is_condition)
+                case_list.append(case_info)
+                #case_map[case_info.case_number] = case_info
+                state.switch_case_map[f"{switch_info.switch_number}-{case_info.case_number}"] = case_info
+  #Add original to switch_case_map
+  temp_file = FileInfo('original')
+  temp_line = LineInfo(temp_file, 0)
+  temp_switch = SwitchInfo(temp_line, 0)
+  temp_type = TypeInfo(temp_switch, PatchType.Original)
+  temp_case = CaseInfo(temp_type, 0, False)
+  state.switch_case_map["0-0"] = temp_case
+
+
+def read_repair_conf(state: MSVState) -> None:
+  conf_dict = dict()
+  with open(os.path.join(state.work_dir, "repair.conf"), "r") as repair_conf:
+    for line in repair_conf.readlines():
+      if line.startswith("#"):
+        continue
+      line = line.strip()
+      key = line.split("=")[0]
+      value = line.split("=")[1]
+      conf_dict[key] = value
+  with open(conf_dict["revision_file"], "r") as revision_file:
+    line = revision_file.readline()
+    line = revision_file.readline()
+    line = revision_file.readline()
+    line = revision_file.readline()
+    for test in line.strip().split():
+      state.negative_test.append(int(test))
+    line = revision_file.readline()
+    line = revision_file.readline()
+    for test in line.strip().split():
+      state.positive_test.append(int(test))
+
+def main(argv: list):
+  state = parse_args(argv)
+  state.msv_logger = set_logger(state)
+  read_info(state)
+  read_repair_conf(state)
+  state.msv_logger.info('Initialized!')
+  msv = MSV(state)
+  state.msv_logger.info('MSV is started')
+  msv.run()
+  state.msv_logger.info('MSV is finished')
+
+
+if __name__ == "__main__":
+  main(sys.argv)
