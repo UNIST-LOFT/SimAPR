@@ -179,6 +179,7 @@ def main(argv: list):
   state.msv_logger.info('MSV is started')
   msv.run()
   state.msv_logger.info('MSV is finished')
+  msv.save_result()
 
 
 if __name__ == "__main__":

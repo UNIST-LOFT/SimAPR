@@ -350,6 +350,7 @@ class PatchInfo:
       if self.has_var:
         conf["variable"] = self.variable_info.variable
         conf["constant"] = self.constant_info.constant_value
+    return conf
   def __str__(self) -> str:
     return self.to_str()
   def to_str(self) -> str:
@@ -401,6 +402,7 @@ class MSVState:
   timeout: int
   cycle: int
   start_time: float
+  last_save_time: float
   is_alive: bool
   correct_patch: str
   use_condition_synthesis: bool
@@ -420,11 +422,12 @@ class MSVState:
   positive_test: List[int]
   profile_map: Dict[int, Profile]
   priority_list: List[Tuple[str, int, float]]  # (file_name, line_number, score)
-  msv_result: List[MSVResult]
+  msv_result: List[dict]   # List of json object by MSVResult.to_json_object()
   def __init__(self) -> None:
     self.mode = MSVMode.guided
     self.cycle = 0
     self.start_time = time.time()
+    self.last_save_time = self.start_time
     self.is_alive = True
     self.use_condition_synthesis = False
     self.use_fl = False

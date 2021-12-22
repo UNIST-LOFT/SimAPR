@@ -30,8 +30,22 @@ class MSV:
     for patch in selected_patch:
       PatchInfo.update_result(patch, run_result, n)
 
-  def save_result(self, selected_patch: List[PatchInfo]) -> None:
-    pass
+  def save_result(self) -> None:
+    self.state.last_save_time = time.time()
+    result_file = os.path.join(self.state.out_dir, "msv-result.json")
+    self.state.msv_logger.info(f"Saving result to {result_file}")
+    with open(result_file, 'w') as f:
+      json.dump(self.state.msv_result, f, indent=2)
+
+  # Append result list, save result to file periodically
+  def append_result(self, selected_patch: List[PatchInfo], test_result: bool) -> None:   
+    save_interval = 10
+    tm = time.time() 
+    tm_interval = tm - self.state.start_time
+    result = MSVResult(self.state.cycle, tm_interval, selected_patch, test_result)
+    self.state.msv_result.append(result.to_json_object())
+    if (tm - self.state.last_save_time) > save_interval:
+      self.save_result()
     
   # Run one test with selected_patch (which can be multiple patches)
   def run_test(self, selected_patch: List[PatchInfo], selected_test: int) -> bool:
@@ -92,10 +106,10 @@ class MSV:
     self.initialize()
     while self.is_alive():
       for neg in self.state.negative_test:
-        tm = time.time()
         patch = select_patch.select_patch(self.state, self.state.mode, self.state.use_multi_line)
         run_result = self.run_test(patch, neg)
         #self.run_positive_test(patch, self.state.positive_test)
         self.update_result(patch, run_result, 1)
+        self.append_result(patch, run_result)
         select_patch.remove_patch(self.state, patch)
       
