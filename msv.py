@@ -56,32 +56,41 @@ class MSV:
     args = args[0:1] + ['-i', selected_patch[0].to_str()] + args[1:]
     self.state.msv_logger.debug(' '.join(args))
 
-    if selected_patch[0].case_info.is_condition and not self.state.use_condition_synthesis:
-      prophet_cond=condition.ProphetCondition(selected_patch[0],self.state,selected_test)
-      prophet_cond.get_condition()
-    # set environment variables
-    new_env = MSVEnvVar.get_new_env(self.state, selected_patch, selected_test)
-    # run test
-    test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
-    so: bytes
-    se: bytes
-    try:
-      so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
-    except: # timeout
-      test_proc.kill()
-      so, se = test_proc.communicate()
-      self.state.msv_logger.info("Timeout!")
-    result_str = so.decode('utf-8').strip()
-    if result_str == "":
-      self.state.msv_logger.info("Result: FAIL")
-      return False
-    self.state.msv_logger.debug(result_str)
-    result = (int(result_str) == selected_test)
-    if result:
-      self.state.msv_logger.warning("Result: PASS")
+    if selected_patch[0].case_info.is_condition and not self.state.use_condition_synthesis and \
+          selected_patch[0].case_info.operator_info_list is not None and len(selected_patch[0].case_info.operator_info_list)==0:
+      prophet_cond=condition.ProphetCondition(selected_patch[0].case_info,self.state,self.state.negative_test,self.state.positive_test)
+      opers=prophet_cond.get_condition()
+      if opers is not None:
+        selected_patch[0].operator_info=opers
+        return True
+      else:
+        selected_patch[0].operator_info=None
+        return False
+      
     else:
-      self.state.msv_logger.warning("Result: FAIL")
-    return result
+      # set environment variables
+      new_env = MSVEnvVar.get_new_env(self.state, selected_patch, selected_test)
+      # run test
+      test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
+      so: bytes
+      se: bytes
+      try:
+        so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
+      except: # timeout
+        test_proc.kill()
+        so, se = test_proc.communicate()
+        self.state.msv_logger.info("Timeout!")
+      result_str = so.decode('utf-8').strip()
+      if result_str == "":
+        self.state.msv_logger.info("Result: FAIL")
+        return False
+      self.state.msv_logger.debug(result_str)
+      result = (int(result_str) == selected_test)
+      if result:
+        self.state.msv_logger.warning("Result: PASS")
+      else:
+        self.state.msv_logger.warning("Result: FAIL")
+      return result
   
   # Run multiple positive tests in parallel
   def run_positive_test(self, selected_patch: List[PatchInfo], selected_test: List[int]) -> bool:

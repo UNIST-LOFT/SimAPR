@@ -23,13 +23,13 @@ class MSVMode(Enum):
 class PatchType(Enum):
   TightenConditionKind = 0
   LoosenConditionKind = 1
-  IfExitKind = 2
-  GuardKind = 3
-  SpecialGuardKind = 4
+  GuardKind = 2
+  SpecialGuardKind = 3
+  IfExitKind = 4
   AddInitKind = 5
-  AddAndReplaceKind = 6
-  ReplaceKind = 7
-  ReplaceStringKind = 8
+  ReplaceKind = 6
+  ReplaceStringKind = 7
+  AddAndReplaceKind = 8
   Original = 31
 
 class OperatorType(Enum):
@@ -294,12 +294,11 @@ class MSVEnvVar:
       else:
         new_env["IS_NEG"] = "RUN"
         new_env["TMP_FILE"] = f"/tmp/{sw}-{cs}"
-        
-      if patch_info.is_condition:
-        new_env[f"__{sw}_{cs}__OPERATOR"] = str(patch_info.operator_info.operator_type.value)
-        if patch_info.has_var:
-          new_env[f"__{sw}_{cs}__VARIABLE"] = str(patch_info.variable_info.variable)
-          new_env[f"__{sw}_{cs}__CONSTANT"] = str(patch_info.constant_info.constant_value)
+        if patch_info.is_condition:
+          new_env[f"__{sw}_{cs}__OPERATOR"] = str(patch_info.operator_info.operator_type.value)
+          if not patch_info.operator_info.operator_type==OperatorType.ALL_1:
+            new_env[f"__{sw}_{cs}__VARIABLE"] = str(patch_info.variable_info.variable)
+            new_env[f"__{sw}_{cs}__CONSTANT"] = str(patch_info.constant_info.constant_value)
     return new_env
 
 
@@ -312,7 +311,6 @@ class PatchInfo:
     self.file_info = self.line_info.parent
     self.is_condition = case_info.is_condition
     self.operator_info = op_info
-    self.has_var = False if op_info is None else op_info.operator_type != OperatorType.ALL_1
     self.variable_info = var_info
     self.constant_info = con_info
   def update_result(self, result: bool, n: float) -> None:
@@ -321,9 +319,9 @@ class PatchInfo:
     self.switch_info.pf.update(result, n)
     self.line_info.pf.update(result, n)
     self.file_info.pf.update(result, n)
-    if self.is_condition:
+    if self.is_condition and self.operator_info is not None:
       self.operator_info.pf.update(result, n)
-      if self.has_var:
+      if self.operator_info.operator_type!=OperatorType.ALL_1:
         self.variable_info.pf.update(result, n)
         self.constant_info.pf.update(result, n)
   def remove_patch(self, state: 'MSVState') -> None:
@@ -347,7 +345,7 @@ class PatchInfo:
     conf["is_cond"] = self.is_condition
     if self.is_condition:
       conf["operator"] = self.operator_info.operator_type.value
-      if self.has_var:
+      if self.operator_info.operator_type!=OperatorType.ALL_1:
         conf["variable"] = self.variable_info.variable
         conf["constant"] = self.constant_info.constant_value
     return conf
@@ -355,10 +353,10 @@ class PatchInfo:
     return self.to_str()
   def to_str(self) -> str:
     base = f"{self.switch_info.switch_number}-{self.case_info.case_number}"
-    if self.is_condition:
+    if self.is_condition and self.operator_info is not None:
       base += f":{self.operator_info.operator_type.value}"
-      if self.has_var:
-        base += f"-{self.variable_info.variable}-{self.constant_info.constant_value}"
+      if self.operator_info.operator_type!=OperatorType.ALL_1:
+        base += f",{self.variable_info.variable},{self.constant_info.constant_value}"
     return base
   @staticmethod
   def list_to_str(selected_patch: list) -> str:
