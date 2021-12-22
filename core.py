@@ -15,9 +15,10 @@ from typing import List, Dict, Tuple
 class MSVMode(Enum):
   prophet = 1
   guided = 2
-  original = 3
-  positive = 4
-  validation = 5
+  random = 3
+  original = 4
+  positive = 5
+  validation = 6
 
 class PatchType(Enum):
   TightenConditionKind = 0
@@ -77,7 +78,6 @@ class PassFail:
 class FileInfo:
   def __init__(self, file_name: str) -> None:
     self.file_name = file_name
-    self.line_info_map = dict()
     self.line_info_list: List[LineInfo] = list()
     self.pf = PassFail()
     self.critical_pf = PassFail()
@@ -92,7 +92,6 @@ class FileInfo:
 class LineInfo:
   def __init__(self, parent: FileInfo, line_number: int) -> None:
     self.line_number = line_number
-    self.switch_info_map = dict()
     self.switch_info_list: List[SwitchInfo] = list()
     self.parent = parent
     self.pf = PassFail()
@@ -108,7 +107,6 @@ class SwitchInfo:
   def __init__(self, parent: LineInfo, switch_number: int) -> None:
     self.switch_number = switch_number
     self.parent = parent
-    self.type_info_map = dict()
     self.type_info_list: List[TypeInfo] = list()
     self.pf = PassFail()
     self.critical_pf = PassFail()
@@ -122,7 +120,6 @@ class TypeInfo:
   def __init__(self, parent: SwitchInfo, patch_type: PatchType) -> None:
     self.patch_type = patch_type
     self.parent = parent
-    self.case_info_map = dict()
     self.case_info_list: List[CaseInfo] = list()
     self.pf = PassFail()
     self.critical_pf = PassFail()
@@ -137,7 +134,7 @@ class CaseInfo:
     self.case_number = case_number
     self.parent = parent
     self.is_condition = is_condition
-    self.operator_info_map = dict()
+    self.var_count: int = 0
     self.operator_info_list: List[OperatorInfo] = list()
     self.pf = PassFail()
     self.critical_pf = PassFail()
@@ -151,7 +148,6 @@ class OperatorInfo:
   def __init__(self, parent: CaseInfo, operator_type: OperatorType) -> None:
     self.operator_type = operator_type
     self.parent = parent
-    self.variable_info_map = dict()
     self.variable_info_list: List[VariableInfo] = list()
     self.pf = PassFail()
     self.critical_pf = PassFail()
@@ -165,7 +161,6 @@ class VariableInfo:
   def __init__(self, parent: OperatorInfo, variable: int) -> None:
     self.variable = variable
     self.parent = parent
-    self.constant_info_map = dict()
     self.constant_info_list: List[ConstantInfo] = list()
     self.pf = PassFail()
     self.critical_pf = PassFail()
@@ -383,13 +378,14 @@ class MSVState:
   cycle_limit: int
   max_parallel_cpu: int
   patch_info_map: Dict[str, FileInfo]  # fine_name: str -> FileInfo
-  patch_info_list: List[FileInfo]
+  patch_info_list: List[FileInfo]      # Root of tree of patch data structure
   switch_case_map: Dict[str, CaseInfo] # f"{switch_number}-{case_number}" -> SwitchCase
   selected_patch: List[PatchInfo]
   selected_test: List[int]
   negative_test: List[int]
   positive_test: List[int]
   profile_map: Dict[int, Profile]
+  priority_list: List[Tuple[str, int, float]]  # (file_name, line_number, score)
   def __init__(self) -> None:
     self.mode = MSVMode.guided
     self.cycle = 0
@@ -411,4 +407,4 @@ class MSVState:
     self.negative_test = list()
     self.positive_test = list()
     self.profile_map = dict()
-
+    self.priority_list = list()

@@ -12,6 +12,7 @@ from enum import Enum
 
 from core import *
 import condition
+import select_patch
 
 
 class MSV:
@@ -74,7 +75,7 @@ class MSV:
   def run_test(self, selected_patch: List[PatchInfo], selected_test: int) -> bool:
     self.state.cycle += 1
     # set arguments
-    self.state.msv_logger.info(f"@{self.state.cycle} Test [{selected_test}]  with {PatchInfo.list_to_str(selected_patch)}")
+    self.state.msv_logger.warning(f"@{self.state.cycle} Test [{selected_test}]  with {PatchInfo.list_to_str(selected_patch)}")
     args = self.state.args + [str(selected_test)]
     args = args[0:1] + ['-i', selected_patch[0].to_str()] + args[1:]
     self.state.msv_logger.debug(' '.join(args))
@@ -89,9 +90,14 @@ class MSV:
     so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
     result_str = so.decode('utf-8').strip()
     if result_str == "":
+      self.state.msv_logger.info("Result: FAIL")
       return False
     self.state.msv_logger.debug(result_str)
-    return int(result_str) == selected_test
+    result = (int(result_str) == selected_test)
+    if result:
+      self.state.msv_logger.warning("Result: PASS")
+    else:
+      self.state.msv_logger.warning(f"Result: FAIL")
   
   # Run multiple positive tests in parallel
   def run_positive_test(self, selected_patch: List[PatchInfo], selected_test: List[int]) -> bool:
@@ -114,8 +120,10 @@ class MSV:
   def run(self) -> None:
     self.initialize()
     while self.is_alive():
-      tm = time.time()
-      patch = self.select_patch(self.state.mode)
-      run_result = self.run_test(patch, 1)
-      #self.run_positive_test(patch, self.state.positive_test)
-      self.update_result(patch, run_result, 1)
+      for neg in self.state.negative_test:
+        tm = time.time()
+        patch = select_patch.select_patch(self.state, self.state.mode, self.state.use_multi_line)
+        run_result = self.run_test(patch, neg)
+        #self.run_positive_test(patch, self.state.positive_test)
+        self.update_result(patch, run_result, 1)
+      
