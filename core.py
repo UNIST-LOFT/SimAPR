@@ -307,6 +307,20 @@ class PatchInfo:
       if self.has_var:
         self.variable_info.pf.update(result, n)
         self.constant_info.pf.update(result, n)
+  def remove_patch(self, state: 'MSVState') -> None:
+    if self.is_condition:
+      pass
+    else:
+      self.type_info.case_info_list.remove(self.case_info)
+    if len(self.type_info.case_info_list) == 0:
+      self.switch_info.type_info_list.remove(self.type_info)
+    if len(self.switch_info.type_info_list) == 0:
+      self.line_info.switch_info_list.remove(self.switch_info)
+    if len(self.line_info.switch_info_list) == 0:
+      self.file_info.line_info_list.remove(self.line_info)
+    if len(self.file_info.line_info_list) == 0:
+      state.patch_info_list.remove(self.file_info)
+
   def to_json_object(self) -> dict:
     conf = dict()
     conf["switch"] = self.switch_info.switch_number

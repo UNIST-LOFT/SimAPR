@@ -1,9 +1,9 @@
 from core import *
 
  
-def remove_patch(state: MSVState) -> None:
-  pass
-
+def remove_patch(state: MSVState, patches: List[PatchInfo]) -> None:
+  for patch in patches:
+    patch.remove_patch(state)
 
 def select_patch_prophet(state:MSVState) -> List[PatchInfo]:
   # select file
