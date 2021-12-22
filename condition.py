@@ -113,14 +113,16 @@ class ProphetCondition:
   def collect_value(self,temp_file:str,record:List[int]):
     selected_test=self.fail_test[0]
     write_record(temp_file,record)
-    log_file=f"/tmp/{self.case.parent.parent.switch_number}-{self.case.case_number}.log"
+    sw = self.case.parent.parent.switch_number
+    cs = self.case.case_number
+    log_file=f"/tmp/{sw}-{cs}.log"
     try:
       os.remove(log_file)
     except:
       pass
 
     args = self.state.args + [str(selected_test)]
-    args = args[0:1] + ['-i', str(self.case)] + args[1:]
+    args = args[0:1] + ['-i', f"{sw}-{cs}"] + args[1:]
     self.state.msv_logger.debug(' '.join(args))
 
     patch=[PatchInfo(self.case,None,None,None)]
@@ -134,7 +136,7 @@ class ProphetCondition:
       return None
 
     return parse_value(log_file)
-
+    
   def __check_condition(self,record,values,operator,variable,constant):
     result=True
     for path,value in zip(record,values[variable]):
