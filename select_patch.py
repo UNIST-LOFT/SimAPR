@@ -6,11 +6,33 @@ def remove_patch(state: MSVState) -> None:
 
 
 def select_patch_prophet(state:MSVState) -> List[PatchInfo]:
-  cs = state.switch_case_map["0-0"]
-  patch = PatchInfo(cs, None, None, None)
-  while True:
-    priority: Tuple[str, int, float] = state.priority_list[0]
-    break
+  # select file
+  selected_file=state.patch_info_list[0]
+  for file in state.patch_info_list:
+    if selected_file.fl_score<file.fl_score:
+      selected_file=file
+  
+  # select line
+  selected_line=selected_file.line_info_list[0]
+  for line in selected_file.line_info_list:
+    if selected_line.fl_score<line.fl_score:
+      selected_line=line
+  
+  # select case
+  selected_case=None
+  for type in PatchType:
+    selected=False
+    for switch in selected_line.switch_info_list:
+      if len(switch.type_info_list[type.value].case_info_list)>0:
+        # select first case
+        selected_case=switch.type_info_list[type.value].case_info_list[0]
+        selected=True
+        break
+    if selected:
+      break
+  assert selected_case is not None
+      
+  patch = PatchInfo(selected_case, None, None, None)
   return patch
 
 
@@ -79,7 +101,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode) -> List[PatchInfo]:
 def select_patch(state: MSVState, mode: MSVMode, multi_line: int) -> List[PatchInfo]:
   selected_patch = list()
   if mode == MSVMode.prophet:
-    return select_patch_prophet(state)
+    return [select_patch_prophet(state)]
   result = select_patch_guided(state, mode)
   selected_patch.append(result)
   return selected_patch
