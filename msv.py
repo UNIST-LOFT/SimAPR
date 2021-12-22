@@ -74,10 +74,10 @@ class MSV:
       prophet_cond=condition.ProphetCondition(selected_patch[0].case_info,self.state,self.state.negative_test,self.state.positive_test)
       opers=prophet_cond.get_condition()
       if opers is not None:
-        selected_patch[0].operator_info=opers
+        selected_patch[0].case_info.operator_info_list=opers
         return True
       else:
-        selected_patch[0].operator_info=None
+        selected_patch[0].case_info.operator_info_list=None
         return False
     
     # our condition synthesis
