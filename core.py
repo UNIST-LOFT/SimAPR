@@ -444,7 +444,7 @@ class MSVState:
     self.is_alive = True
     self.use_condition_synthesis = False
     self.use_fl = False
-    self.use_hierarchical_selection = 0
+    self.use_hierarchical_selection = 1
     self.use_pass_test = False
     self.use_multi_line = 1
     self.time_limit = -1

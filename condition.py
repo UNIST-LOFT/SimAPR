@@ -88,15 +88,18 @@ class ProphetCondition:
   def collect_value(self,temp_file:str,record:List[int]):
     selected_test=self.fail_test[0]
     self.__write_record(temp_file,record)
-    log_file=f"/tmp/{self.case.parent.parent.switch_number}-{self.case.case_number}.log"
-    os.remove(log_file)
+    sw = self.case.parent.parent.switch_number
+    cs = self.case.case_number
+    log_file=f"/tmp/{sw}-{cs}.log"
+    if os.path.isfile(log_file):
+      os.remove(log_file)
 
     args = self.state.args + [str(selected_test)]
-    args = args[0:1] + ['-i', self.case] + args[1:]
+    args = args[0:1] + ['-i', f"{sw}-{cs}"] + args[1:]
     self.state.msv_logger.debug(' '.join(args))
 
     patch=PatchInfo(self.case,None,None,None)
-    new_env = MSVEnvVar.get_new_env(self.state, patch, selected_test,EnvVarMode.collect_neg)
+    new_env = MSVEnvVar.get_new_env(self.state, [patch], selected_test,EnvVarMode.collect_neg)
     test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
     so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
 
@@ -199,7 +202,7 @@ class ProphetCondition:
       self.state.msv_logger.info('Fail at recording')
       return None
 
-    values=self.collect_value(f"/tmp/{self.patch.case_info.parent.parent.switch_number}-{self.patch.case_info.case_number}.tmp",path)
+    values=self.collect_value(f"/tmp/{self.case.parent.parent.switch_number}-{self.case.case_number}.tmp",path)
     if values==None:
       self.state.msv_logger.info('Fail at collecting')
       return None
