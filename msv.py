@@ -115,3 +115,96 @@ class MSV:
         # self.append_result(patch, run_result)
         # self.remove_patch(patch)
       
+def run_pass_test(state:MSVState,patch:List[PatchInfo]):
+  MAX_TEST_ONCE=1000
+
+  state.msv_logger.info(f"@{state.cycle} Run pass test with {PatchInfo.list_to_str(patch)}")
+  total_test=len(state.negative_test)-1+len(state.positive_test)
+  group_num=total_test//MAX_TEST_ONCE
+  remain_num=total_test%MAX_TEST_ONCE
+
+  args=state.args
+  args = args[0:1] + ['-i', patch[0].to_str(),'-j',state.max_parallel_cpu] + args[1:]
+
+  for i in range(group_num):
+    tests=[]
+    start=i*MAX_TEST_ONCE
+    for j in range(MAX_TEST_ONCE):
+      index=start+j
+      if index<total_test:
+        if index<len(state.negative_test)-1:
+          tests.append(str(state.negative_test[index+1]))
+        else:
+          tests.append(str(state.positive_test[index-len(state.negative_test)-1]))
+    current_args = args + tests
+    state.msv_logger.debug(' '.join(current_args))
+
+    new_env = MSVEnvVar.get_new_env(state, patch, int(tests[0]),set_tmp_file=False)
+    # run test
+    test_proc = subprocess.Popen(current_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
+    so: bytes
+    se: bytes
+    try:
+      so, se = test_proc.communicate(timeout=(state.timeout/1000))
+    except: # timeout
+      test_proc.kill()
+      so, se = test_proc.communicate()
+      state.msv_logger.info("Timeout!")
+
+    result_str = so.decode('utf-8').strip()
+    if result_str == "":
+      state.msv_logger.info("Result: FAIL")
+      return False
+    state.msv_logger.debug(result_str)
+
+    results=result_str.splitlines()
+    result=True
+    for s in tests:
+      if s not in results:
+        result=False
+        return result
+    if result:
+      state.msv_logger.warning("Result: PASS")
+    else:
+      state.msv_logger.warning("Result: FAIL")
+
+  for j in range(remain_num):
+    index=start+j
+    if index<total_test:
+      if index<len(state.negative_test)-1:
+        tests.append(str(state.negative_test[index+1]))
+      else:
+        tests.append(str(state.positive_test[index-len(state.negative_test)-1]))
+  current_args = args + tests
+  state.msv_logger.debug(' '.join(current_args))
+
+  new_env = MSVEnvVar.get_new_env(state, patch, int(tests[0]),set_tmp_file=False)
+  # run test
+  test_proc = subprocess.Popen(current_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
+  so: bytes
+  se: bytes
+  try:
+    so, se = test_proc.communicate(timeout=(state.timeout/1000))
+  except: # timeout
+    test_proc.kill()
+    so, se = test_proc.communicate()
+    state.msv_logger.info("Timeout!")
+
+  result_str = so.decode('utf-8').strip()
+  if result_str == "":
+    state.msv_logger.info("Result: FAIL")
+    return False
+  state.msv_logger.debug(result_str)
+
+  results=result_str.splitlines()
+  result=True
+  for s in tests:
+    if s not in results:
+      result=False
+      return result
+  if result:
+    state.msv_logger.warning("Result: PASS")
+  else:
+    state.msv_logger.warning("Result: FAIL")
+
+  return result

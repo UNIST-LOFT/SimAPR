@@ -314,7 +314,7 @@ class MSVEnvVar:
   def __init__(self) -> None:
     pass
   @staticmethod
-  def get_new_env(state: 'MSVState', patch: List['PatchInfo'], test: int, mode: EnvVarMode = EnvVarMode.basic) -> Dict[str, str]:
+  def get_new_env(state: 'MSVState', patch: List['PatchInfo'], test: int, mode: EnvVarMode = EnvVarMode.basic,set_tmp_file=True) -> Dict[str, str]:
     new_env = os.environ.copy()
     new_env["__PID"] = f"{test}-{patch[0].to_str_sw_cs()}"
     for patch_info in patch:
@@ -338,7 +338,8 @@ class MSVEnvVar:
         new_env['TMP_FILE']=f"/tmp/{sw}-{cs}.log"
       else:
         new_env["IS_NEG"] = "RUN"
-        new_env["TMP_FILE"] = f"/tmp/{sw}-{cs}"
+        if set_tmp_file:
+          new_env["TMP_FILE"] = f"/tmp/{sw}-{cs}"
         if patch_info.is_condition:
           new_env[f"__{sw}_{cs}__OPERATOR"] = str(patch_info.operator_info.operator_type.value)
           if not patch_info.operator_info.operator_type==OperatorType.ALL_1:
