@@ -6,6 +6,7 @@ import json
 import time
 import hashlib
 import getopt
+from types import CodeType
 from dataclasses import dataclass
 import logging
 from enum import Enum
@@ -67,8 +68,9 @@ class MSV:
     args = args[0:1] + ['-i', selected_patch[0].to_str()] + args[1:]
     self.state.msv_logger.debug(' '.join(args))
 
+    # prophet condition synthesis
     if selected_patch[0].case_info.is_condition and not self.state.use_condition_synthesis and \
-          selected_patch[0].case_info.operator_info_list is not None and len(selected_patch[0].case_info.operator_info_list)==0:
+          not selected_patch[0].case_info.processed:
       prophet_cond=condition.ProphetCondition(selected_patch[0].case_info,self.state,self.state.negative_test,self.state.positive_test)
       opers=prophet_cond.get_condition()
       if opers is not None:
@@ -77,6 +79,11 @@ class MSV:
       else:
         selected_patch[0].operator_info=None
         return False
+    
+    # our condition synthesis
+    elif self.state.use_condition_synthesis and selected_patch[0].case_info.is_condition:
+      cond_syn=condition.MyCondition(selected_patch[0],self.state,self.state.negative_test,self.state.positive_test)
+      cond_syn.run()
       
     else:
       # set environment variables

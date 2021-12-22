@@ -3,6 +3,53 @@ import subprocess
 from typing import List
 from core import CaseInfo, ConstantInfo, EnvVarMode, MSVEnvVar, MSVState, OperatorInfo, OperatorType, PatchInfo, VariableInfo
 
+def parse_record(temp_file):
+  try:
+    file=open(temp_file,'r')
+
+    line=file.readline().split()
+    del line[0]
+
+    record=[]
+    for i in line:
+      record.append(int(i))
+    
+    file.close()
+    return record
+
+  except IOError:
+    return None
+
+def write_record_terminate(temp_file):
+  file=open(temp_file,'a')
+  file.write(' 0')
+  file.close()
+
+def parse_value(log_file):
+  file=open(log_file,'r')
+
+  values=[]
+  while file.readable():
+    line=file.readline().split()
+    if len(line)==0:
+      break
+    del line[0]
+
+    value=[]
+    for i in line:
+      value.append(int(i))
+    values.append(value)
+  
+  return values
+
+def write_record(temp_file,record):
+  file=open(temp_file,'w')
+  file.write(f'{len(record)}')
+  for i in record:
+    file.write(f" {i}")
+  file.write('\n')
+  file.close()
+
 
 class ProphetCondition:
   def __init__(self,patch: CaseInfo,state: MSVState, fail_test: list, pass_test: list):
@@ -33,10 +80,10 @@ class ProphetCondition:
       test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
       so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
 
-      record=self.__parse_record(temp_file)
+      record=parse_record(temp_file)
       if record==None:
         break
-      self.__write_record_terminate(temp_file)
+      write_record_terminate(temp_file)
 
       result_str = so.decode('utf-8').strip()
       if str(selected_test) in result_str:
@@ -50,10 +97,10 @@ class ProphetCondition:
     test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
     so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
 
-    record=self.__parse_record(temp_file)
+    record=parse_record(temp_file)
     if record == None:
       return None
-    self.__write_record_terminate(temp_file)
+    write_record_terminate(temp_file)
 
     result_str = so.decode('utf-8').strip()
     if str(selected_test) in result_str:
@@ -61,45 +108,25 @@ class ProphetCondition:
       return record
     
     return None
-
-  def __parse_record(self,temp_file):
-    try:
-      file=open(temp_file,'r')
-
-      line=file.readline().split()
-      del line[0]
-
-      record=[]
-      for i in line:
-        record.append(int(i))
-      
-      file.close()
-      return record
-
-    except IOError:
-      return None
   
-  def __write_record_terminate(self,temp_file):
-    file=open(temp_file,'a')
-    file.write(' 0')
-    file.close()
-
   # TODO: Add pass test
   def collect_value(self,temp_file:str,record:List[int]):
     selected_test=self.fail_test[0]
-    self.__write_record(temp_file,record)
+    write_record(temp_file,record)
     sw = self.case.parent.parent.switch_number
     cs = self.case.case_number
     log_file=f"/tmp/{sw}-{cs}.log"
-    if os.path.isfile(log_file):
+    try:
       os.remove(log_file)
+    except:
+      pass
 
     args = self.state.args + [str(selected_test)]
     args = args[0:1] + ['-i', f"{sw}-{cs}"] + args[1:]
     self.state.msv_logger.debug(' '.join(args))
 
-    patch=PatchInfo(self.case,None,None,None)
-    new_env = MSVEnvVar.get_new_env(self.state, [patch], selected_test,EnvVarMode.collect_neg)
+    patch=[PatchInfo(self.case,None,None,None)]
+    new_env = MSVEnvVar.get_new_env(self.state, patch, selected_test,EnvVarMode.collect_neg)
     test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
     so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
 
@@ -108,28 +135,8 @@ class ProphetCondition:
       self.state.msv_logger.warn("Terrible fail at collecting value!")
       return None
 
-    return self.__parse_value(log_file)
+    return parse_value(log_file)
     
-  def __write_record(self,temp_file,record):
-    file=open(temp_file,'w')
-    file.write(f'{len(record)}')
-    for i in record:
-      file.write(f" {i}")
-    file.write('\n')
-    file.close()
-
-  def __parse_value(self,log_file):
-    values = []
-    with open(log_file, 'r') as f:
-      lines = f.readlines()
-      del lines[0]
-      for line in lines:
-        value=[]
-        for i in line.split():
-          value.append(int(i))
-        values.append(value)
-    return values
-
   def __check_condition(self,record,values,operator,variable,constant):
     result=True
     for path,value in zip(record,values[variable]):
@@ -148,7 +155,7 @@ class ProphetCondition:
         if not cond:
           result=False
           break
-      if operator==OperatorType.LT:
+      elif operator==OperatorType.LT:
         cond=(True if path==1 else False) == (value < constant)
       if not cond:
         result=False
@@ -160,7 +167,7 @@ class ProphetCondition:
     import numpy as np
     MAGIC_NUMBER=-123456789
 
-    values_arr=np.ndarray(values)
+    values_arr=np.array(values)
     values_t=values_arr.transpose() # transpose: to [atom][value]
     operators=dict()
     available_const=[]
@@ -182,18 +189,21 @@ class ProphetCondition:
     ## Create condition infos
     for op in OperatorType:
       new_operator=OperatorInfo(self.case,op)
-      for i,consts in enumerate(available_const):
-        new_variable=VariableInfo(new_operator,i)
-        for const in consts:
-          if self.__check_condition(record,consts,op,i,const):
-            new_constant=ConstantInfo(new_variable,const)
-            new_variable.constant_info_list.append(new_constant)
-        new_operator.variable_info_list.append(new_variable)
+      if op!=OperatorType.ALL_1:
+        for i,consts in enumerate(available_const):
+          new_variable=VariableInfo(new_operator,i)
+          for const in consts:
+            if self.__check_condition(record,values_t,op,i,const):
+              new_constant=ConstantInfo(new_variable,const)
+              self.state.msv_logger.info(f'Create new condition: {new_variable.parent.operator_type}, {new_variable.variable}, {const}')
+              new_variable.constant_info_list.append(new_constant)
+          new_operator.variable_info_list.append(new_variable)
       operators[op]=new_operator
 
     return operators
 
   def get_condition(self):
+    self.case.processed=True
     path=self.record()
     if path==None:
       self.state.msv_logger.info('Fail at recording')
@@ -206,3 +216,184 @@ class ProphetCondition:
     
     conditions=self.synthesize(path,values)
     return conditions
+
+class MyCondition:
+  def __init__(self,patch: PatchInfo,state: MSVState, fail_test: list, pass_test: list):
+    self.patch=patch
+    self.fail_test=fail_test
+    self.pass_test=pass_test
+    self.state=state
+
+  def get_record(self):
+    self.state.cycle+=1
+    # set arguments
+    selected_test=self.fail_test[0]
+    self.state.msv_logger.info(f"@{self.state.cycle} Record [{selected_test}]  with {self.patch}")
+    args = self.state.args + [str(selected_test)]
+    args = args[0:1] + ['-i', str(self.patch)] + args[1:]
+    self.state.msv_logger.debug(' '.join(args))
+    # set environment variables
+    patch=[self.patch]
+    new_env = MSVEnvVar.get_new_env(self.state, patch, selected_test,EnvVarMode.basic)
+    # run test
+
+    temp_file=f"/tmp/{self.patch.switch_info.switch_number}-{self.patch.case_info.case_number}.tmp"
+    try:
+      os.remove(temp_file)
+    except:
+      pass
+
+    test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
+    so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
+
+    record=parse_record(temp_file)
+    if record == None:
+      return None
+    write_record_terminate(temp_file)
+
+    result_str = so.decode('utf-8').strip()
+    result=False
+    if str(selected_test) in result_str:
+      self.state.msv_logger.info("Result: PASS")
+      result=True
+    
+    return result,record
+
+  # TODO: Add pass test
+  def collect_value(self,temp_file:str,record:List[int]):
+    selected_test=self.fail_test[0]
+    write_record(temp_file,record)
+    log_file=f"/tmp/{self.patch.switch_info.switch_number}-{self.patch.case_info.case_number}.log"
+    try:
+      os.remove(log_file)
+    except:
+      pass
+
+    args = self.state.args + [str(selected_test)]
+    args = args[0:1] + ['-i', self.patch.to_str()] + args[1:]
+    self.state.msv_logger.debug(' '.join(args))
+
+    new_env = MSVEnvVar.get_new_env(self.state, [self.patch], selected_test,EnvVarMode.collect_neg)
+    test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
+    so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
+
+    result_str = so.decode('utf-8').strip()
+    if str(selected_test) not in result_str:
+      self.state.msv_logger.warn("Terrible fail at collecting value!")
+      return None
+
+    return parse_value(log_file)
+
+  def extend_bst(self,values:list):
+    import numpy as np
+
+    values_arr=np.ndarray(values)
+    values_t=values_arr.transpose() # transpose: to [atom][value]
+
+    for i,atom in enumerate(values_t):
+      current_var=self.patch.operator_info.variable_info_list[i]
+      for const in atom:
+        if -1000<const<1000 and const not in current_var.used_const:
+          current_var.used_const.add(const)
+          current_const=current_var.constant_info_list[0]
+          if current_const is None:
+            current_var.constant_info_list[0]=ConstantInfo(current_var,const)
+          else:
+            while current_const.left is not None or current_const.right is not None:
+              if current_const.constant_value<const:
+                current_const=current_const.right
+              else:
+                current_const=current_const.left
+            
+            if current_const<const:
+              current_const.right=ConstantInfo(current_var,const)
+            else:
+              current_const.left=ConstantInfo(current_var,const)
+
+  def remove_same_record(self,record:list,values:list,node:ConstantInfo,test_result:bool):
+    current_var=node.variable
+    if __check_expr(record,values[current_var.variable],node.variable.parent.operator_type,node.constant_value):
+      self.state.msv_logger.info(f'Remove {node.variable.parent.operator_type.value}, {node.variable.variable}, {node.constant_value}')
+      next=None
+      if node.left is None and node.right is None:
+        next=None
+      elif node.left is None and node.right is not None:
+        next=node.right
+        next.parent=node.parent
+      elif node.left is not None and node.right is None:
+        next=node.left
+        next.parent=node.parent
+      else:
+        next=node.left
+        next.parent=node.parent
+
+        target=node.right
+        current=next
+        while current is not None:
+          if target.constant_value<current.constant_value:
+            if current.left is None:
+              current.left=target
+              target.parent=current
+              break
+            else:
+              current=current.left
+          else:
+            if current.right is None:
+              current.right=target
+              target.parent=current
+              break
+            else:
+              current=current.right
+
+      if node.parent is None:
+        node.variable.constant_info_list[0]=next
+        if next is not None:
+          self.remove_same_record(record,values,next,test_result)
+      elif node.parent.left is node:
+        node.parent.left=next
+        self.remove_same_record(record,values,node.parent,test_result)
+      elif node.parent.right is node:
+        node.parent.right=next
+        self.remove_same_record(record,values,node.parent,test_result)
+
+    else:
+      if node.left is not None:
+        self.remove_same_record(record,values,node.left,test_result)
+      if node.right is not None:
+        self.remove_same_record(record,values,node.right,test_result)
+    
+  def run(self):
+    (result,record)=self.get_record()
+    if record is None:
+      self.state.msv_logger.warn(f'No record found')
+      return None
+
+    values=self.collect_value(f"/tmp/{self.patch.switch_info.switch_number}-{self.patch.case_info.case_number}.tmp",record)
+    if values is None:
+      self.state.msv_logger.warn(f'No values found')
+      return None
+
+    self.state.msv_logger.info(f'Extending BST')
+    self.extend_bst(values)
+    import numpy as np
+
+    values_arr=np.ndarray(values)
+    values_t=values_arr.transpose() # transpose: to [atom][value]
+    for var in self.patch.operator_info.variable_info_list:
+      self.remove_same_record(record,values_t,var.constant_info_list[0],result)
+
+def __check_expr(record,values,operator,constant):
+  for record,value in zip(record,values):
+    if operator==OperatorType.EQ:
+      if (value==constant and record==0) or (value!=constant and record==1):
+        return False
+    elif operator==OperatorType.NE:
+      if (value!=constant and record==0) or (value==constant and record==1):
+        return False
+    elif operator==OperatorType.GT:
+      if (value>constant and record==0) or (value<=constant and record==1):
+        return False
+    elif operator==OperatorType.LT:
+      if (value<constant and record==0) or (value>=constant and record==1):
+        return False
+  return True

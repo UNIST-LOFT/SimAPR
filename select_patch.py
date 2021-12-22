@@ -68,12 +68,12 @@ def select_patch_prophet(state:MSVState) -> PatchInfo:
       break
   assert selected_case is not None
 
-  if selected_case.is_condition and len(selected_case.operator_info_list)>0:
+  if selected_case.is_condition and selected_case.processed:
     cond=__select_prophet_condition(selected_case,state)
     if type(cond)==OperatorInfo:
       return PatchInfo(selected_case,cond,None,None)
     else:
-      return PatchInfo(selected_case,cond.parent.parent,cond.parent,cond)
+      return PatchInfo(selected_case,cond.variable.parent,cond.variable,cond)
       
   patch = PatchInfo(selected_case, None, None, None)
   return patch
@@ -163,6 +163,38 @@ def select_patch_guided(state: MSVState, mode: MSVMode) -> PatchInfo:
     return PatchInfo(selected_case_info, None, None, None)
   else:
     # Select condition
+    if state.use_condition_synthesis:
+      if len(selected_case_info.operator_info_list)==0:
+        for op in OperatorType:
+          if op==OperatorType.ALL_1:
+            operator=OperatorInfo(selected_case_info,op)
+            selected_case_info.operator_info_list.append(operator)
+          else:
+            operator=OperatorInfo(selected_case_info,op,state.var_counts[f'{selected_switch_info.switch_number}-{selected_case_info.case_number}'])
+            for i in range(operator.var_count):
+              new_var=VariableInfo(operator,i)
+              const_zero=ConstantInfo(new_var,0)
+              new_var.constant_info_list.append(const_zero)
+              current_const=const_zero
+              for j in range(-1,-11,-1):
+                const_left=ConstantInfo(new_var,j)
+                const_left.parent=current_const
+                current_const.left=const_left
+                current_const=const_left
+              current_const=const_zero
+              for j in range(1,11):
+                const_right=ConstantInfo(new_var,j)
+                const_right.parent=current_const
+                current_const.right=const_right
+                current_const=const_right
+              operator.variable_info_list.append(new_var)
+            selected_case_info.operator_info_list.append(operator)
+        
+    else: # if use prophet condition syn, return basic patch for cond syn
+      if not selected_case_info.processed:
+        return PatchInfo(selected_case_info, None, None, None)
+
+    # TODO: select condition with bayesian approach
     op_info = OperatorInfo(selected_case_info, OperatorType.ALL_1)
     return PatchInfo(selected_case_info, op_info, None, None)
 
