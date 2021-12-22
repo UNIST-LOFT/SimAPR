@@ -145,6 +145,10 @@ class CaseInfo:
     return hash(self.case_number)
   def __eq__(self, other) -> bool:
     return self.case_number == other.case_number
+  def to_str(self) -> str:
+    return f"{self.parent.parent.switch_number}-{self.case_number}"
+  def __str__(self) -> str:
+    return self.to_str()
 
 class OperatorInfo:
   def __init__(self, parent: CaseInfo, operator_type: OperatorType,var_count:int=0) -> None:
@@ -158,6 +162,8 @@ class OperatorInfo:
   def __hash__(self) -> int:
     return self.operator_type.value
   def __eq__(self, other) -> bool:
+    if other is None:   # It can be None if record fails
+      return False
     return self.operator_type == other.operator_type
   # if ALL_1, return 1 if not selected, or return 0 otherwise.
   def get_remain(self,new_cond_syn:bool):
@@ -389,7 +395,7 @@ class PatchInfo:
         self.constant_info.positive_pf.update(result, n)
   
   def remove_patch(self, state: 'MSVState') -> None:
-    if self.is_condition and self.operator_info is not None:
+    if self.is_condition and self.operator_info is not None and self.case_info.operator_info_list is not None:
       if self.operator_info.operator_type == OperatorType.ALL_1:
         self.case_info.operator_info_list.remove(self.operator_info)
       else:
@@ -417,7 +423,7 @@ class PatchInfo:
     conf["case"] = self.case_info.case_number
     conf["is_cond"] = self.is_condition
     if self.is_condition:
-      if self.operator_info == None:   # It's null if record fails
+      if self.operator_info is None:   # It's null if record fails
         return conf
       conf["operator"] = self.operator_info.operator_type.value
       if self.operator_info.operator_type!=OperatorType.ALL_1:

@@ -215,7 +215,7 @@ class ProphetCondition:
       return None
     
     conditions=self.synthesize(path,values)
-    return conditions
+    return list(conditions.values())
 
 class MyCondition:
   def __init__(self,patch: PatchInfo,state: MSVState, fail_test: list, pass_test: list):
