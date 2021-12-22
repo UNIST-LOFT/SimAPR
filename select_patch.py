@@ -1,6 +1,19 @@
 from condition import ProphetCondition
 from core import *
 
+# n: number of hierarchy
+def select_by_probability_hierarchical(state: MSVState, n: int, p1: List[PassFail], p2: List[PassFail] = [], p3: List[PassFail] = []) -> int:
+  # Select patch for hierarchical
+  if n == 1:
+    return PassFail.select_by_probability(p1)
+  p1_select = list()
+  p2_select_pf = list()
+  p1_total = 64
+  for i in range(p1_total):
+    p1_select.append(PassFail.select_by_probability(p1))
+    p2_select_pf.append(p2[p1_select[i]])
+  return p1_select[PassFail.select_by_probability(p2_select_pf)]
+ 
 def __select_prophet_condition(selected_case:CaseInfo,state:MSVState):
   for op in OperatorType:
     if selected_case.operator_info_list[op.value].get_remain(state.use_condition_synthesis)>0:
