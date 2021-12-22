@@ -108,6 +108,7 @@ class SwitchInfo:
     self.switch_number = switch_number
     self.parent = parent
     self.type_info_list: List[TypeInfo] = list()
+    self.type_info_map: Dict[PatchType, TypeInfo] = dict()
     self.pf = PassFail()
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
@@ -386,6 +387,7 @@ class MSVState:
   positive_test: List[int]
   profile_map: Dict[int, Profile]
   priority_list: List[Tuple[str, int, float]]  # (file_name, line_number, score)
+  msv_result: List[MSVResult]
   def __init__(self) -> None:
     self.mode = MSVMode.guided
     self.cycle = 0
@@ -408,3 +410,4 @@ class MSVState:
     self.positive_test = list()
     self.profile_map = dict()
     self.priority_list = list()
+    self.msv_result = list()
