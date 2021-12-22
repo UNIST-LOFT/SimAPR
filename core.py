@@ -140,23 +140,26 @@ class CaseInfo:
     self.pf = PassFail()
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
+    self.processed=False # for prophet condition
   def __hash__(self) -> int:
     return hash(self.case_number)
   def __eq__(self, other) -> bool:
     return self.case_number == other.case_number
 
 class OperatorInfo:
-  def __init__(self, parent: CaseInfo, operator_type: OperatorType) -> None:
+  def __init__(self, parent: CaseInfo, operator_type: OperatorType,var_count:int=0) -> None:
     self.operator_type = operator_type
     self.parent = parent
     self.variable_info_list: List[VariableInfo] = list()
     self.pf = PassFail()
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
+    self.var_count=var_count
   def __hash__(self) -> int:
     return self.operator_type.value
   def __eq__(self, other) -> bool:
     return self.operator_type == other.operator_type
+  # if ALL_1, return 1 if not selected, or return 0 otherwise.
   def get_remain(self,new_cond_syn:bool):
     if not new_cond_syn:
       if not self.operator_type == OperatorType.ALL_1:
@@ -165,7 +168,7 @@ class OperatorInfo:
           res+=var.get_remain_const(new_cond_syn)
         return res
       else:
-        return 1
+        return self.var_count
     else: # TODO: Add new condition synthesis
       res=0
       for var in self.variable_info_list:
@@ -176,10 +179,11 @@ class VariableInfo:
   def __init__(self, parent: OperatorInfo, variable: int) -> None:
     self.variable = variable
     self.parent = parent
-    self.constant_info_list: List[ConstantInfo] = list()
+    self.constant_info_list: List[ConstantInfo] = list() # if new_condition_syn is turned on, len=1
     self.pf = PassFail()
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
+    self.used_const=set()
   def __hash__(self) -> int:
     return hash(f"{self.parent.parent.parent.parent.switch_number}-{self.parent.parent.case_number}-{self.parent}-{self.variable}")
   def __eq__(self, other) -> bool:
@@ -193,10 +197,13 @@ class VariableInfo:
 class ConstantInfo:
   def __init__(self, parent: VariableInfo, constant_value: int) -> None:
     self.constant_value = constant_value
-    self.parent = parent
+    self.parent:ConstantInfo = None # parent constant, or None if new_condition_syn not set
+    self.variable=parent # variable
     self.pf = PassFail()
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
+    self.left:ConstantInfo=None
+    self.right:ConstantInfo=None
   def __hash__(self) -> int:
     return hash(self.constant_value)
   def __eq__(self, other) -> bool:
@@ -442,3 +449,4 @@ class MSVState:
     self.profile_map = dict()
     self.priority_list = list()
     self.msv_result = list()
+    self.var_counts=dict()

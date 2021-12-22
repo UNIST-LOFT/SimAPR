@@ -145,6 +145,7 @@ def read_info(state: MSVState) -> None:
       temp_score: float = priority["score"]
       store = (temp_file, temp_line, temp_score)
       state.priority_list.append(store)
+    read_var_count(state,info['sizes'])
   #Add original to switch_case_map
   temp_file = FileInfo('original')
   temp_line = LineInfo(temp_file, 0)
@@ -153,6 +154,10 @@ def read_info(state: MSVState) -> None:
   temp_case = CaseInfo(temp_type, 0, False)
   state.switch_case_map["0-0"] = temp_case
 
+def read_var_count(state:MSVState,sizes:list):
+  for object in sizes:
+    key=f'{object["switch"]}-{object["case"]}'
+    state.var_counts[key]=int(object["size"])
 
 def read_repair_conf(state: MSVState) -> None:
   conf_dict = dict()
