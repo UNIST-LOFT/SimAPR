@@ -119,18 +119,15 @@ class ProphetCondition:
     file.close()
 
   def __parse_value(self,log_file):
-    file=open(log_file,'r')
-
-    values=[]
-    while file.readable():
-      line=file.readline().split()
-      del line[0]
-
-      value=[]
-      for i in line:
-        value.append(int(i))
-      values.append(value)
-    
+    values = []
+    with open(log_file, 'r') as f:
+      lines = f.readlines()
+      del lines[0]
+      for line in lines:
+        value=[]
+        for i in line.split():
+          value.append(int(i))
+        values.append(value)
     return values
 
   def __check_condition(self,record,values,operator,variable,constant):
