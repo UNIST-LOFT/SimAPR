@@ -26,9 +26,16 @@ class MSV:
       self.state.is_alive = False
     return self.state.is_alive
 
-  def update_result(self, selected_patch: List[PatchInfo], run_result: bool, n: float) -> None:
+  def update_result(self, selected_patch: List[PatchInfo], run_result: bool, n: float, test: int) -> None:
+    critical_pf = PassFail()
+    if self.state.use_hierarchical_selection >= 2:
+        original_profile = self.state.profile_map[test]
+        profile = Profile(self.state, f"{test}-{selected_patch[0].to_str_sw_cs()}")
+        critical_pf = original_profile.get_diff(profile, run_result)
+        self.state.msv_logger.debug(f"Critical PF: {critical_pf.pass_count}/{critical_pf.fail_count}")
     for patch in selected_patch:
-      PatchInfo.update_result(patch, run_result, n)
+      patch.update_result(run_result, n)
+      patch.update_result_critical(critical_pf)
 
   def save_result(self) -> None:
     self.state.last_save_time = time.time()
@@ -46,6 +53,10 @@ class MSV:
     self.state.msv_result.append(result.to_json_object())
     if (tm - self.state.last_save_time) > save_interval:
       self.save_result()
+  
+  def remove_patch(self, patches: List[PatchInfo]) -> None:
+    for patch in patches:
+      patch.remove_patch(self.state)
     
   # Run one test with selected_patch (which can be multiple patches)
   def run_test(self, selected_patch: List[PatchInfo], selected_test: int) -> bool:
@@ -118,7 +129,7 @@ class MSV:
         patch = select_patch.select_patch(self.state, self.state.mode, self.state.use_multi_line)
         run_result = self.run_test(patch, neg)
         #self.run_positive_test(patch, self.state.positive_test)
-        self.update_result(patch, run_result, 1)
+        self.update_result(patch, run_result, 1, neg)
         self.append_result(patch, run_result)
-        select_patch.remove_patch(self.state, patch)
+        self.remove_patch(patch)
       

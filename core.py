@@ -256,17 +256,45 @@ class Profile:
             value = line_split[1].strip()
             profile_elem = ProfileElement(line, var, value)
             self.profile_set.add(profile_elem)
-  def get_diff(self, other: 'Profile') -> PassFail:
+
+  def get_diff(self, other: 'Profile', result: bool) -> PassFail:
+    diff_pf = PassFail()
     origin_new = self.profile_set - other.profile_set
     new_origin = other.profile_set - self.profile_set
     not_changed = self.profile_set & other.profile_set
-    critical_pf = PassFail()
     on = len(origin_new)
-    critical_pf.update(True, on)
+    diff_pf.update(True, on)
     no = len(new_origin)
-    critical_pf.update(True, no)
+    diff_pf.update(True, no)
     nc = len(not_changed)
-    critical_pf.update(False, nc)
+    diff_pf.update(False, nc)
+    return diff_pf
+
+  def get_critical_diff(self, other: 'Profile', result: bool) -> PassFail:
+    critical_pf = PassFail()
+    if result:
+      intersect = self.profile_critical.intersection(other.profile_set)
+      diff_new = other.profile_set - intersect
+      diff_original = self.profile_critical - intersect
+      for elem in intersect:
+        elem.critical_value += 1
+        critical_pf.update(True, elem.critical_value)
+      for elem in diff_new:
+        elem.critical_value = 1
+        critical_pf.update(True, elem.critical_value)
+        self.profile_critical.add(elem)
+      critical_pf.update(False, len(diff_original))
+      return critical_pf
+    origin_new = self.profile_set - other.profile_set
+    new_origin = other.profile_set - self.profile_set
+    not_changed = self.profile_set & other.profile_set
+    diff = origin_new | new_origin
+    crit = diff & self.profile_critical
+    for elem in crit:
+      critical_pf.update(True, elem.critical_value)
+    crit_fail = (diff | self.profile_critical) - crit
+    for elem in crit_fail:
+      critical_pf.update(False, elem.critical_value)
     return critical_pf
 
 class MSVEnvVar:
@@ -275,7 +303,7 @@ class MSVEnvVar:
   @staticmethod
   def get_new_env(state: 'MSVState', patch: List['PatchInfo'], test: int, mode: EnvVarMode = EnvVarMode.basic) -> Dict[str, str]:
     new_env = os.environ.copy()
-    new_env["__PID"] = f"{test}-{patch[0].switch_info.switch_number}-{patch[0].case_info.case_number}"
+    new_env["__PID"] = f"{test}-{patch[0].to_str_sw_cs()}"
     for patch_info in patch:
       sw = patch_info.switch_info.switch_number
       cs = patch_info.case_info.case_number
@@ -328,6 +356,31 @@ class PatchInfo:
       if self.operator_info.operator_type!=OperatorType.ALL_1:
         self.variable_info.pf.update(result, n)
         self.constant_info.pf.update(result, n)
+  
+  def update_result_critical(self, critical_pf: PassFail) -> None:
+    self.case_info.critical_pf.update_with_pf(critical_pf)
+    self.type_info.critical_pf.update_with_pf(critical_pf)
+    self.switch_info.critical_pf.update_with_pf(critical_pf)
+    self.line_info.critical_pf.update_with_pf(critical_pf)
+    self.file_info.critical_pf.update_with_pf(critical_pf)
+    if self.is_condition and self.operator_info is not None:
+      self.operator_info.critical_pf.update_with_pf(critical_pf)
+      if self.operator_info.operator_type!=OperatorType.ALL_1:
+        self.variable_info.critical_pf.update_with_pf(critical_pf)
+        self.constant_info.critical_pf.update_with_pf(critical_pf)
+  
+  def update_result_positive(self, result: bool, n: bool) -> None:
+    self.case_info.positive_pf.update(result, n)
+    self.type_info.positive_pf.update(result, n)
+    self.switch_info.positive_pf.update(result, n)
+    self.line_info.positive_pf.update(result, n)
+    self.file_info.positive_pf.update(result, n)
+    if self.is_condition and self.operator_info is not None:
+      self.operator_info.positive_pf.update(result, n)
+      if self.operator_info.operator_type!=OperatorType.ALL_1:
+        self.variable_info.positive_pf.update(result, n)
+        self.constant_info.positive_pf.update(result, n)
+  
   def remove_patch(self, state: 'MSVState') -> None:
     if self.is_condition and self.operator_info is not None:
       if self.operator_info.operator_type == OperatorType.ALL_1:
@@ -373,6 +426,8 @@ class PatchInfo:
       if self.operator_info.operator_type!=OperatorType.ALL_1:
         base += f"-{self.variable_info.variable}-{self.constant_info.constant_value}"
     return base
+  def to_str_sw_cs(self) -> str:
+    return f"{self.switch_info.switch_number}-{self.case_info.case_number}"
   @staticmethod
   def list_to_str(selected_patch: list) -> str:
     result = list()

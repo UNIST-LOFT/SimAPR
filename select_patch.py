@@ -38,9 +38,6 @@ def __select_prophet_condition(selected_case:CaseInfo,state:MSVState):
         return selected_case.operator_info_list[op.value]
   assert False
 
-def remove_patch(state: MSVState, patches: List[PatchInfo]) -> None:
-  for patch in patches:
-    patch.remove_patch(state)
 
 def select_patch_prophet(state:MSVState) -> PatchInfo:
   # select file
