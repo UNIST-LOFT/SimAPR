@@ -1,12 +1,12 @@
 import os
 import subprocess
 from typing import List
-from core import ConstantInfo, EnvVarMode, MSVEnvVar, MSVState, OperatorInfo, OperatorType, PatchInfo, VariableInfo
+from core import CaseInfo, ConstantInfo, EnvVarMode, MSVEnvVar, MSVState, OperatorInfo, OperatorType, PatchInfo, VariableInfo
 
 
 class ProphetCondition:
-  def __init__(self,patch: PatchInfo,state: MSVState, fail_test: list, pass_test: list):
-    self.patch=patch
+  def __init__(self,patch: CaseInfo,state: MSVState, fail_test: list, pass_test: list):
+    self.case=patch
     self.fail_test=fail_test
     self.pass_test=pass_test
     self.state=state
@@ -15,15 +15,16 @@ class ProphetCondition:
     self.state.cycle+=1
     # set arguments
     selected_test=self.fail_test[0]
-    self.state.msv_logger.info(f"@{self.state.cycle} Record [{selected_test}]  with {str(self.patch)}")
+    self.state.msv_logger.info(f"@{self.state.cycle} Record [{selected_test}]  with {self.case}")
     args = self.state.args + [str(selected_test)]
-    args = args[0:1] + ['-i', self.patch.to_str()] + args[1:]
+    args = args[0:1] + ['-i', str(self.case)] + args[1:]
     self.state.msv_logger.debug(' '.join(args))
     # set environment variables
-    new_env = MSVEnvVar.get_new_env(self.state, self.patch, selected_test,EnvVarMode.record_it)
+    patch=PatchInfo(self.case,None,None,None)
+    new_env = MSVEnvVar.get_new_env(self.state, [patch], selected_test,EnvVarMode.record_it)
     # run test
 
-    temp_file=f"/tmp/{self.patch.case_info.parent.parent.switch_number}-{self.patch.case_info.case_number}.tmp"
+    temp_file=f"/tmp/{self.case.parent.parent.switch_number}-{self.case.case_number}.tmp"
     for i in range(10):
       test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
       so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
@@ -38,7 +39,7 @@ class ProphetCondition:
         self.state.msv_logger.info("Pass in iteration!")
         return record
 
-    new_env = MSVEnvVar.get_new_env(self.state, self.patch, selected_test,EnvVarMode.record_all_1)
+    new_env = MSVEnvVar.get_new_env(self.state, patch, selected_test,EnvVarMode.record_all_1)
     test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
     so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
 
@@ -80,14 +81,15 @@ class ProphetCondition:
   def collect_value(self,temp_file:str,record:List[int]):
     selected_test=self.fail_test[0]
     self.__write_record(temp_file,record)
-    log_file=f"/tmp/{self.patch.case_info.parent.parent.switch_number}-{self.patch.case_info.case_number}.log"
+    log_file=f"/tmp/{self.case.parent.parent.switch_number}-{self.case.case_number}.log"
     os.remove(log_file)
 
     args = self.state.args + [str(selected_test)]
-    args = args[0:1] + ['-i', self.patch.to_str()] + args[1:]
+    args = args[0:1] + ['-i', self.case] + args[1:]
     self.state.msv_logger.debug(' '.join(args))
 
-    new_env = MSVEnvVar.get_new_env(self.state, self.patch, selected_test,EnvVarMode.collect_neg)
+    patch=PatchInfo(self.case,None,None,None)
+    new_env = MSVEnvVar.get_new_env(self.state, patch, selected_test,EnvVarMode.collect_neg)
     test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
     so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
 
