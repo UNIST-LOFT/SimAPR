@@ -136,7 +136,7 @@ class CaseInfo:
     self.parent = parent
     self.is_condition = is_condition
     self.var_count: int = 0
-    self.operator_info_list: List[OperatorInfo] = list()
+    self.operator_info_list: List[OperatorInfo]=list()
     self.pf = PassFail()
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
@@ -159,21 +159,6 @@ class OperatorInfo:
     return self.operator_type.value
   def __eq__(self, other) -> bool:
     return self.operator_type == other.operator_type
-  # if ALL_1, return 1 if not selected, or return 0 otherwise.
-  def get_remain(self,new_cond_syn:bool):
-    if not new_cond_syn:
-      if not self.operator_type == OperatorType.ALL_1:
-        res=0
-        for var in self.variable_info_list:
-          res+=var.get_remain_const(new_cond_syn)
-        return res
-      else:
-        return self.var_count
-    else: # TODO: Add new condition synthesis
-      res=0
-      for var in self.variable_info_list:
-        res+=var.get_remain_const(new_cond_syn)
-      return res
 
 class VariableInfo:
   def __init__(self, parent: OperatorInfo, variable: int) -> None:
@@ -192,11 +177,6 @@ class VariableInfo:
     return hash(self.to_str())
   def __eq__(self, other) -> bool:
     return self.to_str() == other.to_str()
-  def get_remain_const(self,new_cond_syn:bool):
-    if not new_cond_syn:
-      return len(self.constant_info_list)
-    else: # TODO: Add new condition synthesis
-      return len(self.constant_info_list)
 
 class ConstantInfo:
   def __init__(self, parent: VariableInfo, constant_value: int) -> None:
@@ -418,7 +398,7 @@ class PatchInfo:
     conf["case"] = self.case_info.case_number
     conf["is_cond"] = self.is_condition
     if self.is_condition:
-      if self.operator_info == None:   # It's null if record fails
+      if self.operator_info is None:   # It's null if record fails
         return conf
       conf["operator"] = self.operator_info.operator_type.value
       if self.operator_info.operator_type!=OperatorType.ALL_1:

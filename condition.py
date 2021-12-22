@@ -2,6 +2,7 @@ import os
 import subprocess
 from typing import List
 from core import CaseInfo, ConstantInfo, EnvVarMode, MSVEnvVar, MSVState, OperatorInfo, OperatorType, PatchInfo, VariableInfo
+import msv_result_handler as result_handler
 
 def parse_record(temp_file):
   try:
@@ -52,8 +53,8 @@ def write_record(temp_file,record):
 
 
 class ProphetCondition:
-  def __init__(self,patch: CaseInfo,state: MSVState, fail_test: list, pass_test: list):
-    self.case=patch
+  def __init__(self,patch: PatchInfo,state: MSVState, fail_test: list, pass_test: list):
+    self.patch=patch
     self.fail_test=fail_test
     self.pass_test=pass_test
     self.state=state
@@ -62,16 +63,16 @@ class ProphetCondition:
     self.state.cycle+=1
     # set arguments
     selected_test=self.fail_test[0]
-    self.state.msv_logger.info(f"@{self.state.cycle} Record [{selected_test}]  with {self.case.case_number}")
+    self.state.msv_logger.info(f"@{self.state.cycle} Record [{selected_test}]  with {self.patch.to_str()}")
     args = self.state.args + [str(selected_test)]
-    args = args[0:1] + ['-i', str(self.case)] + args[1:]
+    args = args[0:1] + ['-i', self.patch.to_str()] + args[1:]
     self.state.msv_logger.debug(' '.join(args))
     # set environment variables
-    patch=[PatchInfo(self.case,None,None,None)]
+    patch=[self.patch]
     new_env = MSVEnvVar.get_new_env(self.state, patch, selected_test,EnvVarMode.record_it)
     # run test
 
-    temp_file=f"/tmp/{self.case.parent.parent.switch_number}-{self.case.case_number}.tmp"
+    temp_file=f"/tmp/{self.patch.switch_info.switch_number}-{self.patch.case_info.case_number}.tmp"
     try:
       os.remove(temp_file)
     except:
@@ -98,7 +99,7 @@ class ProphetCondition:
     so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
 
     record=parse_record(temp_file)
-    if record == None:
+    if record is None:
       return None
     write_record_terminate(temp_file)
 
@@ -113,8 +114,8 @@ class ProphetCondition:
   def collect_value(self,temp_file:str,record:List[int]):
     selected_test=self.fail_test[0]
     write_record(temp_file,record)
-    sw = self.case.parent.parent.switch_number
-    cs = self.case.case_number
+    sw = self.patch.switch_info.switch_number
+    cs = self.patch.case_info.case_number
     log_file=f"/tmp/{sw}-{cs}.log"
     try:
       os.remove(log_file)
@@ -125,7 +126,7 @@ class ProphetCondition:
     args = args[0:1] + ['-i', f"{sw}-{cs}"] + args[1:]
     self.state.msv_logger.debug(' '.join(args))
 
-    patch=[PatchInfo(self.case,None,None,None)]
+    patch=[self.patch]
     new_env = MSVEnvVar.get_new_env(self.state, patch, selected_test,EnvVarMode.collect_neg)
     test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
     so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
@@ -169,7 +170,7 @@ class ProphetCondition:
 
     values_arr=np.array(values)
     values_t=values_arr.transpose() # transpose: to [atom][value]
-    operators=dict()
+    operators=[]
     available_const=[]
     for value in values_t:
       ## Get available constants
@@ -179,7 +180,7 @@ class ProphetCondition:
         if const==MAGIC_NUMBER:
           giveup=True
         if -1000 < const < 1000:
-          available_value.append(const)
+          available_value.append(int(const))
       
       if giveup:
         available_const.append([])
@@ -188,7 +189,7 @@ class ProphetCondition:
     
     ## Create condition infos
     for op in OperatorType:
-      new_operator=OperatorInfo(self.case,op)
+      new_operator=OperatorInfo(self.patch.case_info,op)
       if op!=OperatorType.ALL_1:
         for i,consts in enumerate(available_const):
           new_variable=VariableInfo(new_operator,i)
@@ -197,21 +198,31 @@ class ProphetCondition:
               new_constant=ConstantInfo(new_variable,const)
               self.state.msv_logger.info(f'Create new condition: {new_variable.parent.operator_type}, {new_variable.variable}, {const}')
               new_variable.constant_info_list.append(new_constant)
-          new_operator.variable_info_list.append(new_variable)
-      operators[op]=new_operator
+          
+          if len(new_variable.constant_info_list)>0:
+            new_operator.variable_info_list.append(new_variable)
+
+      if len(new_operator.variable_info_list)>0:
+        operators.append(new_operator)
 
     return operators
 
   def get_condition(self):
-    self.case.processed=True
+    self.patch.case_info.processed=True
     path=self.record()
     if path==None:
       self.state.msv_logger.info('Fail at recording')
+      result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0])
+      result_handler.append_result(self.state, [self.patch], False)
+      result_handler.remove_patch(self.state, [self.patch])
       return None
 
-    values=self.collect_value(f"/tmp/{self.case.parent.parent.switch_number}-{self.case.case_number}.tmp",path)
+    values=self.collect_value(f"/tmp/{self.patch.switch_info.switch_number}-{self.patch.case_info.case_number}.tmp",path)
     if values==None:
       self.state.msv_logger.info('Fail at collecting')
+      result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0])
+      result_handler.append_result(self.state, [self.patch], False)
+      result_handler.remove_patch(self.state, [self.patch])
       return None
     
     conditions=self.synthesize(path,values)
@@ -247,7 +258,7 @@ class MyCondition:
     so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
 
     record=parse_record(temp_file)
-    if record == None:
+    if record is None:
       return None
     write_record_terminate(temp_file)
 
@@ -294,10 +305,10 @@ class MyCondition:
       current_var=self.patch.operator_info.variable_info_list[i]
       for const in atom:
         if -1000<const<1000 and const not in current_var.used_const:
-          current_var.used_const.add(const)
+          current_var.used_const.add(int(const))
           current_const=current_var.constant_info_list[0]
           if current_const is None:
-            current_var.constant_info_list[0]=ConstantInfo(current_var,const)
+            current_var.constant_info_list[0]=ConstantInfo(current_var,int(const))
           else:
             while current_const.left is not None or current_const.right is not None:
               if current_const.constant_value<const:
@@ -306,9 +317,9 @@ class MyCondition:
                 current_const=current_const.left
             
             if current_const<const:
-              current_const.right=ConstantInfo(current_var,const)
+              current_const.right=ConstantInfo(current_var,int(const))
             else:
-              current_const.left=ConstantInfo(current_var,const)
+              current_const.left=ConstantInfo(current_var,int(const))
 
   def remove_same_record(self,record:list,values:list,node:ConstantInfo,test_result:bool):
     current_var=node.variable
@@ -366,11 +377,17 @@ class MyCondition:
     (result,record)=self.get_record()
     if record is None:
       self.state.msv_logger.warn(f'No record found')
+      result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0])
+      result_handler.append_result(self.state, [self.patch], False)
+      result_handler.remove_patch(self.state, [self.patch])
       return None
 
     values=self.collect_value(f"/tmp/{self.patch.switch_info.switch_number}-{self.patch.case_info.case_number}.tmp",record)
     if values is None:
       self.state.msv_logger.warn(f'No values found')
+      result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0])
+      result_handler.append_result(self.state, [self.patch], False)
+      result_handler.remove_patch(self.state, [self.patch])
       return None
 
     self.state.msv_logger.info(f'Extending BST')

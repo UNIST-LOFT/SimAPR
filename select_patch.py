@@ -28,15 +28,11 @@ def select_by_probability_hierarchical(state: MSVState, n: int, p1: List[PassFai
     return p1_select[p2_select[PassFail.select_by_probability(p3_select_pf)]]
 
 def __select_prophet_condition(selected_case:CaseInfo,state:MSVState):
-  for op in OperatorType:
-    if selected_case.operator_info_list[op.value].get_remain(state.use_condition_synthesis)>0:
-      if not op==OperatorType.ALL_1:
-        for var in selected_case.operator_info_list[op.value].variable_info_list:
-          if var.get_remain_const(state.use_condition_synthesis)>0:
-            return var.constant_info_list[0]
-      else:
-        return selected_case.operator_info_list[op.value]
-  assert False
+  selected_operator=selected_case.operator_info_list[0]
+  if selected_operator.operator_type==OperatorType.ALL_1:
+    return selected_operator
+  else:
+    return selected_operator.variable_info_list[0].constant_info_list[0]
 
 
 def select_patch_prophet(state:MSVState) -> PatchInfo:
@@ -56,12 +52,12 @@ def select_patch_prophet(state:MSVState) -> PatchInfo:
   selected_case=None
   type_priority=(PatchType.TightenConditionKind,PatchType.LoosenConditionKind,PatchType.IfExitKind,PatchType.GuardKind,PatchType.SpecialGuardKind,
         PatchType.AddInitKind,PatchType.AddAndReplaceKind,PatchType.ReplaceKind,PatchType.ReplaceStringKind)
-  for type in type_priority:
+  for type_ in type_priority:
     selected=False
     for switch in selected_line.switch_info_list:
-      if len(switch.type_info_list[type.value].case_info_list)>0:
+      if len(switch.type_info_list[type_.value].case_info_list)>0:
         # select first case
-        selected_case=switch.type_info_list[type.value].case_info_list[0]
+        selected_case=switch.type_info_list[type_.value].case_info_list[0]
         selected=True
         break
     if selected:
@@ -162,15 +158,15 @@ def select_patch_guided(state: MSVState, mode: MSVMode) -> PatchInfo:
   if selected_case_info.is_condition == False:
     return PatchInfo(selected_case_info, None, None, None)
   else:
-    # Select condition
+    # Create init condition
     if state.use_condition_synthesis:
       if len(selected_case_info.operator_info_list)==0:
-        for op in OperatorType:
-          if op==OperatorType.ALL_1:
-            operator=OperatorInfo(selected_case_info,op)
+        for op in selected_case_info.operator_info_list:
+          if op.operator_type==OperatorType.ALL_1:
+            operator=OperatorInfo(selected_case_info,op.operator_type)
             selected_case_info.operator_info_list.append(operator)
           else:
-            operator=OperatorInfo(selected_case_info,op,state.var_counts[f'{selected_switch_info.switch_number}-{selected_case_info.case_number}'])
+            operator=OperatorInfo(selected_case_info,op.operator_type,state.var_counts[f'{selected_switch_info.switch_number}-{selected_case_info.case_number}'])
             for i in range(operator.var_count):
               new_var=VariableInfo(operator,i)
               const_zero=ConstantInfo(new_var,0)

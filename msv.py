@@ -43,7 +43,7 @@ class MSV:
     # prophet condition synthesis
     if selected_patch[0].case_info.is_condition and not self.state.use_condition_synthesis and \
           not selected_patch[0].case_info.processed:
-      prophet_cond=condition.ProphetCondition(selected_patch[0].case_info,self.state,self.state.negative_test,self.state.positive_test)
+      prophet_cond=condition.ProphetCondition(selected_patch[0],self.state,self.state.negative_test,self.state.positive_test)
       opers=prophet_cond.get_condition()
       if opers is not None:
         selected_patch[0].case_info.operator_info_list=opers
@@ -73,6 +73,9 @@ class MSV:
       result_str = so.decode('utf-8').strip()
       if result_str == "":
         self.state.msv_logger.info("Result: FAIL")
+        result_handler.update_result(self.state, selected_patch, False, 1, selected_test)
+        result_handler.append_result(self.state, selected_patch, False)
+        result_handler.remove_patch(self.state, selected_patch)
         return False
       self.state.msv_logger.debug(result_str)
       result = (int(result_str) == selected_test)

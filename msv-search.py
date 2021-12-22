@@ -149,10 +149,15 @@ def read_info(state: MSVState) -> None:
   #Add original to switch_case_map
   temp_file = FileInfo('original')
   temp_line = LineInfo(temp_file, 0)
+  temp_file.line_info_list.append(temp_line)
   temp_switch = SwitchInfo(temp_line, 0)
+  temp_line.switch_info_list.append(temp_switch)
   temp_type = TypeInfo(temp_switch, PatchType.Original)
+  temp_switch.type_info_list.append(temp_type)
   temp_case = CaseInfo(temp_type, 0, False)
+  temp_type.case_info_list.append(temp_case)
   state.switch_case_map["0-0"] = temp_case
+  state.patch_info_list.append(temp_file)
 
 def read_var_count(state:MSVState,sizes:list):
   for object in sizes:
