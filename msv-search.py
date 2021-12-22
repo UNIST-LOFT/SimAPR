@@ -120,13 +120,11 @@ def read_info(state: MSVState) -> None:
           types = switches['types']
           type_list = switch_info.type_info_list
           for t in PatchType:
-            switch_info.type_info_map[t]=[]
             if t == PatchType.Original:
               continue
             if len(types[t.value]) > 0:
               type_info = TypeInfo(switch_info, t)
               type_list.append(type_info)
-              switch_info.type_info_map[t].append(type_info)
               #case_map = type_info.case_info_map
               case_list = type_info.case_info_list
               for c in types[t.value]:

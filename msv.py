@@ -32,45 +32,7 @@ class MSV:
 
   def save_result(self, selected_patch: List[PatchInfo]) -> None:
     pass
-  
-  def select_patch_prophet(self) -> List[PatchInfo]:
-    # select file
-    selected_file=self.state.patch_info_list[0]
-    for file in self.state.patch_info_list:
-      if selected_file.fl_score<file.fl_score:
-        selected_file=file
     
-    # select line
-    selected_line=selected_file.line_info_list[0]
-    for line in selected_file.line_info_list:
-      if selected_line.fl_score<line.fl_score:
-        selected_line=line
-    
-    # select case
-    selected_case=None
-    for type in PatchType:
-      selected=False
-      for switch in selected_line.switch_info_list:
-        if len(switch.type_info_map[type])>0:
-          # select first case
-          selected_case=switch.type_info_map[type][0]
-          selected=True
-          break
-      if selected:
-        break
-    assert selected_case!=None
-        
-    patch = PatchInfo(selected_case, None, None, None)
-    return [patch]
-
-  def select_patch(self, mode: MSVMode) -> List[PatchInfo]:
-    if mode == MSVMode.prophet:
-      return self.select_patch_prophet()
-    cs = self.state.switch_case_map["0-0"]
-    patch = PatchInfo(cs, None, None, None)
-
-    return [patch]
-  
   # Run one test with selected_patch (which can be multiple patches)
   def run_test(self, selected_patch: List[PatchInfo], selected_test: int) -> bool:
     self.state.cycle += 1
