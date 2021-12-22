@@ -157,6 +157,20 @@ class OperatorInfo:
     return self.operator_type.value
   def __eq__(self, other) -> bool:
     return self.operator_type == other.operator_type
+  def get_remain(self,new_cond_syn:bool):
+    if not new_cond_syn:
+      if not self.operator_type == OperatorType.ALL_1:
+        res=0
+        for var in self.variable_info_list:
+          res+=var.get_remain_const(new_cond_syn)
+        return res
+      else:
+        return 1
+    else: # TODO: Add new condition synthesis
+      res=0
+      for var in self.variable_info_list:
+        res+=var.get_remain_const(new_cond_syn)
+      return res
 
 class VariableInfo:
   def __init__(self, parent: OperatorInfo, variable: int) -> None:
@@ -170,6 +184,11 @@ class VariableInfo:
     return hash(f"{self.parent.parent.parent.parent.switch_number}-{self.parent.parent.case_number}-{self.parent}-{self.variable}")
   def __eq__(self, other) -> bool:
     return self.__hash__() == other.__hash__()
+  def get_remain_const(self,new_cond_syn:bool):
+    if not new_cond_syn:
+      return len(self.constant_info_list)
+    else: # TODO: Add new condition synthesis
+      return len(self.constant_info_list)
 
 class ConstantInfo:
   def __init__(self, parent: VariableInfo, constant_value: int) -> None:
