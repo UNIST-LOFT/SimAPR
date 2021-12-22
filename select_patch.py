@@ -31,7 +31,9 @@ def select_patch_prophet(state:MSVState) -> List[PatchInfo]:
   
   # select case
   selected_case=None
-  for type in PatchType:
+  type_priority=(PatchType.TightenConditionKind,PatchType.LoosenConditionKind,PatchType.IfExitKind,PatchType.GuardKind,PatchType.SpecialGuardKind,
+        PatchType.AddInitKind,PatchType.AddAndReplaceKind,PatchType.ReplaceKind,PatchType.ReplaceStringKind)
+  for type in type_priority:
     selected=False
     for switch in selected_line.switch_info_list:
       if len(switch.type_info_list[type.value].case_info_list)>0:

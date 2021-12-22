@@ -15,16 +15,20 @@ class ProphetCondition:
     self.state.cycle+=1
     # set arguments
     selected_test=self.fail_test[0]
-    self.state.msv_logger.info(f"@{self.state.cycle} Record [{selected_test}]  with {self.case}")
+    self.state.msv_logger.info(f"@{self.state.cycle} Record [{selected_test}]  with {self.case.case_number}")
     args = self.state.args + [str(selected_test)]
     args = args[0:1] + ['-i', str(self.case)] + args[1:]
     self.state.msv_logger.debug(' '.join(args))
     # set environment variables
-    patch=PatchInfo(self.case,None,None,None)
-    new_env = MSVEnvVar.get_new_env(self.state, [patch], selected_test,EnvVarMode.record_it)
+    patch=[PatchInfo(self.case,None,None,None)]
+    new_env = MSVEnvVar.get_new_env(self.state, patch, selected_test,EnvVarMode.record_it)
     # run test
 
     temp_file=f"/tmp/{self.case.parent.parent.switch_number}-{self.case.case_number}.tmp"
+    try:
+      os.remove(temp_file)
+    except:
+      pass
     for i in range(10):
       test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
       so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
@@ -38,6 +42,9 @@ class ProphetCondition:
       if str(selected_test) in result_str:
         self.state.msv_logger.info("Pass in iteration!")
         return record
+      
+      if 0 not in record:
+        return None
 
     new_env = MSVEnvVar.get_new_env(self.state, patch, selected_test,EnvVarMode.record_all_1)
     test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
@@ -174,7 +181,7 @@ class ProphetCondition:
     
     ## Create condition infos
     for op in OperatorType:
-      new_operator=OperatorInfo(self.patch.case_info,op)
+      new_operator=OperatorInfo(self.case,op)
       for i,consts in enumerate(available_const):
         new_variable=VariableInfo(new_operator,i)
         for const in consts:
@@ -189,10 +196,12 @@ class ProphetCondition:
   def get_condition(self):
     path=self.record()
     if path==None:
+      self.state.msv_logger.info('Fail at recording')
       return None
 
     values=self.collect_value(f"/tmp/{self.patch.case_info.parent.parent.switch_number}-{self.patch.case_info.case_number}.tmp",path)
     if values==None:
+      self.state.msv_logger.info('Fail at collecting')
       return None
     
     conditions=self.synthesize(path,values)

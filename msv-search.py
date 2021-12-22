@@ -63,6 +63,12 @@ def parse_args(argv: list) -> MSVState:
     state.out_dir = os.path.join(state.out_dir, sub_dir)
   if not os.path.exists(state.out_dir):
     os.makedirs(state.out_dir)
+  if state.mode==MSVMode.prophet:
+    state.use_condition_synthesis=False
+    state.use_fl=False
+    state.use_hierarchical_selection=False
+    state.use_pass_test=False
+    state.use_multi_line=False
   return state
 
 
@@ -128,7 +134,8 @@ def read_info(state: MSVState) -> None:
               #case_map = type_info.case_info_map
               case_list = type_info.case_info_list
               for c in types[t.value]:
-                is_condition = t.value <= PatchType.IfExitKind.value
+                is_condition = t.value == PatchType.TightenConditionKind.value or t.value==PatchType.LoosenConditionKind.value or t.value==PatchType.IfExitKind.value or \
+                            t.value==PatchType.GuardKind.value or t.value==PatchType.SpecialGuardKind.value
                 case_info = CaseInfo(type_info, int(c), is_condition)
                 case_list.append(case_info)
                 state.switch_case_map[f"{switch_info.switch_number}-{case_info.case_number}"] = case_info
