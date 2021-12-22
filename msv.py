@@ -90,4 +90,5 @@ class MSV:
         run_result = self.run_test(patch, neg)
         #self.run_positive_test(patch, self.state.positive_test)
         self.update_result(patch, run_result, 1)
+        select_patch.remove_patch(self.state, patch)
       

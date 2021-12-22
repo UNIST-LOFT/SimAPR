@@ -309,7 +309,7 @@ class PatchInfo:
         self.constant_info.pf.update(result, n)
   def remove_patch(self, state: 'MSVState') -> None:
     if self.is_condition:
-      pass
+      self.type_info.case_info_list.remove(self.case_info)
     else:
       self.type_info.case_info_list.remove(self.case_info)
     if len(self.type_info.case_info_list) == 0:
