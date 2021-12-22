@@ -14,6 +14,7 @@ from enum import Enum
 from core import *
 import condition
 import select_patch
+import msv_result_handler as result_handler
 
 
 class MSV:
@@ -27,38 +28,9 @@ class MSV:
       self.state.is_alive = False
     return self.state.is_alive
 
-  def update_result(self, selected_patch: List[PatchInfo], run_result: bool, n: float, test: int) -> None:
-    critical_pf = PassFail()
-    if self.state.use_hierarchical_selection >= 2:
-        original_profile = self.state.profile_map[test]
-        profile = Profile(self.state, f"{test}-{selected_patch[0].to_str_sw_cs()}")
-        critical_pf = original_profile.get_diff(profile, run_result)
-        self.state.msv_logger.debug(f"Critical PF: {critical_pf.pass_count}/{critical_pf.fail_count}")
-    for patch in selected_patch:
-      patch.update_result(run_result, n)
-      patch.update_result_critical(critical_pf)
-
   def save_result(self) -> None:
-    self.state.last_save_time = time.time()
-    result_file = os.path.join(self.state.out_dir, "msv-result.json")
-    self.state.msv_logger.info(f"Saving result to {result_file}")
-    with open(result_file, 'w') as f:
-      json.dump(self.state.msv_result, f, indent=2)
+    result_handler.save_result(self.state)
 
-  # Append result list, save result to file periodically
-  def append_result(self, selected_patch: List[PatchInfo], test_result: bool) -> None:   
-    save_interval = 10
-    tm = time.time() 
-    tm_interval = tm - self.state.start_time
-    result = MSVResult(self.state.cycle, tm_interval, selected_patch, test_result)
-    self.state.msv_result.append(result.to_json_object())
-    if (tm - self.state.last_save_time) > save_interval:
-      self.save_result()
-  
-  def remove_patch(self, patches: List[PatchInfo]) -> None:
-    for patch in patches:
-      patch.remove_patch(self.state)
-    
   # Run one test with selected_patch (which can be multiple patches)
   def run_test(self, selected_patch: List[PatchInfo], selected_test: int) -> bool:
     self.state.cycle += 1
@@ -108,6 +80,9 @@ class MSV:
         self.state.msv_logger.warning("Result: PASS")
       else:
         self.state.msv_logger.warning("Result: FAIL")
+      result_handler.update_result(self.state, selected_patch, result, 1, selected_test)
+      result_handler.append_result(self.state, selected_patch, result)
+      result_handler.remove_patch(self.state, selected_patch)
       return result
   
   # Run multiple positive tests in parallel
@@ -136,7 +111,7 @@ class MSV:
         patch = select_patch.select_patch(self.state, self.state.mode, self.state.use_multi_line)
         run_result = self.run_test(patch, neg)
         #self.run_positive_test(patch, self.state.positive_test)
-        self.update_result(patch, run_result, 1, neg)
-        self.append_result(patch, run_result)
-        self.remove_patch(patch)
+        # self.update_result(patch, run_result, 1, neg)
+        # self.append_result(patch, run_result)
+        # self.remove_patch(patch)
       

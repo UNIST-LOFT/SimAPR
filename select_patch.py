@@ -158,7 +158,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode) -> PatchInfo:
           f"{selected_line_info.line_number}({len(selected_line_info.switch_info_list)}):" +
           f"{selected_switch_info.switch_number}({len(selected_switch_info.type_info_list)}):" +
           f"{selected_type_info.patch_type.name}({len(selected_type_info.case_info_list)}):" +
-          f"{selected_case_info.case_number}({len(selected_case_info.operator_info_list)})")
+                         f"{selected_case_info.case_number}")  # ({len(selected_case_info.operator_info_list)})
   if selected_case_info.is_condition == False:
     return PatchInfo(selected_case_info, None, None, None)
   else:
