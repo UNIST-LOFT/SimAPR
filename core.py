@@ -22,13 +22,13 @@ class MSVMode(Enum):
 class PatchType(Enum):
   TightenConditionKind = 0
   LoosenConditionKind = 1
-  GuardKind = 2
-  SpecialGuardKind = 3
-  IfExitKind = 4
+  IfExitKind = 2
+  GuardKind = 3
+  SpecialGuardKind = 4
   AddInitKind = 5
-  ReplaceKind = 6
-  ReplaceStringKind = 7
-  AddAndReplaceKind = 8
+  AddAndReplaceKind = 6
+  ReplaceKind = 7
+  ReplaceStringKind = 8
   Original = 31
 
 class OperatorType(Enum):
@@ -82,6 +82,8 @@ class FileInfo:
     self.pf = PassFail()
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
+    self.fl_score=-1
+
   def __hash__(self) -> int:
     return hash(self.file_name)
   def __eq__(self, other) -> bool:
@@ -96,6 +98,7 @@ class LineInfo:
     self.pf = PassFail()
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
+    self.fl_score=0
   def __hash__(self) -> int:
     return hash(self.line_number)
   def __eq__(self, other) -> bool:
@@ -159,8 +162,7 @@ class OperatorInfo:
     return self.operator_type == other.operator_type
 
 class VariableInfo:
-  def __init__(self, parent: OperatorInfo, variable_name: str, variable: int) -> None:
-    self.variable_name = variable_name
+  def __init__(self, parent: OperatorInfo, variable: int) -> None:
     self.variable = variable
     self.parent = parent
     self.constant_info_map = dict()
@@ -169,9 +171,9 @@ class VariableInfo:
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
   def __hash__(self) -> int:
-    return hash(self.variable_name)
+    return hash(f"{self.parent.parent.parent.parent.switch_number}-{self.parent.parent.case_number}-{self.parent}-{self.variable}")
   def __eq__(self, other) -> bool:
-    return self.variable_name == other.variable_name
+    return self.__hash__() == other.__hash__()
 
 class ConstantInfo:
   def __init__(self, parent: VariableInfo, constant_value: int) -> None:
@@ -248,18 +250,6 @@ class Profile:
     critical_pf.update(False, nc)
     return critical_pf
 
-
-class Condition:
-  def __init__(self, state: 'MSVState', patch: List['PatchInfo']):
-    self.state = state
-    self.patch = patch
-  def record() -> None:
-    pass
-  def collect_values() -> None:
-    pass
-  def parse_values() -> None:
-    pass
-
 class MSVEnvVar:
   def __init__(self) -> None:
     pass
@@ -271,8 +261,25 @@ class MSVEnvVar:
       sw = patch_info.switch_info.switch_number
       cs = patch_info.case_info.case_number
       new_env[f"__SWITCH{sw}"] = str(cs)
-      new_env["IS_NEG"] = "RUN"
-      new_env["TMP_FILE"] = f"/tmp/{sw}-{cs}"
+      if mode==EnvVarMode.record_it:
+        new_env["IS_NEG"]='1'
+        new_env['NEG_ARG']='1'
+        new_env['TMP_FILE']=f"/tmp/{sw}-{cs}.tmp"
+      elif mode==EnvVarMode.record_all_1:
+        new_env["IS_NEG"]='1'
+        new_env['NEG_ARG']='0'
+        new_env['TMP_FILE']=f"/tmp/{sw}-{cs}.tmp"
+      elif mode==EnvVarMode.collect_neg:
+        new_env['IS_NEG']='RECORD1'
+        new_env['NEG_ARG']=f"/tmp/{sw}-{cs}.tmp"
+        new_env['TMP_FILE']=f"/tmp/{sw}-{cs}.log"
+      elif mode==EnvVarMode.collect_pos:
+        new_env['IS_NEG']='RECORD0'
+        new_env['TMP_FILE']=f"/tmp/{sw}-{cs}.log"
+      else:
+        new_env["IS_NEG"] = "RUN"
+        new_env["TMP_FILE"] = f"/tmp/{sw}-{cs}"
+        
       if patch_info.is_condition:
         new_env[f"__{sw}_{cs}__OPERATOR"] = str(patch_info.operator_info.operator_type.value)
         if patch_info.has_var:

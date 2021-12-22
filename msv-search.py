@@ -85,6 +85,14 @@ def set_logger(state: MSVState) -> logging.Logger:
 def read_info(state: MSVState) -> None:
   with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
     info = json.load(f)
+    priority=info['priority']
+
+    def get_score(file,line):
+      for object in priority:
+        if object['file']==file and object['line']==line:
+          return float(object['score'])
+      assert False
+
     #file_map = state.patch_info_map
     file_list = state.patch_info_list
     for file in info['rules']:
@@ -95,6 +103,10 @@ def read_info(state: MSVState) -> None:
       line_list = file_info.line_info_list
       for line in file['lines']:
         line_info = LineInfo(file_info, int(line['line']))
+        line_info.fl_score=get_score(file_info.file_name,line_info.line_number)
+        if file_info.fl_score<line_info.fl_score:
+          file_info.fl_score=line_info.fl_score
+        
         line_list.append(line_info)
         #line_map[line_info.line_number] = line_info
         #switch_map = line_info.switch_info_map
@@ -106,12 +118,13 @@ def read_info(state: MSVState) -> None:
           types = switches['types']
           type_list = switch_info.type_info_list
           for t in PatchType:
+            switch_info.type_info_map[t]=[]
             if t == PatchType.Original:
               continue
             if len(types[t.value]) > 0:
               type_info = TypeInfo(switch_info, t)
               type_list.append(type_info)
-              switch_info.type_info_map[t.value] = type_info
+              switch_info.type_info_map[t].append(type_info)
               #case_map = type_info.case_info_map
               case_list = type_info.case_info_list
               for c in types[t.value]:

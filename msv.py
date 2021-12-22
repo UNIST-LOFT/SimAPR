@@ -11,6 +11,7 @@ import logging
 from enum import Enum
 
 from core import *
+import condition
 
 
 class MSV:
@@ -32,8 +33,33 @@ class MSV:
     pass
   
   def select_patch_prophet(self) -> List[PatchInfo]:
-    cs = self.state.switch_case_map["0-0"]
-    patch = PatchInfo(cs, None, None, None)
+    # select file
+    selected_file=self.state.patch_info_list[0]
+    for file in self.state.patch_info_list:
+      if selected_file.fl_score<file.fl_score:
+        selected_file=file
+    
+    # select line
+    selected_line=selected_file.line_info_list[0]
+    for line in selected_file.line_info_list:
+      if selected_line.fl_score<line.fl_score:
+        selected_line=line
+    
+    # select case
+    selected_case=None
+    for type in PatchType:
+      selected=False
+      for switch in selected_line.switch_info_list:
+        if len(switch.type_info_map[type])>0:
+          # select first case
+          selected_case=switch.type_info_map[type][0]
+          selected=True
+          break
+      if selected:
+        break
+    assert selected_case!=None
+        
+    patch = PatchInfo(selected_case, None, None, None)
     return [patch]
 
   def select_patch(self, mode: MSVMode) -> List[PatchInfo]:
@@ -41,6 +67,7 @@ class MSV:
       return self.select_patch_prophet()
     cs = self.state.switch_case_map["0-0"]
     patch = PatchInfo(cs, None, None, None)
+
     return [patch]
   
   # Run one test with selected_patch (which can be multiple patches)
@@ -51,6 +78,10 @@ class MSV:
     args = self.state.args + [str(selected_test)]
     args = args[0:1] + ['-i', selected_patch[0].to_str()] + args[1:]
     self.state.msv_logger.debug(' '.join(args))
+
+    if selected_patch[0].case_info.is_condition and not self.state.use_condition_synthesis:
+      prophet_cond=condition.ProphetCondition(selected_patch[0],self.state,selected_test)
+      prophet_cond.get_condition()
     # set environment variables
     new_env = MSVEnvVar.get_new_env(self.state, selected_patch, selected_test)
     # run test
