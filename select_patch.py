@@ -1,5 +1,17 @@
 from core import *
 
+# n: number of hierarchy
+def select_by_probability_hierarchical(state: MSVState, n: int, p1: List[PassFail], p2: List[PassFail] = [], p3: List[PassFail] = []) -> int:
+  # Select patch for hierarchical
+  if n == 1:
+    return PassFail.select_by_probability(p1)
+  p1_select = list()
+  p2_select_pf = list()
+  p1_total = 64
+  for i in range(p1_total):
+    p1_select.append(PassFail.select_by_probability(p1))
+    p2_select_pf.append(p2[p1_select[i]])
+  return p1_select[PassFail.select_by_probability(p2_select_pf)]
  
 def remove_patch(state: MSVState, patches: List[PatchInfo]) -> None:
   for patch in patches:

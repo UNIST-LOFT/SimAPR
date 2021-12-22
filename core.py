@@ -338,7 +338,7 @@ class PatchInfo:
     if self.is_condition:
       base += f":{self.operator_info.operator_type.value}"
       if self.has_var:
-        base += f",{self.variable_info.variable_name},{self.constant_info.constant_value}"
+        base += f"-{self.variable_info.variable}-{self.constant_info.constant_value}"
     return base
   @staticmethod
   def list_to_str(selected_patch: list) -> str:
