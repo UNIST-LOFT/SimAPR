@@ -29,7 +29,7 @@ def remove_patch(state: MSVState, patches: List[PatchInfo]) -> None:
   for patch in patches:
     patch.remove_patch(state)
 
-def select_patch_prophet(state:MSVState) -> List[PatchInfo]:
+def select_patch_prophet(state:MSVState) -> PatchInfo:
   # select file
   selected_file=state.patch_info_list[0]
   for file in state.patch_info_list:
@@ -69,7 +69,7 @@ def select_patch_prophet(state:MSVState) -> List[PatchInfo]:
   return patch
 
 
-def select_patch_guided(state: MSVState, mode: MSVMode) -> List[PatchInfo]:
+def select_patch_guided(state: MSVState, mode: MSVMode) -> PatchInfo:
   # Select patch for guided, random
   is_rand = (mode == MSVMode.random)
   pf_rand = PassFail()
