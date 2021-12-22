@@ -49,7 +49,14 @@ class MSV:
     new_env = MSVEnvVar.get_new_env(self.state, selected_patch, selected_test)
     # run test
     test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
-    so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
+    so: bytes
+    se: bytes
+    try:
+      so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
+    except: # timeout
+      test_proc.kill()
+      so, se = test_proc.communicate()
+      self.state.msv_logger.info("Timeout!")
     result_str = so.decode('utf-8').strip()
     if result_str == "":
       self.state.msv_logger.info("Result: FAIL")
