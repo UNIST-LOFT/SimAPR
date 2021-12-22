@@ -1,9 +1,9 @@
 import os
 import subprocess
-from typing import List
+from typing import List, Tuple, Dict
 from core import CaseInfo, ConstantInfo, EnvVarMode, MSVEnvVar, MSVState, OperatorInfo, OperatorType, PatchInfo, VariableInfo
 
-def parse_record(temp_file):
+def parse_record(temp_file: str) -> List[int]:
   try:
     file=open(temp_file,'r')
 
@@ -20,12 +20,12 @@ def parse_record(temp_file):
   except IOError:
     return None
 
-def write_record_terminate(temp_file):
+def write_record_terminate(temp_file: str) -> None:
   file=open(temp_file,'a')
   file.write(' 0')
   file.close()
 
-def parse_value(log_file):
+def parse_value(log_file: str) -> List[int]:
   file=open(log_file,'r')
 
   values=[]
@@ -42,7 +42,7 @@ def parse_value(log_file):
   
   return values
 
-def write_record(temp_file,record):
+def write_record(temp_file: str, record: List[int]) -> None:
   file=open(temp_file,'w')
   file.write(f'{len(record)}')
   for i in record:
@@ -52,7 +52,7 @@ def write_record(temp_file,record):
 
 
 class ProphetCondition:
-  def __init__(self,patch: CaseInfo,state: MSVState, fail_test: list, pass_test: list):
+  def __init__(self,patch: CaseInfo,state: MSVState, fail_test: list, pass_test: list) -> None:
     self.case=patch
     self.fail_test=fail_test
     self.pass_test=pass_test
@@ -110,7 +110,7 @@ class ProphetCondition:
     return None
   
   # TODO: Add pass test
-  def collect_value(self,temp_file:str,record:List[int]):
+  def collect_value(self,temp_file: str, record: List[int]) -> List[int]:
     selected_test=self.fail_test[0]
     write_record(temp_file,record)
     sw = self.case.parent.parent.switch_number
@@ -137,7 +137,8 @@ class ProphetCondition:
 
     return parse_value(log_file)
     
-  def __check_condition(self,record,values,operator,variable,constant):
+  def __check_condition(self, record: List[int], values: List[int], 
+          operator: OperatorType, variable: int, constant: int) -> bool:
     result=True
     for path,value in zip(record,values[variable]):
       if operator==OperatorType.EQ:
@@ -163,7 +164,7 @@ class ProphetCondition:
 
     return result
 
-  def synthesize(self,record,values):
+  def synthesize(self, record: List[int], values: List[int]) -> Dict[OperatorType, OperatorInfo]:
     import numpy as np
     MAGIC_NUMBER=-123456789
 
@@ -202,7 +203,7 @@ class ProphetCondition:
 
     return operators
 
-  def get_condition(self):
+  def get_condition(self) -> List[OperatorInfo]:
     self.case.processed=True
     path=self.record()
     if path==None:
@@ -218,13 +219,13 @@ class ProphetCondition:
     return list(conditions.values())
 
 class MyCondition:
-  def __init__(self,patch: PatchInfo,state: MSVState, fail_test: list, pass_test: list):
+  def __init__(self,patch: PatchInfo,state: MSVState, fail_test: list, pass_test: list) -> None:
     self.patch=patch
     self.fail_test=fail_test
     self.pass_test=pass_test
     self.state=state
 
-  def get_record(self):
+  def get_record(self) -> Tuple[bool, List[int]]:
     self.state.cycle+=1
     # set arguments
     selected_test=self.fail_test[0]
@@ -260,7 +261,7 @@ class MyCondition:
     return result,record
 
   # TODO: Add pass test
-  def collect_value(self,temp_file:str,record:List[int]):
+  def collect_value(self, temp_file: str, record: List[int]) -> List[int]:
     selected_test=self.fail_test[0]
     write_record(temp_file,record)
     log_file=f"/tmp/{self.patch.switch_info.switch_number}-{self.patch.case_info.case_number}.log"
@@ -284,7 +285,7 @@ class MyCondition:
 
     return parse_value(log_file)
 
-  def extend_bst(self,values:list):
+  def extend_bst(self, values: List[int]) -> None:
     import numpy as np
 
     values_arr=np.ndarray(values)
@@ -310,7 +311,7 @@ class MyCondition:
             else:
               current_const.left=ConstantInfo(current_var,const)
 
-  def remove_same_record(self,record:list,values:list,node:ConstantInfo,test_result:bool):
+  def remove_same_record(self,record:list,values:list,node:ConstantInfo,test_result:bool) -> None:
     current_var=node.variable
     if __check_expr(record,values[current_var.variable],node.variable.parent.operator_type,node.constant_value):
       self.state.msv_logger.info(f'Remove {node.variable.parent.operator_type.value}, {node.variable.variable}, {node.constant_value}')
@@ -362,7 +363,7 @@ class MyCondition:
       if node.right is not None:
         self.remove_same_record(record,values,node.right,test_result)
     
-  def run(self):
+  def run(self) -> None:
     (result,record)=self.get_record()
     if record is None:
       self.state.msv_logger.warn(f'No record found')
@@ -382,7 +383,7 @@ class MyCondition:
     for var in self.patch.operator_info.variable_info_list:
       self.remove_same_record(record,values_t,var.constant_info_list[0],result)
 
-def __check_expr(record,values,operator,constant):
+def __check_expr(record,values,operator,constant) -> bool:
   for record,value in zip(record,values):
     if operator==OperatorType.EQ:
       if (value==constant and record==0) or (value!=constant and record==1):
