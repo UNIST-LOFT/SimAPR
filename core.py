@@ -180,10 +180,14 @@ class VariableInfo:
     self.pf = PassFail()
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
+  def to_str(self) -> str:
+    return f"{self.parent.parent.parent.parent.switch_number}-{self.parent.parent.case_number}-{self.parent}-{self.variable}"
+  def __str__(self) -> str:
+    return self.to_str()
   def __hash__(self) -> int:
-    return hash(f"{self.parent.parent.parent.parent.switch_number}-{self.parent.parent.case_number}-{self.parent}-{self.variable}")
+    return hash(self.to_str())
   def __eq__(self, other) -> bool:
-    return self.__hash__() == other.__hash__()
+    return self.to_str() == other.to_str()
   def get_remain_const(self,new_cond_syn:bool):
     if not new_cond_syn:
       return len(self.constant_info_list)
@@ -325,8 +329,17 @@ class PatchInfo:
         self.variable_info.pf.update(result, n)
         self.constant_info.pf.update(result, n)
   def remove_patch(self, state: 'MSVState') -> None:
-    if self.is_condition:
-      self.type_info.case_info_list.remove(self.case_info)
+    if self.is_condition and self.operator_info is not None:
+      if self.operator_info.operator_type == OperatorType.ALL_1:
+        self.case_info.operator_info_list.remove(self.operator_info)
+      else:
+        self.variable_info.constant_info_list.remove(self.constant_info)
+        if len(self.variable_info.constant_info_list) == 0:
+          self.operator_info.variable_info_list.remove(self.variable_info)
+        if len(self.operator_info.variable_info_list) == 0:
+          self.case_info.operator_info_list.remove(self.operator_info)
+      if len(self.case_info.operator_info_list) == 0:
+        self.type_info.case_info_list.remove(self.case_info)
     else:
       self.type_info.case_info_list.remove(self.case_info)
     if len(self.type_info.case_info_list) == 0:
@@ -344,6 +357,8 @@ class PatchInfo:
     conf["case"] = self.case_info.case_number
     conf["is_cond"] = self.is_condition
     if self.is_condition:
+      if self.operator_info == None:   # It's null if record fails
+        return conf
       conf["operator"] = self.operator_info.operator_type.value
       if self.operator_info.operator_type!=OperatorType.ALL_1:
         conf["variable"] = self.variable_info.variable
@@ -356,7 +371,7 @@ class PatchInfo:
     if self.is_condition and self.operator_info is not None:
       base += f":{self.operator_info.operator_type.value}"
       if self.operator_info.operator_type!=OperatorType.ALL_1:
-        base += f",{self.variable_info.variable},{self.constant_info.constant_value}"
+        base += f"-{self.variable_info.variable}-{self.constant_info.constant_value}"
     return base
   @staticmethod
   def list_to_str(selected_patch: list) -> str:
