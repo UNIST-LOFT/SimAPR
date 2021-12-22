@@ -108,6 +108,7 @@ class SwitchInfo:
     self.switch_number = switch_number
     self.parent = parent
     self.type_info_list: List[TypeInfo] = list()
+    self.type_info_map: Dict[PatchType, TypeInfo] = dict()
     self.pf = PassFail()
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
@@ -325,6 +326,20 @@ class PatchInfo:
       if self.has_var:
         self.variable_info.pf.update(result, n)
         self.constant_info.pf.update(result, n)
+  def remove_patch(self, state: 'MSVState') -> None:
+    if self.is_condition:
+      self.type_info.case_info_list.remove(self.case_info)
+    else:
+      self.type_info.case_info_list.remove(self.case_info)
+    if len(self.type_info.case_info_list) == 0:
+      self.switch_info.type_info_list.remove(self.type_info)
+    if len(self.switch_info.type_info_list) == 0:
+      self.line_info.switch_info_list.remove(self.switch_info)
+    if len(self.line_info.switch_info_list) == 0:
+      self.file_info.line_info_list.remove(self.line_info)
+    if len(self.file_info.line_info_list) == 0:
+      state.patch_info_list.remove(self.file_info)
+
   def to_json_object(self) -> dict:
     conf = dict()
     conf["switch"] = self.switch_info.switch_number
@@ -405,6 +420,7 @@ class MSVState:
   positive_test: List[int]
   profile_map: Dict[int, Profile]
   priority_list: List[Tuple[str, int, float]]  # (file_name, line_number, score)
+  msv_result: List[MSVResult]
   def __init__(self) -> None:
     self.mode = MSVMode.guided
     self.cycle = 0
@@ -427,3 +443,4 @@ class MSVState:
     self.positive_test = list()
     self.profile_map = dict()
     self.priority_list = list()
+    self.msv_result = list()

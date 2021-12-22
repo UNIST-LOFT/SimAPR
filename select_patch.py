@@ -1,10 +1,6 @@
 from condition import ProphetCondition
 from core import *
 
- 
-def remove_patch(state: MSVState) -> None:
-  pass
-
 def __select_prophet_condition(selected_case:CaseInfo,state:MSVState):
   for op in OperatorType:
     if selected_case.operator_info_list[op.value].get_remain(state.use_condition_synthesis)>0:
@@ -15,6 +11,10 @@ def __select_prophet_condition(selected_case:CaseInfo,state:MSVState):
       else:
         return selected_case.operator_info_list[op.value]
   assert False
+
+def remove_patch(state: MSVState, patches: List[PatchInfo]) -> None:
+  for patch in patches:
+    patch.remove_patch(state)
 
 def select_patch_prophet(state:MSVState) -> List[PatchInfo]:
   # select file

@@ -59,7 +59,8 @@ class MSV:
     if result:
       self.state.msv_logger.warning("Result: PASS")
     else:
-      self.state.msv_logger.warning(f"Result: FAIL")
+      self.state.msv_logger.warning("Result: FAIL")
+    return result
   
   # Run multiple positive tests in parallel
   def run_positive_test(self, selected_patch: List[PatchInfo], selected_test: List[int]) -> bool:
@@ -68,6 +69,7 @@ class MSV:
     test_proc = subprocess.Popen(self.state.args, stdout=subprocess.PIPE,
                                  stderr=subprocess.PIPE)
     (so, se) = test_proc.communicate(timeout=(self.state.timeout/1000))
+    result_str = so.decode('utf-8').strip()
     return True
   
   def initialize(self) -> None:
@@ -88,4 +90,5 @@ class MSV:
         run_result = self.run_test(patch, neg)
         #self.run_positive_test(patch, self.state.positive_test)
         self.update_result(patch, run_result, 1)
+        select_patch.remove_patch(self.state, patch)
       
