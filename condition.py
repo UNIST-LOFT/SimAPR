@@ -368,7 +368,7 @@ class MyCondition:
   def remove_same_record(self,record:list,values:list,node:ConstantInfo,test_result:bool) -> None:
     current_var=node.variable
     if check_expr(record,values[current_var.variable],node.variable.parent.operator_type,node.constant_value):
-      self.state.msv_logger.info(f'Remove {node.variable.parent.operator_type.value}, {node.variable.variable}, {node.constant_value}')
+      self.state.msv_logger.debug(f'Remove {node.variable.parent.operator_type.value}, {node.variable.variable}, {node.constant_value}')
       result_handler.update_result(self.state, [self.patch], test_result, 1, self.state.negative_test[0])
       result_handler.append_result(self.state, [self.patch], test_result)
 
@@ -438,7 +438,7 @@ class MyCondition:
     from msv import run_pass_test
 
     patch=[PatchInfo(target.variable.parent.parent,target.variable.parent,target.variable,target)]
-    (result,fail_test)=run_pass_test(self.state,patch)
+    (result,fail_tests)=run_pass_test(self.state,patch)
     self.state.msv_logger.info(f'Pass test {"pass" if result else "fail"} with {patch[0].to_str()}')
     conditions.remove(target)
     result_handler.remove_patch(self.state,patch)
@@ -451,12 +451,16 @@ class MyCondition:
       self.remove_by_pass_test(conditions,root)
     else:
       cp_conds=conditions.copy()
+      fail_test_str=[]
+      for i in fail_tests:
+        fail_test_str.append(str(i))
+
       for condition in cp_conds:
         patch_next=[PatchInfo(condition.variable.parent.parent,condition.variable.parent,condition.variable,condition)]
-        args = self.state.args + [str(fail_test)]
+        args = self.state.args + fail_test_str
         args = args[0:1] + ['-i', patch_next[0].to_str()] + args[1:]
         self.state.msv_logger.debug(' '.join(args))
-        new_env = MSVEnvVar.get_new_env(self.state, patch_next, fail_test)
+        new_env = MSVEnvVar.get_new_env(self.state, patch_next, fail_tests[0])
 
         # run test
         test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
@@ -472,7 +476,7 @@ class MyCondition:
         result_str = so.decode('utf-8').strip()
         result = False
         if result_str == "":
-          self.state.msv_logger.info(f"Test {str(fail_test)} fail with {patch_next[0].to_str()}")
+          self.state.msv_logger.info(f"Test {str(fail_tests)} fail with {patch_next[0].to_str()}")
           conditions.remove(condition)
           result_handler.remove_patch(self.state,patch_next)
           result_handler.update_result(self.state, [self.patch], True, 1, self.state.negative_test[0])
@@ -481,11 +485,17 @@ class MyCondition:
 
         else:
           self.state.msv_logger.debug(result_str)
-          result = (int(result_str) == fail_test)
+          results=result_str.splitlines()
+          result=True
+          for s in fail_test_str:
+            if s not in results:
+              result=False
+              break
+
           if result:
-            self.state.msv_logger.info(f"Test {str(fail_test)} pass with {patch_next[0].to_str()}")
+            self.state.msv_logger.info(f"Test {str(fail_tests)} pass with {patch_next[0].to_str()}")
           else:
-            self.state.msv_logger.info(f"Test {str(fail_test)} fail with {patch_next[0].to_str()}")
+            self.state.msv_logger.info(f"Test {str(fail_tests)} fail with {patch_next[0].to_str()}")
             conditions.remove(condition)
             result_handler.remove_patch(self.state,patch_next)
             result_handler.update_result(self.state, [self.patch], True, 1, self.state.negative_test[0])
@@ -519,8 +529,7 @@ class MyCondition:
     values_t=values_arr.transpose() # transpose: to [atom][value]
     for var in self.patch.operator_info.variable_info_list:
       if len(var.constant_info_list)==0 or var.constant_info_list[0] is None:
-        if var.constant_info_list[0] is None:
-          var.constant_info_list.clear()
+        var.constant_info_list.clear()
         continue
       if not self.state.use_pass_test or not result:
         self.remove_same_record(record,values_t,var.constant_info_list[0],result)

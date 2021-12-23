@@ -82,7 +82,7 @@ class MSV:
 
           if self.state.use_pass_test:
             self.state.msv_logger.info("Run pass test!")
-            pass_result=run_pass_test(self.state,selected_patch)
+            (pass_result,_)=run_pass_test(self.state,selected_patch)
             result_handler.update_result(self.state, selected_patch, result, 1, selected_test)
             # TODO: update p3
             result_handler.append_result(self.state, selected_patch, result,pass_result)
@@ -99,17 +99,7 @@ class MSV:
         result_handler.append_result(self.state, selected_patch, result)
         result_handler.remove_patch(self.state, selected_patch)
       return result
-  
-  # Run multiple positive tests in parallel
-  def run_positive_test(self, selected_patch: List[PatchInfo], selected_test: List[int]) -> bool:
-    self.state.cycle += 1
-    self.state.msv_logger.info(f"@{self.state.cycle} Test [{', '.join(map(str, selected_test))}]  with {PatchInfo.list_to_str(selected_patch)}")
-    test_proc = subprocess.Popen(self.state.args, stdout=subprocess.PIPE,
-                                 stderr=subprocess.PIPE)
-    (so, se) = test_proc.communicate(timeout=(self.state.timeout/1000))
-    result_str = so.decode('utf-8').strip()
-    return True
-  
+    
   def initialize(self) -> None:
     # run original program and get original profile
     cs = self.state.switch_case_map["0-0"]
@@ -190,7 +180,6 @@ class MSV:
       for neg in self.state.negative_test:
         patch = select_patch.select_patch(self.state, self.state.mode, self.state.use_multi_line)
         run_result = self.run_test(patch, neg)
-        #self.run_positive_test(patch, self.state.positive_test)
         # self.update_result(patch, run_result, 1, neg)
         # self.append_result(patch, run_result)
         # self.remove_patch(patch)
@@ -228,21 +217,23 @@ def run_pass_test(state:MSVState,patch:List[PatchInfo]):
 
     result_str = so.decode('utf-8').strip()
     if result_str == "":
+      return_tests=set()
+      for test in tests:
+        return_tests.add(int(test))
       state.msv_logger.info("Result: FAIL")
-      return False,int(tests[0])
+      return False,return_tests
     state.msv_logger.debug(result_str)
 
     results=result_str.splitlines()
     result=True
+    return_tests=set()
     for s in tests:
       if s not in results:
         result=False
-        state.msv_logger.warning(f"Result: FAIL at {s}")
-        return result,int(s)
-    if result:
-      state.msv_logger.warning("Result: PASS")
-    else:
-      state.msv_logger.warning("Result: FAIL")
+        return_tests.add(int(s))
+    if not result:
+      state.msv_logger.warning(f"Result: FAIL at {return_tests}")
+      return False,return_tests
 
   for j in range(remain_num):
     index=start+j
@@ -263,20 +254,25 @@ def run_pass_test(state:MSVState,patch:List[PatchInfo]):
 
   result_str = so.decode('utf-8').strip()
   if result_str == "":
+    return_tests=set()
+    for test in tests:
+      return_tests.add(int(test))
     state.msv_logger.info("Result: FAIL")
-    return False,int(tests[0])
+    return False,return_tests
   state.msv_logger.debug(result_str)
 
   results=result_str.splitlines()
   result=True
+  return_tests=set()
   for s in tests:
     if s not in results:
       result=False
-      state.msv_logger.warning(f"Result: FAIL at {s}")
-      return result,int(s)
+      return_tests.add(int(s))
+
   if result:
     state.msv_logger.warning("Result: PASS")
   else:
-    state.msv_logger.warning("Result: FAIL")
+    state.msv_logger.warning(f"Result: FAIL at {return_tests}")
+    return False,return_tests
 
-  return result,0
+  return result,set()

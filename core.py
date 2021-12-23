@@ -51,16 +51,22 @@ class PassFail:
   def __init__(self) -> None:
     self.pass_count = 0
     self.fail_count = 0
+  def __fixed_beta__(self,use_fixed_beta,alpha,beta):
+    if not use_fixed_beta:
+      return 1
+    else:
+      mode=self.beta_mode(alpha,beta)
+      return 0.5*(pow(3.7,mode))+0.2
   def beta_mode(self, alpha: float, beta: float) -> float:
     return (alpha - 1.0) / (alpha + beta - 2.0)
-  def update(self, result: bool, n: float) -> None:
+  def update(self, result: bool, n: float,use_fixed_beta:bool=False) -> None:
     if result:
       self.pass_count += n
     else:
-      self.fail_count += n
-  def update_with_pf(self, other) -> None:
+      self.fail_count += n*self.__fixed_beta__(use_fixed_beta,self.pass_count,self.fail_count)
+  def update_with_pf(self, other,use_fixed_beta:bool=False) -> None:
     self.pass_count += other.pass_count
-    self.fail_count += other.fail_count
+    self.fail_count += other.fail_count*self.__fixed_beta__(use_fixed_beta,self.pass_count,self.fail_count)
   def expect_probability(self) -> float:
     return self.beta_mode(self.pass_count + 1.5, self.fail_count + 2.0)
   @staticmethod
@@ -339,7 +345,7 @@ class PatchInfo:
     self.operator_info = op_info
     self.variable_info = var_info
     self.constant_info = con_info
-  def update_result(self, result: bool, n: float) -> None:
+  def update_result(self, result: bool, n: float,use_fixed_beta:bool) -> None:
     self.case_info.pf.update(result, n)
     self.type_info.pf.update(result, n)
     self.switch_info.pf.update(result, n)
@@ -351,7 +357,7 @@ class PatchInfo:
         self.variable_info.pf.update(result, n)
         self.constant_info.pf.update(result, n)
   
-  def update_result_critical(self, critical_pf: PassFail) -> None:
+  def update_result_critical(self, critical_pf: PassFail,use_fixed_beta:bool) -> None:
     self.case_info.critical_pf.update_with_pf(critical_pf)
     self.type_info.critical_pf.update_with_pf(critical_pf)
     self.switch_info.critical_pf.update_with_pf(critical_pf)
@@ -363,7 +369,7 @@ class PatchInfo:
         self.variable_info.critical_pf.update_with_pf(critical_pf)
         self.constant_info.critical_pf.update_with_pf(critical_pf)
   
-  def update_result_positive(self, result: bool, n: bool) -> None:
+  def update_result_positive(self, result: bool, n: bool,use_fixed_beta:bool) -> None:
     self.case_info.positive_pf.update(result, n)
     self.type_info.positive_pf.update(result, n)
     self.switch_info.positive_pf.update(result, n)
@@ -538,6 +544,7 @@ class MSVState:
     self.use_pass_test = False
     self.use_multi_line = 1
     self.skip_valid=False
+    self.use_fixed_beta=False
     self.time_limit = -1
     self.cycle_limit = -1
     self.max_parallel_cpu = 8
