@@ -177,7 +177,7 @@ def run_pass_test(state: MSVState, patch: List[PatchInfo], pass_tests: List[int]
     for test in pass_tests:
       tests.append(str(test))
   else:
-    for i in range(group_num + 1):
+    for i in range(group_num):
       tests=[]
       start=i*MAX_TEST_ONCE
       end = min(start + MAX_TEST_ONCE, total_test)

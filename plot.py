@@ -85,6 +85,8 @@ def msv_plot_multiple(in_dir: str, in_files: list, out_file: str, title: str, ig
         iter: int = data["iteration"]
         tm: float = data["time"]
         result: bool = data["result"]
+        if result:
+          total += 1
         config = data["config"][0]
         #print(config)
         sw = config["switch"]

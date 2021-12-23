@@ -70,12 +70,9 @@ class PassFail:
   def expect_probability(self,additional_score:float=0) -> float:
     return self.beta_mode(self.pass_count + 1.5+additional_score, self.fail_count + 2.0)
   @staticmethod
-  def select_by_probability(pf_list: list,additional_score:List[float]=None) -> int:   # pf_list: list of PassFail
+  def select_by_probability(pf_list: list) -> int:   # pf_list: list of PassFail
     probability=[]
-    if additional_score is None:
-      probability = list(map(lambda x: x.expect_probability(), pf_list))
-    else:
-      probability = list(map(lambda x,score: x.expect_probability(score), pf_list,additional_score))
+    probability = list(map(lambda x: x.expect_probability(), pf_list))
     total = sum(probability)
     rand = random.random() * total
     for i in range(len(pf_list)):
@@ -161,10 +158,11 @@ class CaseInfo:
     return self.to_str()
 
 class OperatorInfo:
-  def __init__(self, parent: CaseInfo, operator_type: OperatorType,var_count:int=0) -> None:
+  def __init__(self, parent: CaseInfo, operator_type: OperatorType, var_count:int=0) -> None:
     self.operator_type = operator_type
     self.parent = parent
     self.variable_info_list: List[VariableInfo] = list()
+    self.temp_variable_info_list: List[VariableInfo] = list() # Variable which consumed all constants
     self.pf = PassFail()
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
@@ -433,6 +431,9 @@ class PatchInfo:
               node.parent.left=next
             elif node.parent.right is node:
               node.parent.right=next
+          if len(node.variable.constant_info_list) == 0:
+            self.operator_info.temp_variable_info_list.append(node.variable)
+            self.operator_info.variable_info_list.remove(node.variable)   
 
       if len(self.case_info.operator_info_list) == 0:
         self.type_info.case_info_list.remove(self.case_info)

@@ -3,19 +3,10 @@ from condition import ProphetCondition
 from core import *
 
 # n: number of hierarchy
-def select_by_probability_hierarchical(state: MSVState, n: int, p1: List[PassFail], p2: List[PassFail] = [], p3: List[PassFail] = [],parent=None) -> int:
-  score=None
-  if parent is not None:
-    score=[]
-    if type(parent)==MSVState:
-      for file in parent.patch_info_list:
-        score.append(file.fl_score)
-    elif type(parent)==FileInfo:
-      for line in parent.line_info_list:
-        score.append(line.fl_score)
+def select_by_probability_hierarchical(state: MSVState, n: int, p1: List[PassFail], p2: List[PassFail] = [], p3: List[PassFail] = []) -> int:
   # Select patch for hierarchical
   if n == 1:
-    return PassFail.select_by_probability(p1,score)
+    return PassFail.select_by_probability(p1)
   p1_select = list()
   p2_select = list()
   p2_select_pf = list()
@@ -23,19 +14,19 @@ def select_by_probability_hierarchical(state: MSVState, n: int, p1: List[PassFai
   if n == 2:
     p1_total = 64
     for i in range(p1_total):
-      p1_select.append(PassFail.select_by_probability(p1,score))
+      p1_select.append(PassFail.select_by_probability(p1))
       p2_select_pf.append(p2[p1_select[i]])
-    return p1_select[PassFail.select_by_probability(p2_select_pf,score)]
+    return p1_select[PassFail.select_by_probability(p2_select_pf)]
   if n == 3:
     p1_total = 64
     for i in range(p1_total):
-      p1_select.append(PassFail.select_by_probability(p1,score))
+      p1_select.append(PassFail.select_by_probability(p1))
       p2_select_pf.append(p2[p1_select[i]])
     p2_total = 16
     for i in range(p2_total):
-      p2_select.append(PassFail.select_by_probability(p2_select_pf,score))
+      p2_select.append(PassFail.select_by_probability(p2_select_pf))
       p3_select_pf.append(p3[p2_select[i]])
-    return p1_select[p2_select[PassFail.select_by_probability(p3_select_pf,score)]]
+    return p1_select[p2_select[PassFail.select_by_probability(p3_select_pf)]]
 
 def __select_prophet_condition(selected_case:CaseInfo,state:MSVState):
   selected_operator=selected_case.operator_info_list[0]
@@ -100,7 +91,13 @@ def select_patch_guided(state: MSVState, mode: MSVMode) -> PatchInfo:
     if is_rand:
       p1.append(pf_rand)
     else:
-      p1.append(file_info.pf)
+      if state.use_fl:
+        adjusted_pf = PassFail()
+        adjusted_pf.update_with_pf(file_info.pf)
+        adjusted_pf.update(True, file_info.fl_score)
+        p1.append(adjusted_pf)
+      else:
+        p1.append(file_info.pf)
       p2.append(file_info.critical_pf)
       p3.append(file_info.positive_pf)
   selected_file = select_by_probability_hierarchical(state, n, p1, p2, p3)
@@ -113,7 +110,13 @@ def select_patch_guided(state: MSVState, mode: MSVMode) -> PatchInfo:
     if is_rand:
       p1.append(pf_rand)
     else:
-      p1.append(line_info.pf)
+      if state.use_fl:
+        adjusted_pf = PassFail()
+        adjusted_pf.update_with_pf(line_info.pf)
+        adjusted_pf.update(True, line_info.fl_score)
+        p1.append(adjusted_pf)
+      else:
+        p1.append(line_info.pf)
       p2.append(line_info.critical_pf)
       p3.append(line_info.positive_pf)
   selected_line = select_by_probability_hierarchical(state, n, p1, p2, p3)
@@ -221,6 +224,9 @@ def select_patch_guided(state: MSVState, mode: MSVMode) -> PatchInfo:
       return PatchInfo(selected_case_info, selected_operator_info, None, None)
     # Select variable
     for var_info in selected_operator_info.variable_info_list:
+      # If variable has no constant, skip
+      if len(var_info.constant_info_list) == 0:
+        continue
       if is_rand:
         p1.append(pf_rand)
       else:
