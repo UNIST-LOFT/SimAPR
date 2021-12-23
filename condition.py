@@ -569,7 +569,7 @@ class MyCondition:
         self.remove_same_record(record,values_t,var.constant_info_list[0],result)
       else:
         conditions=[]
-        self.get_same_record(record,values,var.constant_info_list[0],conditions)
+        self.get_same_record(record,values_t,var.constant_info_list[0],conditions)
         self.remove_by_pass_test(conditions,var.constant_info_list[0])
 
 def check_expr(record,values,operator,constant) -> bool:
