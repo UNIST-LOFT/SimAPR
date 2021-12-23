@@ -11,8 +11,8 @@ def update_result(state: MSVState, selected_patch: List[PatchInfo], run_result: 
     state.msv_logger.debug(
         f"Critical PF: {critical_pf.pass_count}/{critical_pf.fail_count}")
   for patch in selected_patch:
-    patch.update_result(run_result, n)
-    patch.update_result_critical(critical_pf)
+    patch.update_result(run_result, n,state.use_fixed_beta)
+    patch.update_result_critical(critical_pf,state.use_fixed_beta)
 
 def update_result_critical(state: MSVState, selected_patch: List[PatchInfo], run_result: bool, test: int) -> None:
   pass
