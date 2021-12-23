@@ -9,6 +9,8 @@ def parse_record(temp_file: str) -> List[int]:
     file=open(temp_file,'r')
 
     line=file.readline().split()
+    if len(line)==0:
+      return None
     del line[0]
 
     record=[]
@@ -27,22 +29,26 @@ def write_record_terminate(temp_file: str) -> None:
   file.close()
 
 def parse_value(log_file: str) -> List[int]:
-  file=open(log_file,'r')
+  try:
+    file=open(log_file,'r')
+    values=[]
+    lines=file.readlines()
+    for line in lines:
+      line=line.split()
+      if len(line)==0:
+        break
+      del line[0]
 
-  values=[]
-  lines=file.readlines()
-  for line in lines:
-    line=line.split()
-    if len(line)==0:
-      break
-    del line[0]
+      value=[]
+      for i in line:
+        value.append(int(i))
+      values.append(value)
+    
+    return values
 
-    value=[]
-    for i in line:
-      value.append(int(i))
-    values.append(value)
-  
-  return values
+  except:
+    return None
+
 
 def write_record(temp_file: str, record: List[int]) -> None:
   file=open(temp_file,'w')
@@ -438,17 +444,44 @@ class MyCondition:
     from msv import run_pass_test
 
     patch=[PatchInfo(target.variable.parent.parent,target.variable.parent,target.variable,target)]
-    (result,fail_tests)=run_pass_test(self.state,patch)
-    self.state.msv_logger.info(f'Pass test {"pass" if result else "fail"} with {patch[0].to_str()}')
+    MAX_TEST_ONCE=1000
+    total_test=len(self.state.negative_test)-1+len(self.state.positive_test)
+    group_num=total_test//MAX_TEST_ONCE
+    remain_num=total_test%MAX_TEST_ONCE
+    fail_tests = set()
+    pass_result=True
+    for i in range(group_num):
+      tests=[]
+      start=i*MAX_TEST_ONCE
+      for j in range(MAX_TEST_ONCE):
+        index=start+j
+        if index<total_test:
+          if index<len(self.state.negative_test)-1:
+            tests.append(str(self.state.negative_test[index+1]))
+          else:
+            tests.append(str(self.state.positive_test[index-len(self.state.negative_test)-1]))
+      (pass_result, fail_tests)=run_pass_test(self.state,patch,tests)
+    if pass_result:
+      tests=[]
+      start=group_num*MAX_TEST_ONCE
+      for j in range(remain_num):
+        index=start+j
+        if index<total_test:
+          if index<len(self.state.negative_test)-1:
+            tests.append(str(self.state.negative_test[index+1]))
+          else:
+            tests.append(str(self.state.positive_test[index-len(self.state.negative_test)-1]))
+      (pass_result, fail_tests)=run_pass_test(self.state,patch,tests)
+
+    self.state.msv_logger.info(f'Pass test {"pass" if pass_result else "fail"} with {patch[0].to_str()}')
     conditions.remove(target)
     result_handler.remove_patch(self.state,patch)
     result_handler.update_result(self.state, [self.patch], True, 1, self.state.negative_test[0])
-    # TODO: update p3
-    result_handler.update_result_positive(self.state, [self.patch], result, fail_tests)
-    result_handler.append_result(self.state, [self.patch], result)
+    result_handler.update_result_positive(self.state, [self.patch], pass_result, fail_tests)
+    result_handler.append_result(self.state, [self.patch], pass_result,pass_result)
 
     ## if pass, remove from tree
-    if result:
+    if pass_result:
       self.remove_by_pass_test(conditions,root)
     else:
       cp_conds=conditions.copy()
@@ -481,9 +514,8 @@ class MyCondition:
           conditions.remove(condition)
           result_handler.remove_patch(self.state,patch_next)
           result_handler.update_result(self.state, [self.patch], True, 1, self.state.negative_test[0])
-          # TODO: update p3
           result_handler.update_result_positive(self.state, [self.patch], result, fail_tests)
-          result_handler.append_result(self.state, [self.patch], result)
+          result_handler.append_result(self.state, [self.patch], True,result)
 
         else:
           self.state.msv_logger.debug(result_str)
@@ -501,9 +533,8 @@ class MyCondition:
             conditions.remove(condition)
             result_handler.remove_patch(self.state,patch_next)
             result_handler.update_result(self.state, [self.patch], True, 1, self.state.negative_test[0])
-            # TODO: update p3
             result_handler.update_result_positive(self.state, [self.patch], result, fail_tests)
-            result_handler.append_result(self.state, [self.patch], result)
+            result_handler.append_result(self.state, [self.patch], True,result)
 
       self.remove_by_pass_test(conditions,root)
     
@@ -538,7 +569,7 @@ class MyCondition:
         self.remove_same_record(record,values_t,var.constant_info_list[0],result)
       else:
         conditions=[]
-        self.get_same_record(record,values,var.constant_info_list[0],conditions)
+        self.get_same_record(record,values_t,var.constant_info_list[0],conditions)
         self.remove_by_pass_test(conditions,var.constant_info_list[0])
 
 def check_expr(record,values,operator,constant) -> bool:

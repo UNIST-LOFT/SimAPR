@@ -20,7 +20,7 @@ def update_result_critical(state: MSVState, selected_patch: List[PatchInfo], run
 def update_result_positive(state: MSVState, selected_patch: List[PatchInfo], run_result: bool, failed_tests: Set[int]) -> None:
   run_result = (len(failed_tests) == 0)
   for patch in selected_patch:
-    patch.update_result_positive(run_result, len(failed_tests))
+    patch.update_result_positive(run_result, len(failed_tests),state.use_fixed_beta)
 
 def save_result(state: MSVState) -> None:
   state.last_save_time = time.time()

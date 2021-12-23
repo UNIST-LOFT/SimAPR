@@ -82,11 +82,37 @@ class MSV:
 
           if self.state.use_pass_test:
             self.state.msv_logger.info("Run pass test!")
-            (pass_result, fail_tests)=run_pass_test(self.state,selected_patch)
-            result_handler.update_result(self.state, selected_patch, result, 1, selected_test)
-            # TODO: update p3
+            MAX_TEST_ONCE=1000
+            total_test=len(self.state.negative_test)-1+len(self.state.positive_test)
+            group_num=total_test//MAX_TEST_ONCE
+            remain_num=total_test%MAX_TEST_ONCE
+            pass_result=True
+            fail_tests = set()
+            for i in range(group_num):
+              tests=[]
+              start=i*MAX_TEST_ONCE
+              for j in range(MAX_TEST_ONCE):
+                index=start+j
+                if index<total_test:
+                  if index<len(self.state.negative_test)-1:
+                    tests.append(str(self.state.negative_test[index+1]))
+                  else:
+                    tests.append(str(self.state.positive_test[index-len(self.state.negative_test)-1]))
+              (pass_result, fail_tests)=run_pass_test(self.state,selected_patch,tests)
+            if pass_result:
+              tests=[]
+              start=group_num*MAX_TEST_ONCE
+              for j in range(remain_num):
+                index=start+j
+                if index<total_test:
+                  if index<len(self.state.negative_test)-1:
+                    tests.append(str(self.state.negative_test[index+1]))
+                  else:
+                    tests.append(str(self.state.positive_test[index-len(self.state.negative_test)-1]))
+              (pass_result, fail_tests)=run_pass_test(self.state,selected_patch,tests)
+            result_handler.update_result(self.state, selected_patch, True, 1, selected_test)
             result_handler.update_result_positive(self.state, selected_patch, pass_result, fail_tests)
-            result_handler.append_result(self.state, selected_patch, result,pass_result)
+            result_handler.append_result(self.state, selected_patch, True,pass_result)
             result_handler.remove_patch(self.state, selected_patch)
             self.state.msv_logger.info("Result: PASS" if pass_result else "Result: FAIL")
         else:
@@ -97,7 +123,7 @@ class MSV:
       
       if not result or not self.state.use_pass_test:
         result_handler.update_result(self.state, selected_patch, result, 1, selected_test)
-        result_handler.append_result(self.state, selected_patch, result)
+        result_handler.append_result(self.state, selected_patch, result,False)
         result_handler.remove_patch(self.state, selected_patch)
       return result
     
