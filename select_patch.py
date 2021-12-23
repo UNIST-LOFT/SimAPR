@@ -221,6 +221,9 @@ def select_patch_guided(state: MSVState, mode: MSVMode) -> PatchInfo:
       return PatchInfo(selected_case_info, selected_operator_info, None, None)
     # Select variable
     for var_info in selected_operator_info.variable_info_list:
+      # If variable has no constant, skip
+      if len(var_info.constant_info_list) == 0:
+        continue
       if is_rand:
         p1.append(pf_rand)
       else:
