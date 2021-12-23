@@ -202,8 +202,10 @@ class ProphetCondition:
           
           if len(new_variable.constant_info_list)>0:
             new_operator.variable_info_list.append(new_variable)
+      else:
+        new_operator.var_count=1
 
-      if len(new_operator.variable_info_list)>0:
+      if len(new_operator.variable_info_list)>0 or new_operator.operator_type==OperatorType.ALL_1:
         operators.append(new_operator)
 
     return operators
@@ -227,7 +229,7 @@ class ProphetCondition:
       return None
     
     conditions=self.synthesize(path,values)
-    return list(conditions.values())
+    return conditions
 
 class MyCondition:
   def __init__(self,patch: PatchInfo,state: MSVState, fail_test: list, pass_test: list) -> None:
@@ -260,7 +262,7 @@ class MyCondition:
 
     record=parse_record(temp_file)
     if record is None:
-      return None
+      return False,None
     write_record_terminate(temp_file)
 
     result_str = so.decode('utf-8').strip()

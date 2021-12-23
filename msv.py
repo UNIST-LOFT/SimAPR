@@ -53,7 +53,7 @@ class MSV:
         return False
     
     # our condition synthesis
-    elif self.state.use_condition_synthesis and selected_patch[0].case_info.is_condition:
+    elif self.state.use_condition_synthesis and selected_patch[0].case_info.is_condition and selected_patch[0].operator_info.operator_type!=OperatorType.ALL_1:
       cond_syn=condition.MyCondition(selected_patch[0],self.state,self.state.negative_test,self.state.positive_test)
       cond_syn.run()
       
@@ -81,6 +81,10 @@ class MSV:
       result = (int(result_str) == selected_test)
       if result:
         self.state.msv_logger.warning("Result: PASS")
+        if self.state.use_pass_test:
+          self.state.msv_logger.info("Run pass test!")
+          pass_result=run_pass_test(self.state,selected_patch)
+          self.state.msv_logger.info("Result: PASS" if pass_result else "Result: FAIL")
       else:
         self.state.msv_logger.warning("Result: FAIL")
       result_handler.update_result(self.state, selected_patch, result, 1, selected_test)
@@ -127,7 +131,7 @@ def run_pass_test(state:MSVState,patch:List[PatchInfo]):
   remain_num=total_test%MAX_TEST_ONCE
 
   args=state.args
-  args = args[0:1] + ['-i', patch[0].to_str(),'-j',state.max_parallel_cpu] + args[1:]
+  args = args[0:1] + ['-i', patch[0].to_str(),'-j',str(state.max_parallel_cpu)] + args[1:]
 
   for i in range(group_num):
     tests=[]
@@ -147,12 +151,7 @@ def run_pass_test(state:MSVState,patch:List[PatchInfo]):
     test_proc = subprocess.Popen(current_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
     so: bytes
     se: bytes
-    try:
-      so, se = test_proc.communicate(timeout=(state.timeout/1000))
-    except: # timeout
-      test_proc.kill()
-      so, se = test_proc.communicate()
-      state.msv_logger.info("Timeout!")
+    so, se = test_proc.communicate()
 
     result_str = so.decode('utf-8').strip()
     if result_str == "":
@@ -165,6 +164,7 @@ def run_pass_test(state:MSVState,patch:List[PatchInfo]):
     for s in tests:
       if s not in results:
         result=False
+        state.msv_logger.warning(f"Result: FAIL at {s}")
         return result
     if result:
       state.msv_logger.warning("Result: PASS")
@@ -186,12 +186,7 @@ def run_pass_test(state:MSVState,patch:List[PatchInfo]):
   test_proc = subprocess.Popen(current_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
   so: bytes
   se: bytes
-  try:
-    so, se = test_proc.communicate(timeout=(state.timeout/1000))
-  except: # timeout
-    test_proc.kill()
-    so, se = test_proc.communicate()
-    state.msv_logger.info("Timeout!")
+  so, se = test_proc.communicate()
 
   result_str = so.decode('utf-8').strip()
   if result_str == "":
@@ -204,6 +199,7 @@ def run_pass_test(state:MSVState,patch:List[PatchInfo]):
   for s in tests:
     if s not in results:
       result=False
+      state.msv_logger.warning(f"Result: FAIL at {s}")
       return result
   if result:
     state.msv_logger.warning("Result: PASS")

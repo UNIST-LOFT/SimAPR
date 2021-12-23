@@ -55,7 +55,7 @@ def parse_args(argv: list) -> MSVState:
       state.use_fl = True
     elif o in ['--use-hierarchical-selection']:
       state.use_hierarchical_selection = int(a)
-    elif o in ['--pass-test']:
+    elif o in ['--use-pass-test']:
       state.use_pass_test = True
     elif o in ['--use-multi-line']:
       state.use_multi_line = int(a)
@@ -67,7 +67,6 @@ def parse_args(argv: list) -> MSVState:
     state.use_condition_synthesis=False
     state.use_fl=False
     state.use_hierarchical_selection=False
-    state.use_pass_test=False
     state.use_multi_line=False
   return state
 

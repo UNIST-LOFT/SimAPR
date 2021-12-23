@@ -1,3 +1,4 @@
+from os import terminal_size
 from condition import ProphetCondition
 from core import *
 
@@ -160,13 +161,14 @@ def select_patch_guided(state: MSVState, mode: MSVMode) -> PatchInfo:
   else:
     # Create init condition
     if state.use_condition_synthesis:
-      if len(selected_case_info.operator_info_list)==0:
-        for op in selected_case_info.operator_info_list:
-          if op.operator_type==OperatorType.ALL_1:
-            operator=OperatorInfo(selected_case_info,op.operator_type)
+      if not selected_case_info.processed:
+        selected_case_info.processed=True
+        for op in OperatorType:
+          if op==OperatorType.ALL_1:
+            operator=OperatorInfo(selected_case_info,op,1)
             selected_case_info.operator_info_list.append(operator)
           else:
-            operator=OperatorInfo(selected_case_info,op.operator_type,state.var_counts[f'{selected_switch_info.switch_number}-{selected_case_info.case_number}'])
+            operator=OperatorInfo(selected_case_info,op,state.var_counts[f'{selected_switch_info.switch_number}-{selected_case_info.case_number}'])
             for i in range(operator.var_count):
               new_var=VariableInfo(operator,i)
               const_zero=ConstantInfo(new_var,0)
