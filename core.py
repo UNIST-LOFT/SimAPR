@@ -319,7 +319,7 @@ class MSVEnvVar:
       else:
         new_env["IS_NEG"] = "RUN"
         if set_tmp_file:
-          new_env["TMP_FILE"] = f"/tmp/{sw}-{cs}"
+          new_env["TMP_FILE"] = f"/tmp/{sw}-{cs}.tmp"
         if patch_info.is_condition:
           new_env[f"__{sw}_{cs}__OPERATOR"] = str(patch_info.operator_info.operator_type.value)
           if not patch_info.operator_info.operator_type==OperatorType.ALL_1:

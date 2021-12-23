@@ -30,8 +30,9 @@ def parse_value(log_file: str) -> List[int]:
   file=open(log_file,'r')
 
   values=[]
-  while file.readable():
-    line=file.readline().split()
+  lines=file.readlines()
+  for line in lines:
+    line=line.split()
     if len(line)==0:
       break
     del line[0]
@@ -79,7 +80,15 @@ class ProphetCondition:
       pass
     for i in range(10):
       test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
-      so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
+      so: bytes
+      se: bytes
+      try:
+        so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
+      except: # timeout
+        test_proc.kill()
+        so, se = test_proc.communicate()
+        self.state.msv_logger.info("Timeout!")
+        return None
 
       record=parse_record(temp_file)
       if record==None:
@@ -96,7 +105,15 @@ class ProphetCondition:
 
     new_env = MSVEnvVar.get_new_env(self.state, patch, selected_test,EnvVarMode.record_all_1)
     test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
-    so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
+    so: bytes
+    se: bytes
+    try:
+      so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
+    except: # timeout
+      test_proc.kill()
+      so, se = test_proc.communicate()
+      self.state.msv_logger.info("Timeout!")
+      return None
 
     record=parse_record(temp_file)
     if record is None:
@@ -129,7 +146,15 @@ class ProphetCondition:
     patch=[self.patch]
     new_env = MSVEnvVar.get_new_env(self.state, patch, selected_test,EnvVarMode.collect_neg)
     test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
-    so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
+    so: bytes
+    se: bytes
+    try:
+      so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
+    except: # timeout
+      test_proc.kill()
+      so, se = test_proc.communicate()
+      self.state.msv_logger.info("Timeout!")
+      return None
 
     result_str = so.decode('utf-8').strip()
     if str(selected_test) not in result_str:
@@ -258,7 +283,15 @@ class MyCondition:
       pass
 
     test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
-    so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
+    so: bytes
+    se: bytes
+    try:
+      so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
+    except: # timeout
+      test_proc.kill()
+      so, se = test_proc.communicate()
+      self.state.msv_logger.info("Timeout!")
+      return False,None
 
     record=parse_record(temp_file)
     if record is None:
@@ -273,7 +306,6 @@ class MyCondition:
     
     return result,record
 
-  # TODO: Add pass test
   def collect_value(self, temp_file: str, record: List[int]) -> List[int]:
     selected_test=self.fail_test[0]
     write_record(temp_file,record)
@@ -289,11 +321,14 @@ class MyCondition:
 
     new_env = MSVEnvVar.get_new_env(self.state, [self.patch], selected_test,EnvVarMode.collect_neg)
     test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
-    so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
-
-    result_str = so.decode('utf-8').strip()
-    if str(selected_test) not in result_str:
-      self.state.msv_logger.warn("Terrible fail at collecting value!")
+    so: bytes
+    se: bytes
+    try:
+      so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
+    except: # timeout
+      test_proc.kill()
+      so, se = test_proc.communicate()
+      self.state.msv_logger.info("Timeout!")
       return None
 
     return parse_value(log_file)
@@ -301,7 +336,7 @@ class MyCondition:
   def extend_bst(self, values: List[int]) -> None:
     import numpy as np
 
-    values_arr=np.ndarray(values)
+    values_arr=np.array(values)
     values_t=values_arr.transpose() # transpose: to [atom][value]
 
     for i,atom in enumerate(values_t):
@@ -313,20 +348,26 @@ class MyCondition:
           if current_const is None:
             current_var.constant_info_list[0]=ConstantInfo(current_var,int(const))
           else:
-            while current_const.left is not None or current_const.right is not None:
+            before=None
+            while current_const is not None:
               if current_const.constant_value<const:
+                before=current_const
                 current_const=current_const.right
               else:
+                before=current_const
                 current_const=current_const.left
             
-            if current_const<const:
-              current_const.right=ConstantInfo(current_var,int(const))
+            if before is not None:
+              if before.constant_value<const:
+                before.right=ConstantInfo(current_var,int(const))
+              else:
+                before.left=ConstantInfo(current_var,int(const))
             else:
-              current_const.left=ConstantInfo(current_var,int(const))
+              assert False
 
   def remove_same_record(self,record:list,values:list,node:ConstantInfo,test_result:bool) -> None:
     current_var=node.variable
-    if __check_expr(record,values[current_var.variable],node.variable.parent.operator_type,node.constant_value):
+    if check_expr(record,values[current_var.variable],node.variable.parent.operator_type,node.constant_value):
       self.state.msv_logger.info(f'Remove {node.variable.parent.operator_type.value}, {node.variable.variable}, {node.constant_value}')
       next=None
       if node.left is None and node.right is None:
@@ -397,12 +438,12 @@ class MyCondition:
     self.extend_bst(values)
     import numpy as np
 
-    values_arr=np.ndarray(values)
+    values_arr=np.array(values)
     values_t=values_arr.transpose() # transpose: to [atom][value]
     for var in self.patch.operator_info.variable_info_list:
       self.remove_same_record(record,values_t,var.constant_info_list[0],result)
 
-def __check_expr(record,values,operator,constant) -> bool:
+def check_expr(record,values,operator,constant) -> bool:
   for record,value in zip(record,values):
     if operator==OperatorType.EQ:
       if (value==constant and record==0) or (value!=constant and record==1):

@@ -173,18 +173,21 @@ def select_patch_guided(state: MSVState, mode: MSVMode) -> PatchInfo:
               new_var=VariableInfo(operator,i)
               const_zero=ConstantInfo(new_var,0)
               new_var.constant_info_list.append(const_zero)
+              new_var.used_const.add(0)
               current_const=const_zero
               for j in range(-1,-11,-1):
                 const_left=ConstantInfo(new_var,j)
                 const_left.parent=current_const
                 current_const.left=const_left
                 current_const=const_left
+                new_var.used_const.add(j)
               current_const=const_zero
               for j in range(1,11):
                 const_right=ConstantInfo(new_var,j)
                 const_right.parent=current_const
                 current_const.right=const_right
                 current_const=const_right
+                new_var.used_const.add(j)
               operator.variable_info_list.append(new_var)
             selected_case_info.operator_info_list.append(operator)
         
@@ -192,7 +195,6 @@ def select_patch_guided(state: MSVState, mode: MSVMode) -> PatchInfo:
       if not selected_case_info.processed:
         return PatchInfo(selected_case_info, None, None, None)
 
-    # TODO: select condition with bayesian approach
     # Select operator
     for op_info in selected_case_info.operator_info_list:
       if is_rand:
