@@ -231,7 +231,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode) -> PatchInfo:
         p1.append(const_info.pf)
         p2.append(const_info.critical_pf)
         p3.append(const_info.positive_pf)
-    selected_constant = select_by_probability_hierarchical(state, n, p1, p2, p3)
+    selected_constant = select_by_probability_hierarchical(state, n, p1, p2, p3) # TODO: Do not select if len(constant_info_list) is 0
     selected_constant_info = selected_variable_info.constant_info_list[selected_constant]
     p1.clear()
     p2.clear()
