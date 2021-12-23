@@ -222,7 +222,7 @@ def run_pass_test(state:MSVState,patch:List[PatchInfo]):
     result_str = so.decode('utf-8').strip()
     if result_str == "":
       state.msv_logger.info("Result: FAIL")
-      return False
+      return False,int(tests[0])
     state.msv_logger.debug(result_str)
 
     results=result_str.splitlines()
@@ -231,7 +231,7 @@ def run_pass_test(state:MSVState,patch:List[PatchInfo]):
       if s not in results:
         result=False
         state.msv_logger.warning(f"Result: FAIL at {s}")
-        return result
+        return result,int(s)
     if result:
       state.msv_logger.warning("Result: PASS")
     else:
@@ -257,7 +257,7 @@ def run_pass_test(state:MSVState,patch:List[PatchInfo]):
   result_str = so.decode('utf-8').strip()
   if result_str == "":
     state.msv_logger.info("Result: FAIL")
-    return False
+    return False,int(tests[0])
   state.msv_logger.debug(result_str)
 
   results=result_str.splitlines()
@@ -266,10 +266,10 @@ def run_pass_test(state:MSVState,patch:List[PatchInfo]):
     if s not in results:
       result=False
       state.msv_logger.warning(f"Result: FAIL at {s}")
-      return result
+      return result,int(s)
   if result:
     state.msv_logger.warning("Result: PASS")
   else:
     state.msv_logger.warning("Result: FAIL")
 
-  return result
+  return result,0

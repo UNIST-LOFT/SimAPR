@@ -380,11 +380,50 @@ class PatchInfo:
       if self.operator_info.operator_type == OperatorType.ALL_1:
         self.case_info.operator_info_list.remove(self.operator_info)
       else:
-        self.variable_info.constant_info_list.remove(self.constant_info)
-        if len(self.variable_info.constant_info_list) == 0:
-          self.operator_info.variable_info_list.remove(self.variable_info)
-        if len(self.operator_info.variable_info_list) == 0:
-          self.case_info.operator_info_list.remove(self.operator_info)
+        if not state.use_condition_synthesis:
+          self.variable_info.constant_info_list.remove(self.constant_info)
+          if len(self.variable_info.constant_info_list) == 0:
+            self.operator_info.variable_info_list.remove(self.variable_info)
+          if len(self.operator_info.variable_info_list) == 0:
+            self.case_info.operator_info_list.remove(self.operator_info)
+        else:
+          node=self.constant_info
+          if node.left is None and node.right is None:
+            next=None
+          elif node.left is None and node.right is not None:
+            next=node.right
+            next.parent=node.parent
+          elif node.left is not None and node.right is None:
+            next=node.left
+            next.parent=node.parent
+          else:
+            next=node.left
+            next.parent=node.parent
+
+            target=node.right
+            current=next
+            while current is not None:
+              if target.constant_value<current.constant_value:
+                if current.left is None:
+                  current.left=target
+                  target.parent=current
+                  break
+                else:
+                  current=current.left
+              else:
+                if current.right is None:
+                  current.right=target
+                  target.parent=current
+                  break
+                else:
+                  current=current.right
+            if node.parent is None:
+              node.variable.constant_info_list.clear()
+            elif node.parent.left is node:
+              node.parent.left=next
+            elif node.parent.right is node:
+              node.parent.right=next
+
       if len(self.case_info.operator_info_list) == 0:
         self.type_info.case_info_list.remove(self.case_info)
     else:

@@ -401,7 +401,7 @@ class MyCondition:
               current=current.right
 
       if node.parent is None:
-        node.variable.constant_info_list[0]=next
+        node.variable.constant_info_list.clear()
         if next is not None:
           self.remove_same_record(record,values,next,test_result)
       elif node.parent.left is node:
@@ -416,6 +416,69 @@ class MyCondition:
         self.remove_same_record(record,values,node.left,test_result)
       if node.right is not None:
         self.remove_same_record(record,values,node.right,test_result)
+
+  def get_same_record(self,record:list,values:list,node:ConstantInfo,conditions:List[ConstantInfo]):
+    current_var=node.variable
+    if check_expr(record,values[current_var.variable],node.variable.parent.operator_type,node.constant_value):
+      self.state.msv_logger.info(f'Same record {node.variable.parent.operator_type.value}, {node.variable.variable}, {node.constant_value}')
+      conditions.append(node)
+
+    if node.left is not None:
+      self.get_same_record(record,values,node.left,conditions)
+    if node.right is not None:
+      self.get_same_record(record,values,node.right,conditions)
+
+  def remove_by_pass_test(self,conditions:List[ConstantInfo],root:ConstantInfo):
+    if len(conditions)==0:
+      return
+    target=conditions[0]
+    from msv import run_pass_test
+
+    patch=[PatchInfo(target.variable.parent.parent,target.variable.parent,target.variable,target)]
+    (result,fail_test)=run_pass_test(self.state,patch)
+    self.state.msv_logger.info(f'Pass test {"pass" if result else "fail"} with {patch[0].to_str()}')
+    conditions.remove(target)
+    result_handler.remove_patch(self.state,patch)
+    ## if pass, remove from tree
+    if result:
+      self.remove_by_pass_test(conditions,root)
+    else:
+      cp_conds=conditions.copy()
+      for condition in cp_conds:
+        patch_next=[PatchInfo(condition.variable.parent.parent,condition.variable.parent,condition.variable,condition)]
+        args = self.state.args + [str(fail_test)]
+        args = args[0:1] + ['-i', patch_next[0].to_str()] + args[1:]
+        self.state.msv_logger.debug(' '.join(args))
+        new_env = MSVEnvVar.get_new_env(self.state, patch_next, fail_test)
+
+        # run test
+        test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
+        so: bytes
+        se: bytes
+        try:
+          so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
+        except: # timeout
+          test_proc.kill()
+          so, se = test_proc.communicate()
+          self.state.msv_logger.info("Timeout!")
+
+        result_str = so.decode('utf-8').strip()
+        result = False
+        if result_str == "":
+          self.state.msv_logger.info(f"Test {str(fail_test)} fail with {patch_next[0].to_str()}")
+          conditions.remove(condition)
+          result_handler.remove_patch(self.state,patch_next)
+        else:
+          self.state.msv_logger.debug(result_str)
+          result = (int(result_str) == fail_test)
+          if result:
+            self.state.msv_logger.info(f"Test {str(fail_test)} pass with {patch_next[0].to_str()}")
+          else:
+            self.state.msv_logger.info(f"Test {str(fail_test)} fail with {patch_next[0].to_str()}")
+            conditions.remove(condition)
+            result_handler.remove_patch(self.state,patch_next)
+
+      self.remove_by_pass_test(conditions,root)
     
   def run(self) -> None:
     (result,record)=self.get_record()
@@ -441,7 +504,16 @@ class MyCondition:
     values_arr=np.array(values)
     values_t=values_arr.transpose() # transpose: to [atom][value]
     for var in self.patch.operator_info.variable_info_list:
-      self.remove_same_record(record,values_t,var.constant_info_list[0],result)
+      if len(var.constant_info_list)==0 or var.constant_info_list[0] is None:
+        if var.constant_info_list[0] is None:
+          var.constant_info_list.clear()
+        continue
+      if not self.state.use_pass_test or not result:
+        self.remove_same_record(record,values_t,var.constant_info_list[0],result)
+      else:
+        conditions=[]
+        self.get_same_record(record,values,var.constant_info_list[0],conditions)
+        self.remove_by_pass_test(conditions,var.constant_info_list[0])
 
 def check_expr(record,values,operator,constant) -> bool:
   for record,value in zip(record,values):
