@@ -156,7 +156,6 @@ def read_info(state: MSVState) -> None:
   temp_case = CaseInfo(temp_type, 0, False)
   temp_type.case_info_list.append(temp_case)
   state.switch_case_map["0-0"] = temp_case
-  state.patch_info_list.append(temp_file)
 
 def read_var_count(state:MSVState,sizes:list):
   for object in sizes:
