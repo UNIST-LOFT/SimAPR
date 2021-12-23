@@ -17,7 +17,7 @@ def update_result(state: MSVState, selected_patch: List[PatchInfo], run_result: 
 def update_result_critical(state: MSVState, selected_patch: List[PatchInfo], run_result: bool, test: int) -> None:
   pass
 
-def update_result_positive(state: MSVState, selected_patch: List[PatchInfo], failed_tests: Set[int]) -> None:
+def update_result_positive(state: MSVState, selected_patch: List[PatchInfo], run_result: bool, failed_tests: Set[int]) -> None:
   run_result = (len(failed_tests) == 0)
   for patch in selected_patch:
     patch.update_result_positive(run_result, len(failed_tests))
