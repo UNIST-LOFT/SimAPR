@@ -369,6 +369,9 @@ class MyCondition:
     current_var=node.variable
     if check_expr(record,values[current_var.variable],node.variable.parent.operator_type,node.constant_value):
       self.state.msv_logger.info(f'Remove {node.variable.parent.operator_type.value}, {node.variable.variable}, {node.constant_value}')
+      result_handler.update_result(self.state, [self.patch], test_result, 1, self.state.negative_test[0])
+      result_handler.append_result(self.state, [self.patch], test_result)
+
       next=None
       if node.left is None and node.right is None:
         next=None
@@ -439,6 +442,10 @@ class MyCondition:
     self.state.msv_logger.info(f'Pass test {"pass" if result else "fail"} with {patch[0].to_str()}')
     conditions.remove(target)
     result_handler.remove_patch(self.state,patch)
+    result_handler.update_result(self.state, [self.patch], True, 1, self.state.negative_test[0])
+    # TODO: update p3
+    result_handler.append_result(self.state, [self.patch], result)
+
     ## if pass, remove from tree
     if result:
       self.remove_by_pass_test(conditions,root)
@@ -468,6 +475,10 @@ class MyCondition:
           self.state.msv_logger.info(f"Test {str(fail_test)} fail with {patch_next[0].to_str()}")
           conditions.remove(condition)
           result_handler.remove_patch(self.state,patch_next)
+          result_handler.update_result(self.state, [self.patch], True, 1, self.state.negative_test[0])
+          # TODO: update p3
+          result_handler.append_result(self.state, [self.patch], result)
+
         else:
           self.state.msv_logger.debug(result_str)
           result = (int(result_str) == fail_test)
@@ -477,6 +488,9 @@ class MyCondition:
             self.state.msv_logger.info(f"Test {str(fail_test)} fail with {patch_next[0].to_str()}")
             conditions.remove(condition)
             result_handler.remove_patch(self.state,patch_next)
+            result_handler.update_result(self.state, [self.patch], True, 1, self.state.negative_test[0])
+            # TODO: update p3
+            result_handler.append_result(self.state, [self.patch], result)
 
       self.remove_by_pass_test(conditions,root)
     

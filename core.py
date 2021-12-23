@@ -474,16 +474,18 @@ class MSVResult:
   time: float
   config: List[PatchInfo]
   result: bool
-  def __init__(self, iteration: int, time: float, config: List[PatchInfo], result: bool) -> None:
+  def __init__(self, iteration: int, time: float, config: List[PatchInfo], result: bool,pass_test_result:bool=False) -> None:
     self.iteration = iteration
     self.time = time
     self.config = config
     self.result = result
+    self.pass_result=pass_test_result
   def to_json_object(self) -> dict:
     object = dict()
     object["iteration"] = self.iteration
     object["time"] = self.time
     object["result"] = self.result
+    object['pass_result']=self.pass_result
     conf_list = list()
     for patch in self.config:
       conf = patch.to_json_object()

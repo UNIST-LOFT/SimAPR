@@ -22,12 +22,12 @@ def save_result(state: MSVState) -> None:
 
 
 # Append result list, save result to file periodically
-def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result: bool) -> None:
+def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result: bool,pass_test_result:bool=False) -> None:
   save_interval = 10
   tm = time.time()
   tm_interval = tm - state.start_time
   result = MSVResult(state.cycle, tm_interval,
-                     selected_patch, test_result)
+                     selected_patch, test_result,pass_test_result)
   state.msv_result.append(result.to_json_object())
   if (tm - state.last_save_time) > save_interval:
     save_result(state)

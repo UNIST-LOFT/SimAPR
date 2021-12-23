@@ -57,7 +57,7 @@ class MSV:
       cond_syn=condition.MyCondition(selected_patch[0],self.state,self.state.negative_test,self.state.positive_test)
       cond_syn.run()
       
-    else:
+    else: ## basic patch, or conditional patch if condition-synthesis is turned off
       # set environment variables
       new_env = MSVEnvVar.get_new_env(self.state, selected_patch, selected_test)
       # run test
@@ -79,18 +79,25 @@ class MSV:
         result = (int(result_str) == selected_test)
         if result:
           self.state.msv_logger.warning("Result: PASS")
+
           if self.state.use_pass_test:
             self.state.msv_logger.info("Run pass test!")
             pass_result=run_pass_test(self.state,selected_patch)
+            result_handler.update_result(self.state, selected_patch, result, 1, selected_test)
+            # TODO: update p3
+            result_handler.append_result(self.state, selected_patch, result,pass_result)
+            result_handler.remove_patch(self.state, selected_patch)
             self.state.msv_logger.info("Result: PASS" if pass_result else "Result: FAIL")
         else:
           self.state.msv_logger.warning("Result: FAIL")
       # Do not update result for original program
       if selected_patch[0].to_str_sw_cs() == "0-0":
         return result
-      result_handler.update_result(self.state, selected_patch, result, 1, selected_test)
-      result_handler.append_result(self.state, selected_patch, result)
-      result_handler.remove_patch(self.state, selected_patch)
+      
+      if not result or not self.state.use_pass_test:
+        result_handler.update_result(self.state, selected_patch, result, 1, selected_test)
+        result_handler.append_result(self.state, selected_patch, result)
+        result_handler.remove_patch(self.state, selected_patch)
       return result
   
   # Run multiple positive tests in parallel
