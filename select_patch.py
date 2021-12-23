@@ -3,10 +3,19 @@ from condition import ProphetCondition
 from core import *
 
 # n: number of hierarchy
-def select_by_probability_hierarchical(state: MSVState, n: int, p1: List[PassFail], p2: List[PassFail] = [], p3: List[PassFail] = []) -> int:
+def select_by_probability_hierarchical(state: MSVState, n: int, p1: List[PassFail], p2: List[PassFail] = [], p3: List[PassFail] = [],parent=None) -> int:
+  score=None
+  if parent is not None:
+    score=[]
+    if type(parent)==MSVState:
+      for file in parent.patch_info_list:
+        score.append(file.fl_score)
+    elif type(parent)==FileInfo:
+      for line in parent.line_info_list:
+        score.append(line.fl_score)
   # Select patch for hierarchical
   if n == 1:
-    return PassFail.select_by_probability(p1)
+    return PassFail.select_by_probability(p1,score)
   p1_select = list()
   p2_select = list()
   p2_select_pf = list()
@@ -14,19 +23,19 @@ def select_by_probability_hierarchical(state: MSVState, n: int, p1: List[PassFai
   if n == 2:
     p1_total = 64
     for i in range(p1_total):
-      p1_select.append(PassFail.select_by_probability(p1))
+      p1_select.append(PassFail.select_by_probability(p1,score))
       p2_select_pf.append(p2[p1_select[i]])
-    return p1_select[PassFail.select_by_probability(p2_select_pf)]
+    return p1_select[PassFail.select_by_probability(p2_select_pf,score)]
   if n == 3:
     p1_total = 64
     for i in range(p1_total):
-      p1_select.append(PassFail.select_by_probability(p1))
+      p1_select.append(PassFail.select_by_probability(p1,score))
       p2_select_pf.append(p2[p1_select[i]])
     p2_total = 16
     for i in range(p2_total):
-      p2_select.append(PassFail.select_by_probability(p2_select_pf))
+      p2_select.append(PassFail.select_by_probability(p2_select_pf,score))
       p3_select_pf.append(p3[p2_select[i]])
-    return p1_select[p2_select[PassFail.select_by_probability(p3_select_pf)]]
+    return p1_select[p2_select[PassFail.select_by_probability(p3_select_pf,score)]]
 
 def __select_prophet_condition(selected_case:CaseInfo,state:MSVState):
   selected_operator=selected_case.operator_info_list[0]

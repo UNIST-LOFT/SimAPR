@@ -460,7 +460,7 @@ class MyCondition:
         args = self.state.args + fail_test_str
         args = args[0:1] + ['-i', patch_next[0].to_str()] + args[1:]
         self.state.msv_logger.debug(' '.join(args))
-        new_env = MSVEnvVar.get_new_env(self.state, patch_next, fail_tests[0])
+        new_env = MSVEnvVar.get_new_env(self.state, patch_next, list(fail_tests)[0])
 
         # run test
         test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
