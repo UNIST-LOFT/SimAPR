@@ -1,4 +1,6 @@
+from matplotlib.patches import Patch
 from core import *
+from typing import List, Set, Dict, Tuple
 
 def update_result(state: MSVState, selected_patch: List[PatchInfo], run_result: bool, n: float, test: int) -> None:
   critical_pf = PassFail()
@@ -12,6 +14,13 @@ def update_result(state: MSVState, selected_patch: List[PatchInfo], run_result: 
     patch.update_result(run_result, n,state.use_fixed_beta)
     patch.update_result_critical(critical_pf,state.use_fixed_beta)
 
+def update_result_critical(state: MSVState, selected_patch: List[PatchInfo], run_result: bool, test: int) -> None:
+  pass
+
+def update_result_positive(state: MSVState, selected_patch: List[PatchInfo], run_result: bool, failed_tests: Set[int]) -> None:
+  run_result = (len(failed_tests) == 0)
+  for patch in selected_patch:
+    patch.update_result_positive(run_result, len(failed_tests))
 
 def save_result(state: MSVState) -> None:
   state.last_save_time = time.time()

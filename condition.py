@@ -444,6 +444,7 @@ class MyCondition:
     result_handler.remove_patch(self.state,patch)
     result_handler.update_result(self.state, [self.patch], True, 1, self.state.negative_test[0])
     # TODO: update p3
+    result_handler.update_result_positive(self.state, [self.patch], result, fail_tests)
     result_handler.append_result(self.state, [self.patch], result)
 
     ## if pass, remove from tree
@@ -481,6 +482,7 @@ class MyCondition:
           result_handler.remove_patch(self.state,patch_next)
           result_handler.update_result(self.state, [self.patch], True, 1, self.state.negative_test[0])
           # TODO: update p3
+          result_handler.update_result_positive(self.state, [self.patch], result, fail_tests)
           result_handler.append_result(self.state, [self.patch], result)
 
         else:
@@ -500,6 +502,7 @@ class MyCondition:
             result_handler.remove_patch(self.state,patch_next)
             result_handler.update_result(self.state, [self.patch], True, 1, self.state.negative_test[0])
             # TODO: update p3
+            result_handler.update_result_positive(self.state, [self.patch], result, fail_tests)
             result_handler.append_result(self.state, [self.patch], result)
 
       self.remove_by_pass_test(conditions,root)

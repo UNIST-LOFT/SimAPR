@@ -9,7 +9,7 @@ from dataclasses import dataclass
 import logging
 import random
 from enum import Enum
-from typing import List, Dict, Tuple
+from typing import List, Dict, Tuple, Set
 
 
 class MSVMode(Enum):
@@ -529,13 +529,14 @@ class MSVState:
   patch_info_map: Dict[str, FileInfo]  # fine_name: str -> FileInfo
   patch_info_list: List[FileInfo]      # Root of tree of patch data structure
   switch_case_map: Dict[str, CaseInfo] # f"{switch_number}-{case_number}" -> SwitchCase
-  selected_patch: List[PatchInfo]
-  selected_test: List[int]
-  negative_test: List[int]
-  positive_test: List[int]
-  profile_map: Dict[int, Profile]
+  selected_patch: List[PatchInfo] # Unused
+  selected_test: List[int]        # Unused
+  negative_test: List[int]        # Negative test case
+  positive_test: List[int]        # Positive test case
+  profile_map: Dict[int, Profile] # test case number -> Profile (of original program)
   priority_list: List[Tuple[str, int, float]]  # (file_name, line_number, score)
   msv_result: List[dict]   # List of json object by MSVResult.to_json_object()
+  failed_positive_test: Set[int] # Set of positive test that failed
   def __init__(self) -> None:
     self.mode = MSVMode.guided
     self.cycle = 0
@@ -563,3 +564,4 @@ class MSVState:
     self.priority_list = list()
     self.msv_result = list()
     self.var_counts=dict()
+    self.failed_positive_test = set()
