@@ -193,8 +193,48 @@ def select_patch_guided(state: MSVState, mode: MSVMode) -> PatchInfo:
         return PatchInfo(selected_case_info, None, None, None)
 
     # TODO: select condition with bayesian approach
-    op_info = OperatorInfo(selected_case_info, OperatorType.ALL_1)
-    return PatchInfo(selected_case_info, op_info, None, None)
+    # Select operator
+    for op_info in selected_case_info.operator_info_list:
+      if is_rand:
+        p1.append(pf_rand)
+      else:
+        p1.append(op_info.pf)
+        p2.append(op_info.critical_pf)
+        p3.append(op_info.positive_pf)
+    selected_operator = select_by_probability_hierarchical(state, n, p1, p2, p3)
+    selected_operator_info = selected_case_info.operator_info_list[selected_operator]
+    p1.clear()
+    p2.clear()
+    p3.clear()
+    if selected_operator_info.operator_type == OperatorType.ALL_1:
+      return PatchInfo(selected_case_info, selected_operator_info, None, None)
+    # Select variable
+    for var_info in selected_operator_info.variable_info_list:
+      if is_rand:
+        p1.append(pf_rand)
+      else:
+        p1.append(var_info.pf)
+        p2.append(var_info.critical_pf)
+        p3.append(var_info.positive_pf)
+    selected_variable = select_by_probability_hierarchical(state, n, p1, p2, p3)
+    selected_variable_info = selected_operator_info.variable_info_list[selected_variable]
+    p1.clear()
+    p2.clear()
+    p3.clear()
+    # Select constant
+    for const_info in selected_variable_info.constant_info_list:
+      if is_rand:
+        p1.append(pf_rand)
+      else:
+        p1.append(const_info.pf)
+        p2.append(const_info.critical_pf)
+        p3.append(const_info.positive_pf)
+    selected_constant = select_by_probability_hierarchical(state, n, p1, p2, p3)
+    selected_constant_info = selected_variable_info.constant_info_list[selected_constant]
+    p1.clear()
+    p2.clear()
+    p3.clear()
+    return PatchInfo(selected_case_info, selected_operator_info, selected_variable_info, selected_constant_info)
 
 def select_patch(state: MSVState, mode: MSVMode, multi_line: int) -> List[PatchInfo]:
   selected_patch = list()

@@ -71,22 +71,23 @@ class MSV:
         so, se = test_proc.communicate()
         self.state.msv_logger.info("Timeout!")
       result_str = so.decode('utf-8').strip()
+      result = False
       if result_str == "":
         self.state.msv_logger.info("Result: FAIL")
-        result_handler.update_result(self.state, selected_patch, False, 1, selected_test)
-        result_handler.append_result(self.state, selected_patch, False)
-        result_handler.remove_patch(self.state, selected_patch)
-        return False
-      self.state.msv_logger.debug(result_str)
-      result = (int(result_str) == selected_test)
-      if result:
-        self.state.msv_logger.warning("Result: PASS")
-        if self.state.use_pass_test:
-          self.state.msv_logger.info("Run pass test!")
-          pass_result=run_pass_test(self.state,selected_patch)
-          self.state.msv_logger.info("Result: PASS" if pass_result else "Result: FAIL")
       else:
-        self.state.msv_logger.warning("Result: FAIL")
+        self.state.msv_logger.debug(result_str)
+        result = (int(result_str) == selected_test)
+        if result:
+          self.state.msv_logger.warning("Result: PASS")
+          if self.state.use_pass_test:
+            self.state.msv_logger.info("Run pass test!")
+            pass_result=run_pass_test(self.state,selected_patch)
+            self.state.msv_logger.info("Result: PASS" if pass_result else "Result: FAIL")
+        else:
+          self.state.msv_logger.warning("Result: FAIL")
+      # Do not update result for original program
+      if selected_patch[0].to_str_sw_cs() == "0-0":
+        return result
       result_handler.update_result(self.state, selected_patch, result, 1, selected_test)
       result_handler.append_result(self.state, selected_patch, result)
       result_handler.remove_patch(self.state, selected_patch)
