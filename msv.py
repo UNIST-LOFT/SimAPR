@@ -110,6 +110,71 @@ class MSV:
       run_result = self.run_test([patch], neg)
       profile = Profile(self.state, f"{neg}-0-0")
       self.state.profile_map[neg] = profile
+    
+    if not self.state.skip_valid:
+      self.state.msv_logger.info(f"Validating pass tests")
+      total_test=len(self.state.positive_test)
+      MAX_TEST_ONCE=1000
+      group_num=total_test//MAX_TEST_ONCE
+      remain_num=total_test%MAX_TEST_ONCE
+
+      args=self.state.args
+      args = args[0:1] + ['-i', patch.to_str(),'-j',str(self.state.max_parallel_cpu)] + args[1:]
+
+      tests=[]
+      for i in range(group_num):
+        start=i*MAX_TEST_ONCE
+        for j in range(MAX_TEST_ONCE):
+          index=start+j
+          tests.append(str(self.state.positive_test[index]))
+
+        current_args = args + tests
+        self.state.msv_logger.debug(' '.join(current_args))
+
+        new_env = MSVEnvVar.get_new_env(self.state, [patch], int(tests[0]),set_tmp_file=False)
+        # run test
+        test_proc = subprocess.Popen(current_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
+        so: bytes
+        se: bytes
+        so, se = test_proc.communicate()
+
+        result_str = so.decode('utf-8').strip()
+        self.state.msv_logger.debug(result_str)
+
+        results=result_str.splitlines()
+        fail_tests=[]
+        for s in tests:
+          if s not in results:
+            self.state.msv_logger.warning(f"Remove failed pass test {s}")
+            fail_tests.append(int(s))
+        for s in fail_tests:
+          self.state.positive_test.remove(s)
+
+      for j in range(remain_num):
+        index=start+j
+        tests.append(str(self.state.positive_test[index]))
+
+      current_args = args + tests
+      self.state.msv_logger.debug(' '.join(current_args))
+
+      new_env = MSVEnvVar.get_new_env(self.state, [patch], int(tests[0]),set_tmp_file=False)
+      # run test
+      test_proc = subprocess.Popen(current_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
+      so: bytes
+      se: bytes
+      so, se = test_proc.communicate()
+
+      result_str = so.decode('utf-8').strip()
+      self.state.msv_logger.debug(result_str)
+
+      results=result_str.splitlines()
+      fail_tests=[]
+      for s in tests:
+        if s not in results:
+          self.state.msv_logger.warning(f"Remove failed pass test {s}")
+          fail_tests.append(int(s))
+      for s in fail_tests:
+        self.state.positive_test.remove(s)
 
   def run(self) -> None:
     self.initialize()

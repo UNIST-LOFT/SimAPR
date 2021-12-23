@@ -496,6 +496,7 @@ class MSVState:
     self.use_hierarchical_selection = 1
     self.use_pass_test = False
     self.use_multi_line = 1
+    self.skip_valid=False
     self.time_limit = -1
     self.cycle_limit = -1
     self.max_parallel_cpu = 8
