@@ -249,20 +249,18 @@ class ProfileElement:
 
 class Profile:
   def __init__(self, state: 'MSVState', profile: str) -> None:
-    self.profile_critical = set()
-    self.profile_set = set()
-    self.profile_dict = dict()
-    self.profile_critical_dict = dict()
+    self.profile_dict: Dict[ProfileElement, ProfileElement] = dict()
+    self.profile_critical_dict: Dict[ProfileElement, ProfileElement] = dict()
     state.msv_logger.debug(f"Profile: {profile}")
     profile_meta_filename = f"/tmp/{profile}_profile.log"
     with open(profile_meta_filename, "r") as pm:
-      for line in pm.readlines():
-        if line.startswith("#"):
+      for func in pm.readlines():
+        if func.startswith("#"):
           continue
-        line = line.strip()
-        if line == "":
+        func = func.strip()
+        if func == "":
           continue
-        profile_file = f"/tmp/{profile}_{line}_profile.log"
+        profile_file = f"/tmp/{profile}_{func}_profile.log"
         with open(profile_file, "r") as p:
           for line in p.readlines():
             if line.startswith("#"):
@@ -274,9 +272,8 @@ class Profile:
             if len(line_split) != 2:
               continue
             var = line_split[0].strip()
-            value = line_split[1].strip()
-            profile_elem = ProfileElement(line, var, value)
-            self.profile_set.add(profile_elem)
+            value = int(line_split[1].strip())
+            profile_elem = ProfileElement(func, var, value)
             self.profile_dict[profile_elem] = profile_elem
         if os.path.exists(profile_file):
           os.remove(profile_file)
@@ -286,33 +283,33 @@ class Profile:
   def diff(self, other: 'Profile', result: bool) -> Tuple[Set[ProfileElement], Set[ProfileElement]]:
     profile_diff_set = set()
     profile_same_set = set()
-    for profile_elem in self.profile_set:
-      if profile_elem not in other.profile_set:
+    for profile_elem in self.profile_dict:
+      if profile_elem not in other.profile_dict:
         profile_diff_set.add(profile_elem)
       else:
         if profile_elem.value != other.profile_dict[profile_elem].value:
           profile_diff_set.add(profile_elem)
         else:
           profile_same_set.add(profile_elem)
-    for pe in other.profile_set:
-      if pe not in self.profile_set:
-        profile_diff_set.add(pe)
+    for profile_elem in other.profile_dict:
+      if profile_elem not in self.profile_dict:
+        profile_diff_set.add(profile_elem)
     return (profile_diff_set, profile_same_set)
 
   def get_diff(self, other: 'Profile', result: bool) -> PassFail:
     diff_pf = PassFail()
     profile_diff_set = set()
     profile_same_set = set()
-    for profile_elem in self.profile_set:
-      if profile_elem not in other.profile_set:
+    for profile_elem in self.profile_dict:
+      if profile_elem not in other.profile_dict:
         profile_diff_set.add(profile_elem)
       else:
         if profile_elem.value != other.profile_dict[profile_elem].value:
           profile_diff_set.add(profile_elem)
         else:
           profile_same_set.add(profile_elem)
-    for pe in other.profile_set:
-      if pe not in self.profile_set:
+    for pe in other.profile_dict:
+      if pe not in self.profile_dict:
         profile_diff_set.add(pe)
     diff = len(profile_diff_set)
     same = len(profile_same_set)
@@ -324,30 +321,29 @@ class Profile:
     critical_pf = PassFail()
     profile_diff_set, profile_same_set = self.diff(other, result)
     if result:
-      intersect = self.profile_critical.intersection(profile_diff_set)
-      diff_new = profile_diff_set - intersect
-      diff_original = self.profile_critical - intersect
-      for elem in intersect:
-        elem.critical_value += 1
-        critical_pf.update(True, elem.critical_value)
-      for elem in diff_new:
-        elem.critical_value = 1
-        critical_pf.update(True, elem.critical_value)
-        self.profile_critical.add(elem)
-      critical_pf.update(False, len(diff_original))
+      for elem in profile_diff_set:
+        if elem in self.profile_critical_dict:
+          self.profile_critical_dict[elem].critical_value += 1
+          critical_pf.update(True, self.profile_critical_dict[elem].critical_value)
+        else:
+          elem.critical_value = 1
+          self.profile_critical_dict[elem] = elem
+          critical_pf.update(True, 1)
+      for elem in self.profile_critical_dict:
+        if elem not in profile_diff_set:
+          critical_pf.update(False, self.profile_critical_dict[elem].critical_value)
       return critical_pf
-    if len(self.profile_critical) == 0:
+    if len(self.profile_critical_dict) == 0:
       return self.get_diff(other, result)
-
-    intersect = self.profile_critical.intersection(profile_diff_set)
-    diff_new = profile_diff_set - intersect
-    crit_fail = self.profile_critical - profile_diff_set
-    for elem in intersect:
-      critical_pf.update(True, elem.critical_value)
-    for elem in crit_fail:
-      critical_pf.update(False, elem.critical_value)
-    for dn in diff_new:
-      critical_pf.update(False, 1)
+    
+    for elem in self.profile_critical_dict:
+      if elem in profile_diff_set:
+        critical_pf.update(True, elem.critical_value)
+      else:
+        critical_pf.update(False, elem.critical_value)
+    for elem in profile_diff_set:
+      if elem not in self.profile_critical_dict:
+        critical_pf.update(False, 1)
     return critical_pf
 
 class MSVEnvVar:
