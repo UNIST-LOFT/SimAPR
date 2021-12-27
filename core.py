@@ -221,6 +221,21 @@ class SwitchCase:
   def __eq__(self, other) -> bool:
     return self.switch_number == other.switch_number and self.case_number == other.case_number
 
+# Find with f"{file_name}:{line_number}"
+class FileLine:
+  def __init__(self, fi: FileInfo, li: LineInfo, score: float) -> None:
+    self.file_info = fi
+    self.line_info = li
+    self.score = score
+  def to_str(self) -> str:
+    return f"{self.file_info.file_name}:{self.line_info.line_number}"
+  def __str__(self) -> str:
+    return self.to_str()
+  def __hash__(self) -> int:
+    return hash(self.to_str())
+  def __eq__(self, other) -> bool:
+    return self.file_info == other.file_info and self.line_info == other.line_info
+
 class ProfileElement:
   def __init__(self, function: str, variable: str, value: int) -> None:
     self.function = function
@@ -573,6 +588,7 @@ class MSVState:
   positive_test: List[int]        # Positive test case
   profile_map: Dict[int, Profile] # test case number -> Profile (of original program)
   priority_list: List[Tuple[str, int, float]]  # (file_name, line_number, score)
+  priority_map: Dict[str, FileLine] # f"{file_name}:{line_number}" -> FileLine
   msv_result: List[dict]   # List of json object by MSVResult.to_json_object()
   failed_positive_test: Set[int] # Set of positive test that failed
   def __init__(self) -> None:
@@ -604,3 +620,4 @@ class MSVState:
     self.var_counts=dict()
     self.failed_positive_test = set()
     self.use_cpr_space=False
+    self.priority_map = dict()

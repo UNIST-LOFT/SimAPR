@@ -36,18 +36,31 @@ def __select_prophet_condition(selected_case:CaseInfo,state:MSVState):
     return selected_operator.variable_info_list[0].constant_info_list[0]
 
 
-def select_patch_prophet(state:MSVState) -> PatchInfo:
-  # select file
-  selected_file=state.patch_info_list[0]
-  for file in state.patch_info_list:
-    if selected_file.fl_score<file.fl_score:
-      selected_file=file
+def select_patch_prophet(state: MSVState) -> PatchInfo:
+  # Select file and line by priority
+  file_line: FileLine
+  while len(state.priority_list) > 0:
+    (p_file, p_line, p_score) = state.priority_list.pop(0)
+    fl_str = f"{p_file}:{p_line}"
+    if fl_str in state.priority_map:
+      file_line = state.priority_map[fl_str]
+      # If it still has switch, use it
+      if (len(file_line.line_info.switch_info_list) > 0):
+        state.priority_list.insert(0, (p_file, p_line, p_score))
+        break
+  selected_file = file_line.file_info
+  selected_line = file_line.line_info
+  # # select file
+  # selected_file=state.patch_info_list[0]
+  # for file in state.patch_info_list:
+  #   if selected_file.fl_score<file.fl_score:
+  #     selected_file=file
   
-  # select line
-  selected_line=selected_file.line_info_list[0]
-  for line in selected_file.line_info_list:
-    if selected_line.fl_score<line.fl_score:
-      selected_line=line
+  # # select line
+  # selected_line=selected_file.line_info_list[0]
+  # for line in selected_file.line_info_list:
+  #   if selected_line.fl_score<line.fl_score:
+  #     selected_line=line
   
   # select case
   selected_case=None
@@ -56,11 +69,12 @@ def select_patch_prophet(state:MSVState) -> PatchInfo:
   for type_ in type_priority:
     selected=False
     for switch in selected_line.switch_info_list:
-      if len(switch.type_info_list[type_.value].case_info_list)>0:
-        # select first case
-        selected_case=switch.type_info_list[type_.value].case_info_list[0]
-        selected=True
-        break
+      for type_in_switch in switch.type_info_list:
+        if type_in_switch.patch_type == type_:
+          if len(type_in_switch.case_info_list) > 0:
+            selected_case = type_in_switch.case_info_list[0]
+            selected=True
+            break
     if selected:
       break
   assert selected_case is not None

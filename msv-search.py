@@ -122,10 +122,11 @@ def read_info(state: MSVState) -> None:
         if len(line['switches']) == 0:
           continue
         line_info = LineInfo(file_info, int(line['line']))
-        line_info.fl_score=get_score(file_info.file_name,line_info.line_number)
-        line_info.fl_score = line_info.fl_score / max_priority * max_value
+        score=get_score(file_info.file_name,line_info.line_number)
+        line_info.fl_score = score / max_priority * max_value
         if file_info.fl_score<line_info.fl_score:
           file_info.fl_score=line_info.fl_score
+        state.priority_map[f"{file_info.file_name}:{line_info.line_number}"] = FileLine(file_info, line_info, score)
     
         line_list.append(line_info)
         switch_list = line_info.switch_info_list
