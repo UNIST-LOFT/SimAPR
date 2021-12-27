@@ -169,52 +169,52 @@ def run_pass_test(state: MSVState, patch: List[PatchInfo], pass_tests: List[int]
   state.msv_logger.info(f"@{state.cycle} Run pass test with {PatchInfo.list_to_str(patch)}")
   total_test = len(state.positive_test)
   group_num = (total_test + MAX_TEST_ONCE - 1) // MAX_TEST_ONCE
-
+  if len(pass_tests) > 0:
+    group_num = 1
   args=state.args
   args = args[0:1] + ['-i', patch[0].to_str(),'-j',str(state.max_parallel_cpu)] + args[1:]
-  tests = list()
-  if len(pass_tests) > 0:
-    for test in pass_tests:
-      tests.append(str(test))
-  else:
-    for i in range(group_num):
-      tests=[]
+  for i in range(group_num):
+    tests = list()
+    if len(pass_tests) > 0:
+      for test in pass_tests:
+        tests.append(str(test))
+    else:
       start=i*MAX_TEST_ONCE
       end = min(start + MAX_TEST_ONCE, total_test)
       for j in range(start, end):
         tests.append(str(state.negative_test[j]))
-  current_args = args + tests
-  state.msv_logger.debug(' '.join(current_args))
+    current_args = args + tests
+    state.msv_logger.debug(' '.join(current_args))
 
-  new_env = MSVEnvVar.get_new_env(state, patch, int(tests[0]), set_tmp_file=False)
-  # run test
-  test_proc = subprocess.Popen(current_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
-  so: bytes
-  se: bytes
-  so, se = test_proc.communicate()
+    new_env = MSVEnvVar.get_new_env(state, patch, int(tests[0]), set_tmp_file=False)
+    # run test
+    test_proc = subprocess.Popen(current_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
+    so: bytes
+    se: bytes
+    so, se = test_proc.communicate()
 
-  result_str = so.decode('utf-8').strip()
-  if result_str == "":
-    return_tests=set()
-    for test in tests:
-      return_tests.add(int(test))
-    state.msv_logger.info("Result: FAIL")
-    return False,return_tests
+    result_str = so.decode('utf-8').strip()
+    if result_str == "":
+      return_tests=set()
+      for test in tests:
+        return_tests.add(int(test))
+      state.msv_logger.info("Result: FAIL")
+      return False,return_tests
 
-  results=result_str.splitlines()
-  # Too many lines! Reduce to oneline...
-  debug_str = ""
-  for s in results:
-    debug_str += ' ' + s.strip()
-  state.msv_logger.debug(debug_str)
+    results=result_str.splitlines()
+    # Too many lines! Reduce to oneline...
+    debug_str = ""
+    for s in results:
+      debug_str += ' ' + s.strip()
+    state.msv_logger.debug(debug_str)
 
-  result=True
-  return_tests = set()
-  for s in tests:
-    if s not in results:
-      result=False
-      return_tests.add(int(s))
-  if not result:
-    state.msv_logger.warning(f"Result: FAIL at {return_tests}")
-    return False,return_tests
-  return result,set()
+    result=True
+    return_tests = set()
+    for s in tests:
+      if s not in results:
+        result=False
+        return_tests.add(int(s))
+    if not result:
+      state.msv_logger.warning(f"Result: FAIL at {return_tests}")
+      return False,return_tests
+  return True, set()
