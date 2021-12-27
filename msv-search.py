@@ -19,7 +19,7 @@ def parse_args(argv: list) -> MSVState:
   longopts = ["help", "outdir=", "workdir=", "timeout=", "msvpath=", "time-limit=", "cycle-limit=",
               "mode=", "max-parallel-cpu=",'skip-valid','use-fixed-beta',
               "use-condition-synthesis", "use-fl", "use-hierarchical-selection=", "use-pass-test",
-              "use-multi-line=", "prev-result", "sub-node=", "main-node"]
+              "multi-line=", "prev-result", "sub-node=", "main-node"]
   opts, args = getopt.getopt(argv[1:], "ho:w:p:t:m:c:j:T:E:M:S:", longopts)
   state = MSVState()
   state.original_args = argv
@@ -57,7 +57,7 @@ def parse_args(argv: list) -> MSVState:
       state.use_hierarchical_selection = int(a)
     elif o in ['--use-pass-test']:
       state.use_pass_test = True
-    elif o in ['--use-multi-line']:
+    elif o in ['--multi-line']:
       state.use_multi_line = int(a)
     elif o in ['--use-fixed-beta']:
       state.use_fixed_beta=True

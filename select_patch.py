@@ -76,7 +76,7 @@ def select_patch_prophet(state:MSVState) -> PatchInfo:
   return patch
 
 
-def select_patch_guided(state: MSVState, mode: MSVMode) -> PatchInfo:
+def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[PatchInfo]=[]) -> PatchInfo:
   # Select patch for guided, random
   is_rand = (mode == MSVMode.random)
   n = state.use_hierarchical_selection
@@ -253,10 +253,17 @@ def select_patch_guided(state: MSVState, mode: MSVMode) -> PatchInfo:
     p3.clear()
     return PatchInfo(selected_case_info, selected_operator_info, selected_variable_info, selected_constant_info)
 
-def select_patch(state: MSVState, mode: MSVMode, multi_line: int) -> List[PatchInfo]:
+def select_patch(state: MSVState, mode: MSVMode) -> List[PatchInfo]:
   selected_patch = list()
   if mode == MSVMode.prophet:
     return [select_patch_prophet(state)]
-  result = select_patch_guided(state, mode)
-  selected_patch.append(result)
+
+  for _ in range(state.use_multi_line):
+    result = select_patch_guided(state, mode,selected_patch)
+    selected_patch.append(result)
+
+    PROB_NEXT_PATCH=10
+    prob=random.randint(0,99)
+    if prob>=PROB_NEXT_PATCH:
+      break
   return selected_patch

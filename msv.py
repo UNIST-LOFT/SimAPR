@@ -53,7 +53,7 @@ class MSV:
         return False
     
     # our condition synthesis
-    elif self.state.use_condition_synthesis and selected_patch[0].case_info.is_condition and selected_patch[0].operator_info.operator_type!=OperatorType.ALL_1:
+    elif self.state.use_condition_synthesis and selected_patch[0].case_info.is_condition and selected_patch[0].operator_info.operator_type!=OperatorType.ALL_1 and len(selected_patch)==1:
       cond_syn=condition.MyCondition(selected_patch[0],self.state,self.state.negative_test,self.state.positive_test)
       cond_syn.run()
       
@@ -158,7 +158,7 @@ class MSV:
     self.initialize()
     while self.is_alive():
       for neg in self.state.negative_test:
-        patch = select_patch.select_patch(self.state, self.state.mode, self.state.use_multi_line)
+        patch = select_patch.select_patch(self.state, self.state.mode)
         run_result = self.run_test(patch, neg)
         # self.update_result(patch, run_result, 1, neg)
         # self.append_result(patch, run_result)
