@@ -9,6 +9,7 @@ import getopt
 from dataclasses import dataclass
 import logging
 from enum import Enum
+import shutil
 
 from core import *
 
@@ -197,11 +198,20 @@ def read_repair_conf(state: MSVState) -> None:
     for test in line.strip().split():
       state.positive_test.append(int(test))
 
+def copy_previous_results(state: MSVState) -> None:
+  result_json = os.path.join(state.out_dir, "msv-result.json")
+  result_log = os.path.join(state.out_dir, "msv-search.log")
+  if os.path.exists(result_json):
+    shutil.copy(result_json, os.path.join(state.out_dir, "msv-result.json.bak"))
+  if os.path.exists(result_log):
+    shutil.copy(result_log, os.path.join(state.out_dir, "msv-search.log.bak"))
+
 def main(argv: list):
   state = parse_args(argv)
   state.msv_logger = set_logger(state)
   read_info(state)
   read_repair_conf(state)
+  copy_previous_results(state)
   state.msv_logger.info('Initialized!')
   msv = MSV(state)
   state.msv_logger.info('MSV is started')
