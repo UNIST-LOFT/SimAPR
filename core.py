@@ -566,3 +566,4 @@ class MSVState:
     self.msv_result = list()
     self.var_counts=dict()
     self.failed_positive_test = set()
+    self.use_cpr_space=False

@@ -63,16 +63,21 @@ def parse_args(argv: list) -> MSVState:
       state.use_fixed_beta=True
     elif o in ['--skip-valid']:
       state.skip_valid=True
+    elif o in ['--use-cpr-space']:
+      state.use_cpr_space=True
   if sub_dir != "":
     state.out_dir = os.path.join(state.out_dir, sub_dir)
   if not os.path.exists(state.out_dir):
     os.makedirs(state.out_dir)
+  ## set options for Prophet search
   if state.mode==MSVMode.prophet:
     state.use_condition_synthesis=False
     state.use_fl=False
     state.use_hierarchical_selection=False
-    state.use_multi_line=False
+    state.use_multi_line=False # prophet only runs 1-line patch
     state.use_fixed_beta=False
+    state.use_cpr_space=False
+    state.max_parallel_cpu=1 # prophet doesn't run parallel
   return state
 
 
