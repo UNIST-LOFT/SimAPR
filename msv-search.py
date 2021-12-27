@@ -206,8 +206,10 @@ def copy_previous_results(state: MSVState) -> None:
     while os.path.exists(os.path.join(state.out_dir, f"bak{prefix}-msv-result.json")):
       prefix += 1
     shutil.copy(result_json, os.path.join(state.out_dir, f"bak{prefix}-msv-result.json"))
+    os.remove(result_json)
   if os.path.exists(result_log):
     shutil.copy(result_log, os.path.join(state.out_dir, f"bak{prefix}-msv-search.log"))
+    os.remove(result_log)
 
 def main(argv: list):
   state = parse_args(argv)
