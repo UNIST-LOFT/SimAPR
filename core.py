@@ -70,12 +70,15 @@ class PassFail:
   def expect_probability(self,additional_score:float=0) -> float:
     return self.beta_mode(self.pass_count + 1.5+additional_score, self.fail_count + 2.0)
   @staticmethod
-  def select_by_probability(pf_list: list) -> int:   # pf_list: list of PassFail
-    probability=[]
-    probability = list(map(lambda x: x.expect_probability(), pf_list))
-    total = sum(probability)
+  def select_by_probability(probability: List[float]) -> int:   # pf_list: list of PassFail
+    # probability=[]
+    # probability = list(map(lambda x: x.expect_probability(), pf_list))
+    total = 0
+    for p in probability:
+      if p > 0:
+        total += p
     rand = random.random() * total
-    for i in range(len(pf_list)):
+    for i in range(len(probability)):
       rand -= probability[i]
       if rand <= 0:
         return i

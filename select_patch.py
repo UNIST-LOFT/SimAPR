@@ -3,7 +3,7 @@ from condition import ProphetCondition
 from core import *
 
 # n: number of hierarchy
-def select_by_probability_hierarchical(state: MSVState, n: int, p1: List[PassFail], p2: List[PassFail] = [], p3: List[PassFail] = []) -> int:
+def select_by_probability_hierarchical(state: MSVState, n: int, p1: List[float], p2: List[float] = [], p3: List[float] = []) -> int:
   # Select patch for hierarchical
   if n == 1:
     return PassFail.select_by_probability(p1)
@@ -89,17 +89,17 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
   p3 = list()
   for file_info in state.patch_info_list:
     if is_rand:
-      p1.append(pf_rand)
+      p1.append(pf_rand.expect_probability())
     else:
       if state.use_fl:
         adjusted_pf = PassFail()
         adjusted_pf.update_with_pf(file_info.pf)
-        adjusted_pf.update(file_info.fl_score > 0, file_info.fl_score)
-        p1.append(adjusted_pf)
+        adjusted_pf.update(file_info.fl_score > 0, abs(file_info.fl_score))
+        p1.append(adjusted_pf.expect_probability())
       else:
-        p1.append(file_info.pf)
-      p2.append(file_info.critical_pf)
-      p3.append(file_info.positive_pf)
+        p1.append(file_info.pf.expect_probability())
+      p2.append(file_info.critical_pf.expect_probability())
+      p3.append(file_info.positive_pf.expect_probability())
   selected_file = select_by_probability_hierarchical(state, n, p1, p2, p3)
   selected_file_info = state.patch_info_list[selected_file]
   p1.clear()
@@ -108,17 +108,17 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
   # Select line
   for line_info in selected_file_info.line_info_list:
     if is_rand:
-      p1.append(pf_rand)
+      p1.append(pf_rand.expect_probability())
     else:
       if state.use_fl:
         adjusted_pf = PassFail()
         adjusted_pf.update_with_pf(line_info.pf)
-        adjusted_pf.update(line_info.fl_score > 0, line_info.fl_score)
-        p1.append(adjusted_pf)
+        adjusted_pf.update(line_info.fl_score > 0, abs(line_info.fl_score))
+        p1.append(adjusted_pf.expect_probability())
       else:
-        p1.append(line_info.pf)
-      p2.append(line_info.critical_pf)
-      p3.append(line_info.positive_pf)
+        p1.append(line_info.pf.expect_probability())
+      p2.append(line_info.critical_pf.expect_probability())
+      p3.append(line_info.positive_pf.expect_probability())
   selected_line = select_by_probability_hierarchical(state, n, p1, p2, p3)
   selected_line_info = selected_file_info.line_info_list[selected_line]
   p1.clear()
@@ -127,11 +127,11 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
   # Select switch
   for switch_info in selected_line_info.switch_info_list:
     if is_rand:
-      p1.append(pf_rand)
+      p1.append(pf_rand.expect_probability())
     else:
-      p1.append(switch_info.pf)
-      p2.append(switch_info.critical_pf)
-      p3.append(switch_info.positive_pf)
+      p1.append(switch_info.pf.expect_probability())
+      p2.append(switch_info.critical_pf.expect_probability())
+      p3.append(switch_info.positive_pf.expect_probability())
   selected_switch = select_by_probability_hierarchical(state, n, p1, p2, p3)
   selected_switch_info = selected_line_info.switch_info_list[selected_switch]
   p1.clear()
@@ -140,11 +140,11 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
   # Select type
   for type_info in selected_switch_info.type_info_list:
     if is_rand:
-      p1.append(pf_rand)
+      p1.append(pf_rand.expect_probability())
     else:
-      p1.append(type_info.pf)
-      p2.append(type_info.critical_pf)
-      p3.append(type_info.positive_pf)
+      p1.append(type_info.pf.expect_probability())
+      p2.append(type_info.critical_pf.expect_probability())
+      p3.append(type_info.positive_pf.expect_probability())
   selected_type = select_by_probability_hierarchical(state, n, p1, p2, p3)
   selected_type_info = selected_switch_info.type_info_list[selected_type]
   p1.clear()
@@ -153,11 +153,11 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
   # Select case
   for case_info in selected_type_info.case_info_list:
     if is_rand:
-      p1.append(pf_rand)
+      p1.append(pf_rand.expect_probability())
     else:
-      p1.append(case_info.pf)
-      p2.append(case_info.critical_pf)
-      p3.append(case_info.positive_pf)
+      p1.append(case_info.pf.expect_probability())
+      p2.append(case_info.critical_pf.expect_probability())
+      p3.append(case_info.positive_pf.expect_probability())
   selected_case = select_by_probability_hierarchical(state, n, p1, p2, p3)
   selected_case_info = selected_type_info.case_info_list[selected_case]
   p1.clear()
@@ -210,11 +210,11 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     # Select operator
     for op_info in selected_case_info.operator_info_list:
       if is_rand:
-        p1.append(pf_rand)
+        p1.append(pf_rand.expect_probability())
       else:
-        p1.append(op_info.pf)
-        p2.append(op_info.critical_pf)
-        p3.append(op_info.positive_pf)
+        p1.append(op_info.pf.expect_probability())
+        p2.append(op_info.critical_pf.expect_probability())
+        p3.append(op_info.positive_pf.expect_probability())
     selected_operator = select_by_probability_hierarchical(state, n, p1, p2, p3)
     selected_operator_info = selected_case_info.operator_info_list[selected_operator]
     p1.clear()
@@ -228,11 +228,11 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       if len(var_info.constant_info_list) == 0:
         continue
       if is_rand:
-        p1.append(pf_rand)
+        p1.append(pf_rand.expect_probability())
       else:
-        p1.append(var_info.pf)
-        p2.append(var_info.critical_pf)
-        p3.append(var_info.positive_pf)
+        p1.append(var_info.pf.expect_probability())
+        p2.append(var_info.critical_pf.expect_probability())
+        p3.append(var_info.positive_pf.expect_probability())
     selected_variable = select_by_probability_hierarchical(state, n, p1, p2, p3)
     selected_variable_info = selected_operator_info.variable_info_list[selected_variable]
     p1.clear()
@@ -241,11 +241,11 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     # Select constant
     for const_info in selected_variable_info.constant_info_list:
       if is_rand:
-        p1.append(pf_rand)
+        p1.append(pf_rand.expect_probability())
       else:
-        p1.append(const_info.pf)
-        p2.append(const_info.critical_pf)
-        p3.append(const_info.positive_pf)
+        p1.append(const_info.pf.expect_probability())
+        p2.append(const_info.critical_pf.expect_probability())
+        p3.append(const_info.positive_pf.expect_probability())
     selected_constant = select_by_probability_hierarchical(state, n, p1, p2, p3) # TODO: Do not select if len(constant_info_list) is 0
     selected_constant_info = selected_variable_info.constant_info_list[selected_constant]
     p1.clear()
