@@ -201,10 +201,13 @@ def read_repair_conf(state: MSVState) -> None:
 def copy_previous_results(state: MSVState) -> None:
   result_json = os.path.join(state.out_dir, "msv-result.json")
   result_log = os.path.join(state.out_dir, "msv-search.log")
+  prefix = 0
   if os.path.exists(result_json):
-    shutil.copy(result_json, os.path.join(state.out_dir, "msv-result.json.bak"))
+    while os.path.exists(os.path.join(state.out_dir, f"bak{prefix}-msv-result.json")):
+      prefix += 1
+    shutil.copy(result_json, os.path.join(state.out_dir, f"bak{prefix}-msv-result.json"))
   if os.path.exists(result_log):
-    shutil.copy(result_log, os.path.join(state.out_dir, "msv-search.log.bak"))
+    shutil.copy(result_log, os.path.join(state.out_dir, f"bak{prefix}-msv-search.log"))
 
 def main(argv: list):
   state = parse_args(argv)
