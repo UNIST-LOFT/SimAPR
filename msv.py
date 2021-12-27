@@ -45,7 +45,7 @@ class MSV:
           not selected_patch[0].case_info.processed:
       prophet_cond=condition.ProphetCondition(selected_patch[0],self.state,self.state.negative_test,self.state.positive_test)
       opers=prophet_cond.get_condition()
-      if opers is not None:
+      if opers is not None and len(opers)>0:
         selected_patch[0].case_info.operator_info_list=opers
         return True
       else:
@@ -148,7 +148,7 @@ class MSV:
         if end > total_test:
           end = total_test
         self.state.msv_logger.info(f"Validating {start}-{end}")
-        result, fail = run_pass_test(self.state, [patch], pass_tests=self.state.positive_test[start:end])
+        result, fail = run_pass_test(self.state, [patch], pass_tests=self.state.positive_test[start:end],is_initialize=True)
         fail_tests.update(fail)
       for fail in fail_tests:
         self.state.msv_logger.warning(f"Removing failed pass test: {fail}")
@@ -164,7 +164,7 @@ class MSV:
         # self.append_result(patch, run_result)
         # self.remove_patch(patch)
       
-def run_pass_test(state: MSVState, patch: List[PatchInfo], pass_tests: List[int] = []) -> Tuple[bool, Set[int]]:
+def run_pass_test(state: MSVState, patch: List[PatchInfo], pass_tests: List[int] = [],is_initialize:bool=False) -> Tuple[bool, Set[int]]:
   MAX_TEST_ONCE=1000
   state.msv_logger.info(f"@{state.cycle} Run pass test with {PatchInfo.list_to_str(patch)}")
   total_test = len(state.positive_test)
@@ -172,7 +172,7 @@ def run_pass_test(state: MSVState, patch: List[PatchInfo], pass_tests: List[int]
   if len(pass_tests) > 0:
     group_num = 1
   args=state.args
-  args = args[0:1] + ['-i', patch[0].to_str(),'-j',str(state.max_parallel_cpu)] + args[1:]
+  args = args[0:1] + ['-i', patch[0].to_str(),'-j',str(state.max_parallel_cpu) if not is_initialize and not state.mode==MSVMode.prophet else str(1)] + args[1:]
   for i in range(group_num):
     tests = list()
     if len(pass_tests) > 0:
