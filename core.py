@@ -236,6 +236,8 @@ class Profile:
   def __init__(self, state: 'MSVState', profile: str) -> None:
     self.profile_critical = set()
     self.profile_set = set()
+    self.profile_dict = dict()
+    self.profile_critical_dict = dict()
     state.msv_logger.debug(f"Profile: {profile}")
     profile_meta_filename = f"/tmp/{profile}_profile.log"
     with open(profile_meta_filename, "r") as pm:
@@ -260,25 +262,55 @@ class Profile:
             value = line_split[1].strip()
             profile_elem = ProfileElement(line, var, value)
             self.profile_set.add(profile_elem)
+            self.profile_dict[profile_elem] = profile_elem
+        if os.path.exists(profile_file):
+          os.remove(profile_file)
+    if os.path.exists(profile_meta_filename):
+      os.remove(profile_meta_filename)
+  
+  def diff(self, other: 'Profile', result: bool) -> Tuple[Set[ProfileElement], Set[ProfileElement]]:
+    profile_diff_set = set()
+    profile_same_set = set()
+    for profile_elem in self.profile_set:
+      if profile_elem not in other.profile_set:
+        profile_diff_set.add(profile_elem)
+      else:
+        if profile_elem.value != other.profile_dict[profile_elem].value:
+          profile_diff_set.add(profile_elem)
+        else:
+          profile_same_set.add(profile_elem)
+    for pe in other.profile_set:
+      if pe not in self.profile_set:
+        profile_diff_set.add(pe)
+    return (profile_diff_set, profile_same_set)
 
   def get_diff(self, other: 'Profile', result: bool) -> PassFail:
     diff_pf = PassFail()
-    origin_new = self.profile_set - other.profile_set
-    new_origin = other.profile_set - self.profile_set
-    not_changed = self.profile_set & other.profile_set
-    on = len(origin_new)
-    diff_pf.update(True, on)
-    no = len(new_origin)
-    diff_pf.update(True, no)
-    nc = len(not_changed)
-    diff_pf.update(False, nc)
+    profile_diff_set = set()
+    profile_same_set = set()
+    for profile_elem in self.profile_set:
+      if profile_elem not in other.profile_set:
+        profile_diff_set.add(profile_elem)
+      else:
+        if profile_elem.value != other.profile_dict[profile_elem].value:
+          profile_diff_set.add(profile_elem)
+        else:
+          profile_same_set.add(profile_elem)
+    for pe in other.profile_set:
+      if pe not in self.profile_set:
+        profile_diff_set.add(pe)
+    diff = len(profile_diff_set)
+    same = len(profile_same_set)
+    diff_pf.update(True, diff)
+    diff_pf.update(False, same)
     return diff_pf
 
   def get_critical_diff(self, other: 'Profile', result: bool) -> PassFail:
     critical_pf = PassFail()
+    profile_diff_set, profile_same_set = self.diff(other, result)
     if result:
-      intersect = self.profile_critical.intersection(other.profile_set)
-      diff_new = other.profile_set - intersect
+      intersect = self.profile_critical.intersection(profile_diff_set)
+      diff_new = profile_diff_set - intersect
       diff_original = self.profile_critical - intersect
       for elem in intersect:
         elem.critical_value += 1
@@ -289,16 +321,18 @@ class Profile:
         self.profile_critical.add(elem)
       critical_pf.update(False, len(diff_original))
       return critical_pf
-    origin_new = self.profile_set - other.profile_set
-    new_origin = other.profile_set - self.profile_set
-    not_changed = self.profile_set & other.profile_set
-    diff = origin_new | new_origin
-    crit = diff & self.profile_critical
-    for elem in crit:
+    if len(self.profile_critical) == 0:
+      return self.get_diff(other, result)
+
+    intersect = self.profile_critical.intersection(profile_diff_set)
+    diff_new = profile_diff_set - intersect
+    crit_fail = self.profile_critical - profile_diff_set
+    for elem in intersect:
       critical_pf.update(True, elem.critical_value)
-    crit_fail = (diff | self.profile_critical) - crit
     for elem in crit_fail:
       critical_pf.update(False, elem.critical_value)
+    for dn in diff_new:
+      critical_pf.update(False, 1)
     return critical_pf
 
 class MSVEnvVar:
