@@ -94,7 +94,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       if state.use_fl:
         adjusted_pf = PassFail()
         adjusted_pf.update_with_pf(file_info.pf)
-        adjusted_pf.update(True, file_info.fl_score)
+        adjusted_pf.update(file_info.fl_score > 0, file_info.fl_score)
         p1.append(adjusted_pf)
       else:
         p1.append(file_info.pf)
@@ -113,7 +113,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       if state.use_fl:
         adjusted_pf = PassFail()
         adjusted_pf.update_with_pf(line_info.pf)
-        adjusted_pf.update(True, line_info.fl_score)
+        adjusted_pf.update(line_info.fl_score > 0, line_info.fl_score)
         p1.append(adjusted_pf)
       else:
         p1.append(line_info.pf)

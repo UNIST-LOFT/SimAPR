@@ -74,7 +74,7 @@ def parse_args(argv: list) -> MSVState:
     state.use_condition_synthesis=False
     state.use_fl=False
     state.use_hierarchical_selection=False
-    state.use_multi_line=False # prophet only runs 1-line patch
+    state.use_multi_line=1 # prophet only runs 1-line patch
     state.use_fixed_beta=False
     state.use_cpr_space=False
     state.max_parallel_cpu=1 # prophet doesn't run parallel
@@ -101,15 +101,16 @@ def set_logger(state: MSVState) -> logging.Logger:
 def read_info(state: MSVState) -> None:
   with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
     info = json.load(f)
-    priority=info['priority']
+    max_value = 10
 
     def get_score(file,line):
-      for object in priority:
+      for object in info['priority']:
         if object['file']==file and object['line']==line:
           return float(object['score'])
       assert False
 
     #file_map = state.patch_info_map
+    max_priority = info['priority'][0]['score']
     file_list = state.patch_info_list
     for file in info['rules']:
       if len(file['lines']) == 0:
@@ -122,9 +123,10 @@ def read_info(state: MSVState) -> None:
           continue
         line_info = LineInfo(file_info, int(line['line']))
         line_info.fl_score=get_score(file_info.file_name,line_info.line_number)
+        line_info.fl_score = line_info.fl_score / max_priority * max_value
         if file_info.fl_score<line_info.fl_score:
           file_info.fl_score=line_info.fl_score
-        
+    
         line_list.append(line_info)
         switch_list = line_info.switch_info_list
         for switches in line['switches']:
