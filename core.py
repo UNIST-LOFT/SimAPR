@@ -480,9 +480,13 @@ class PatchInfo:
               node.parent.left=next
             elif node.parent.right is node:
               node.parent.right=next
-          if len(node.variable.constant_info_list) == 0:
-            self.operator_info.temp_variable_info_list.append(node.variable)
-            self.operator_info.variable_info_list.remove(node.variable)   
+
+          is_remove=True
+          for var in self.operator_info.variable_info_list:
+            if len(var.constant_info_list)>0:
+              is_remove=False
+          if is_remove:
+            self.case_info.operator_info_list.remove(self.operator_info)
 
       if len(self.case_info.operator_info_list) == 0:
         self.type_info.case_info_list.remove(self.case_info)

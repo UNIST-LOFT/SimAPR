@@ -168,6 +168,8 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
   for case_info in selected_type_info.case_info_list:
     if is_rand:
       p1.append(pf_rand.expect_probability())
+    elif not state.use_condition_synthesis and len(selected_patch)>0 and not case_info.processed: # do not select multi-line patch if patch is not processed at prophet cond syn
+      p1.append(-1)
     else:
       p1.append(case_info.pf.expect_probability())
       p2.append(case_info.critical_pf.expect_probability())
@@ -240,8 +242,8 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     for var_info in selected_operator_info.variable_info_list:
       # If variable has no constant, skip
       if len(var_info.constant_info_list) == 0:
-        continue
-      if is_rand:
+        p1.append(-1)
+      elif is_rand:
         p1.append(pf_rand.expect_probability())
       else:
         p1.append(var_info.pf.expect_probability())

@@ -642,7 +642,7 @@ class MyCondition:
       return None
 
     values=self.collect_value(f"/tmp/{self.patch.switch_info.switch_number}-{self.patch.case_info.case_number}.tmp",record)
-    if values is None:
+    if values is None or len(values)==0:
       self.state.msv_logger.warn(f'No values found')
       result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0])
       result_handler.append_result(self.state, [self.patch], False)
