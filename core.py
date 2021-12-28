@@ -476,12 +476,15 @@ class PatchInfo:
                   break
                 else:
                   current=current.right
-            if node.parent is None:
+          if node.parent is None:
+            if next is None:
               node.variable.constant_info_list.clear()
-            elif node.parent.left is node:
-              node.parent.left=next
-            elif node.parent.right is node:
-              node.parent.right=next
+            else:
+              node.variable.constant_info_list[0]=next
+          elif node.parent.left is node:
+            node.parent.left=next
+          elif node.parent.right is node:
+            node.parent.right=next
 
           is_remove=True
           for var in self.operator_info.variable_info_list:

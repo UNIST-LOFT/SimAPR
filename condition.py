@@ -468,60 +468,11 @@ class MyCondition:
             else:
               assert False
 
-  def remove_same_record(self,record:list,values:list,node:ConstantInfo,test_result:bool) -> None:
-    current_var=node.variable
-    if check_expr(record,values[current_var.variable],node.variable.parent.operator_type,node.constant_value):
-      self.state.msv_logger.debug(f'Remove {node.variable.parent.operator_type.value}, {node.variable.variable}, {node.constant_value}')
-      result_handler.update_result(self.state, [self.patch], test_result, 1, self.state.negative_test[0])
-      result_handler.append_result(self.state, [self.patch], test_result)
-
-      next=None
-      if node.left is None and node.right is None:
-        next=None
-      elif node.left is None and node.right is not None:
-        next=node.right
-        next.parent=node.parent
-      elif node.left is not None and node.right is None:
-        next=node.left
-        next.parent=node.parent
-      else:
-        next=node.left
-        next.parent=node.parent
-
-        target=node.right
-        current=next
-        while current is not None:
-          if target.constant_value<current.constant_value:
-            if current.left is None:
-              current.left=target
-              target.parent=current
-              break
-            else:
-              current=current.left
-          else:
-            if current.right is None:
-              current.right=target
-              target.parent=current
-              break
-            else:
-              current=current.right
-
-      if node.parent is None:
-        node.variable.constant_info_list.clear()
-        if next is not None:
-          self.remove_same_record(record,values,next,test_result)
-      elif node.parent.left is node:
-        node.parent.left=next
-        self.remove_same_record(record,values,node.parent,test_result)
-      elif node.parent.right is node:
-        node.parent.right=next
-        self.remove_same_record(record,values,node.parent,test_result)
-
-    else:
-      if node.left is not None:
-        self.remove_same_record(record,values,node.left,test_result)
-      if node.right is not None:
-        self.remove_same_record(record,values,node.right,test_result)
+  def remove_same_record(self,conditions:List[ConstantInfo],result:bool) -> None:
+    for cond in conditions:
+      result_handler.remove_patch(self.state,[PatchInfo(cond.variable.parent.parent,cond.variable.parent,cond.variable,cond)])
+      result_handler.update_result(self.state, [self.patch], True, 1, self.state.negative_test[0])
+      result_handler.append_result(self.state, [self.patch], result)
 
   def get_same_record(self,record:list,values:list,node:ConstantInfo,conditions:List[ConstantInfo]):
     current_var=node.variable
@@ -573,9 +524,9 @@ class MyCondition:
     self.state.msv_logger.info(f'Pass test {"pass" if pass_result else "fail"} with {patch[0].to_str()}')
     conditions.remove(target)
     result_handler.remove_patch(self.state,patch)
-    result_handler.update_result(self.state, [self.patch], True, 1, self.state.negative_test[0])
-    result_handler.update_result_positive(self.state, [self.patch], pass_result, fail_tests)
-    result_handler.append_result(self.state, [self.patch], pass_result,pass_result)
+    result_handler.update_result(self.state, patch, True, 1, self.state.negative_test[0])
+    result_handler.update_result_positive(self.state, patch, pass_result, fail_tests)
+    result_handler.append_result(self.state, patch, pass_result,pass_result)
 
     ## if pass, remove from tree
     if pass_result:
@@ -610,9 +561,9 @@ class MyCondition:
           self.state.msv_logger.info(f"Test {str(fail_tests)} fail with {patch_next[0].to_str()}")
           conditions.remove(condition)
           result_handler.remove_patch(self.state,patch_next)
-          result_handler.update_result(self.state, [self.patch], True, 1, self.state.negative_test[0])
-          result_handler.update_result_positive(self.state, [self.patch], result, fail_tests)
-          result_handler.append_result(self.state, [self.patch], True,result)
+          result_handler.update_result(self.state, patch_next, True, 1, self.state.negative_test[0])
+          result_handler.update_result_positive(self.state, patch_next, result, fail_tests)
+          result_handler.append_result(self.state, patch_next, True,result)
 
         else:
           self.state.msv_logger.debug(result_str)
@@ -629,9 +580,9 @@ class MyCondition:
             self.state.msv_logger.info(f"Test {str(fail_tests)} fail with {patch_next[0].to_str()}")
             conditions.remove(condition)
             result_handler.remove_patch(self.state,patch_next)
-            result_handler.update_result(self.state, [self.patch], True, 1, self.state.negative_test[0])
-            result_handler.update_result_positive(self.state, [self.patch], result, fail_tests)
-            result_handler.append_result(self.state, [self.patch], True,result)
+            result_handler.update_result(self.state, patch_next, True, 1, self.state.negative_test[0])
+            result_handler.update_result_positive(self.state, patch_next, result, fail_tests)
+            result_handler.append_result(self.state, patch_next, True,result)
 
       self.remove_by_pass_test(conditions,root)
     
@@ -661,11 +612,11 @@ class MyCondition:
       if len(var.constant_info_list)==0 or var.constant_info_list[0] is None:
         var.constant_info_list.clear()
         continue
+      conditions=[]
+      self.get_same_record(record,values,var.constant_info_list[0],conditions)
       if not self.state.use_pass_test or not result:
-        self.remove_same_record(record,values,var.constant_info_list[0],result)
+        self.remove_same_record(conditions,result)
       else:
-        conditions=[]
-        self.get_same_record(record,values,var.constant_info_list[0],conditions)
         self.remove_by_pass_test(conditions,var.constant_info_list[0])
 
 def check_expr(record,values,operator,constant) -> bool:
