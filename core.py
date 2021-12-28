@@ -80,6 +80,8 @@ class PassFail:
         total += p
     rand = random.random() * total
     for i in range(len(probability)):
+      if probability[i] < 0:
+        continue
       rand -= probability[i]
       if rand <= 0:
         return i
