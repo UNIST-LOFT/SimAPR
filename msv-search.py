@@ -74,7 +74,7 @@ def parse_args(argv: list) -> MSVState:
     state.use_condition_synthesis=False
     state.use_fl=False
     state.use_hierarchical_selection=False
-    state.use_multi_line=False # prophet only runs 1-line patch
+    state.use_multi_line=1 # prophet only runs 1-line patch
     state.use_fixed_beta=False
     state.use_cpr_space=False
     state.max_parallel_cpu=1 # prophet doesn't run parallel
@@ -130,6 +130,9 @@ def read_info(state: MSVState) -> None:
         for switches in line['switches']:
           if len(switches['types']) == 0:
             continue
+          if state.use_cpr_space:
+            if len(switches['types'][PatchType.ConditionKind.value])==0:
+              continue
           switch_info = SwitchInfo(line_info, int(switches['switch']))
           switch_list.append(switch_info)
           types = switches['types']
@@ -144,9 +147,10 @@ def read_info(state: MSVState) -> None:
               case_list = type_info.case_info_list
               for c in types[t.value]:
                 is_condition = t.value == PatchType.TightenConditionKind.value or t.value==PatchType.LoosenConditionKind.value or t.value==PatchType.IfExitKind.value or \
-                            t.value==PatchType.GuardKind.value or t.value==PatchType.SpecialGuardKind.value
+                            t.value==PatchType.GuardKind.value or t.value==PatchType.SpecialGuardKind.value or t.value==PatchType.ConditionKind
                 case_info = CaseInfo(type_info, int(c), is_condition)
-                case_list.append(case_info)
+                if not state.use_cpr_space or type_info.patch_type==PatchType.ConditionKind: # CPR only includes ConditionKind
+                  case_list.append(case_info)
                 state.switch_case_map[f"{switch_info.switch_number}-{case_info.case_number}"] = case_info
     for priority in info['priority']:
       temp_file: str = priority["file"]

@@ -30,6 +30,7 @@ class PatchType(Enum):
   ReplaceKind = 6
   ReplaceStringKind = 7
   AddAndReplaceKind = 8
+  ConditionKind=9
   Original = 31
 
 class OperatorType(Enum):

@@ -28,7 +28,7 @@ def write_record_terminate(temp_file: str) -> None:
   file.write(' 0')
   file.close()
 
-def parse_value(log_file: str) -> List[int]:
+def parse_value(log_file: str) -> List[List[int]]:
   try:
     file=open(log_file,'r')
     values=[]
@@ -411,7 +411,7 @@ class MyCondition:
     
     return result,record
 
-  def collect_value(self, temp_file: str, record: List[int]) -> List[int]:
+  def collect_value(self, temp_file: str, record: List[int]) -> List[List[int]]:
     selected_test=self.fail_test[0]
     write_record(temp_file,record)
     log_file=f"/tmp/{self.patch.switch_info.switch_number}-{self.patch.case_info.case_number}.log"
@@ -438,13 +438,8 @@ class MyCondition:
 
     return parse_value(log_file)
 
-  def extend_bst(self, values: List[int]) -> None:
-    import numpy as np
-
-    values_arr=np.array(values)
-    values_t=values_arr.transpose() # transpose: to [atom][value]
-
-    for i,atom in enumerate(values_t):
+  def extend_bst(self, values: List[List[int]]) -> None:
+    for i,atom in enumerate(values):
       current_var=self.patch.operator_info.variable_info_list[i]
       for const in atom:
         if -1000<const<1000 and const not in current_var.used_const:
@@ -654,21 +649,20 @@ class MyCondition:
       result_handler.remove_patch(self.state, [self.patch])
       return None
 
-    self.state.msv_logger.info(f'Extending BST')
-    self.extend_bst(values)
-    import numpy as np
+    # CPR use concrete constant: -10 ≤ c ≤ 10
+    if not self.state.use_cpr_space:
+      self.state.msv_logger.info(f'Extending BST')
+      self.extend_bst(values)
 
-    values_arr=np.array(values)
-    values_t=values_arr.transpose() # transpose: to [atom][value]
     for var in self.patch.operator_info.variable_info_list:
       if len(var.constant_info_list)==0 or var.constant_info_list[0] is None:
         var.constant_info_list.clear()
         continue
       if not self.state.use_pass_test or not result:
-        self.remove_same_record(record,values_t,var.constant_info_list[0],result)
+        self.remove_same_record(record,values,var.constant_info_list[0],result)
       else:
         conditions=[]
-        self.get_same_record(record,values_t,var.constant_info_list[0],conditions)
+        self.get_same_record(record,values,var.constant_info_list[0],conditions)
         self.remove_by_pass_test(conditions,var.constant_info_list[0])
 
 def check_expr(record,values,operator,constant) -> bool:

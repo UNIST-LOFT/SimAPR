@@ -262,6 +262,10 @@ def select_patch(state: MSVState, mode: MSVMode) -> List[PatchInfo]:
     result = select_patch_guided(state, mode,selected_patch)
     selected_patch.append(result)
 
+    # if use prophet condition and cond syn not done, do not select multi patch
+    if not state.use_condition_synthesis and result.case_info.is_condition and not result.case_info.processed:
+      break
+
     PROB_NEXT_PATCH=10
     prob=random.randint(0,99)
     if prob>=PROB_NEXT_PATCH:
