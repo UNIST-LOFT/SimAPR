@@ -18,7 +18,7 @@ from msv import MSV
 
 def parse_args(argv: list) -> MSVState:
   longopts = ["help", "outdir=", "workdir=", "timeout=", "msvpath=", "time-limit=", "cycle-limit=",
-              "mode=", "max-parallel-cpu=",'skip-valid','use-fixed-beta',
+              "mode=", "max-parallel-cpu=",'skip-valid','use-fixed-beta','use-cpr-space',
               "use-condition-synthesis", "use-fl", "use-hierarchical-selection=", "use-pass-test",
               "multi-line=", "prev-result", "sub-node=", "main-node"]
   opts, args = getopt.getopt(argv[1:], "ho:w:p:t:m:c:j:T:E:M:S:", longopts)
@@ -151,11 +151,21 @@ def read_info(state: MSVState) -> None:
               case_list = type_info.case_info_list
               for c in types[t.value]:
                 is_condition = t.value == PatchType.TightenConditionKind.value or t.value==PatchType.LoosenConditionKind.value or t.value==PatchType.IfExitKind.value or \
-                            t.value==PatchType.GuardKind.value or t.value==PatchType.SpecialGuardKind.value or t.value==PatchType.ConditionKind
+                            t.value==PatchType.GuardKind.value or t.value==PatchType.SpecialGuardKind.value or t.value==PatchType.ConditionKind.value
                 case_info = CaseInfo(type_info, int(c), is_condition)
                 if not state.use_cpr_space or type_info.patch_type==PatchType.ConditionKind: # CPR only includes ConditionKind
                   case_list.append(case_info)
                 state.switch_case_map[f"{switch_info.switch_number}-{case_info.case_number}"] = case_info
+
+              if len(type_info.case_info_list)==0:
+                type_list.remove(type_info)
+
+          if len(switch_info.type_info_list)==0:
+            switch_list.remove(switch_info)
+        if len(line_info.switch_info_list)==0:
+          line_list.remove(line_info)
+      if len(file_info.line_info_list)==0:
+        file_list.remove(file_info)
     for priority in info['priority']:
       temp_file: str = priority["file"]
       temp_line: int = priority["line"]

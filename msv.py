@@ -159,12 +159,11 @@ class MSV:
   def run(self) -> None:
     self.initialize()
     while self.is_alive():
-      for neg in self.state.negative_test:
-        patch = select_patch.select_patch(self.state, self.state.mode)
-        run_result = self.run_test(patch, neg)
-        # self.update_result(patch, run_result, 1, neg)
-        # self.append_result(patch, run_result)
-        # self.remove_patch(patch)
+      patch = select_patch.select_patch(self.state, self.state.mode)
+      run_result = self.run_test(patch, self.state.negative_test[0])
+      # self.update_result(patch, run_result, 1, neg)
+      # self.append_result(patch, run_result)
+      # self.remove_patch(patch)
       
 def run_pass_test(state: MSVState, patch: List[PatchInfo], pass_tests: List[int] = [],is_initialize:bool=False) -> Tuple[bool, Set[int]]:
   MAX_TEST_ONCE=1000
