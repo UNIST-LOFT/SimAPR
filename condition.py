@@ -301,6 +301,9 @@ class ProphetCondition:
       operators.append(new_operator)
 
     available_const=[]
+    if len(values[0]) == 0:
+      del values[0]
+
     for _ in range(len(values[0])):
       available_const.append(set())
 

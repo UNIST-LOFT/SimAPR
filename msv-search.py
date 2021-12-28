@@ -142,7 +142,7 @@ def read_info(state: MSVState) -> None:
           types = switches['types']
           type_list = switch_info.type_info_list
           for t in PatchType:
-            if t == PatchType.Original:
+            if t == PatchType.Original or t == PatchType.ConditionKind:
               continue
             if len(types[t.value]) > 0:
               type_info = TypeInfo(switch_info, t)
@@ -227,10 +227,10 @@ def copy_previous_results(state: MSVState) -> None:
 
 def main(argv: list):
   state = parse_args(argv)
+  copy_previous_results(state)
   state.msv_logger = set_logger(state)
   read_info(state)
   read_repair_conf(state)
-  copy_previous_results(state)
   state.msv_logger.info('Initialized!')
   msv = MSV(state)
   state.msv_logger.info('MSV is started')
