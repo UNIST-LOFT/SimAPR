@@ -84,34 +84,7 @@ class MSV:
 
           if self.state.use_pass_test:
             self.state.msv_logger.info("Run pass test!")
-            MAX_TEST_ONCE=1000
-            total_test=len(self.state.negative_test)-1+len(self.state.positive_test)
-            group_num=total_test//MAX_TEST_ONCE
-            remain_num=total_test%MAX_TEST_ONCE
-            pass_result=True
-            fail_tests = set()
-            for i in range(group_num):
-              tests=[]
-              start=i*MAX_TEST_ONCE
-              for j in range(MAX_TEST_ONCE):
-                index=start+j
-                if index<total_test:
-                  if index<len(self.state.negative_test)-1:
-                    tests.append(str(self.state.negative_test[index+1]))
-                  else:
-                    tests.append(str(self.state.positive_test[index-len(self.state.negative_test)-1]))
-              (pass_result, fail_tests)=run_pass_test(self.state,selected_patch,tests)
-            if pass_result:
-              tests=[]
-              start=group_num*MAX_TEST_ONCE
-              for j in range(remain_num):
-                index=start+j
-                if index<total_test:
-                  if index<len(self.state.negative_test)-1:
-                    tests.append(str(self.state.negative_test[index+1]))
-                  else:
-                    tests.append(str(self.state.positive_test[index-len(self.state.negative_test)-1]))
-              (pass_result, fail_tests)=run_pass_test(self.state,selected_patch,tests)
+            (pass_result, fail_tests)=run_pass_test(self.state, selected_patch, False)
             result_handler.update_result(self.state, selected_patch, True, 1, selected_test)
             result_handler.update_result_positive(self.state, selected_patch, pass_result, fail_tests)
             result_handler.append_result(self.state, selected_patch, True,pass_result)
@@ -150,12 +123,24 @@ class MSV:
         if end > total_test:
           end = total_test
         self.state.msv_logger.info(f"Validating {start}-{end}")
-        result, fail = run_pass_test(self.state, [patch], pass_tests=self.state.positive_test[start:end],is_initialize=True)
+        result, fail = run_pass_test(self.state, [patch], is_initialize=True, pass_tests=self.state.positive_test[start:end])
         fail_tests.update(fail)
       for fail in fail_tests:
         self.state.msv_logger.warning(f"Removing failed pass test: {fail}")
         self.state.positive_test.remove(fail)
-
+      # Save the validation result for the later use
+      self.state.msv_logger.info(f"Saving validation result to {os.path.join(self.state.out_dir, 'new.revlog')}")
+      with open(os.path.join(self.state.out_dir, "new.revlog"), 'w') as f:
+        f.write("-\n-\n")
+        f.write(f"Diff Cases: Tot {len(self.state.negative_test)}\n")
+        for nt in self.state.negative_test:
+          f.write(f"{nt} ")
+        f.write("\n")
+        f.write(f"Positive Cases: Tot {len(self.state.positive_test)}\n")
+        for pt in self.state.positive_test:
+          f.write(f"{pt} ")
+        f.write("\n")
+        f.write("Regression Cases: Tot 0\n")
   def run(self) -> None:
     self.initialize()
     while self.is_alive():
@@ -165,25 +150,35 @@ class MSV:
       # self.append_result(patch, run_result)
       # self.remove_patch(patch)
       
-def run_pass_test(state: MSVState, patch: List[PatchInfo], pass_tests: List[int] = [],is_initialize:bool=False) -> Tuple[bool, Set[int]]:
+def run_pass_test(state: MSVState, patch: List[PatchInfo], is_initialize: bool = False, pass_tests: List[int] = []) -> Tuple[bool, Set[int]]:
   MAX_TEST_ONCE=1000
   state.msv_logger.info(f"@{state.cycle} Run pass test with {PatchInfo.list_to_str(patch)}")
   total_test = len(state.positive_test)
   group_num = (total_test + MAX_TEST_ONCE - 1) // MAX_TEST_ONCE
+  if len(state.failed_positive_test) > 0:
+    group_num += 1
   if len(pass_tests) > 0:
     group_num = 1
   args=state.args
-  args = args[0:1] + ['-i', patch[0].to_str(),'-j',str(state.max_parallel_cpu) if not is_initialize and not state.mode==MSVMode.prophet else str(1)] + args[1:]
+  args = args[0:1] + ['-i', patch[0].to_str(), '-j', str(state.max_parallel_cpu)] + args[1:]
   for i in range(group_num):
     tests = list()
     if len(pass_tests) > 0:
       for test in pass_tests:
         tests.append(str(test))
     else:
-      start=i*MAX_TEST_ONCE
-      end = min(start + MAX_TEST_ONCE, total_test)
-      for j in range(start, end):
-        tests.append(str(state.negative_test[j]))
+      if i == 0:
+        # For the first group, use failed positive tests
+        # tests.extend(state.negative_test[1:])
+        if len(state.failed_positive_test) > 0:
+          tests.extend(state.failed_positive_test)
+      else:
+        start = i * MAX_TEST_ONCE
+        end = min(start + MAX_TEST_ONCE, total_test)
+        for j in range(start, end):
+          t = state.positive_test[j]
+          if t not in state.failed_positive_test:
+            tests.append(str(t))
     current_args = args + tests
     state.msv_logger.debug(' '.join(current_args))
 
@@ -215,6 +210,8 @@ def run_pass_test(state: MSVState, patch: List[PatchInfo], pass_tests: List[int]
       if s not in results:
         result=False
         return_tests.add(int(s))
+        if not is_initialize:
+          state.failed_positive_test.add(int(s))
     if not result:
       state.msv_logger.warning(f"Result: FAIL at {return_tests}")
       return False,return_tests

@@ -492,35 +492,7 @@ class MyCondition:
     from msv import run_pass_test
 
     patch=[PatchInfo(target.variable.parent.parent,target.variable.parent,target.variable,target)]
-    MAX_TEST_ONCE=1000
-    total_test=len(self.state.negative_test)-1+len(self.state.positive_test)
-    group_num=total_test//MAX_TEST_ONCE
-    remain_num=total_test%MAX_TEST_ONCE
-    fail_tests = set()
-    pass_result=True
-    for i in range(group_num):
-      tests=[]
-      start=i*MAX_TEST_ONCE
-      for j in range(MAX_TEST_ONCE):
-        index=start+j
-        if index<total_test:
-          if index<len(self.state.negative_test)-1:
-            tests.append(str(self.state.negative_test[index+1]))
-          else:
-            tests.append(str(self.state.positive_test[index-len(self.state.negative_test)-1]))
-      (pass_result, fail_tests)=run_pass_test(self.state,patch,tests)
-    if pass_result:
-      tests=[]
-      start=group_num*MAX_TEST_ONCE
-      for j in range(remain_num):
-        index=start+j
-        if index<total_test:
-          if index<len(self.state.negative_test)-1:
-            tests.append(str(self.state.negative_test[index+1]))
-          else:
-            tests.append(str(self.state.positive_test[index-len(self.state.negative_test)-1]))
-      (pass_result, fail_tests)=run_pass_test(self.state,patch,tests)
-
+    (pass_result, fail_tests) = run_pass_test(self.state, patch, False)
     self.state.msv_logger.info(f'Pass test {"pass" if pass_result else "fail"} with {patch[0].to_str()}')
     conditions.remove(target)
     result_handler.remove_patch(self.state,patch)

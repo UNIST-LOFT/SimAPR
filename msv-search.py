@@ -141,8 +141,8 @@ def read_info(state: MSVState) -> None:
           switch_list.append(switch_info)
           types = switches['types']
           type_list = switch_info.type_info_list
-          for t in PatchType:
-            if t == PatchType.Original or t == PatchType.ConditionKind:
+          for t in PatchType: 
+            if t == PatchType.Original or t.value >= len(types):
               continue
             if len(types[t.value]) > 0:
               type_info = TypeInfo(switch_info, t)
@@ -213,17 +213,17 @@ def read_repair_conf(state: MSVState) -> None:
       state.positive_test.append(int(test))
 
 def copy_previous_results(state: MSVState) -> None:
-  result_json = os.path.join(state.out_dir, "msv-result.json")
   result_log = os.path.join(state.out_dir, "msv-search.log")
+  result_json = os.path.join(state.out_dir, "msv-result.json")
   prefix = 0
-  if os.path.exists(result_json):
-    while os.path.exists(os.path.join(state.out_dir, f"bak{prefix}-msv-result.json")):
-      prefix += 1
-    shutil.copy(result_json, os.path.join(state.out_dir, f"bak{prefix}-msv-result.json"))
-    os.remove(result_json)
   if os.path.exists(result_log):
+    while os.path.exists(os.path.join(state.out_dir, f"bak{prefix}-msv-search.log")):
+      prefix += 1
     shutil.copy(result_log, os.path.join(state.out_dir, f"bak{prefix}-msv-search.log"))
     os.remove(result_log)
+  if os.path.exists(result_json):
+    shutil.copy(result_json, os.path.join(state.out_dir, f"bak{prefix}-msv-result.json"))
+    os.remove(result_json)
 
 def main(argv: list):
   state = parse_args(argv)
