@@ -71,12 +71,15 @@ class PassFail:
   def expect_probability(self,additional_score:float=0) -> float:
     return self.beta_mode(self.pass_count + 1.5+additional_score, self.fail_count + 2.0)
   @staticmethod
-  def select_by_probability(pf_list: list) -> int:   # pf_list: list of PassFail
-    probability=[]
-    probability = list(map(lambda x: x.expect_probability(), pf_list))
-    total = sum(probability)
+  def select_by_probability(probability: List[float]) -> int:   # pf_list: list of PassFail
+    # probability=[]
+    # probability = list(map(lambda x: x.expect_probability(), pf_list))
+    total = 0
+    for p in probability:
+      if p > 0:
+        total += p
     rand = random.random() * total
-    for i in range(len(pf_list)):
+    for i in range(len(probability)):
       rand -= probability[i]
       if rand <= 0:
         return i
@@ -219,6 +222,21 @@ class SwitchCase:
   def __eq__(self, other) -> bool:
     return self.switch_number == other.switch_number and self.case_number == other.case_number
 
+# Find with f"{file_name}:{line_number}"
+class FileLine:
+  def __init__(self, fi: FileInfo, li: LineInfo, score: float) -> None:
+    self.file_info = fi
+    self.line_info = li
+    self.score = score
+  def to_str(self) -> str:
+    return f"{self.file_info.file_name}:{self.line_info.line_number}"
+  def __str__(self) -> str:
+    return self.to_str()
+  def __hash__(self) -> int:
+    return hash(self.to_str())
+  def __eq__(self, other) -> bool:
+    return self.file_info == other.file_info and self.line_info == other.line_info
+
 class ProfileElement:
   def __init__(self, function: str, variable: str, value: int) -> None:
     self.function = function
@@ -232,18 +250,18 @@ class ProfileElement:
 
 class Profile:
   def __init__(self, state: 'MSVState', profile: str) -> None:
-    self.profile_critical = set()
-    self.profile_set = set()
+    self.profile_dict: Dict[ProfileElement, ProfileElement] = dict()
+    self.profile_critical_dict: Dict[ProfileElement, ProfileElement] = dict()
     state.msv_logger.debug(f"Profile: {profile}")
     profile_meta_filename = f"/tmp/{profile}_profile.log"
     with open(profile_meta_filename, "r") as pm:
-      for line in pm.readlines():
-        if line.startswith("#"):
+      for func in pm.readlines():
+        if func.startswith("#"):
           continue
-        line = line.strip()
-        if line == "":
+        func = func.strip()
+        if func == "":
           continue
-        profile_file = f"/tmp/{profile}_{line}_profile.log"
+        profile_file = f"/tmp/{profile}_{func}_profile.log"
         with open(profile_file, "r") as p:
           for line in p.readlines():
             if line.startswith("#"):
@@ -255,48 +273,78 @@ class Profile:
             if len(line_split) != 2:
               continue
             var = line_split[0].strip()
-            value = line_split[1].strip()
-            profile_elem = ProfileElement(line, var, value)
-            self.profile_set.add(profile_elem)
+            value = int(line_split[1].strip())
+            profile_elem = ProfileElement(func, var, value)
+            self.profile_dict[profile_elem] = profile_elem
+        if os.path.exists(profile_file):
+          os.remove(profile_file)
+    if os.path.exists(profile_meta_filename):
+      os.remove(profile_meta_filename)
+  
+  def diff(self, other: 'Profile', result: bool) -> Tuple[Set[ProfileElement], Set[ProfileElement]]:
+    profile_diff_set = set()
+    profile_same_set = set()
+    for profile_elem in self.profile_dict:
+      if profile_elem not in other.profile_dict:
+        profile_diff_set.add(profile_elem)
+      else:
+        if profile_elem.value != other.profile_dict[profile_elem].value:
+          profile_diff_set.add(profile_elem)
+        else:
+          profile_same_set.add(profile_elem)
+    for profile_elem in other.profile_dict:
+      if profile_elem not in self.profile_dict:
+        profile_diff_set.add(profile_elem)
+    return (profile_diff_set, profile_same_set)
 
   def get_diff(self, other: 'Profile', result: bool) -> PassFail:
     diff_pf = PassFail()
-    origin_new = self.profile_set - other.profile_set
-    new_origin = other.profile_set - self.profile_set
-    not_changed = self.profile_set & other.profile_set
-    on = len(origin_new)
-    diff_pf.update(True, on)
-    no = len(new_origin)
-    diff_pf.update(True, no)
-    nc = len(not_changed)
-    diff_pf.update(False, nc)
+    profile_diff_set = set()
+    profile_same_set = set()
+    for profile_elem in self.profile_dict:
+      if profile_elem not in other.profile_dict:
+        profile_diff_set.add(profile_elem)
+      else:
+        if profile_elem.value != other.profile_dict[profile_elem].value:
+          profile_diff_set.add(profile_elem)
+        else:
+          profile_same_set.add(profile_elem)
+    for pe in other.profile_dict:
+      if pe not in self.profile_dict:
+        profile_diff_set.add(pe)
+    diff = len(profile_diff_set)
+    same = len(profile_same_set)
+    diff_pf.update(True, diff)
+    diff_pf.update(False, same)
     return diff_pf
 
   def get_critical_diff(self, other: 'Profile', result: bool) -> PassFail:
     critical_pf = PassFail()
+    profile_diff_set, profile_same_set = self.diff(other, result)
     if result:
-      intersect = self.profile_critical.intersection(other.profile_set)
-      diff_new = other.profile_set - intersect
-      diff_original = self.profile_critical - intersect
-      for elem in intersect:
-        elem.critical_value += 1
-        critical_pf.update(True, elem.critical_value)
-      for elem in diff_new:
-        elem.critical_value = 1
-        critical_pf.update(True, elem.critical_value)
-        self.profile_critical.add(elem)
-      critical_pf.update(False, len(diff_original))
+      for elem in profile_diff_set:
+        if elem in self.profile_critical_dict:
+          self.profile_critical_dict[elem].critical_value += 1
+          critical_pf.update(True, self.profile_critical_dict[elem].critical_value)
+        else:
+          elem.critical_value = 1
+          self.profile_critical_dict[elem] = elem
+          critical_pf.update(True, 1)
+      for elem in self.profile_critical_dict:
+        if elem not in profile_diff_set:
+          critical_pf.update(False, self.profile_critical_dict[elem].critical_value)
       return critical_pf
-    origin_new = self.profile_set - other.profile_set
-    new_origin = other.profile_set - self.profile_set
-    not_changed = self.profile_set & other.profile_set
-    diff = origin_new | new_origin
-    crit = diff & self.profile_critical
-    for elem in crit:
-      critical_pf.update(True, elem.critical_value)
-    crit_fail = (diff | self.profile_critical) - crit
-    for elem in crit_fail:
-      critical_pf.update(False, elem.critical_value)
+    if len(self.profile_critical_dict) == 0:
+      return self.get_diff(other, result)
+    
+    for elem in self.profile_critical_dict:
+      if elem in profile_diff_set:
+        critical_pf.update(True, elem.critical_value)
+      else:
+        critical_pf.update(False, elem.critical_value)
+    for elem in profile_diff_set:
+      if elem not in self.profile_critical_dict:
+        critical_pf.update(False, 1)
     return critical_pf
 
 class MSVEnvVar:
@@ -537,6 +585,7 @@ class MSVState:
   positive_test: List[int]        # Positive test case
   profile_map: Dict[int, Profile] # test case number -> Profile (of original program)
   priority_list: List[Tuple[str, int, float]]  # (file_name, line_number, score)
+  priority_map: Dict[str, FileLine] # f"{file_name}:{line_number}" -> FileLine
   msv_result: List[dict]   # List of json object by MSVResult.to_json_object()
   failed_positive_test: Set[int] # Set of positive test that failed
   def __init__(self) -> None:
@@ -568,3 +617,4 @@ class MSVState:
     self.var_counts=dict()
     self.failed_positive_test = set()
     self.use_cpr_space=False
+    self.priority_map = dict()

@@ -9,6 +9,7 @@ import getopt
 from dataclasses import dataclass
 import logging
 from enum import Enum
+import shutil
 
 from core import *
 
@@ -101,15 +102,16 @@ def set_logger(state: MSVState) -> logging.Logger:
 def read_info(state: MSVState) -> None:
   with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
     info = json.load(f)
-    priority=info['priority']
+    max_value = 10
 
     def get_score(file,line):
-      for object in priority:
+      for object in info['priority']:
         if object['file']==file and object['line']==line:
           return float(object['score'])
       assert False
 
     #file_map = state.patch_info_map
+    max_priority = info['priority'][0]['score']
     file_list = state.patch_info_list
     for file in info['rules']:
       if len(file['lines']) == 0:
@@ -121,10 +123,12 @@ def read_info(state: MSVState) -> None:
         if len(line['switches']) == 0:
           continue
         line_info = LineInfo(file_info, int(line['line']))
-        line_info.fl_score=get_score(file_info.file_name,line_info.line_number)
+        score=get_score(file_info.file_name,line_info.line_number)
+        line_info.fl_score = score / max_priority * max_value
         if file_info.fl_score<line_info.fl_score:
           file_info.fl_score=line_info.fl_score
-        
+        state.priority_map[f"{file_info.file_name}:{line_info.line_number}"] = FileLine(file_info, line_info, score)
+    
         line_list.append(line_info)
         switch_list = line_info.switch_info_list
         for switches in line['switches']:
@@ -198,11 +202,25 @@ def read_repair_conf(state: MSVState) -> None:
     for test in line.strip().split():
       state.positive_test.append(int(test))
 
+def copy_previous_results(state: MSVState) -> None:
+  result_json = os.path.join(state.out_dir, "msv-result.json")
+  result_log = os.path.join(state.out_dir, "msv-search.log")
+  prefix = 0
+  if os.path.exists(result_json):
+    while os.path.exists(os.path.join(state.out_dir, f"bak{prefix}-msv-result.json")):
+      prefix += 1
+    shutil.copy(result_json, os.path.join(state.out_dir, f"bak{prefix}-msv-result.json"))
+    os.remove(result_json)
+  if os.path.exists(result_log):
+    shutil.copy(result_log, os.path.join(state.out_dir, f"bak{prefix}-msv-search.log"))
+    os.remove(result_log)
+
 def main(argv: list):
   state = parse_args(argv)
   state.msv_logger = set_logger(state)
   read_info(state)
   read_repair_conf(state)
+  copy_previous_results(state)
   state.msv_logger.info('Initialized!')
   msv = MSV(state)
   state.msv_logger.info('MSV is started')

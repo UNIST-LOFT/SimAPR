@@ -22,6 +22,8 @@ class MSV:
     self.state = state
 
   def is_alive(self) -> bool:
+    if len(self.state.patch_info_list) == 0:
+      self.state.is_alive = False
     if self.state.cycle_limit > 0 and self.state.cycle >= self.state.cycle_limit:
       self.state.is_alive = False
     elif self.state.time_limit > 0 and (time.time() - self.state.start_time) > self.state.time_limit:
