@@ -256,6 +256,9 @@ class Profile:
     self.profile_critical_dict: Dict[ProfileElement, ProfileElement] = dict()
     state.msv_logger.debug(f"Profile: {profile}")
     profile_meta_filename = f"/tmp/{profile}_profile.log"
+    if not os.path.exists(profile_meta_filename):
+      state.msv_logger.debug(f"Profile meta file not found: {profile_meta_filename}")
+      return
     with open(profile_meta_filename, "r") as pm:
       for func in pm.readlines():
         if func.startswith("#"):

@@ -363,22 +363,7 @@ class MyCondition:
         os.remove(log_file)
     except:
       pass
-
-    # args = self.state.args + [str(selected_test)]
-    # args = args[0:1] + ['-i', self.patch.to_str()] + args[1:]
-    # self.state.msv_logger.debug(' '.join(args))
-
     new_env = MSVEnvVar.get_new_env(self.state, [self.patch], selected_test,EnvVarMode.collect_neg)
-    # test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
-    # so: bytes
-    # se: bytes
-    # try:
-    #   so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
-    # except: # timeout
-    #   test_proc.kill()
-    #   so, se = test_proc.communicate()
-    #   self.state.msv_logger.info("Timeout!")
-    #   return None
     run_result, is_timeout = run_test.run_fail_test(self.state, [self.patch], selected_test, new_env)
     if is_timeout:
       return None
