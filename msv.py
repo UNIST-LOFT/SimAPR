@@ -15,6 +15,7 @@ from core import *
 import condition
 import select_patch
 import msv_result_handler as result_handler
+import run_test
 
 
 class MSV:
@@ -35,12 +36,6 @@ class MSV:
 
   # Run one test with selected_patch (which can be multiple patches)
   def run_test(self, selected_patch: List[PatchInfo], selected_test: int) -> bool:
-    self.state.cycle += 1
-    # set arguments
-    self.state.msv_logger.warning(f"@{self.state.cycle} Test [{selected_test}]  with {PatchInfo.list_to_str(selected_patch)}")
-    args = self.state.args + [str(selected_test)]
-    args = args[0:1] + ['-i', selected_patch[0].to_str()] + args[1:]
-    self.state.msv_logger.debug(' '.join(args))
 
     # prophet condition synthesis
     if selected_patch[0].case_info.is_condition and not self.state.use_condition_synthesis and \
@@ -63,44 +58,25 @@ class MSV:
       # set environment variables
       new_env = MSVEnvVar.get_new_env(self.state, selected_patch, selected_test)
       # run test
-      test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
-      so: bytes
-      se: bytes
-      try:
-        so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
-      except: # timeout
-        test_proc.kill()
-        so, se = test_proc.communicate()
-        self.state.msv_logger.info("Timeout!")
-      result_str = so.decode('utf-8').strip()
-      result = False
-      if result_str == "":
-        self.state.msv_logger.info("Result: FAIL")
-      else:
-        self.state.msv_logger.debug(result_str)
-        result = (int(result_str) == selected_test)
-        if result:
-          self.state.msv_logger.warning("Result: PASS")
+      run_result, is_timeout = run_test.run_fail_test(self.state, selected_patch, selected_test, new_env)
 
-          if self.state.use_pass_test:
-            self.state.msv_logger.info("Run pass test!")
-            (pass_result, fail_tests)=run_pass_test(self.state, selected_patch, False)
-            result_handler.update_result(self.state, selected_patch, True, 1, selected_test)
-            result_handler.update_result_positive(self.state, selected_patch, pass_result, fail_tests)
-            result_handler.append_result(self.state, selected_patch, True,pass_result)
-            result_handler.remove_patch(self.state, selected_patch)
-            self.state.msv_logger.info("Result: PASS" if pass_result else "Result: FAIL")
-        else:
-          self.state.msv_logger.warning("Result: FAIL")
+      if self.state.use_pass_test and run_result:
+        self.state.msv_logger.info("Run pass test!")
+        (pass_result, fail_tests) = run_test.run_pass_test(self.state, selected_patch, False)
+        result_handler.update_result(self.state, selected_patch, True, 1, selected_test)
+        result_handler.update_result_positive(self.state, selected_patch, pass_result, fail_tests)
+        result_handler.append_result(self.state, selected_patch, True,pass_result)
+        result_handler.remove_patch(self.state, selected_patch)
+        self.state.msv_logger.info("Result: PASS" if pass_result else "Result: FAIL")
       # Do not update result for original program
       if selected_patch[0].to_str_sw_cs() == "0-0":
-        return result
+        return run_result
       
-      if not result or not self.state.use_pass_test:
-        result_handler.update_result(self.state, selected_patch, result, 1, selected_test)
-        result_handler.append_result(self.state, selected_patch, result,False)
+      if not run_result or not self.state.use_pass_test:
+        result_handler.update_result(self.state, selected_patch, run_result, 1, selected_test)
+        result_handler.append_result(self.state, selected_patch, run_result,False)
         result_handler.remove_patch(self.state, selected_patch)
-      return result
+      return run_result
     
   def initialize(self) -> None:
     # run original program and get original profile
@@ -123,7 +99,7 @@ class MSV:
         if end > total_test:
           end = total_test
         self.state.msv_logger.info(f"Validating {start}-{end}")
-        result, fail = run_pass_test(self.state, [patch], is_initialize=True, pass_tests=self.state.positive_test[start:end])
+        result, fail = run_test.run_pass_test(self.state, [patch], is_initialize=True, pass_tests=self.state.positive_test[start:end])
         fail_tests.update(fail)
       for fail in fail_tests:
         self.state.msv_logger.warning(f"Removing failed pass test: {fail}")
@@ -149,70 +125,4 @@ class MSV:
       # self.update_result(patch, run_result, 1, neg)
       # self.append_result(patch, run_result)
       # self.remove_patch(patch)
-      
-def run_pass_test(state: MSVState, patch: List[PatchInfo], is_initialize: bool = False, pass_tests: List[int] = []) -> Tuple[bool, Set[int]]:
-  MAX_TEST_ONCE=1000
-  state.msv_logger.info(f"@{state.cycle} Run pass test with {PatchInfo.list_to_str(patch)}")
-  total_test = len(state.positive_test)
-  group_num = (total_test + MAX_TEST_ONCE - 1) // MAX_TEST_ONCE
-  if len(state.failed_positive_test) > 0:
-    group_num += 1
-  if len(pass_tests) > 0:
-    group_num = 1
-  args=state.args
-  args = args[0:1] + ['-i', patch[0].to_str(), '-j', str(state.max_parallel_cpu)] + args[1:]
-  for i in range(group_num):
-    tests = list()
-    if len(pass_tests) > 0:
-      for test in pass_tests:
-        tests.append(str(test))
-    else:
-      if i == 0:
-        # For the first group, use failed positive tests
-        # tests.extend(state.negative_test[1:])
-        if len(state.failed_positive_test) > 0:
-          tests.extend(state.failed_positive_test)
-      else:
-        start = i * MAX_TEST_ONCE
-        end = min(start + MAX_TEST_ONCE, total_test)
-        for j in range(start, end):
-          t = state.positive_test[j]
-          if t not in state.failed_positive_test:
-            tests.append(str(t))
-    current_args = args + tests
-    state.msv_logger.debug(' '.join(current_args))
 
-    new_env = MSVEnvVar.get_new_env(state, patch, int(tests[0]), set_tmp_file=False)
-    # run test
-    test_proc = subprocess.Popen(current_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
-    so: bytes
-    se: bytes
-    so, se = test_proc.communicate()
-
-    result_str = so.decode('utf-8').strip()
-    if result_str == "":
-      return_tests=set()
-      for test in tests:
-        return_tests.add(int(test))
-      state.msv_logger.info("Result: FAIL")
-      return False,return_tests
-
-    results=result_str.splitlines()
-    # Too many lines! Reduce to oneline...
-    debug_str = ""
-    for s in results:
-      debug_str += ' ' + s.strip()
-    state.msv_logger.debug(debug_str)
-
-    result=True
-    return_tests = set()
-    for s in tests:
-      if s not in results:
-        result=False
-        return_tests.add(int(s))
-        if not is_initialize:
-          state.failed_positive_test.add(int(s))
-    if not result:
-      state.msv_logger.warning(f"Result: FAIL at {return_tests}")
-      return False,return_tests
-  return True, set()

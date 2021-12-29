@@ -3,6 +3,7 @@ import subprocess
 from typing import List, Tuple, Dict
 from core import CaseInfo, ConstantInfo, EnvVarMode, MSVEnvVar, MSVState, OperatorInfo, OperatorType, PatchInfo, VariableInfo
 import msv_result_handler as result_handler
+import run_test
 
 def parse_record(temp_file: str) -> List[bool]:
   try:
@@ -79,35 +80,24 @@ class ProphetCondition:
     self.state=state
 
   def record(self) -> List[List[bool]]:
-    self.state.cycle+=1
     records=[]
     # set arguments
     for test in self.fail_test:
-      self.state.msv_logger.info(f"@{self.state.cycle} Record [{test}]  with {self.patch.to_str()}")
-      args = self.state.args + [str(test)]
-      args = args[0:1] + ['-i', self.patch.to_str()] + args[1:]
-      self.state.msv_logger.debug(' '.join(args))
-      # set environment variables
       patch=[self.patch]
       new_env = MSVEnvVar.get_new_env(self.state, patch, test,EnvVarMode.record_it)
       # run test
 
       temp_file=f"/tmp/{self.patch.switch_info.switch_number}-{self.patch.case_info.case_number}.tmp"
       try:
-        os.remove(temp_file)
+        if os.path.exists(temp_file):
+          os.remove(temp_file)
       except:
         pass
       result=False
       for i in range(10):
-        test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
-        so: bytes
-        se: bytes
-        try:
-          so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
-        except: # timeout
-          test_proc.kill()
-          so, se = test_proc.communicate()
-          self.state.msv_logger.info("Timeout!")
+        self.state.msv_logger.info(f"@{self.state.cycle + 1} Record [{test}]  with {self.patch.to_str()}")
+        run_result, is_timeout = run_test.run_fail_test(self.state, patch, test, new_env)
+        if is_timeout:
           return None
 
         record=parse_record(temp_file)
@@ -115,8 +105,7 @@ class ProphetCondition:
           break
         write_record_terminate(temp_file)
 
-        result_str = so.decode('utf-8').strip()
-        if str(test) in result_str:
+        if run_result:
           self.state.msv_logger.info(f"Pass in iteration! {test}")
           records.append(record)
           result=True
@@ -129,25 +118,17 @@ class ProphetCondition:
       if result:
         continue
       new_env = MSVEnvVar.get_new_env(self.state, patch, test,EnvVarMode.record_all_1)
-      test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
-      so: bytes
-      se: bytes
-      try:
-        so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
-      except: # timeout
-        test_proc.kill()
-        so, se = test_proc.communicate()
-        self.state.msv_logger.info("Timeout!")
+      run_result, is_timeout = run_test.run_fail_test(self.state, patch, test, new_env)
+      if is_timeout:
         return None
 
-      record=parse_record(temp_file)
+      record = parse_record(temp_file)
       if record is None:
         self.state.msv_logger.info(f'Empty record! {test}')
         return None
       write_record_terminate(temp_file)
 
-      result_str = so.decode('utf-8').strip()
-      if str(test) in result_str:
+      if run_result:
         self.state.msv_logger.info(f"Pass in all 1! {test}")
         records.append(record)
       else:
@@ -165,30 +146,16 @@ class ProphetCondition:
       cs = self.patch.case_info.case_number
       log_file=f"/tmp/{sw}-{cs}.log"
       try:
-        os.remove(log_file)
+        if os.path.exists(log_file):
+          os.remove(log_file)
       except:
         pass
-
-      # collect values from fail test
-      args = self.state.args + [str(test)]
-      args = args[0:1] + ['-i', f"{sw}-{cs}"] + args[1:]
-      self.state.msv_logger.debug(' '.join(args))
-
       patch=[self.patch]
       new_env = MSVEnvVar.get_new_env(self.state, patch, test,EnvVarMode.collect_neg)
-      test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
-      so: bytes
-      se: bytes
-      try:
-        so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
-      except: # timeout
-        test_proc.kill()
-        so, se = test_proc.communicate()
-        self.state.msv_logger.info("Timeout!")
+      run_result, is_timeout = run_test.run_fail_test(self.state, patch, test, new_env)
+      if is_timeout:
         values.append([])
-
-      result_str = so.decode('utf-8').strip()
-      if str(test) not in result_str:
+      if not run_result:
         self.state.msv_logger.warn("Terrible fail at collecting value!")
         values.append([])
       
@@ -198,33 +165,19 @@ class ProphetCondition:
       # collect values from pass test
       self.state.msv_logger.info('Collecting values from pass test')
       for test in self.state.positive_test:
-        args = self.state.args + [str(test)]
-        args = args[0:1] + ['-i', f"{sw}-{cs}"] + args[1:]
-        self.state.msv_logger.debug(' '.join(args))
-
         try:
-          os.remove(log_file)
+          if os.path.exists(log_file):
+            os.remove(log_file)
         except:
           pass
         patch=[self.patch]
         new_env = MSVEnvVar.get_new_env(self.state, patch, test,EnvVarMode.collect_pos)
-        test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
-        so: bytes
-        se: bytes
-        try:
-          so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
-          result_str = so.decode('utf-8').strip()
-          if str(test) not in result_str:
-            self.state.msv_logger.warn("Terrible fail at collecting value!")
-            values.append([])
-          else:
-            values.append(parse_value(log_file))
-        except: # timeout
-          test_proc.kill()
-          so, se = test_proc.communicate()
-          self.state.msv_logger.info("Timeout!")
+        run_result, is_timeout = run_test.run_fail_test(self.state, patch, test, new_env)
+        if run_result:
+          values.append(parse_value(log_file))
+        else:
+          self.state.msv_logger("Terrible fail at collecting value!")
           values.append([])
-
     return values
     
   def __check_condition(self, records: List[List[bool]], values: List[List[List[int]]], 
@@ -289,7 +242,7 @@ class ProphetCondition:
     MAGIC_NUMBER=-123456789
 
     # create empty operators/variables
-    operators=[]
+    operators: List[OperatorInfo]=[]
     for op in OperatorType:
       new_operator=OperatorInfo(self.patch.case_info,op)
       if op!=OperatorType.ALL_1:
@@ -372,45 +325,32 @@ class MyCondition:
     self.state=state
 
   def get_record(self) -> Tuple[bool, List[int]]:
-    self.state.cycle+=1
     # set arguments
     selected_test=self.fail_test[0]
-    self.state.msv_logger.info(f"@{self.state.cycle} Record [{selected_test}]  with {self.patch}")
-    args = self.state.args + [str(selected_test)]
-    args = args[0:1] + ['-i', str(self.patch)] + args[1:]
-    self.state.msv_logger.debug(' '.join(args))
+    self.state.msv_logger.info(f"@{self.state.cycle + 1} Record [{selected_test}]  with {self.patch}")
     # set environment variables
     patch=[self.patch]
     new_env = MSVEnvVar.get_new_env(self.state, patch, selected_test,EnvVarMode.basic)
     # run test
-
     temp_file=f"/tmp/{self.patch.switch_info.switch_number}-{self.patch.case_info.case_number}.tmp"
     try:
-      os.remove(temp_file)
+      if os.path.exists(temp_file):
+        os.remove(temp_file)
     except:
       pass
-
-    test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
-    so: bytes
-    se: bytes
-    try:
-      so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
-    except: # timeout
-      test_proc.kill()
-      so, se = test_proc.communicate()
-      self.state.msv_logger.info("Timeout!")
-      return False,None
+    
+    run_result, is_timeout = run_test.run_fail_test(self.state, patch, selected_test, new_env)
+    if is_timeout:
+      return False, None
 
     record=parse_record(temp_file)
     if record is None:
       return False,None
     write_record_terminate(temp_file)
-
-    result_str = so.decode('utf-8').strip()
-    result=False
-    if str(selected_test) in result_str:
+    result = False
+    if run_result:
       self.state.msv_logger.info("Result: PASS")
-      result=True
+      result = True
     
     return result,record
 
@@ -419,26 +359,29 @@ class MyCondition:
     write_record(temp_file,record)
     log_file=f"/tmp/{self.patch.switch_info.switch_number}-{self.patch.case_info.case_number}.log"
     try:
-      os.remove(log_file)
+      if os.path.exists(log_file):
+        os.remove(log_file)
     except:
       pass
 
-    args = self.state.args + [str(selected_test)]
-    args = args[0:1] + ['-i', self.patch.to_str()] + args[1:]
-    self.state.msv_logger.debug(' '.join(args))
+    # args = self.state.args + [str(selected_test)]
+    # args = args[0:1] + ['-i', self.patch.to_str()] + args[1:]
+    # self.state.msv_logger.debug(' '.join(args))
 
     new_env = MSVEnvVar.get_new_env(self.state, [self.patch], selected_test,EnvVarMode.collect_neg)
-    test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
-    so: bytes
-    se: bytes
-    try:
-      so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
-    except: # timeout
-      test_proc.kill()
-      so, se = test_proc.communicate()
-      self.state.msv_logger.info("Timeout!")
+    # test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
+    # so: bytes
+    # se: bytes
+    # try:
+    #   so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
+    # except: # timeout
+    #   test_proc.kill()
+    #   so, se = test_proc.communicate()
+    #   self.state.msv_logger.info("Timeout!")
+    #   return None
+    run_result, is_timeout = run_test.run_fail_test(self.state, [self.patch], selected_test, new_env)
+    if is_timeout:
       return None
-
     return parse_value(log_file)
 
   def extend_bst(self, values: List[List[int]]) -> None:
@@ -489,10 +432,9 @@ class MyCondition:
     if len(conditions)==0:
       return
     target=conditions[0]
-    from msv import run_pass_test
 
     patch=[PatchInfo(target.variable.parent.parent,target.variable.parent,target.variable,target)]
-    (pass_result, fail_tests) = run_pass_test(self.state, patch, False)
+    (pass_result, fail_tests) = run_test.run_pass_test(self.state, patch, False)
     self.state.msv_logger.info(f'Pass test {"pass" if pass_result else "fail"} with {patch[0].to_str()}')
     conditions.remove(target)
     result_handler.remove_patch(self.state,patch)
@@ -511,50 +453,18 @@ class MyCondition:
 
       for condition in cp_conds:
         patch_next=[PatchInfo(condition.variable.parent.parent,condition.variable.parent,condition.variable,condition)]
-        args = self.state.args + fail_test_str
-        args = args[0:1] + ['-i', patch_next[0].to_str()] + args[1:]
-        self.state.msv_logger.debug(' '.join(args))
         new_env = MSVEnvVar.get_new_env(self.state, patch_next, list(fail_tests)[0])
-
-        # run test
-        test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
-        so: bytes
-        se: bytes
-        try:
-          so, se = test_proc.communicate(timeout=(self.state.timeout/1000))
-        except: # timeout
-          test_proc.kill()
-          so, se = test_proc.communicate()
-          self.state.msv_logger.info("Timeout!")
-
-        result_str = so.decode('utf-8').strip()
+        run_result, fail_tests_retry = run_test.run_pass_test(self.state, patch_next, True, list(fail_tests))
         result = False
-        if result_str == "":
+        if not run_result:
           self.state.msv_logger.info(f"Test {str(fail_tests)} fail with {patch_next[0].to_str()}")
           conditions.remove(condition)
           result_handler.remove_patch(self.state,patch_next)
           result_handler.update_result(self.state, patch_next, True, 1, self.state.negative_test[0])
           result_handler.update_result_positive(self.state, patch_next, result, fail_tests)
           result_handler.append_result(self.state, patch_next, True,result)
-
         else:
-          self.state.msv_logger.debug(result_str)
-          results=result_str.splitlines()
-          result=True
-          for s in fail_test_str:
-            if s not in results:
-              result=False
-              break
-
-          if result:
-            self.state.msv_logger.info(f"Test {str(fail_tests)} pass with {patch_next[0].to_str()}")
-          else:
-            self.state.msv_logger.info(f"Test {str(fail_tests)} fail with {patch_next[0].to_str()}")
-            conditions.remove(condition)
-            result_handler.remove_patch(self.state,patch_next)
-            result_handler.update_result(self.state, patch_next, True, 1, self.state.negative_test[0])
-            result_handler.update_result_positive(self.state, patch_next, result, fail_tests)
-            result_handler.append_result(self.state, patch_next, True,result)
+          self.state.msv_logger.info(f"Test {str(fail_tests)} pass with {patch_next[0].to_str()}")
 
       self.remove_by_pass_test(conditions,root)
     
