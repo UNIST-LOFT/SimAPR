@@ -176,7 +176,7 @@ class ProphetCondition:
         if run_result:
           values.append(parse_value(log_file))
         else:
-          self.state.msv_logger("Terrible fail at collecting value!")
+          self.state.msv_logger.info("Terrible fail at collecting value!")
           values.append([])
     return values
     

@@ -18,7 +18,7 @@ from msv import MSV
 
 def parse_args(argv: list) -> MSVState:
   longopts = ["help", "outdir=", "workdir=", "timeout=", "msvpath=", "time-limit=", "cycle-limit=",
-              "mode=", "max-parallel-cpu=",'skip-valid','use-fixed-beta','use-cpr-space',
+              "mode=", "max-parallel-cpu=",'skip-valid', 'new-revlog=', 'use-fixed-beta','use-cpr-space',
               "use-condition-synthesis", "use-fl", "use-hierarchical-selection=", "use-pass-test",
               "multi-line=", "prev-result", "sub-node=", "main-node"]
   opts, args = getopt.getopt(argv[1:], "ho:w:p:t:m:c:j:T:E:M:S:", longopts)
@@ -64,6 +64,9 @@ def parse_args(argv: list) -> MSVState:
       state.use_fixed_beta=True
     elif o in ['--skip-valid']:
       state.skip_valid=True
+    elif o in ['--new-revlog']:
+      state.new_revlog = a
+      state.skip_valid = True
     elif o in ['--use-cpr-space']:
       state.use_cpr_space=True
   if sub_dir != "":
@@ -200,7 +203,10 @@ def read_repair_conf(state: MSVState) -> None:
       key = line.split("=")[0]
       value = line.split("=")[1]
       conf_dict[key] = value
-  with open(conf_dict["revision_file"], "r") as revision_file:
+  revlog = conf_dict['revision_file']
+  if state.new_revlog != "":
+    revlog = state.new_revlog
+  with open(revlog, "r") as revision_file:
     line = revision_file.readline()
     line = revision_file.readline()
     line = revision_file.readline()

@@ -591,6 +591,7 @@ class MSVState:
   time_limit: int
   cycle_limit: int
   max_parallel_cpu: int
+  new_revlog: str
   patch_info_map: Dict[str, FileInfo]  # fine_name: str -> FileInfo
   patch_info_list: List[FileInfo]      # Root of tree of patch data structure
   switch_case_map: Dict[str, CaseInfo] # f"{switch_number}-{case_number}" -> SwitchCase
@@ -619,6 +620,7 @@ class MSVState:
     self.time_limit = -1
     self.cycle_limit = -1
     self.max_parallel_cpu = 8
+    self.new_revlog = ""
     self.patch_info_map = dict()
     self.switch_case_map = dict()
     self.selected_patch = None
