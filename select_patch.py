@@ -241,12 +241,13 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     # Select variable
     for var_info in selected_operator_info.variable_info_list:
       # If variable has no constant, skip
-      if len(var_info.constant_info_list) == 0:
-        p1.append(-1)
-      elif is_rand:
+      if is_rand:
         p1.append(pf_rand.expect_probability())
       else:
-        p1.append(var_info.pf.expect_probability())
+        if len(var_info.constant_info_list) == 0:
+          p1.append(-1)
+        else:
+          p1.append(var_info.pf.expect_probability())
         p2.append(var_info.critical_pf.expect_probability())
         p3.append(var_info.positive_pf.expect_probability())
     selected_variable = select_by_probability_hierarchical(state, n, p1, p2, p3)
