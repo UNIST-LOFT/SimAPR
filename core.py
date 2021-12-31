@@ -627,3 +627,4 @@ class MSVState:
     self.failed_positive_test = set()
     self.use_cpr_space=False
     self.priority_map = dict()
+    self.use_fixed_const=False

@@ -203,19 +203,38 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
               new_var.constant_info_list.append(const_zero)
               new_var.used_const.add(0)
               current_const=const_zero
-              for j in range(-1,-11,-1):
-                const_left=ConstantInfo(new_var,j)
-                const_left.parent=current_const
-                current_const.left=const_left
-                current_const=const_left
-                new_var.used_const.add(j)
-              current_const=const_zero
-              for j in range(1,11):
-                const_right=ConstantInfo(new_var,j)
-                const_right.parent=current_const
-                current_const.right=const_right
-                current_const=const_right
-                new_var.used_const.add(j)
+
+              if state.use_cpr_space:
+                # use fixed constant(-10 ≤ c ≤ 10) for CPR search space
+                for j in range(-1,-11,-1):
+                  const_left=ConstantInfo(new_var,j)
+                  const_left.parent=current_const
+                  current_const.left=const_left
+                  current_const=const_left
+                  new_var.used_const.add(j)
+                current_const=const_zero
+                for j in range(1,11):
+                  const_right=ConstantInfo(new_var,j)
+                  const_right.parent=current_const
+                  current_const.right=const_right
+                  current_const=const_right
+                  new_var.used_const.add(j)
+              
+              elif state.use_fixed_const:
+                # use fixed constant(-100 ≤ c ≤ 100) for comparing with Prophet
+                for j in range(-1,-101,-1):
+                  const_left=ConstantInfo(new_var,j)
+                  const_left.parent=current_const
+                  current_const.left=const_left
+                  current_const=const_left
+                  new_var.used_const.add(j)
+                current_const=const_zero
+                for j in range(1,101):
+                  const_right=ConstantInfo(new_var,j)
+                  const_right.parent=current_const
+                  current_const.right=const_right
+                  current_const=const_right
+                  new_var.used_const.add(j)
               operator.variable_info_list.append(new_var)
             selected_case_info.operator_info_list.append(operator)
         

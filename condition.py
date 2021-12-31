@@ -303,14 +303,19 @@ class ProphetCondition:
     available_const=[]
     for _ in range(len(values[0])):
       available_const.append(set())
-
+      
     for test in values:
       # collect all available constants
       for i,var in enumerate(test):
-        for value in var:
-          ## Get available constants
-          if -1000 < value < 1000:
-            available_const[i].add(int(value))
+        if self.state.use_fixed_const:
+          # use fixed constant(-100 ≤ c ≤ 100) instead of constants from test execution
+          for i in range(-100,101):
+            available_const[i].add(i)
+        else:
+          for value in var:
+            ## Get available constants
+            if -1000 < value < 1000:
+              available_const[i].add(int(value))
     
     for var in available_const:
       if MAGIC_NUMBER in var:
@@ -601,7 +606,8 @@ class MyCondition:
       return None
 
     # CPR use concrete constant: -10 ≤ c ≤ 10
-    if not self.state.use_cpr_space:
+    # For comparing with Prophet, use fixed constant: -100 ≤ c ≤ 100
+    if not self.state.use_cpr_space and not self.state.use_fixed_const:
       self.state.msv_logger.info(f'Extending BST')
       self.extend_bst(values)
 
