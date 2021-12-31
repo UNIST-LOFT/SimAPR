@@ -105,7 +105,7 @@ def set_logger(state: MSVState) -> logging.Logger:
 def read_info(state: MSVState) -> None:
   with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
     info = json.load(f)
-    max_value = 10
+    max_value = 2
 
     def get_score(file,line):
       for object in info['priority']:
