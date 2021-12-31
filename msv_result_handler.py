@@ -39,8 +39,11 @@ def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result:
   result = MSVResult(state.cycle, tm_interval,
                      selected_patch, test_result,pass_test_result)
   state.msv_result.append(result.to_json_object())
-  if (tm - state.last_save_time) > save_interval:
-    save_result(state)
+  with open(os.path.join(state.out_dir, "msv-result.csv"), 'a') as f:
+    f.write(json.dumps(result.to_json_object()))
+    f.write("\n")
+  #if (tm - state.last_save_time) > save_interval:
+  #  save_result(state)
 
 def remove_patch(state: MSVState, patches: List[PatchInfo]) -> None:
   for patch in patches:

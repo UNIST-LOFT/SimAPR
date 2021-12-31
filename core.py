@@ -256,6 +256,9 @@ class Profile:
     self.profile_critical_dict: Dict[ProfileElement, ProfileElement] = dict()
     state.msv_logger.debug(f"Profile: {profile}")
     profile_meta_filename = f"/tmp/{profile}_profile.log"
+    if not os.path.exists(profile_meta_filename):
+      state.msv_logger.debug(f"Profile meta file not found: {profile_meta_filename}")
+      return
     with open(profile_meta_filename, "r") as pm:
       for func in pm.readlines():
         if func.startswith("#"):
@@ -379,6 +382,9 @@ class MSVEnvVar:
         new_env["IS_NEG"] = "RUN"
         if set_tmp_file:
           new_env["TMP_FILE"] = f"/tmp/{sw}-{cs}.tmp"
+        else:
+          # Do not use __PID
+          del new_env["__PID"]
         if patch_info.is_condition:
           new_env[f"__{sw}_{cs}__OPERATOR"] = str(patch_info.operator_info.operator_type.value)
           if not patch_info.operator_info.operator_type==OperatorType.ALL_1:
@@ -585,6 +591,7 @@ class MSVState:
   time_limit: int
   cycle_limit: int
   max_parallel_cpu: int
+  new_revlog: str
   patch_info_map: Dict[str, FileInfo]  # fine_name: str -> FileInfo
   patch_info_list: List[FileInfo]      # Root of tree of patch data structure
   switch_case_map: Dict[str, CaseInfo] # f"{switch_number}-{case_number}" -> SwitchCase
@@ -613,6 +620,7 @@ class MSVState:
     self.time_limit = -1
     self.cycle_limit = -1
     self.max_parallel_cpu = 8
+    self.new_revlog = ""
     self.patch_info_map = dict()
     self.switch_case_map = dict()
     self.selected_patch = None

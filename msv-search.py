@@ -20,7 +20,7 @@ def parse_args(argv: list) -> MSVState:
   longopts = ["help", "outdir=", "workdir=", "timeout=", "msvpath=", "time-limit=", "cycle-limit=",
               "mode=", "max-parallel-cpu=",'skip-valid','use-fixed-beta','use-cpr-space','use-fixed-const',
               "use-condition-synthesis", "use-fl", "use-hierarchical-selection=", "use-pass-test",
-              "multi-line=", "prev-result", "sub-node=", "main-node"]
+              "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=']
   opts, args = getopt.getopt(argv[1:], "ho:w:p:t:m:c:j:T:E:M:S:", longopts)
   state = MSVState()
   state.original_args = argv
@@ -64,6 +64,9 @@ def parse_args(argv: list) -> MSVState:
       state.use_fixed_beta=True
     elif o in ['--skip-valid']:
       state.skip_valid=True
+    elif o in ['--new-revlog']:
+      state.new_revlog = a
+      state.skip_valid = True
     elif o in ['--use-cpr-space']:
       state.use_cpr_space=True
     elif o in ['--use-fixed-const']:
@@ -104,7 +107,7 @@ def set_logger(state: MSVState) -> logging.Logger:
 def read_info(state: MSVState) -> None:
   with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
     info = json.load(f)
-    max_value = 10
+    max_value = 2
 
     def get_score(file,line):
       for object in info['priority']:
@@ -143,9 +146,12 @@ def read_info(state: MSVState) -> None:
           switch_list.append(switch_info)
           types = switches['types']
           type_list = switch_info.type_info_list
-          for t in PatchType:
-            if t == PatchType.Original:
+          for t in PatchType: 
+            if t == PatchType.Original or t.value >= len(types):
               continue
+            if t == PatchType.ConditionKind:
+              if not state.use_cpr_space:
+                continue
             if len(types[t.value]) > 0:
               type_info = TypeInfo(switch_info, t)
               type_list.append(type_info)
@@ -202,7 +208,10 @@ def read_repair_conf(state: MSVState) -> None:
       key = line.split("=")[0]
       value = line.split("=")[1]
       conf_dict[key] = value
-  with open(conf_dict["revision_file"], "r") as revision_file:
+  revlog = conf_dict['revision_file']
+  if state.new_revlog != "":
+    revlog = state.new_revlog
+  with open(revlog, "r") as revision_file:
     line = revision_file.readline()
     line = revision_file.readline()
     line = revision_file.readline()
@@ -215,24 +224,24 @@ def read_repair_conf(state: MSVState) -> None:
       state.positive_test.append(int(test))
 
 def copy_previous_results(state: MSVState) -> None:
-  result_json = os.path.join(state.out_dir, "msv-result.json")
   result_log = os.path.join(state.out_dir, "msv-search.log")
+  result_json = os.path.join(state.out_dir, "msv-result.json")
   prefix = 0
-  if os.path.exists(result_json):
-    while os.path.exists(os.path.join(state.out_dir, f"bak{prefix}-msv-result.json")):
-      prefix += 1
-    shutil.copy(result_json, os.path.join(state.out_dir, f"bak{prefix}-msv-result.json"))
-    os.remove(result_json)
   if os.path.exists(result_log):
+    while os.path.exists(os.path.join(state.out_dir, f"bak{prefix}-msv-search.log")):
+      prefix += 1
     shutil.copy(result_log, os.path.join(state.out_dir, f"bak{prefix}-msv-search.log"))
     os.remove(result_log)
+  if os.path.exists(result_json):
+    shutil.copy(result_json, os.path.join(state.out_dir, f"bak{prefix}-msv-result.json"))
+    os.remove(result_json)
 
 def main(argv: list):
   state = parse_args(argv)
+  copy_previous_results(state)
   state.msv_logger = set_logger(state)
   read_info(state)
   read_repair_conf(state)
-  copy_previous_results(state)
   state.msv_logger.info('Initialized!')
   msv = MSV(state)
   state.msv_logger.info('MSV is started')
