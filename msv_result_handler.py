@@ -3,8 +3,8 @@ from core import *
 from typing import List, Set, Dict, Tuple
 
 def update_result(state: MSVState, selected_patch: List[PatchInfo], run_result: bool, n: float, test: int) -> None:
-  if state.use_hierarchical_selection >= 2:
-    update_result_critical(state, selected_patch, run_result, test)
+  #if state.use_hierarchical_selection >= 2:
+  update_result_critical(state, selected_patch, run_result, test)
   for patch in selected_patch:
     patch.update_result(run_result, n,state.use_fixed_beta)
 
@@ -13,17 +13,18 @@ def update_result_critical(state: MSVState, selected_patch: List[PatchInfo], run
   original_profile = state.profile_map[test]
   profile = Profile(state, f"{test}-{selected_patch[0].to_str_sw_cs()}")
   p_diff, p_same = original_profile.diff(profile, run_result)
+  #profile_diff = ProfileDiff(test, original_profile, p_diff)
   cmap = state.critical_map[test]
   for elem in p_diff:
     if elem not in cmap:
       cmap[elem] = list()
     cmap[elem].append(len(state.used_patch))
-  selected_patch[0].profile_diff = p_diff
-  critical_pf = original_profile.get_critical_diff(profile, run_result)
-  state.msv_logger.debug(
-        f"Critical PF: {critical_pf.pass_count}/{critical_pf.fail_count}")
+  #critical_pf = original_profile.get_critical_diff(profile, run_result)
+  # state.msv_logger.debug(
+  #       f"Critical PF: {critical_pf.pass_count}/{critical_pf.fail_count}")
   for patch in selected_patch:
-    patch.update_result_critical(critical_pf, state.use_fixed_beta)
+    #patch.update_result_critical(critical_pf, state.use_fixed_beta)
+    patch.add_profile(test, original_profile, p_diff)
 
 def update_result_positive(state: MSVState, selected_patch: List[PatchInfo], run_result: bool, failed_tests: Set[int]) -> None:
   run_result = (len(failed_tests) == 0)

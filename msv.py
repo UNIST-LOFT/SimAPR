@@ -121,8 +121,9 @@ class MSV:
   def run(self) -> None:
     self.initialize()
     while self.is_alive():
-      patch = select_patch.select_patch(self.state, self.state.mode)
-      run_result = self.run_test(patch, self.state.negative_test[0])
+      neg = self.state.negative_test[0]
+      patch = select_patch.select_patch(self.state, self.state.mode, neg)
+      run_result = self.run_test(patch, neg)
       # self.update_result(patch, run_result, 1, neg)
       # self.append_result(patch, run_result)
       # self.remove_patch(patch)

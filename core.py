@@ -49,9 +49,9 @@ class EnvVarMode(Enum):
   cond_syn = 5
 
 class PassFail:
-  def __init__(self) -> None:
-    self.pass_count = 0
-    self.fail_count = 0
+  def __init__(self, p: float = 0, f: float = 0) -> None:
+    self.pass_count = p
+    self.fail_count = f
   def __fixed_beta__(self,use_fixed_beta,alpha,beta):
     if not use_fixed_beta:
       return 1
@@ -96,6 +96,7 @@ class FileInfo:
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
     self.fl_score=-1
+    self.profile_diff: 'ProfileDiff' = None
 
   def __hash__(self) -> int:
     return hash(self.file_name)
@@ -111,6 +112,7 @@ class LineInfo:
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
     self.fl_score=0
+    self.profile_diff: 'ProfileDiff' = None
   def __hash__(self) -> int:
     return hash(self.line_number)
   def __eq__(self, other) -> bool:
@@ -125,6 +127,7 @@ class SwitchInfo:
     self.pf = PassFail()
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
+    self.profile_diff: 'ProfileDiff' = None
   def __hash__(self) -> int:
     return hash(self.switch_number)
   def __eq__(self, other) -> bool:
@@ -138,6 +141,7 @@ class TypeInfo:
     self.pf = PassFail()
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
+    self.profile_diff: 'ProfileDiff' = None
   def __hash__(self) -> int:
     return hash(self.patch_type)
   def __eq__(self, other) -> bool:
@@ -154,6 +158,7 @@ class CaseInfo:
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
     self.processed=False # for prophet condition
+    self.profile_diff: 'ProfileDiff' = None
   def __hash__(self) -> int:
     return hash(self.case_number)
   def __eq__(self, other) -> bool:
@@ -173,6 +178,7 @@ class OperatorInfo:
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
     self.var_count=var_count
+    self.profile_diff: 'ProfileDiff' = None
   def __hash__(self) -> int:
     return self.operator_type.value
   def __eq__(self, other) -> bool:
@@ -189,6 +195,7 @@ class VariableInfo:
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
     self.used_const=set()
+    self.profile_diff: 'ProfileDiff' = None
   def to_str(self) -> str:
     return f"{self.parent.parent.parent.parent.switch_number}-{self.parent.parent.case_number}-{self.parent}-{self.variable}"
   def __str__(self) -> str:
@@ -208,6 +215,7 @@ class ConstantInfo:
     self.positive_pf = PassFail()
     self.left:ConstantInfo=None
     self.right:ConstantInfo=None
+    self.profile_diff: 'ProfileDiff' = None
   def __hash__(self) -> int:
     return hash(self.constant_value)
   def __eq__(self, other) -> bool:
@@ -361,35 +369,51 @@ class Profile:
 
 
 class ProfileDiff:
-  def __init__(self, test: int, original: Profile, diff_set: Set[ProfileElement], result: bool) -> None:
-    self.profile_dict: Dict[ProfileElement, ProfileElement] = dict()
-    self.profile_critical_dict: Dict[ProfileElement, ProfileElement] = dict()
-    self.test = test
-    self.diff_set = diff_set
-    self.original = original
+  def __init__(self, test: int, original: Profile, diff_set: Set[ProfileElement]) -> None:
+    self.count = 1
+    self.profile_dict: Dict[int, Dict[ProfileElement, PassFail]] = dict()
+    self.profile_dict[test] = dict()
+    profile_dict = self.profile_dict[test]
     for elem in diff_set:
-      self.profile_dict[elem] = elem
-      if result:
-        elem.critical_value = 1
-        elem.critical_pf.update(True, 1)
-        self.profile_critical_dict[elem] = elem
-  def update(self, test: int, result: bool, pd: 'ProfileDiff') -> 'ProfileDiff':
-    diff_set = self.diff_set
-    for elem in pd.diff_set:
-      if elem not in diff_set:
-        tmp_elem = elem.copy()
-        tmp_elem.critical_pf.update(True, 1)
-        diff_set.add(tmp_elem)
-      else:
-        self.profile_dict[elem].critical_pf.update(True, 1)
-    for elem in diff_set:
-      if elem not in pd.diff_set:
-        self.profile_dict[elem].critical_pf.update(False, 1)
-    new_pd = ProfileDiff(test, self.original, diff_set, result)
-    return new_pd
-  def diff(self, other: 'ProfileDiff', result: bool) -> Tuple[Set[ProfileElement], Set[ProfileElement]]:
-    profile_diff_set = set()
-    profile_same_set = set()
+      profile_dict[elem] = PassFail(1, 0)
+  def update(self, test: int, pd: 'ProfileDiff') -> None:
+    self.count += 1
+    profile_dict = self.profile_dict[test]
+    for elem in pd.profile_dict[test]:
+      if elem in profile_dict:
+        profile_dict[elem].update(True, 1)
+      else: # new diff variable found
+        profile_dict[elem] = PassFail(1, self.count - 1)
+    for elem in profile_dict:
+      if elem not in pd.profile_dict[test]:
+        profile_dict[elem].update(False, 1)
+  def get_diff(self, test: int, original: Profile) -> float:
+    pf = PassFail()
+    if self is None:
+      return pf.expect_probability() / 2
+    # If critical variable set is empty, return diff
+    if len(original.profile_critical_dict) == 0:
+      return len(self.profile_dict[test]) / len(original.profile_dict)
+    critical_dict = original.profile_critical_dict
+    profile_dict = self.profile_dict[test]
+    intersect = 0   # crit & diff
+    crit_weight_total = 0
+    diff_remain = 0 # diff\crit
+    for elem in critical_dict:
+      cv = critical_dict[elem].critical_value
+      crit_weight_total += cv
+      if elem in profile_dict:        
+        p = profile_dict[elem].expect_probability()
+        intersect += cv * p
+    diff_remain_total = 0
+    for elem in profile_dict:
+      if elem not in critical_dict:
+        diff_remain_total += 1
+        diff_remain += profile_dict[elem].expect_probability()
+    result = intersect / crit_weight_total
+    if diff_remain_total > 0:
+      result = (result * (1 - diff_remain / diff_remain_total))
+    return result
 
 class MSVEnvVar:
   def __init__(self) -> None:
@@ -442,7 +466,7 @@ class PatchInfo:
     self.operator_info = op_info
     self.variable_info = var_info
     self.constant_info = con_info
-    self.profile_diff: Set[ProfileElement] = None
+    self.profile_diff: ProfileDiff = None
   def update_result(self, result: bool, n: float,use_fixed_beta:bool) -> None:
     self.case_info.pf.update(result, n)
     self.type_info.pf.update(result, n)
@@ -455,6 +479,49 @@ class PatchInfo:
         self.variable_info.pf.update(result, n)
         self.constant_info.pf.update(result, n)
   
+  def add_profile(self, test: int, original: Profile, diff_set: Set[ProfileElement]) -> None:
+    self.profile_diff = ProfileDiff(test, original, diff_set)
+    if self.is_condition and self.operator_info is not None:
+      if self.operator_info.operator_type == OperatorType.ALL_1:
+        self.operator_info.profile_diff = self.profile_diff
+        if self.case_info.profile_diff is None:
+          self.case_info.profile_diff = ProfileDiff(test, original, diff_set)
+        else:
+          self.case_info.profile_diff.update(test, self.profile_diff)
+      else:
+        self.constant_info.profile_diff = self.profile_diff
+        if self.variable_info.profile_diff is None:
+          self.variable_info.profile_diff = ProfileDiff(test, original, diff_set)
+        else:
+          self.variable_info.profile_diff.update(test, self.profile_diff)
+        if self.operator_info.profile_diff is None:
+          self.operator_info.profile_diff = ProfileDiff(test, original, diff_set)
+        else:
+          self.operator_info.profile_diff.update(test, self.profile_diff)
+        if self.case_info.profile_diff is None:
+          self.case_info.profile_diff = ProfileDiff(test, original, diff_set)
+        else:
+          self.case_info.profile_diff.update(test, self.profile_diff)
+    else:
+      self.case_info.profile_diff = self.profile_diff
+    if self.type_info.profile_diff is None:
+      self.type_info.profile_diff = ProfileDiff(test, original, diff_set)
+    else:
+      self.type_info.profile_diff.update(test, self.profile_diff)
+    if self.switch_info.profile_diff is None:
+      self.switch_info.profile_diff = ProfileDiff(test, original, diff_set)
+    else:
+      self.switch_info.profile_diff.update(test, self.profile_diff)
+    if self.line_info.profile_diff is None:
+      self.line_info.profile_diff = ProfileDiff(test, original, diff_set)
+    else:
+      self.line_info.profile_diff.update(test, self.profile_diff)
+    if self.file_info.profile_diff is None:
+      self.file_info.profile_diff = ProfileDiff(test, original, diff_set)
+    else:
+      self.file_info.profile_diff.update(test, self.profile_diff)
+    
+
   def update_result_critical(self, critical_pf: PassFail,use_fixed_beta:bool) -> None:
     self.case_info.critical_pf.update_with_pf(critical_pf)
     self.type_info.critical_pf.update_with_pf(critical_pf)
