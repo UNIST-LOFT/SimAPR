@@ -86,6 +86,7 @@ class MSV:
       run_result = self.run_test([patch], neg)
       profile = Profile(self.state, f"{neg}-0-0")
       self.state.profile_map[neg] = profile
+      self.state.critical_map[neg] = dict()
     
     if not self.state.skip_valid:
       self.state.msv_logger.info(f"Validating {len(self.state.positive_test)} pass tests")
