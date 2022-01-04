@@ -19,6 +19,8 @@ def update_result_critical(state: MSVState, selected_patch: List[PatchInfo], run
     if elem not in cmap:
       cmap[elem] = list()
     cmap[elem].append(len(state.used_patch))
+  if run_result:
+    original_profile.get_critical_diff(profile, run_result)
   #critical_pf = original_profile.get_critical_diff(profile, run_result)
   # state.msv_logger.debug(
   #       f"Critical PF: {critical_pf.pass_count}/{critical_pf.fail_count}")
