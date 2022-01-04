@@ -12,7 +12,7 @@ def update_result_critical(state: MSVState, selected_patch: List[PatchInfo], run
   critical_pf = PassFail()
   original_profile = state.profile_map[test]
   profile = Profile(state, f"{test}-{selected_patch[0].to_str_sw_cs()}")
-  p_diff, p_same = original_profile.diff(profile)
+  p_diff, p_same = original_profile.diff(profile, run_result)
   cmap = state.critical_map[test]
   for elem in p_diff:
     if elem not in cmap:
@@ -39,7 +39,7 @@ def save_result(state: MSVState) -> None:
   with open(result_file, 'w') as f:
     json.dump(state.msv_result, f, indent=2)
   with open(critical_info, 'w') as f:
-    f.write(f"test,var,is_critical,from_pass_patch,from_fail_patch")
+    f.write(f"test,var,is_critical,from_pass_patch,from_fail_patch\n")
     for test in state.critical_map:
       for elem in state.critical_map[test]:
         patch_nums = state.critical_map[test][elem]
@@ -54,7 +54,7 @@ def save_result(state: MSVState) -> None:
 
 # Append result list, save result to file periodically
 def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result: bool,pass_test_result:bool=False) -> None:
-  save_interval = 10
+  save_interval = 1800 # 30 minutes
   tm = time.time()
   tm_interval = tm - state.start_time
   result = MSVResult(state.cycle, tm_interval,
