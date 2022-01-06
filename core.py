@@ -393,7 +393,10 @@ class ProfileDiff:
       return pf.expect_probability() / 2
     # If critical variable set is empty, return diff
     if len(original.profile_critical_dict) == 0:
-      return len(self.profile_dict[test]) / len(original.profile_dict)
+      if len(original.profile_dict) > 0:
+        return len(self.profile_dict[test]) / len(original.profile_dict)
+      else:
+        return pf.expect_probability() / 2
     critical_dict = original.profile_critical_dict
     profile_dict = self.profile_dict[test]
     intersect = 0   # crit & diff
