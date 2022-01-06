@@ -86,6 +86,7 @@ class MSV:
       run_result = self.run_test([patch], neg)
       profile = Profile(self.state, f"{neg}-0-0")
       self.state.profile_map[neg] = profile
+      self.state.critical_map[neg] = dict()
     
     if not self.state.skip_valid:
       self.state.msv_logger.info(f"Validating {len(self.state.positive_test)} pass tests")
@@ -120,8 +121,9 @@ class MSV:
   def run(self) -> None:
     self.initialize()
     while self.is_alive():
-      patch = select_patch.select_patch(self.state, self.state.mode)
-      run_result = self.run_test(patch, self.state.negative_test[0])
+      neg = self.state.negative_test[0]
+      patch = select_patch.select_patch(self.state, self.state.mode, neg)
+      run_result = self.run_test(patch, neg)
       # self.update_result(patch, run_result, 1, neg)
       # self.append_result(patch, run_result)
       # self.remove_patch(patch)
