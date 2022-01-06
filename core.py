@@ -612,29 +612,29 @@ class PatchInfo:
 
       if len(self.case_info.operator_info_list) == 0:
         self.type_info.case_info_list.remove(self.case_info)
-        with open("p1.log",'a') as f:
+        with open(os.path.join(state.out_dir, "p1.log"),'a') as f:
           f.write(f'{self.file_info.file_name}-{self.line_info.line_number}-{self.switch_info.switch_number}-{self.type_info.patch_type}-{self.case_info.case_number}: {self.case_info.pf.pass_count}/{self.case_info.pf.pass_count+self.case_info.pf.fail_count}\n')
 
     else:
       self.type_info.case_info_list.remove(self.case_info)
-      with open("p1.log",'a') as f:
+      with open(os.path.join(state.out_dir, "p1.log"),'a') as f:
         f.write(f'{self.file_info.file_name}-{self.line_info.line_number}-{self.switch_info.switch_number}-{self.type_info.patch_type}-{self.case_info.case_number}: {self.case_info.pf.pass_count}/{self.case_info.pf.pass_count+self.case_info.pf.fail_count}\n')
 
     if len(self.type_info.case_info_list) == 0:
       self.switch_info.type_info_list.remove(self.type_info)
-      with open("p1.log",'a') as f:
+      with open(os.path.join(state.out_dir, "p1.log"),'a') as f:
         f.write(f'{self.file_info.file_name}-{self.line_info.line_number}-{self.switch_info.switch_number}-{self.type_info.patch_type}: {self.type_info.pf.pass_count}/{self.type_info.pf.pass_count+self.type_info.pf.fail_count}\n')
     if len(self.switch_info.type_info_list) == 0:
       self.line_info.switch_info_list.remove(self.switch_info)
-      with open("p1.log",'a') as f:
+      with open(os.path.join(state.out_dir, "p1.log"),'a') as f:
         f.write(f'{self.file_info.file_name}-{self.line_info.line_number}-{self.switch_info.switch_number}: {self.switch_info.pf.pass_count}/{self.switch_info.pf.pass_count+self.switch_info.pf.fail_count}\n')
     if len(self.line_info.switch_info_list) == 0:
       self.file_info.line_info_list.remove(self.line_info)
-      with open("p1.log",'a') as f:
+      with open(os.path.join(state.out_dir, "p1.log"),'a') as f:
         f.write(f'{self.file_info.file_name}-{self.line_info.line_number}: {self.line_info.pf.pass_count}/{self.line_info.pf.pass_count+self.line_info.pf.fail_count}\n')
     if len(self.file_info.line_info_list) == 0:
       state.patch_info_list.remove(self.file_info)
-      with open("p1.log",'a') as f:
+      with open(os.path.join(state.out_dir, "p1.log"),'a') as f:
         f.write(f'{self.file_info.file_name}: {self.file_info.pf.pass_count}/{self.file_info.pf.pass_count+self.file_info.pf.fail_count}\n')
 
 
