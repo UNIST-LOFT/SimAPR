@@ -285,7 +285,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
         p1.append(const_info.pf.expect_probability())
         p2.append(ProfileDiff.get_diff(const_info.profile_diff, test, original_profile))      
         p3.append(const_info.positive_pf.expect_probability())
-    selected_constant = select_by_probability_hierarchical(state, n, p1, p2, p3) # TODO: Do not select if len(constant_info_list) is 0
+    selected_constant = select_by_probability_hierarchical(state, n, p1, p2, p3)
     selected_constant_info = selected_variable_info.constant_info_list[selected_constant]
     p1.clear()
     p2.clear()

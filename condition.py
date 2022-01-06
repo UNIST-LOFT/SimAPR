@@ -380,26 +380,29 @@ class MyCondition:
       for const in atom:
         if -1000<const<1000 and const not in current_var.used_const:
           current_var.used_const.add(int(const))
-          current_const=current_var.constant_info_list[0]
-          if current_const is None:
-            current_var.constant_info_list[0]=ConstantInfo(current_var,int(const))
+          if len(current_var.constant_info_list)>0:
+            current_var.constant_info_list.append(ConstantInfo(current_var,int(const)))
           else:
-            before=None
-            while current_const is not None:
-              if current_const.constant_value<const:
-                before=current_const
-                current_const=current_const.right
-              else:
-                before=current_const
-                current_const=current_const.left
-            
-            if before is not None:
-              if before.constant_value<const:
-                before.right=ConstantInfo(current_var,int(const))
-              else:
-                before.left=ConstantInfo(current_var,int(const))
+            current_const=current_var.constant_info_list[0]
+            if current_const is None:
+              current_var.constant_info_list[0]=ConstantInfo(current_var,int(const))
             else:
-              assert False
+              before=None
+              while current_const is not None:
+                if current_const.constant_value<const:
+                  before=current_const
+                  current_const=current_const.right
+                else:
+                  before=current_const
+                  current_const=current_const.left
+              
+              if before is not None:
+                if before.constant_value<const:
+                  before.right=ConstantInfo(current_var,int(const))
+                else:
+                  before.left=ConstantInfo(current_var,int(const))
+              else:
+                assert False
 
   def remove_same_record(self,conditions:List[ConstantInfo],result:bool) -> None:
     for cond in conditions:
