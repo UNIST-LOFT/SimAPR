@@ -12,7 +12,7 @@ def parse_record(temp_file: str) -> List[bool]:
     line=file.readline().split()
     if len(line)==0:
       return None
-    del line[0]
+    line=line[1:]
 
     record=[]
     for i in line:
@@ -38,7 +38,7 @@ def parse_value(log_file: str) -> List[List[int]]:
       line=line.split()
       if len(line)==0:
         break
-      del line[0]
+      line=line[1:]
 
       value=[]
       for i in line:
@@ -255,7 +255,7 @@ class ProphetCondition:
 
     available_const=[]
     if len(values[0]) == 0:
-      del values[0]
+      values=values[1:]
 
     for _ in range(len(values[0])):
       available_const.append(set())
