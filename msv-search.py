@@ -113,7 +113,7 @@ def read_info(state: MSVState) -> None:
       for object in info['priority']:
         if object['file']==file and object['line']==line:
           return float(object['score'])
-      assert False
+      return 0.
 
     #file_map = state.patch_info_map
     max_priority = info['priority'][0]['score']
