@@ -375,9 +375,9 @@ class MyCondition:
     return parse_value(log_file)
 
   def extend_bst(self, values: List[List[int]]) -> None:
-    for i,atom in enumerate(values):
-      current_var=self.patch.operator_info.variable_info_list[i]
-      for const in atom:
+    for i,atom in enumerate(self.patch.operator_info.variable_info_list):
+      current_var=atom
+      for const in values[i]:
         if -1000<const<1000 and const not in current_var.used_const:
           current_var.used_const.add(int(const))
           if len(current_var.constant_info_list)<=0:
