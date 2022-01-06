@@ -380,7 +380,7 @@ class MyCondition:
       for const in atom:
         if -1000<const<1000 and const not in current_var.used_const:
           current_var.used_const.add(int(const))
-          if len(current_var.constant_info_list)>0:
+          if len(current_var.constant_info_list)<=0:
             current_var.constant_info_list.append(ConstantInfo(current_var,int(const)))
           else:
             current_const=current_var.constant_info_list[0]
