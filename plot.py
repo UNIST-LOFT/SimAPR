@@ -74,12 +74,11 @@ def read_info(work_dir: str) -> Tuple[List[FileInfo], Dict[str, CaseInfo]]:
   return file_list, switch_case_map
 
 
-def afl_barchart(msv_result_file: str, title: str, work_dir: str, out_file: str) -> None:
+def afl_barchart(msv_result_file: str, title: str, work_dir: str) -> None:
   switch_info, switch_case_map = read_info(work_dir)
   result_file_map: Dict[FileInfo, PassFail] = dict()
   result_line_map: Dict[LineInfo, PassFail] = dict()
   result_switch_map: Dict[SwitchInfo, PassFail] = dict()
-  plt.clf()
   with open(msv_result_file, "r") as f:
     info = json.load(f)
     total = 0
@@ -107,26 +106,60 @@ def afl_barchart(msv_result_file: str, title: str, work_dir: str, out_file: str)
       if switch_info not in result_switch_map:
         result_switch_map[switch_info] = PassFail()
       result_switch_map[switch_info].update(result, 1)
-
+  print(f"total {total}")
   file_list = list()
   file_result_list = list()
   for file_info in result_file_map:
+    pass_count = result_file_map[file_info].pass_count
+    if pass_count == 0:
+      continue
     file_list.append(file_info.file_name)
     file_result_list.append(result_file_map[file_info].pass_count)
+  index = np.arange(len(file_list))
+  plt.clf()
+  plt.bar(index, file_result_list, color="b")
+  plt.title(title)
+  plt.xlabel(f"file(total{len(result_file_map)})")
+  plt.ylabel("pass(blue)/fail(red)")
+  plt.xticks(index, file_list)
+  out_file = os.path.join(os.path.dirname(msv_result_file), "file-plot.png")
+  print(f"save to {out_file}")
+  plt.savefig(out_file)
   line_list = list()
   line_result_list = list()
   for line_info in result_line_map:
+    pass_count = result_line_map[line_info].pass_count
+    if pass_count == 0:
+      continue
     line_list.append(line_info.line_number)
     line_result_list.append(int(result_line_map[line_info].pass_count))
-  print(f"total {total}")
   index = np.arange(len(line_list))
+  plt.clf()
   plt.bar(index, line_result_list, color="b")
   plt.title(title)
-  plt.xlabel("line")
+  plt.xlabel(f"line(total{len(result_line_map)})")
   plt.ylabel("pass(blue)/fail(red)")
   plt.xticks(index, line_list)
-  if len(out_file) == 0:
-    out_file = os.path.join(os.path.dirname(msv_result_file), "plot.png")
+  out_file = os.path.join(os.path.dirname(msv_result_file), "line-plot.png")
+  print(f"save to {out_file}")
+  plt.savefig(out_file)
+  switch_list = list()
+  switch_result_list = list()
+  for switch_info in result_switch_map:
+    pass_count = result_switch_map[switch_info].pass_count
+    if pass_count == 0:
+      continue
+    switch_list.append(switch_info.switch_number)
+    switch_result_list.append(int(result_switch_map[switch_info].pass_count))
+  index = np.arange(len(switch_list))
+  plt.clf()
+  plt.bar(index, switch_result_list, color="b")
+  plt.title(title)
+  plt.xlabel(f"switch(total{len(result_switch_map)})")
+  plt.ylabel("pass(blue)/fail(red)")
+  plt.xticks(index, switch_list)
+  out_file = os.path.join(os.path.dirname(msv_result_file), "switch-plot.png")
+  print(f"save to {out_file}")
   plt.savefig(out_file)
 
 
@@ -260,7 +293,7 @@ def main(argv):
   if output_file == "":
     output_file = os.path.join(os.path.dirname(result_file), "plot.png")
   if mode == "bar":
-    afl_barchart(result_file, title, work_dir, output_file)
+    afl_barchart(result_file, title, work_dir)
   elif mode == "auto":
     msv_plot(result_file, title, output_file, ignore,
               correct_patch=tuple(correct_patch))
