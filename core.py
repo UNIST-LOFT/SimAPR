@@ -267,6 +267,7 @@ class ProfileElement:
 
 class Profile:
   def __init__(self, state: 'MSVState', profile: str) -> None:
+    self.state = state
     self.profile_dict: Dict[ProfileElement, ProfileElement] = dict()
     self.profile_critical_dict: Dict[ProfileElement, ProfileElement] = dict()
     state.msv_logger.debug(f"Profile: {profile}")
@@ -342,17 +343,23 @@ class Profile:
     critical_pf = PassFail()
     profile_diff_set, profile_same_set = self.diff(other, result)
     if result:
+      self.state.msv_logger.info(f"Found patch with { len(profile_diff_set) } diff variables!")
+      new_crit = 0
+      existing_crit = 0
       for elem in profile_diff_set:
         if elem in self.profile_critical_dict:
+          existing_crit += 1
           self.profile_critical_dict[elem].critical_value += 1
           critical_pf.update(True, self.profile_critical_dict[elem].critical_value)
         else:
+          new_crit += 1
           elem.critical_value = 1
           self.profile_critical_dict[elem] = elem
           critical_pf.update(True, 1)
       for elem in self.profile_critical_dict:
         if elem not in profile_diff_set:
           critical_pf.update(False, self.profile_critical_dict[elem].critical_value)
+      self.state.msv_logger.info(f"Get {new_crit} new / {existing_crit} existing critical variables!")
       return critical_pf
     if len(self.profile_critical_dict) == 0:
       return self.get_diff(other, result)
