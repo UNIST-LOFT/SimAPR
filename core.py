@@ -270,6 +270,7 @@ class Profile:
     self.state = state
     self.profile_dict: Dict[ProfileElement, ProfileElement] = dict()
     self.profile_critical_dict: Dict[ProfileElement, ProfileElement] = dict()
+    self.profile_critical_dict_values: Dict[ProfileElement, ProfileValue] = dict()
     state.msv_logger.debug(f"Profile: {profile}")
     profile_meta_filename = f"/tmp/{profile}_profile.log"
     if not os.path.exists(profile_meta_filename):
@@ -301,7 +302,7 @@ class Profile:
           os.remove(profile_file)
     if os.path.exists(profile_meta_filename):
       os.remove(profile_meta_filename)
-
+  # self is original profile
   def diff(self, other: 'Profile', result: bool) -> Tuple[Set[ProfileElement], Set[ProfileElement]]:
     profile_diff_set = set()
     profile_same_set = set()
@@ -310,7 +311,7 @@ class Profile:
         profile_diff_set.add(profile_elem.copy())
       else:
         if profile_elem.value != other.profile_dict[profile_elem].value:
-          profile_diff_set.add(profile_elem.copy())
+          profile_diff_set.add(other.profile_dict[profile_elem].copy())
         else:
           profile_same_set.add(profile_elem.copy())
     for profile_elem in other.profile_dict:
@@ -351,10 +352,17 @@ class Profile:
           existing_crit += 1
           self.profile_critical_dict[elem].critical_value += 1
           critical_pf.update(True, self.profile_critical_dict[elem].critical_value)
+          if elem.value in self.profile_critical_dict_values[elem].values:
+            self.profile_critical_dict_values[elem].values[elem.value] += 1
+          else:
+            self.profile_critical_dict_values[elem].values[elem.value] = 1
         else:
           new_crit += 1
           elem.critical_value = 1
           self.profile_critical_dict[elem] = elem
+          temp_pv = ProfileValue()
+          temp_pv.values[elem.value] = 1
+          self.profile_critical_dict_values[elem] = temp_pv
           critical_pf.update(True, 1)
       for elem in self.profile_critical_dict:
         if elem not in profile_diff_set:
@@ -374,26 +382,40 @@ class Profile:
         critical_pf.update(False, 1)
     return critical_pf
 
+class ProfileValue:
+  def __init__(self) -> None:
+    self.values: Dict[int, int] = dict() # key: value, value: count
+    self.pf = PassFail()
 
 class ProfileDiff:
   def __init__(self, test: int, original: Profile, diff_set: Set[ProfileElement]) -> None:
     self.count = 1
-    self.profile_dict: Dict[int, Dict[ProfileElement, PassFail]] = dict()
+    self.profile_dict: Dict[int, Dict[ProfileElement, ProfileValue]] = dict()
     self.profile_dict[test] = dict()
     profile_dict = self.profile_dict[test]
     for elem in diff_set:
-      profile_dict[elem] = PassFail(1, 0)
+      temp_pv = ProfileValue()
+      temp_pv.pf.update(True, 1)
+      temp_pv.values[elem.value] = 1
+      profile_dict[elem] = temp_pv
   def update(self, test: int, pd: 'ProfileDiff') -> None:
     self.count += 1
     profile_dict = self.profile_dict[test]
     for elem in pd.profile_dict[test]:
       if elem in profile_dict:
-        profile_dict[elem].update(True, 1)
+        if elem.value in profile_dict[elem].values:
+          profile_dict[elem].values[elem.value] += 1
+        else:
+          profile_dict[elem].values[elem.value] = 1
+        profile_dict[elem].pf.update(True, 1)
       else: # new diff variable found
-        profile_dict[elem] = PassFail(1, self.count - 1)
+        temp_pv = ProfileValue()
+        temp_pv.pf = PassFail(1, self.count - 1)
+        temp_pv.values[elem.value] = 1
+        profile_dict[elem] = temp_pv
     for elem in profile_dict:
       if elem not in pd.profile_dict[test]:
-        profile_dict[elem].update(False, 1)
+        profile_dict[elem].pf.update(False, 1)
   def get_diff(self, test: int, original: Profile) -> float:
     pf = PassFail()
     if self is None:
@@ -413,13 +435,13 @@ class ProfileDiff:
       cv = critical_dict[elem].critical_value
       crit_weight_total += cv
       if elem in profile_dict:        
-        p = profile_dict[elem].expect_probability()
+        p = profile_dict[elem].pf.expect_probability()
         intersect += cv * p
     diff_remain_total = 0
     for elem in profile_dict:
       if elem not in critical_dict:
         diff_remain_total += 1
-        diff_remain += profile_dict[elem].expect_probability()
+        diff_remain += profile_dict[elem].pf.expect_probability()
     result = intersect / crit_weight_total
     if diff_remain_total > 0:
       result = (result * (1 - diff_remain / diff_remain_total))
@@ -742,6 +764,7 @@ class MSVState:
   priority_map: Dict[str, FileLine] # f"{file_name}:{line_number}" -> FileLine
   msv_result: List[dict]   # List of json object by MSVResult.to_json_object()
   failed_positive_test: Set[int] # Set of positive test that failed
+  profile_diff: ProfileDiff
   def __init__(self) -> None:
     self.mode = MSVMode.guided
     self.cycle = 0
@@ -776,3 +799,4 @@ class MSVState:
     self.use_fixed_const=False
     self.used_patch = list()
     self.critical_map = dict()
+    self.profile_diff = None

@@ -24,6 +24,11 @@ def update_result_critical(state: MSVState, selected_patch: List[PatchInfo], run
   #critical_pf = original_profile.get_critical_diff(profile, run_result)
   # state.msv_logger.debug(
   #       f"Critical PF: {critical_pf.pass_count}/{critical_pf.fail_count}")
+  profile_diff = ProfileDiff(test, original_profile, p_diff)
+  if state.profile_diff is None:
+    state.profile_diff = profile_diff
+  else:
+    state.profile_diff.update(test, profile_diff)
   for patch in selected_patch:
     #patch.update_result_critical(critical_pf, state.use_fixed_beta)
     patch.add_profile(test, original_profile, p_diff)
@@ -42,7 +47,7 @@ def save_result(state: MSVState) -> None:
   with open(result_file, 'w') as f:
     json.dump(state.msv_result, f, indent=2)
   with open(critical_info, 'w') as f:
-    f.write(f"test,var,is_critical,from_pass_patch,from_fail_patch\n")
+    f.write(f"test,var,is_critical,from_pass_patch,from_fail_patch,crit_values,all_values\n")
     for test in state.critical_map:
       for elem in state.critical_map[test]:
         patch_nums = state.critical_map[test][elem]
@@ -53,11 +58,19 @@ def save_result(state: MSVState) -> None:
         for patch_num in patch_nums:
           patch = state.used_patch[patch_num]
           cpf.update(patch.result, 1)
-        f.write(f"{test},{elem},{is_critical},{cpf.pass_count},{cpf.fail_count}\n")
+        f.write(f"{test},{elem},{is_critical},{cpf.pass_count},{cpf.fail_count},")
+        if elem in state.profile_map[test].profile_critical_dict:
+          f.write(f"{state.profile_map[test].profile_critical_dict_values[elem].values},")
+        else:
+          f.write("{},")
+        if elem in state.profile_diff.profile_dict[test]:
+          f.write(f"{state.profile_diff.profile_dict[test][elem].values}\n")
+        else:
+          f.write("{}\n")
 
 # Append result list, save result to file periodically
 def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result: bool,pass_test_result:bool=False) -> None:
-  save_interval = 1800 # 30 minutes
+  save_interval = 60 # 30 minutes
   tm = time.time()
   tm_interval = tm - state.start_time
   result = MSVResult(state.cycle, tm_interval,
