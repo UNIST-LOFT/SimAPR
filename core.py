@@ -600,9 +600,9 @@ class PatchInfo:
                 node.variable.constant_info_list.append(next)
               else:
                 node.variable.constant_info_list[0]=next
-          elif node.parent.left is node:
+          elif node.parent.left == node:
             node.parent.left=next
-          elif node.parent.right is node:
+          elif node.parent.right == node:
             node.parent.right=next
 
           is_remove=True
