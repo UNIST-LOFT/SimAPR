@@ -377,34 +377,33 @@ class MyCondition:
   def extend_bst(self, values: List[List[int]]) -> None:
     for i,atom in enumerate(self.patch.operator_info.variable_info_list):
       current_var=atom
-      if len(values)>=i:
-        continue
-      for const in values[i]:
-        if -1000<const<1000 and const not in current_var.used_const:
-          current_var.used_const.add(int(const))
-          if len(current_var.constant_info_list)<=0:
-            current_var.constant_info_list.append(ConstantInfo(current_var,int(const)))
-          else:
-            current_const=current_var.constant_info_list[0]
-            if current_const is None:
-              current_var.constant_info_list[0]=ConstantInfo(current_var,int(const))
+      if len(values)<i:
+        for const in values[i]:
+          if -1000<const<1000 and const not in current_var.used_const:
+            current_var.used_const.add(int(const))
+            if len(current_var.constant_info_list)<=0:
+              current_var.constant_info_list.append(ConstantInfo(current_var,int(const)))
             else:
-              before=None
-              while current_const is not None:
-                if current_const.constant_value<const:
-                  before=current_const
-                  current_const=current_const.right
-                else:
-                  before=current_const
-                  current_const=current_const.left
-              
-              if before is not None:
-                if before.constant_value<const:
-                  before.right=ConstantInfo(current_var,int(const))
-                else:
-                  before.left=ConstantInfo(current_var,int(const))
+              current_const=current_var.constant_info_list[0]
+              if current_const is None:
+                current_var.constant_info_list[0]=ConstantInfo(current_var,int(const))
               else:
-                assert False
+                before=None
+                while current_const is not None:
+                  if current_const.constant_value<const:
+                    before=current_const
+                    current_const=current_const.right
+                  else:
+                    before=current_const
+                    current_const=current_const.left
+                
+                if before is not None:
+                  if before.constant_value<const:
+                    before.right=ConstantInfo(current_var,int(const))
+                  else:
+                    before.left=ConstantInfo(current_var,int(const))
+                else:
+                  assert False
 
   def remove_same_record(self,conditions:List[ConstantInfo],result:bool) -> None:
     for cond in conditions:
@@ -414,9 +413,10 @@ class MyCondition:
 
   def get_same_record(self,record:list,values:list,node:ConstantInfo,conditions:List[ConstantInfo]):
     current_var=node.variable
-    if check_expr(record,values[current_var.variable],node.variable.parent.operator_type,node.constant_value):
-      self.state.msv_logger.info(f'Same record {node.variable.parent.operator_type.value}, {node.variable.variable}, {node.constant_value}')
-      conditions.append(node)
+    if len(values)<current_var.variable:
+      if check_expr(record,values[current_var.variable],node.variable.parent.operator_type,node.constant_value):
+        self.state.msv_logger.info(f'Same record {node.variable.parent.operator_type.value}, {node.variable.variable}, {node.constant_value}')
+        conditions.append(node)
 
     if node.left is not None:
       self.get_same_record(record,values,node.left,conditions)
@@ -498,17 +498,17 @@ class MyCondition:
         self.remove_by_pass_test(conditions,var.constant_info_list[0])
 
 def check_expr(record,values,operator,constant) -> bool:
-  for record,value in zip(record,values):
+  for path,value in zip(record,values):
     if operator==OperatorType.EQ:
-      if (value==constant and record==0) or (value!=constant and record==1):
+      if (value==constant and path==0) or (value!=constant and path==1):
         return False
     elif operator==OperatorType.NE:
-      if (value!=constant and record==0) or (value==constant and record==1):
+      if (value!=constant and path==0) or (value==constant and path==1):
         return False
     elif operator==OperatorType.GT:
-      if (value>constant and record==0) or (value<=constant and record==1):
+      if (value>constant and path==0) or (value<=constant and path==1):
         return False
     elif operator==OperatorType.LT:
-      if (value<constant and record==0) or (value>=constant and record==1):
+      if (value<constant and path==0) or (value>=constant and path==1):
         return False
   return True
