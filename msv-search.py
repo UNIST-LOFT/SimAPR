@@ -107,6 +107,7 @@ def set_logger(state: MSVState) -> logging.Logger:
 def read_info(state: MSVState) -> None:
   with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
     info = json.load(f)
+    read_var_count(state,info['sizes'])
     max_value = 2
 
     def get_score(file,line):
@@ -161,8 +162,16 @@ def read_info(state: MSVState) -> None:
                 is_condition = t.value == PatchType.TightenConditionKind.value or t.value==PatchType.LoosenConditionKind.value or t.value==PatchType.IfExitKind.value or \
                             t.value==PatchType.GuardKind.value or t.value==PatchType.SpecialGuardKind.value or t.value==PatchType.ConditionKind.value
                 case_info = CaseInfo(type_info, int(c), is_condition)
-                if not state.use_cpr_space or type_info.patch_type==PatchType.ConditionKind: # CPR only includes ConditionKind
-                  case_list.append(case_info)
+                if state.use_cpr_space and type_info.patch_type==PatchType.ConditionKind: # CPR only includes ConditionKind
+                  if state.var_counts[f'{switch_info.switch_number}-{case_info.case_number}']>0:
+                    case_list.append(case_info)
+                elif state.mode==MSVMode.prophet and type_info.patch_type!=PatchType.ConditionKind: # Original Prophet doesn't have ConditionKind
+                  if f'{switch_info.switch_number}-{case_info.case_number}' not in state.var_counts.keys() or state.var_counts[f'{switch_info.switch_number}-{case_info.case_number}']>0:
+                    case_list.append(case_info)
+                else:
+                  if f'{switch_info.switch_number}-{case_info.case_number}' not in state.var_counts.keys() or state.var_counts[f'{switch_info.switch_number}-{case_info.case_number}']>0:
+                    case_list.append(case_info)
+                
                 state.switch_case_map[f"{switch_info.switch_number}-{case_info.case_number}"] = case_info
 
               if len(type_info.case_info_list)==0:
@@ -180,7 +189,6 @@ def read_info(state: MSVState) -> None:
       temp_score: float = priority["score"]
       store = (temp_file, temp_line, temp_score)
       state.priority_list.append(store)
-    read_var_count(state,info['sizes'])
   #Add original to switch_case_map
   temp_file = FileInfo('original')
   temp_line = LineInfo(temp_file, 0)
