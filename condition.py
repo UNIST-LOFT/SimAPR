@@ -413,7 +413,7 @@ class MyCondition:
 
   def get_same_record(self,record:list,values:list,node:ConstantInfo,conditions:List[ConstantInfo]):
     current_var=node.variable
-    if len(values)<current_var.variable:
+    if len(values)>current_var.variable:
       if check_expr(record,values[current_var.variable],node.variable.parent.operator_type,node.constant_value):
         self.state.msv_logger.info(f'Same record {node.variable.parent.operator_type.value}, {node.variable.variable}, {node.constant_value}')
         conditions.append(node)
