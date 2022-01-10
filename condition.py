@@ -377,8 +377,8 @@ class MyCondition:
   def extend_bst(self, values: List[List[int]]) -> None:
     for i,atom in enumerate(self.patch.operator_info.variable_info_list):
       current_var=atom
-      if len(values)<i:
-        for const in values[i]:
+      if len(values)<atom.variable:
+        for const in values[atom.variable]:
           if -1000<const<1000 and const not in current_var.used_const:
             current_var.used_const.add(int(const))
             if len(current_var.constant_info_list)<=0:
