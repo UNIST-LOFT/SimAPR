@@ -19,8 +19,7 @@ def run_fail_test(state: MSVState, selected_patch: List[PatchInfo], selected_tes
     except:  # timeout
       state.msv_logger.info("Timeout!")
       test_proc.kill()
-      so, se = test_proc.communicate()
-      is_timeout = True
+      return False,True
     result_str = so.decode('utf-8').strip()
     if result_str == "":
       state.msv_logger.info("Result: FAIL")

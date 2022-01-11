@@ -407,9 +407,10 @@ class MyCondition:
 
   def remove_same_record(self,conditions:List[ConstantInfo],result:bool) -> None:
     for cond in conditions:
-      result_handler.remove_patch(self.state,[PatchInfo(cond.variable.parent.parent,cond.variable.parent,cond.variable,cond)])
-      result_handler.update_result(self.state, [self.patch], result, 1, self.state.negative_test[0])
-      result_handler.append_result(self.state, [self.patch], result)
+      patch=[PatchInfo(cond.variable.parent.parent,cond.variable.parent,cond.variable,cond)]
+      result_handler.remove_patch(self.state,patch)
+      result_handler.update_result(self.state, patch, result, 1, self.state.negative_test[0])
+      result_handler.append_result(self.state, patch, result)
 
   def get_same_record(self,record:list,values:list,node:ConstantInfo,conditions:List[ConstantInfo]):
     current_var=node.variable
