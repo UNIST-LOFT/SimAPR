@@ -7,7 +7,7 @@ def run_fail_test(state: MSVState, selected_patch: List[PatchInfo], selected_tes
     state.msv_logger.warning(
         f"@{state.cycle} Test [{selected_test}]  with {PatchInfo.list_to_str(selected_patch)}")
     args = state.args + [str(selected_test)]
-    args = args[0:1] + ['-i', selected_patch[0].to_str()] + args[1:]
+    args = args[0:1] + ['-i', selected_patch[0].to_str(),'-t',str(state.timeout)] + args[1:]
     state.msv_logger.debug(' '.join(args))
     test_proc = subprocess.Popen(
         args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
@@ -17,9 +17,9 @@ def run_fail_test(state: MSVState, selected_patch: List[PatchInfo], selected_tes
     try:
       so, se = test_proc.communicate(timeout=(state.timeout/1000))
     except:  # timeout
+      state.msv_logger.info("Timeout!")
       test_proc.kill()
       so, se = test_proc.communicate()
-      state.msv_logger.info("Timeout!")
       is_timeout = True
     result_str = so.decode('utf-8').strip()
     if result_str == "":

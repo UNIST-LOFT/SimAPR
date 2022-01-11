@@ -697,7 +697,6 @@ class MSVState:
   msv_path: str
   work_dir: str
   out_dir: str
-  timeout: int
   cycle: int
   start_time: float
   last_save_time: float
@@ -760,3 +759,4 @@ class MSVState:
     self.use_fixed_const=False
     self.used_patch = list()
     self.critical_map = dict()
+    self.timeout=60000
