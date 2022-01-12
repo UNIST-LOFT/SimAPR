@@ -100,7 +100,7 @@ class MSV:
         if end > total_test:
           end = total_test
         self.state.msv_logger.info(f"Validating {start}-{end}")
-        result, fail = run_test.run_pass_test(self.state, [patch], is_initialize=True, pass_tests=self.state.positive_test[start:end])
+        result, fail = run_test.run_pass_test(self.state, [patch], is_initialize=True)
         fail_tests.update(fail)
       for fail in fail_tests:
         self.state.msv_logger.warning(f"Removing failed pass test: {fail}")
