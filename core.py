@@ -284,6 +284,9 @@ class Profile:
         if func == "":
           continue
         profile_file = f"/tmp/{profile}_{func}_profile.log"
+        if not os.path.exists(profile_file):
+          state.msv_logger.debug(f"Profile file not found: {profile_file}")
+          continue
         with open(profile_file, "r") as p:
           for line in p.readlines():
             if line.startswith("#"):
