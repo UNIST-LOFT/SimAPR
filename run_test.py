@@ -1,5 +1,5 @@
 from core import *
-
+import psutil
 
 def run_fail_test(state: MSVState, selected_patch: List[PatchInfo], selected_test: int, new_env: Dict[str, str]) -> Tuple[bool, bool]:
     state.cycle += 1
@@ -18,6 +18,9 @@ def run_fail_test(state: MSVState, selected_patch: List[PatchInfo], selected_tes
       so, se = test_proc.communicate(timeout=(state.timeout/1000))
     except:  # timeout
       state.msv_logger.info("Timeout!")
+      pid=test_proc.pid
+      for child in psutil.Process(pid).children(True):
+        child.kill()
       test_proc.kill()
       return False,True
     result_str = so.decode('utf-8').strip()
