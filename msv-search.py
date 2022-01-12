@@ -247,6 +247,7 @@ def copy_previous_results(state: MSVState) -> None:
       os.remove(os.path.join(state.out_dir, result_file))
 
 def main(argv: list):
+  sys.setrecursionlimit(2002) # Reset recursion limit, for preventing RecursionError
   state = parse_args(argv)
   copy_previous_results(state)
   state.msv_logger = set_logger(state)

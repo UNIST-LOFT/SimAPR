@@ -1,5 +1,5 @@
 from core import *
-
+import psutil
 
 def run_fail_test(state: MSVState, selected_patch: List[PatchInfo], selected_test: int, new_env: Dict[str, str]) -> Tuple[bool, bool]:
     state.cycle += 1
@@ -7,7 +7,7 @@ def run_fail_test(state: MSVState, selected_patch: List[PatchInfo], selected_tes
     state.msv_logger.warning(
         f"@{state.cycle} Test [{selected_test}]  with {PatchInfo.list_to_str(selected_patch)}")
     args = state.args + [str(selected_test)]
-    args = args[0:1] + ['-i', selected_patch[0].to_str()] + args[1:]
+    args = args[0:1] + ['-i', selected_patch[0].to_str(),'-t',str(state.timeout)] + args[1:]
     state.msv_logger.debug(' '.join(args))
     test_proc = subprocess.Popen(
         args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
@@ -17,10 +17,12 @@ def run_fail_test(state: MSVState, selected_patch: List[PatchInfo], selected_tes
     try:
       so, se = test_proc.communicate(timeout=(state.timeout/1000))
     except:  # timeout
-      test_proc.kill()
-      so, se = test_proc.communicate()
       state.msv_logger.info("Timeout!")
-      is_timeout = True
+      pid=test_proc.pid
+      for child in psutil.Process(pid).children(True):
+        child.kill()
+      test_proc.kill()
+      return False,True
     result_str = so.decode('utf-8').strip()
     if result_str == "":
       state.msv_logger.info("Result: FAIL")
@@ -46,7 +48,7 @@ def run_pass_test(state: MSVState, patch: List[PatchInfo], is_initialize: bool =
     group_num = 1
   args = state.args
   args = args[0:1] + ['-i', patch[0].to_str(), '-j',
-                      str(state.max_parallel_cpu)] + args[1:]
+                      str(state.max_parallel_cpu),'-t',str(state.timeout/1000)] + args[1:]
   for i in range(group_num):
     tests = list()
     if len(pass_tests) > 0:

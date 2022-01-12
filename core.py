@@ -587,12 +587,8 @@ class PatchInfo:
           self.variable_info.constant_info_list.remove(self.constant_info)
           if len(self.variable_info.constant_info_list) == 0:
             self.operator_info.variable_info_list.remove(self.variable_info)
-            with open("p1.log",'a') as f:
-              f.write(f'{self.file_info.file_name}-{self.line_info.line_number}-{self.switch_info.switch_number}-{self.type_info.patch_type}-{self.case_info.case_number}-{self.operator_info.operator_type}-{self.variable_info.variable}: {self.variable_info.pf.pass_count}/{self.variable_info.pf.pass_count+self.variable_info.pf.fail_count}')
           if len(self.operator_info.variable_info_list) == 0:
             self.case_info.operator_info_list.remove(self.operator_info)
-            with open("p1.log",'a') as f:
-              f.write(f'{self.file_info.file_name}-{self.line_info.line_number}-{self.switch_info.switch_number}-{self.type_info.patch_type}-{self.case_info.case_number}-{self.operator_info.operator_type}: {self.variable_info.pf.pass_count}/{self.variable_info.pf.pass_count+self.variable_info.pf.fail_count}')
 
         else:
           node=self.constant_info
@@ -629,10 +625,13 @@ class PatchInfo:
             if next is None:
               node.variable.constant_info_list.clear()
             else:
-              node.variable.constant_info_list[0]=next
-          elif node.parent.left is node:
+              if len(node.variable.constant_info_list)==0:
+                node.variable.constant_info_list.append(next)
+              else:
+                node.variable.constant_info_list[0]=next
+          elif node.parent.left is not None and node.parent.left == node:
             node.parent.left=next
-          elif node.parent.right is node:
+          elif node.parent.right == node:
             node.parent.right=next
 
           is_remove=True
@@ -654,20 +653,12 @@ class PatchInfo:
 
     if len(self.type_info.case_info_list) == 0:
       self.switch_info.type_info_list.remove(self.type_info)
-      with open(os.path.join(state.out_dir, "p1.log"),'a') as f:
-        f.write(f'{self.file_info.file_name}-{self.line_info.line_number}-{self.switch_info.switch_number}-{self.type_info.patch_type}: {self.type_info.pf.pass_count}/{self.type_info.pf.pass_count+self.type_info.pf.fail_count}\n')
     if len(self.switch_info.type_info_list) == 0:
       self.line_info.switch_info_list.remove(self.switch_info)
-      with open(os.path.join(state.out_dir, "p1.log"),'a') as f:
-        f.write(f'{self.file_info.file_name}-{self.line_info.line_number}-{self.switch_info.switch_number}: {self.switch_info.pf.pass_count}/{self.switch_info.pf.pass_count+self.switch_info.pf.fail_count}\n')
     if len(self.line_info.switch_info_list) == 0:
       self.file_info.line_info_list.remove(self.line_info)
-      with open(os.path.join(state.out_dir, "p1.log"),'a') as f:
-        f.write(f'{self.file_info.file_name}-{self.line_info.line_number}: {self.line_info.pf.pass_count}/{self.line_info.pf.pass_count+self.line_info.pf.fail_count}\n')
     if len(self.file_info.line_info_list) == 0:
       state.patch_info_list.remove(self.file_info)
-      with open(os.path.join(state.out_dir, "p1.log"),'a') as f:
-        f.write(f'{self.file_info.file_name}: {self.file_info.pf.pass_count}/{self.file_info.pf.pass_count+self.file_info.pf.fail_count}\n')
 
 
   def to_json_object(self) -> dict:
@@ -735,8 +726,8 @@ class MSVState:
   msv_path: str
   work_dir: str
   out_dir: str
-  timeout: int
   cycle: int
+  timeout: int
   start_time: float
   last_save_time: float
   is_alive: bool
@@ -785,7 +776,6 @@ class MSVState:
     self.patch_info_map = dict()
     self.switch_case_map = dict()
     self.selected_patch = None
-    self.timeout = 10000
     self.patch_info_list = list()
     self.negative_test = list()
     self.positive_test = list()
@@ -800,3 +790,4 @@ class MSVState:
     self.used_patch = list()
     self.critical_map = dict()
     self.profile_diff = None
+    self.timeout = 60000
