@@ -42,7 +42,7 @@ def run_pass_test(state: MSVState, patch: List[PatchInfo], is_initialize: bool =
       f"@{state.cycle} Run pass test with {PatchInfo.list_to_str(patch)}")
   total_test = len(state.positive_test)
   group_num = (total_test + MAX_TEST_ONCE - 1) // MAX_TEST_ONCE
-  if len(state.failed_positive_test) > 0:
+  if len(state.failed_positive_test) > 0 or len(state.negative_test) > 1:
     group_num += 1
   if len(pass_tests) > 0:
     group_num = 1
@@ -55,10 +55,11 @@ def run_pass_test(state: MSVState, patch: List[PatchInfo], is_initialize: bool =
       for test in pass_tests:
         tests.append(str(test))
     else:
-      if i == 0 and len(state.failed_positive_test) > 0:
+      if i == 0 and (len(state.failed_positive_test) > 0 or len(state.negative_test) > 1):
         # For the first group, use failed positive tests
-        # tests.extend(state.negative_test[1:])
         for j in state.failed_positive_test:
+          tests.append(str(j))
+        for j in state.negative_test[1:]:
           tests.append(str(j))
       else:
         start = i * MAX_TEST_ONCE
