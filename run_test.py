@@ -58,7 +58,8 @@ def run_pass_test(state: MSVState, patch: List[PatchInfo], is_initialize: bool =
       if i == 0 and len(state.failed_positive_test) > 0:
         # For the first group, use failed positive tests
         # tests.extend(state.negative_test[1:])
-        tests.extend(state.failed_positive_test)
+        for j in state.failed_positive_test:
+          tests.append(str(j))
       else:
         start = i * MAX_TEST_ONCE
         end = min(start + MAX_TEST_ONCE, total_test)
