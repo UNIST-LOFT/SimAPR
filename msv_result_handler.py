@@ -2,8 +2,17 @@ from matplotlib.patches import Patch
 from core import *
 from typing import List, Set, Dict, Tuple
 
-def update_result(state: MSVState, selected_patch: List[PatchInfo], run_result: bool, n: float, test: int) -> None:
+def update_result(state: MSVState, selected_patch: List[PatchInfo], run_result: bool, n: float, test: int, new_env: Dict[str, str]) -> None:
   #if state.use_hierarchical_selection >= 2:
+  dist = 100.0
+  output_dist_file = new_env["MSV_OUTPUT_DISTANCE_FILE"]
+  if output_dist_file != "":
+    if os.path.exists(output_dist_file):
+      with open(output_dist_file, 'r') as f:
+        distance_file = f.read()
+        dist = float(distance_file.strip())
+      os.remove(output_dist_file)
+  state.msv_logger.debug(f"Output distance at {output_dist_file}: {dist}")
   update_result_critical(state, selected_patch, run_result, test)
   for patch in selected_patch:
     patch.update_result(run_result, n,state.use_fixed_beta)

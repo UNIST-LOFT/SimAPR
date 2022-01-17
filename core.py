@@ -10,6 +10,7 @@ import logging
 import random
 from enum import Enum
 from typing import List, Dict, Tuple, Set
+import uuid
 
 
 class MSVMode(Enum):
@@ -457,6 +458,9 @@ class MSVEnvVar:
   def get_new_env(state: 'MSVState', patch: List['PatchInfo'], test: int, mode: EnvVarMode = EnvVarMode.basic,set_tmp_file=True) -> Dict[str, str]:
     new_env = os.environ.copy()
     new_env["__PID"] = f"{test}-{patch[0].to_str_sw_cs()}"
+    new_env["MSV_UUID"] = str(uuid.uuid4())
+    new_env["MSV_OUTPUT_DISTANCE_FILE"] = os.path.join("/tmp", f"{new_env['MSV_UUID']}.out")
+    new_env["MSV_PATH"] = state.msv_path
     for patch_info in patch:
       sw = patch_info.switch_info.switch_number
       cs = patch_info.case_info.case_number

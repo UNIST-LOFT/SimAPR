@@ -12,7 +12,7 @@ pip install -r requirements.txt
 
 Run msv-search
 ```
-msv-search.py -o out-dir -w work-dir -m mode -t timeout -- php-test.py src tests workdir
+msv-search.py -o out-dir -w work-dir -m mode -t timeout -p path-to-msv -- php-test.py src tests workdir
 ```
 
 Make plot from result

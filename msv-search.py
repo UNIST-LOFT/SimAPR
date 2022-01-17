@@ -216,6 +216,9 @@ def read_repair_conf(state: MSVState) -> None:
       key = line.split("=")[0]
       value = line.split("=")[1]
       conf_dict[key] = value
+  if 'tools_dir' in conf_dict:
+    if state.msv_path is None or state.msv_path == "":
+      state.msv_path = os.path.pardir(conf_dict['tools_dir'])
   revlog = conf_dict['revision_file']
   if state.new_revlog != "":
     revlog = state.new_revlog
