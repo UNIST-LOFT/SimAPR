@@ -17,7 +17,7 @@ from msv import MSV
 
 
 def parse_args(argv: list) -> MSVState:
-  longopts = ["help", "outdir=", "workdir=", "timeout=", "msvpath=", "time-limit=", "cycle-limit=",
+  longopts = ["help", "outdir=", "workdir=", "timeout=", "msv-path=", "time-limit=", "cycle-limit=",
               "mode=", "max-parallel-cpu=",'skip-valid','use-fixed-beta','use-cpr-space','use-fixed-const',
               "use-condition-synthesis", "use-fl", "use-hierarchical-selection=", "use-pass-test",
               "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=']
@@ -36,7 +36,7 @@ def parse_args(argv: list) -> MSVState:
       state.timeout = int(a)
     elif o in ['-w', '--workdir']:
       state.work_dir = a
-    elif o in ['-p', '--msvpath']:
+    elif o in ['-p', '--msv-path']:
       state.msv_path = a
     elif o in ['-c', '--correct-patch']:
       state.cycle_limit = int(a)

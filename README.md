@@ -21,6 +21,7 @@ plot.py -i input-dir -o out-file.png -t title -c correct-patch
 ```
 
 ## 3. Options
+* `-p` path-to-msv (`--msv-path`)
 * `-o` output-directory (`--outdir`)
 * `-w` work-directory (`--workdir`)
 * `-M` fuzzer-name (`--main-node`)
