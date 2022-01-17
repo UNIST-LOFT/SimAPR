@@ -808,6 +808,7 @@ class MSVState:
   profile_diff: ProfileDiff
   def __init__(self) -> None:
     self.mode = MSVMode.guided
+    self.msv_path = ""
     self.cycle = 0
     self.start_time = time.time()
     self.last_save_time = self.start_time
