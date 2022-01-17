@@ -98,6 +98,8 @@ class FileInfo:
     self.positive_pf = PassFail()
     self.fl_score=-1
     self.profile_diff: 'ProfileDiff' = None
+    self.out_dist: float = 0.0
+    self.update_count: int = 0
 
   def __hash__(self) -> int:
     return hash(self.file_name)
@@ -114,6 +116,8 @@ class LineInfo:
     self.positive_pf = PassFail()
     self.fl_score=0
     self.profile_diff: 'ProfileDiff' = None
+    self.out_dist: float = 0.0
+    self.update_count: int = 0
   def __hash__(self) -> int:
     return hash(self.line_number)
   def __eq__(self, other) -> bool:
@@ -129,6 +133,8 @@ class SwitchInfo:
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
     self.profile_diff: 'ProfileDiff' = None
+    self.out_dist: float = 0.0
+    self.update_count: int = 0
   def __hash__(self) -> int:
     return hash(self.switch_number)
   def __eq__(self, other) -> bool:
@@ -143,6 +149,8 @@ class TypeInfo:
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
     self.profile_diff: 'ProfileDiff' = None
+    self.out_dist: float = 0.0
+    self.update_count: int = 0
   def __hash__(self) -> int:
     return hash(self.patch_type)
   def __eq__(self, other) -> bool:
@@ -160,6 +168,8 @@ class CaseInfo:
     self.positive_pf = PassFail()
     self.processed=False # for prophet condition
     self.profile_diff: 'ProfileDiff' = None
+    self.out_dist: float = 0.0
+    self.update_count: int = 0
   def __hash__(self) -> int:
     return hash(self.case_number)
   def __eq__(self, other) -> bool:
@@ -180,6 +190,8 @@ class OperatorInfo:
     self.positive_pf = PassFail()
     self.var_count=var_count
     self.profile_diff: 'ProfileDiff' = None
+    self.out_dist: float = 0.0
+    self.update_count: int = 0
   def __hash__(self) -> int:
     return self.operator_type.value
   def __eq__(self, other) -> bool:
@@ -197,6 +209,8 @@ class VariableInfo:
     self.positive_pf = PassFail()
     self.used_const=set()
     self.profile_diff: 'ProfileDiff' = None
+    self.out_dist: float = 0.0
+    self.update_count: int = 0
   def to_str(self) -> str:
     return f"{self.parent.parent.parent.parent.switch_number}-{self.parent.parent.case_number}-{self.parent}-{self.variable}"
   def __str__(self) -> str:
@@ -217,6 +231,8 @@ class ConstantInfo:
     self.left:ConstantInfo=None
     self.right:ConstantInfo=None
     self.profile_diff: 'ProfileDiff' = None
+    self.out_dist: float = 0.0
+    self.update_count: int = 0
   def __hash__(self) -> int:
     return hash(self.constant_value)
   def __eq__(self, other) -> bool:
@@ -517,6 +533,33 @@ class PatchInfo:
       if self.operator_info.operator_type!=OperatorType.ALL_1:
         self.variable_info.pf.update(result, n)
         self.constant_info.pf.update(result, n)
+  def update_result_out_dist(self, result: bool, dist: float, use_fixed_beta: bool) -> None:
+    tmp = self.case_info.update_count * self.case_info.out_dist
+    self.case_info.out_dist = (tmp + dist) / (self.case_info.update_count + 1)
+    self.case_info.update_count += 1
+    tmp = self.type_info.update_count * self.type_info.out_dist
+    self.type_info.out_dist = (tmp + dist) / (self.type_info.update_count + 1)
+    self.type_info.update_count += 1
+    tmp = self.switch_info.update_count * self.switch_info.out_dist
+    self.switch_info.out_dist = (tmp + dist) / (self.switch_info.update_count + 1)
+    self.switch_info.update_count += 1
+    tmp = self.line_info.update_count * self.line_info.out_dist
+    self.line_info.out_dist = (tmp + dist) / (self.line_info.update_count + 1)
+    self.line_info.update_count += 1
+    tmp = self.file_info.update_count * self.file_info.out_dist
+    self.file_info.out_dist = (tmp + dist) / (self.file_info.update_count + 1)
+    self.file_info.update_count += 1
+    if self.is_condition and self.operator_info is not None:
+      tmp = self.operator_info.update_count * self.operator_info.out_dist
+      self.operator_info.out_dist = (tmp + dist) / (self.operator_info.update_count + 1)
+      self.operator_info.update_count += 1
+      if self.operator_info.operator_type != OperatorType.ALL_1:
+        tmp = self.variable_info.update_count * self.variable_info.out_dist
+        self.variable_info.out_dist = (tmp + dist) / (self.variable_info.update_count + 1)
+        self.variable_info.update_count += 1
+        tmp = self.constant_info.update_count * self.constant_info.out_dist
+        self.constant_info.out_dist = (tmp + dist) / (self.constant_info.update_count + 1)
+        self.constant_info.update_count += 1
   
   def add_profile(self, test: int, original: Profile, diff_set: Set[ProfileElement]) -> None:
     self.profile_diff = ProfileDiff(test, original, diff_set)
