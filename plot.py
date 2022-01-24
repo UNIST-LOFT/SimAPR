@@ -162,44 +162,41 @@ def afl_barchart(msv_result_file: str, title: str, work_dir: str, msv_dist_file:
   line_dist_list = list()
   for line_info in result_line_map:
     pass_count = result_line_map[line_info].pass_count
-    if pass_count == 0:
-      continue
+    # if pass_count == 0:
+    #   continue
     line_list.append(line_info.line_number)
     line_dist_list.append(line_info.out_dist)
     line_result_list.append(int(result_line_map[line_info].pass_count))
   index = np.arange(len(line_list))
   plt.clf()
-  plt.bar(index, line_result_list, color="b")
+  width = 0.15
+  plt.bar(index - width, line_result_list, width, color="b")
+  plt.bar(index + width, line_dist_list, width, color="r")
   plt.title(title)
   plt.xlabel(f"line(total{len(result_line_map)})")
-  plt.ylabel("pass(blue)")
+  plt.ylabel("pass(blue)/dist(red)")
   plt.xticks(index, line_list)
   out_file = os.path.join(os.path.dirname(msv_result_file), "line-plot.png")
   print(f"save to {out_file}")
   plt.savefig(out_file)
-  plt.clf()
-  plt.bar(index, line_dist_list, color="r")
-  plt.title(title)
-  plt.xlabel(f"line(total{len(result_line_map)})")
-  plt.ylabel("dist")
-  plt.xticks(index, line_list)
-  out_file = os.path.join(os.path.dirname(msv_result_file), "line-dist-plot.png")
-  print(f"save to {out_file}")
-  plt.savefig(out_file)
   switch_list = list()
   switch_result_list = list()
+  switch_dist_list = list()
   for switch_info in result_switch_map:
     pass_count = result_switch_map[switch_info].pass_count
     if pass_count == 0:
       continue
     switch_list.append(switch_info.switch_number)
+    switch_dist_list.append(switch_info.out_dist)
     switch_result_list.append(int(result_switch_map[switch_info].pass_count))
   index = np.arange(len(switch_list))
   plt.clf()
-  plt.bar(index, switch_result_list, color="b")
+  width = 0.1
+  plt.bar(index + width, switch_result_list, width, color="b")
+  plt.bar(index - width, switch_dist_list, width, color="r")
   plt.title(title)
   plt.xlabel(f"switch(total{len(result_switch_map)})")
-  plt.ylabel("pass(blue)/fail(red)")
+  plt.ylabel("pass(blue)/dist(red)")
   plt.xticks(index, switch_list)
   out_file = os.path.join(os.path.dirname(msv_result_file), "switch-plot.png")
   print(f"save to {out_file}")
