@@ -2,39 +2,38 @@ from core import *
 import psutil
 
 def run_fail_test(state: MSVState, selected_patch: List[PatchInfo], selected_test: int, new_env: Dict[str, str]) -> Tuple[bool, bool]:
-    state.cycle += 1
-    # set arguments
-    state.msv_logger.warning(
-        f"@{state.cycle} Test [{selected_test}]  with {PatchInfo.list_to_str(selected_patch)}")
-    args = state.args + [str(selected_test)]
-    args = args[0:1] + ['-i', selected_patch[0].to_str(),'-t',str(state.timeout)] + args[1:]
-    state.msv_logger.debug(' '.join(args))
-    test_proc = subprocess.Popen(
+  state.cycle += 1
+  # set arguments
+  state.msv_logger.warning(
+      f"@{state.cycle} Test [{selected_test}]  with {PatchInfo.list_to_str(selected_patch)}")
+  args = state.args + [str(selected_test)]
+  args = args[0:1] + ['-i', selected_patch[0].to_str(),'-t',str(state.timeout)] + args[1:]
+  state.msv_logger.debug(' '.join(args))
+  test_proc = subprocess.Popen(
         args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
-    so: bytes
-    se: bytes
-    is_timeout = False
-    try:
-      so, se = test_proc.communicate(timeout=(state.timeout/1000))
-    except:  # timeout
-      state.msv_logger.info("Timeout!")
-      pid=test_proc.pid
-      for child in psutil.Process(pid).children(True):
-        child.kill()
-      test_proc.kill()
-      return False,True
-    result_str = so.decode('utf-8').strip()
-    if result_str == "":
-      state.msv_logger.info("Result: FAIL")
-      return False, is_timeout
-    state.msv_logger.debug(result_str)
-    if int(result_str) == selected_test:
-      state.msv_logger.warning("Result: PASS")
-      return True, is_timeout
-    else:
-      state.msv_logger.warning("Result: FAIL")
-      return False, is_timeout
-
+  so: bytes
+  se: bytes
+  is_timeout = False
+  try:
+    so, se = test_proc.communicate(timeout=(state.timeout/1000))
+  except:  # timeout
+    state.msv_logger.info("Timeout!")
+    pid=test_proc.pid
+    for child in psutil.Process(pid).children(True):
+      child.kill()
+    test_proc.kill()
+    return False,True
+  result_str = so.decode('utf-8').strip()
+  if result_str == "":
+    state.msv_logger.info("Result: FAIL")
+    return False, is_timeout
+  state.msv_logger.debug(result_str)
+  if int(result_str) == selected_test:
+    state.msv_logger.warning("Result: PASS")
+    return True, is_timeout
+  else:
+    state.msv_logger.warning("Result: FAIL")
+    return False, is_timeout
 
 def run_pass_test(state: MSVState, patch: List[PatchInfo], is_initialize: bool = False, pass_tests: List[int] = []) -> Tuple[bool, Set[int]]:
   MAX_TEST_ONCE = 1000

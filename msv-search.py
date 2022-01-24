@@ -17,7 +17,7 @@ from msv import MSV
 
 
 def parse_args(argv: list) -> MSVState:
-  longopts = ["help", "outdir=", "workdir=", "timeout=", "msvpath=", "time-limit=", "cycle-limit=",
+  longopts = ["help", "outdir=", "workdir=", "timeout=", "msv-path=", "time-limit=", "cycle-limit=",
               "mode=", "max-parallel-cpu=",'skip-valid','use-fixed-beta','use-cpr-space','use-fixed-const',
               "use-condition-synthesis", "use-fl", "use-hierarchical-selection=", "use-pass-test",
               "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=']
@@ -36,7 +36,7 @@ def parse_args(argv: list) -> MSVState:
       state.timeout = int(a)
     elif o in ['-w', '--workdir']:
       state.work_dir = a
-    elif o in ['-p', '--msvpath']:
+    elif o in ['-p', '--msv-path']:
       state.msv_path = a
     elif o in ['-c', '--correct-patch']:
       state.cycle_limit = int(a)
@@ -75,6 +75,11 @@ def parse_args(argv: list) -> MSVState:
     state.out_dir = os.path.join(state.out_dir, sub_dir)
   if not os.path.exists(state.out_dir):
     os.makedirs(state.out_dir)
+  state.tmp_dir = os.path.join(state.out_dir, 'tmp')
+  if os.path.exists(state.tmp_dir):
+    shutil.rmtree(state.tmp_dir)
+  os.makedirs(state.tmp_dir)
+
   ## set options for Prophet search
   if state.mode==MSVMode.prophet:
     state.use_condition_synthesis=False
@@ -216,6 +221,9 @@ def read_repair_conf(state: MSVState) -> None:
       key = line.split("=")[0]
       value = line.split("=")[1]
       conf_dict[key] = value
+  if 'tools_dir' in conf_dict:
+    if state.msv_path is None or state.msv_path == "":
+      state.msv_path = os.path.dirname(conf_dict['tools_dir'])
   revlog = conf_dict['revision_file']
   if state.new_revlog != "":
     revlog = state.new_revlog

@@ -10,6 +10,7 @@ import logging
 import random
 from enum import Enum
 from typing import List, Dict, Tuple, Set
+import uuid
 
 
 class MSVMode(Enum):
@@ -97,6 +98,8 @@ class FileInfo:
     self.positive_pf = PassFail()
     self.fl_score=-1
     self.profile_diff: 'ProfileDiff' = None
+    self.out_dist: float = 0.0
+    self.update_count: int = 0
 
   def __hash__(self) -> int:
     return hash(self.file_name)
@@ -113,6 +116,8 @@ class LineInfo:
     self.positive_pf = PassFail()
     self.fl_score=0
     self.profile_diff: 'ProfileDiff' = None
+    self.out_dist: float = 0.0
+    self.update_count: int = 0
   def __hash__(self) -> int:
     return hash(self.line_number)
   def __eq__(self, other) -> bool:
@@ -128,6 +133,8 @@ class SwitchInfo:
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
     self.profile_diff: 'ProfileDiff' = None
+    self.out_dist: float = 0.0
+    self.update_count: int = 0
   def __hash__(self) -> int:
     return hash(self.switch_number)
   def __eq__(self, other) -> bool:
@@ -142,6 +149,8 @@ class TypeInfo:
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
     self.profile_diff: 'ProfileDiff' = None
+    self.out_dist: float = 0.0
+    self.update_count: int = 0
   def __hash__(self) -> int:
     return hash(self.patch_type)
   def __eq__(self, other) -> bool:
@@ -159,6 +168,8 @@ class CaseInfo:
     self.positive_pf = PassFail()
     self.processed=False # for prophet condition
     self.profile_diff: 'ProfileDiff' = None
+    self.out_dist: float = 0.0
+    self.update_count: int = 0
   def __hash__(self) -> int:
     return hash(self.case_number)
   def __eq__(self, other) -> bool:
@@ -179,6 +190,8 @@ class OperatorInfo:
     self.positive_pf = PassFail()
     self.var_count=var_count
     self.profile_diff: 'ProfileDiff' = None
+    self.out_dist: float = 0.0
+    self.update_count: int = 0
   def __hash__(self) -> int:
     return self.operator_type.value
   def __eq__(self, other) -> bool:
@@ -196,6 +209,8 @@ class VariableInfo:
     self.positive_pf = PassFail()
     self.used_const=set()
     self.profile_diff: 'ProfileDiff' = None
+    self.out_dist: float = 0.0
+    self.update_count: int = 0
   def to_str(self) -> str:
     return f"{self.parent.parent.parent.parent.switch_number}-{self.parent.parent.case_number}-{self.parent}-{self.variable}"
   def __str__(self) -> str:
@@ -216,6 +231,8 @@ class ConstantInfo:
     self.left:ConstantInfo=None
     self.right:ConstantInfo=None
     self.profile_diff: 'ProfileDiff' = None
+    self.out_dist: float = 0.0
+    self.update_count: int = 0
   def __hash__(self) -> int:
     return hash(self.constant_value)
   def __eq__(self, other) -> bool:
@@ -272,7 +289,7 @@ class Profile:
     self.profile_critical_dict: Dict[ProfileElement, ProfileElement] = dict()
     self.profile_critical_dict_values: Dict[ProfileElement, ProfileValue] = dict()
     state.msv_logger.debug(f"Profile: {profile}")
-    profile_meta_filename = f"/tmp/{profile}_profile.log"
+    profile_meta_filename = os.path.join(state.tmp_dir, f"{profile}_profile.log")
     if not os.path.exists(profile_meta_filename):
       state.msv_logger.debug(f"Profile meta file not found: {profile_meta_filename}")
       return
@@ -283,7 +300,7 @@ class Profile:
         func = func.strip()
         if func == "":
           continue
-        profile_file = f"/tmp/{profile}_{func}_profile.log"
+        profile_file = os.path.join(state.tmp_dir, f"{profile}_{func}_profile.log")
         if not os.path.exists(profile_file):
           state.msv_logger.debug(f"Profile file not found: {profile_file}")
           continue
@@ -457,6 +474,13 @@ class MSVEnvVar:
   def get_new_env(state: 'MSVState', patch: List['PatchInfo'], test: int, mode: EnvVarMode = EnvVarMode.basic,set_tmp_file=True) -> Dict[str, str]:
     new_env = os.environ.copy()
     new_env["__PID"] = f"{test}-{patch[0].to_str_sw_cs()}"
+    msv_uuid  = str(uuid.uuid4())
+    new_env["MSV_UUID"] = msv_uuid
+    new_env["MSV_OUTPUT_DISTANCE_FILE"] = os.path.join(state.tmp_dir, f"{msv_uuid}.out")
+    new_env["MSV_TMP_DIR"] = state.tmp_dir
+    new_env["MSV_PATH"] = state.msv_path
+    tmp_file = os.path.join(state.tmp_dir, f"{patch[0].to_str_sw_cs()}.tmp")
+    log_file = os.path.join(state.tmp_dir, f"{patch[0].to_str_sw_cs()}.log")
     for patch_info in patch:
       sw = patch_info.switch_info.switch_number
       cs = patch_info.case_info.case_number
@@ -464,22 +488,22 @@ class MSVEnvVar:
       if mode==EnvVarMode.record_it:
         new_env["IS_NEG"]='1'
         new_env['NEG_ARG']='1'
-        new_env['TMP_FILE']=f"/tmp/{sw}-{cs}.tmp"
+        new_env['TMP_FILE']= tmp_file
       elif mode==EnvVarMode.record_all_1:
         new_env["IS_NEG"]='1'
         new_env['NEG_ARG']='0'
-        new_env['TMP_FILE']=f"/tmp/{sw}-{cs}.tmp"
+        new_env['TMP_FILE']= tmp_file
       elif mode==EnvVarMode.collect_neg:
         new_env['IS_NEG']='RECORD1'
-        new_env['NEG_ARG']=f"/tmp/{sw}-{cs}.tmp"
-        new_env['TMP_FILE']=f"/tmp/{sw}-{cs}.log"
+        new_env['NEG_ARG']= tmp_file
+        new_env['TMP_FILE']= log_file
       elif mode==EnvVarMode.collect_pos:
         new_env['IS_NEG']='RECORD0'
-        new_env['TMP_FILE']=f"/tmp/{sw}-{cs}.log"
+        new_env['TMP_FILE']= log_file
       else:
         new_env["IS_NEG"] = "RUN"
         if set_tmp_file:
-          new_env["TMP_FILE"] = f"/tmp/{sw}-{cs}.tmp"
+          new_env["TMP_FILE"] = tmp_file
         else:
           # Do not use __PID
           del new_env["__PID"]
@@ -502,6 +526,7 @@ class PatchInfo:
     self.variable_info = var_info
     self.constant_info = con_info
     self.profile_diff: ProfileDiff = None
+    self.out_dist = -1.0
   def update_result(self, result: bool, n: float,use_fixed_beta:bool) -> None:
     self.case_info.pf.update(result, n)
     self.type_info.pf.update(result, n)
@@ -513,6 +538,34 @@ class PatchInfo:
       if self.operator_info.operator_type!=OperatorType.ALL_1:
         self.variable_info.pf.update(result, n)
         self.constant_info.pf.update(result, n)
+  def update_result_out_dist(self, result: bool, dist: float, use_fixed_beta: bool) -> None:
+    self.out_dist = dist
+    tmp = self.case_info.update_count * self.case_info.out_dist
+    self.case_info.out_dist = (tmp + dist) / (self.case_info.update_count + 1)
+    self.case_info.update_count += 1
+    tmp = self.type_info.update_count * self.type_info.out_dist
+    self.type_info.out_dist = (tmp + dist) / (self.type_info.update_count + 1)
+    self.type_info.update_count += 1
+    tmp = self.switch_info.update_count * self.switch_info.out_dist
+    self.switch_info.out_dist = (tmp + dist) / (self.switch_info.update_count + 1)
+    self.switch_info.update_count += 1
+    tmp = self.line_info.update_count * self.line_info.out_dist
+    self.line_info.out_dist = (tmp + dist) / (self.line_info.update_count + 1)
+    self.line_info.update_count += 1
+    tmp = self.file_info.update_count * self.file_info.out_dist
+    self.file_info.out_dist = (tmp + dist) / (self.file_info.update_count + 1)
+    self.file_info.update_count += 1
+    if self.is_condition and self.operator_info is not None:
+      tmp = self.operator_info.update_count * self.operator_info.out_dist
+      self.operator_info.out_dist = (tmp + dist) / (self.operator_info.update_count + 1)
+      self.operator_info.update_count += 1
+      if self.operator_info.operator_type != OperatorType.ALL_1:
+        tmp = self.variable_info.update_count * self.variable_info.out_dist
+        self.variable_info.out_dist = (tmp + dist) / (self.variable_info.update_count + 1)
+        self.variable_info.update_count += 1
+        tmp = self.constant_info.update_count * self.constant_info.out_dist
+        self.constant_info.out_dist = (tmp + dist) / (self.constant_info.update_count + 1)
+        self.constant_info.update_count += 1
   
   def add_profile(self, test: int, original: Profile, diff_set: Set[ProfileElement]) -> None:
     self.profile_diff = ProfileDiff(test, original, diff_set)
@@ -701,18 +754,21 @@ class MSVResult:
   time: float
   config: List[PatchInfo]
   result: bool
-  def __init__(self, iteration: int, time: float, config: List[PatchInfo], result: bool,pass_test_result:bool=False) -> None:
+  output_distance: float
+  def __init__(self, iteration: int, time: float, config: List[PatchInfo], result: bool,pass_test_result:bool=False, output_distance: float = 100.0) -> None:
     self.iteration = iteration
     self.time = time
     self.config = config
     self.result = result
     self.pass_result=pass_test_result
+    self.output_distance = output_distance
   def to_json_object(self) -> dict:
     object = dict()
     object["iteration"] = self.iteration
     object["time"] = self.time
     object["result"] = self.result
     object['pass_result']=self.pass_result
+    object["output_distance"] = self.output_distance
     conf_list = list()
     for patch in self.config:
       conf = patch.to_json_object()
@@ -759,8 +815,11 @@ class MSVState:
   msv_result: List[dict]   # List of json object by MSVResult.to_json_object()
   failed_positive_test: Set[int] # Set of positive test that failed
   profile_diff: ProfileDiff
+  tmp_dir = "/tmp"
+  max_dist = 100.0
   def __init__(self) -> None:
     self.mode = MSVMode.guided
+    self.msv_path = ""
     self.cycle = 0
     self.start_time = time.time()
     self.last_save_time = self.start_time
