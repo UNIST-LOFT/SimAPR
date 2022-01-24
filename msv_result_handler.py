@@ -18,6 +18,8 @@ def update_result_out_dist(state: MSVState, selected_patch: List[PatchInfo], run
         distance_file = f.read()
         dist = float(distance_file.strip())
       os.remove(output_dist_file)
+    else:
+      state.msv_logger.error(f"File {output_dist_file} does not exist")
   state.msv_logger.debug(f"Output distance at {output_dist_file}: {dist}")
   for patch in selected_patch:
     patch.update_result_out_dist(run_result, dist, state.use_fixed_beta)

@@ -475,7 +475,7 @@ class MSVEnvVar:
     new_env = os.environ.copy()
     new_env["__PID"] = f"{test}-{patch[0].to_str_sw_cs()}"
     new_env["MSV_UUID"] = str(uuid.uuid4())
-    new_env["MSV_OUTPUT_DISTANCE_FILE"] = os.path.join("/tmp", f"{new_env['MSV_UUID']}.out")
+    new_env["MSV_OUTPUT_DISTANCE_FILE"] = os.path.join(state.out_dir, "tmp", f"{new_env['MSV_UUID']}.out")
     new_env["MSV_PATH"] = state.msv_path
     for patch_info in patch:
       sw = patch_info.switch_info.switch_number
