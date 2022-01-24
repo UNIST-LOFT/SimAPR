@@ -474,8 +474,9 @@ class MSVEnvVar:
   def get_new_env(state: 'MSVState', patch: List['PatchInfo'], test: int, mode: EnvVarMode = EnvVarMode.basic,set_tmp_file=True) -> Dict[str, str]:
     new_env = os.environ.copy()
     new_env["__PID"] = f"{test}-{patch[0].to_str_sw_cs()}"
-    new_env["MSV_UUID"] = str(uuid.uuid4())
-    new_env["MSV_OUTPUT_DISTANCE_FILE"] = os.path.join(state.out_dir, "tmp", f"{new_env['MSV_UUID']}.out")
+    msv_uuid  = str(uuid.uuid4())
+    new_env["MSV_UUID"] = msv_uuid
+    new_env["MSV_OUTPUT_DISTANCE_FILE"] = os.path.join(state.out_dir, "tmp", f"{msv_uuid}.out")
     new_env["MSV_PATH"] = state.msv_path
     for patch_info in patch:
       sw = patch_info.switch_info.switch_number
@@ -522,6 +523,7 @@ class PatchInfo:
     self.variable_info = var_info
     self.constant_info = con_info
     self.profile_diff: ProfileDiff = None
+    self.out_dist = -1.0
   def update_result(self, result: bool, n: float,use_fixed_beta:bool) -> None:
     self.case_info.pf.update(result, n)
     self.type_info.pf.update(result, n)
@@ -534,6 +536,7 @@ class PatchInfo:
         self.variable_info.pf.update(result, n)
         self.constant_info.pf.update(result, n)
   def update_result_out_dist(self, result: bool, dist: float, use_fixed_beta: bool) -> None:
+    self.out_dist = dist
     tmp = self.case_info.update_count * self.case_info.out_dist
     self.case_info.out_dist = (tmp + dist) / (self.case_info.update_count + 1)
     self.case_info.update_count += 1
@@ -748,18 +751,21 @@ class MSVResult:
   time: float
   config: List[PatchInfo]
   result: bool
-  def __init__(self, iteration: int, time: float, config: List[PatchInfo], result: bool,pass_test_result:bool=False) -> None:
+  output_distance: float
+  def __init__(self, iteration: int, time: float, config: List[PatchInfo], result: bool,pass_test_result:bool=False, output_distance: float = 100.0) -> None:
     self.iteration = iteration
     self.time = time
     self.config = config
     self.result = result
     self.pass_result=pass_test_result
+    self.output_distance = output_distance
   def to_json_object(self) -> dict:
     object = dict()
     object["iteration"] = self.iteration
     object["time"] = self.time
     object["result"] = self.result
     object['pass_result']=self.pass_result
+    object["output_distance"] = self.output_distance
     conf_list = list()
     for patch in self.config:
       conf = patch.to_json_object()

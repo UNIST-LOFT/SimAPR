@@ -9,7 +9,7 @@ def update_result(state: MSVState, selected_patch: List[PatchInfo], run_result: 
   for patch in selected_patch:
     patch.update_result(run_result, n,state.use_fixed_beta)
 
-def update_result_out_dist(state: MSVState, selected_patch: List[PatchInfo], run_result: bool, test: int, new_env: Dict[str, str]) -> None:
+def update_result_out_dist(state: MSVState, selected_patch: List[PatchInfo], run_result: bool, test: int, new_env: Dict[str, str]) -> float:
   dist = 100.0
   output_dist_file = new_env["MSV_OUTPUT_DISTANCE_FILE"]
   if output_dist_file != "":
@@ -23,6 +23,7 @@ def update_result_out_dist(state: MSVState, selected_patch: List[PatchInfo], run
   state.msv_logger.debug(f"Output distance at {output_dist_file}: {dist}")
   for patch in selected_patch:
     patch.update_result_out_dist(run_result, dist, state.use_fixed_beta)
+  return dist
 
 def update_result_critical(state: MSVState, selected_patch: List[PatchInfo], run_result: bool, test: int) -> None:
   critical_pf = PassFail()
@@ -119,8 +120,8 @@ def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result:
   save_interval = 60 # 30 minutes
   tm = time.time()
   tm_interval = tm - state.start_time
-  result = MSVResult(state.cycle, tm_interval,
-                     selected_patch, test_result,pass_test_result)
+  result = MSVResult(state.cycle, tm_interval, selected_patch, 
+          test_result, pass_test_result, selected_patch[0].out_dist)
   state.msv_result.append(result.to_json_object())
   state.used_patch.append(result)
   with open(os.path.join(state.out_dir, "msv-result.csv"), 'a') as f:
