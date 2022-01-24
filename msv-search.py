@@ -75,9 +75,10 @@ def parse_args(argv: list) -> MSVState:
     state.out_dir = os.path.join(state.out_dir, sub_dir)
   if not os.path.exists(state.out_dir):
     os.makedirs(state.out_dir)
-  if os.path.exists(os.path.join(state.out_dir, 'tmp')):
-    shutil.rmtree(os.path.join(state.out_dir, 'tmp'))
-  os.makedirs(os.path.join(state.out_dir, 'tmp'))
+  state.tmp_dir = os.path.join(state.out_dir, 'tmp')
+  if os.path.exists(state.tmp_dir):
+    shutil.rmtree(state.tmp_dir)
+  os.makedirs(state.tmp_dir)
 
   ## set options for Prophet search
   if state.mode==MSVMode.prophet:

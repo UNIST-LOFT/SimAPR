@@ -289,7 +289,7 @@ class Profile:
     self.profile_critical_dict: Dict[ProfileElement, ProfileElement] = dict()
     self.profile_critical_dict_values: Dict[ProfileElement, ProfileValue] = dict()
     state.msv_logger.debug(f"Profile: {profile}")
-    profile_meta_filename = f"/tmp/{profile}_profile.log"
+    profile_meta_filename = os.path.join(state.tmp_dir, f"{profile}_profile.log")
     if not os.path.exists(profile_meta_filename):
       state.msv_logger.debug(f"Profile meta file not found: {profile_meta_filename}")
       return
@@ -300,7 +300,7 @@ class Profile:
         func = func.strip()
         if func == "":
           continue
-        profile_file = f"/tmp/{profile}_{func}_profile.log"
+        profile_file = os.path.join(state.tmp_dir, f"{profile}_{func}_profile.log")
         if not os.path.exists(profile_file):
           state.msv_logger.debug(f"Profile file not found: {profile_file}")
           continue
@@ -476,8 +476,11 @@ class MSVEnvVar:
     new_env["__PID"] = f"{test}-{patch[0].to_str_sw_cs()}"
     msv_uuid  = str(uuid.uuid4())
     new_env["MSV_UUID"] = msv_uuid
-    new_env["MSV_OUTPUT_DISTANCE_FILE"] = os.path.join(state.out_dir, "tmp", f"{msv_uuid}.out")
+    new_env["MSV_OUTPUT_DISTANCE_FILE"] = os.path.join(state.tmp_dir, f"{msv_uuid}.out")
+    new_env["MSV_TMP_DIR"] = state.tmp_dir
     new_env["MSV_PATH"] = state.msv_path
+    tmp_file = os.path.join(state.tmp_dir, f"{patch[0].to_str_sw_cs()}.tmp")
+    log_file = os.path.join(state.tmp_dir, f"{patch[0].to_str_sw_cs()}.log")
     for patch_info in patch:
       sw = patch_info.switch_info.switch_number
       cs = patch_info.case_info.case_number
@@ -485,22 +488,22 @@ class MSVEnvVar:
       if mode==EnvVarMode.record_it:
         new_env["IS_NEG"]='1'
         new_env['NEG_ARG']='1'
-        new_env['TMP_FILE']=f"/tmp/{sw}-{cs}.tmp"
+        new_env['TMP_FILE']= tmp_file
       elif mode==EnvVarMode.record_all_1:
         new_env["IS_NEG"]='1'
         new_env['NEG_ARG']='0'
-        new_env['TMP_FILE']=f"/tmp/{sw}-{cs}.tmp"
+        new_env['TMP_FILE']= tmp_file
       elif mode==EnvVarMode.collect_neg:
         new_env['IS_NEG']='RECORD1'
-        new_env['NEG_ARG']=f"/tmp/{sw}-{cs}.tmp"
-        new_env['TMP_FILE']=f"/tmp/{sw}-{cs}.log"
+        new_env['NEG_ARG']= tmp_file
+        new_env['TMP_FILE']= log_file
       elif mode==EnvVarMode.collect_pos:
         new_env['IS_NEG']='RECORD0'
-        new_env['TMP_FILE']=f"/tmp/{sw}-{cs}.log"
+        new_env['TMP_FILE']= log_file
       else:
         new_env["IS_NEG"] = "RUN"
         if set_tmp_file:
-          new_env["TMP_FILE"] = f"/tmp/{sw}-{cs}.tmp"
+          new_env["TMP_FILE"] = tmp_file
         else:
           # Do not use __PID
           del new_env["__PID"]
@@ -812,6 +815,8 @@ class MSVState:
   msv_result: List[dict]   # List of json object by MSVResult.to_json_object()
   failed_positive_test: Set[int] # Set of positive test that failed
   profile_diff: ProfileDiff
+  tmp_dir = "/tmp"
+  max_dist = 100.0
   def __init__(self) -> None:
     self.mode = MSVMode.guided
     self.msv_path = ""
