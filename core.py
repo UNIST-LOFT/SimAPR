@@ -11,8 +11,6 @@ import random
 from enum import Enum
 from typing import List, Dict, Tuple, Set
 import uuid
-
-
 class MSVMode(Enum):
   prophet = 1
   guided = 2
@@ -20,6 +18,7 @@ class MSVMode(Enum):
   original = 4
   positive = 5
   validation = 6
+  spr = 7
 
 class PatchType(Enum):
   TightenConditionKind = 0
@@ -100,6 +99,7 @@ class FileInfo:
     self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = 0.0
     self.update_count: int = 0
+    self.prophet_score:list=[]
 
   def __hash__(self) -> int:
     return hash(self.file_name)
@@ -118,6 +118,7 @@ class LineInfo:
     self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = 0.0
     self.update_count: int = 0
+    self.prophet_score:list=[]
   def __hash__(self) -> int:
     return hash(self.line_number)
   def __eq__(self, other) -> bool:
@@ -135,6 +136,7 @@ class SwitchInfo:
     self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = 0.0
     self.update_count: int = 0
+    self.prophet_score:list=[]
   def __hash__(self) -> int:
     return hash(self.switch_number)
   def __eq__(self, other) -> bool:
@@ -151,6 +153,7 @@ class TypeInfo:
     self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = 0.0
     self.update_count: int = 0
+    self.prophet_score:list=[]
   def __hash__(self) -> int:
     return hash(self.patch_type)
   def __eq__(self, other) -> bool:
@@ -170,6 +173,7 @@ class CaseInfo:
     self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = 0.0
     self.update_count: int = 0
+    self.prophet_score:list=[]
   def __hash__(self) -> int:
     return hash(self.case_number)
   def __eq__(self, other) -> bool:
@@ -192,6 +196,7 @@ class OperatorInfo:
     self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = 0.0
     self.update_count: int = 0
+    self.prophet_score:list=[]
   def __hash__(self) -> int:
     return self.operator_type.value
   def __eq__(self, other) -> bool:
@@ -211,6 +216,7 @@ class VariableInfo:
     self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = 0.0
     self.update_count: int = 0
+    self.prophet_score:int
   def to_str(self) -> str:
     return f"{self.parent.parent.parent.parent.switch_number}-{self.parent.parent.case_number}-{self.parent}-{self.variable}"
   def __str__(self) -> str:
@@ -638,11 +644,22 @@ class PatchInfo:
     if self.is_condition and self.operator_info is not None and self.case_info.operator_info_list is not None:
       if self.operator_info.operator_type == OperatorType.ALL_1:
         self.case_info.operator_info_list.remove(self.operator_info)
+        self.case_info.prophet_score.remove(self.operator_info.prophet_score[0])
+        self.type_info.prophet_score.remove(self.operator_info.prophet_score[0])
+        self.switch_info.prophet_score.remove(self.operator_info.prophet_score[0])
+        self.line_info.prophet_score.remove(self.operator_info.prophet_score[0])
+        self.file_info.prophet_score.remove(self.operator_info.prophet_score[0])
       else:
         if not state.use_condition_synthesis:
           self.variable_info.constant_info_list.remove(self.constant_info)
           if len(self.variable_info.constant_info_list) == 0:
             self.operator_info.variable_info_list.remove(self.variable_info)
+            self.operator_info.prophet_score.remove(self.variable_info.prophet_score)
+            self.case_info.prophet_score.remove(self.variable_info.prophet_score)
+            self.type_info.prophet_score.remove(self.variable_info.prophet_score)
+            self.switch_info.prophet_score.remove(self.variable_info.prophet_score)
+            self.line_info.prophet_score.remove(self.variable_info.prophet_score)
+            self.file_info.prophet_score.remove(self.variable_info.prophet_score)
           if len(self.operator_info.variable_info_list) == 0:
             self.case_info.operator_info_list.remove(self.operator_info)
 
@@ -696,6 +713,12 @@ class PatchInfo:
               is_remove=False
           if is_remove:
             self.case_info.operator_info_list.remove(self.operator_info)
+            for score in self.operator_info.prophet_score:
+              self.case_info.prophet_score.remove(score)
+              self.type_info.prophet_score.remove(score)
+              self.switch_info.prophet_score.remove(score)
+              self.line_info.prophet_score.remove(score)
+              self.file_info.prophet_score.remove(score)
 
       if len(self.case_info.operator_info_list) == 0:
         self.type_info.case_info_list.remove(self.case_info)
@@ -704,6 +727,11 @@ class PatchInfo:
 
     else:
       self.type_info.case_info_list.remove(self.case_info)
+      for score in self.case_info.prophet_score:
+        self.type_info.prophet_score.remove(score)
+        self.switch_info.prophet_score.remove(score)
+        self.line_info.prophet_score.remove(score)
+        self.file_info.prophet_score.remove(score)
       with open(os.path.join(state.out_dir, "p1.log"),'a') as f:
         f.write(f'{self.file_info.file_name}-{self.line_info.line_number}-{self.switch_info.switch_number}-{self.type_info.patch_type}-{self.case_info.case_number}: {self.case_info.pf.pass_count}/{self.case_info.pf.pass_count+self.case_info.pf.fail_count}\n')
 

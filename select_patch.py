@@ -1,4 +1,5 @@
 from os import terminal_size
+from selectors import EpollSelector
 from condition import ProphetCondition
 from core import *
 
@@ -36,7 +37,7 @@ def __select_prophet_condition(selected_case:CaseInfo,state:MSVState):
     return selected_operator.variable_info_list[0].constant_info_list[0]
 
 
-def select_patch_prophet(state: MSVState) -> PatchInfo:
+def select_patch_SPR(state: MSVState) -> PatchInfo:
   # Select file and line by priority
   file_line: FileLine
   while len(state.priority_list) > 0:
@@ -88,6 +89,67 @@ def select_patch_prophet(state: MSVState) -> PatchInfo:
       
   patch = PatchInfo(selected_case, None, None, None)
   return patch
+
+def select_patch_prophet(state: MSVState) -> PatchInfo:
+  # select file
+  selected_file=state.patch_info_list[0]
+  for file in state.patch_info_list:
+    if sorted(file.prophet_score)[-1] > sorted(selected_file.prophet_score)[-1]:
+      selected_file=file
+
+  # select line
+  selected_line=selected_file.line_info_list[0]
+  for line in selected_file.line_info_list:
+    if sorted(line.prophet_score)[-1] > sorted(selected_line.prophet_score)[-1]:
+      selected_line=line
+  
+  # select switch
+  selected_switch=selected_line.switch_info_list[0]
+  for switch in selected_line.switch_info_list:
+    if sorted(switch.prophet_score)[-1] > sorted(selected_switch.prophet_score)[-1]:
+      selected_switch=switch
+
+  # select type
+  selected_type=selected_switch.type_info_list[0]
+  for type in selected_switch.type_info_list:
+    if sorted(type.prophet_score)[-1] > sorted(selected_type.prophet_score)[-1]:
+      selected_type=type
+
+  # select case
+  selected_case=selected_type.case_info_list[0]
+  for case in selected_type.case_info_list:
+    if sorted(case.prophet_score)[-1] > sorted(selected_case.prophet_score)[-1]:
+      selected_case=case
+
+  # handle condition patch
+  if selected_case.is_condition:
+    if selected_case.processed:
+      # if processed, select operator
+      selected_operator=selected_case.operator_info_list[0]
+      for oper in selected_case.operator_info_list:
+        if sorted(oper.prophet_score)[-1] > sorted(selected_operator.prophet_score)[-1]:
+          selected_operator=oper
+      
+      # select variable
+      if selected_operator.operator_type!=OperatorType.ALL_1:
+        selected_variable=selected_operator.variable_info_list[0]
+        for var in selected_operator.variable_info_list:
+          if var.prophet_score > selected_variable.prophet_score:
+            selected_variable=var
+
+        # select first constant
+        selected_constant=selected_variable.constant_info_list[0]
+        return PatchInfo(selected_case,selected_operator,selected_variable,selected_constant)
+      else:
+        # if oper is ALL_1, return it
+        return PatchInfo(selected_case,selected_operator,None,None)
+    else:
+      # if not processed, return it
+      return PatchInfo(selected_case,None,None,None)
+  
+  else:
+    # if patch is not condition, return it
+    return PatchInfo(selected_case,None,None,None)
 
 
 def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[PatchInfo]=[], test: int = -1) -> PatchInfo:
@@ -197,11 +259,16 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
         for op in OperatorType:
           if op==OperatorType.ALL_1:
             operator=OperatorInfo(selected_case_info,op,1)
+            operator.prophet_score.append(sorted(selected_case_info.prophet_score)[-1])
             selected_case_info.operator_info_list.append(operator)
           else:
             operator=OperatorInfo(selected_case_info,op,state.var_counts[f'{selected_switch_info.switch_number}-{selected_case_info.case_number}'])
+            for score in selected_case_info.prophet_score:
+              operator.prophet_score.append(score)
+
             for i in range(operator.var_count):
               new_var=VariableInfo(operator,i)
+              new_var.prophet_score=selected_case_info.prophet_score[i]
               const_zero=ConstantInfo(new_var,0)
               new_var.constant_info_list.append(const_zero)
               new_var.used_const.add(0)
@@ -296,6 +363,8 @@ def select_patch(state: MSVState, mode: MSVMode, test: int) -> List[PatchInfo]:
   selected_patch = list()
   if mode == MSVMode.prophet:
     return [select_patch_prophet(state)]
+  elif mode==MSVMode.spr:
+    return [select_patch_SPR(state)]
 
   for _ in range(state.use_multi_line):
     result = select_patch_guided(state, mode,selected_patch, test)

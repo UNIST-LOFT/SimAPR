@@ -106,6 +106,7 @@ class ProphetCondition:
 
         record=parse_record(temp_file)
         if record==None:
+          self.state.msv_logger.info('No record found in iteration!')
           break
         write_record_terminate(temp_file)
 
@@ -122,6 +123,7 @@ class ProphetCondition:
 
       if result:
         continue
+      self.state.msv_logger.info("Fail to record iteration, try all 1!")
       new_env = MSVEnvVar.get_new_env(self.state, patch, test,EnvVarMode.record_all_1)
       self.new_env = new_env
       temp_file = new_env["TMP_FILE"]
@@ -252,6 +254,14 @@ class ProphetCondition:
   def synthesize(self, record: List[List[int]], values: List[List[List[int]]]) -> Dict[OperatorType, OperatorInfo]:
     MAGIC_NUMBER=-123456789
 
+    # Remove temp score for selecting condition
+    for score in self.patch.case_info.prophet_score:
+      self.patch.type_info.prophet_score.remove(score)
+      self.patch.switch_info.prophet_score.remove(score)
+      self.patch.line_info.prophet_score.remove(score)
+      self.patch.file_info.prophet_score.remove(score)
+    self.patch.case_info.prophet_score.clear()
+    
     # create empty operators/variables
     operators: List[OperatorInfo]=[]
     for op in OperatorType:
@@ -259,9 +269,24 @@ class ProphetCondition:
       if op!=OperatorType.ALL_1:
         for i in range(len(values[0])):
           new_variable=VariableInfo(new_operator,i)
+          new_variable.prophet_score=self.patch.case_info.prophet_score[i]
           new_operator.variable_info_list.append(new_variable)
+          new_operator.prophet_score.append(new_variable.prophet_score)
+          
+          self.patch.case_info.prophet_score.append(new_variable.prophet_score)
+          self.patch.type_info.prophet_score.append(new_variable.prophet_score)
+          self.patch.switch_info.prophet_score.append(new_variable.prophet_score)
+          self.patch.line_info.prophet_score.append(new_variable.prophet_score)
+          self.patch.file_info.prophet_score.append(new_variable.prophet_score)
       else:
         new_operator.var_count=1
+        new_operator.prophet_score.append(sorted(self.patch.case_info.prophet_score)[-1])
+        self.patch.case_info.prophet_score.append(sorted(self.patch.case_info.prophet_score)[-1])
+        self.patch.type_info.prophet_score.append(sorted(self.patch.case_info.prophet_score)[-1])
+        self.patch.switch_info.prophet_score.append(sorted(self.patch.case_info.prophet_score)[-1])
+        self.patch.line_info.prophet_score.append(sorted(self.patch.case_info.prophet_score)[-1])
+        self.patch.file_info.prophet_score.append(sorted(self.patch.case_info.prophet_score)[-1])
+
       operators.append(new_operator)
 
     available_const=[]

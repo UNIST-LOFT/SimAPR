@@ -167,6 +167,20 @@ def read_info(state: MSVState) -> None:
                 is_condition = t.value == PatchType.TightenConditionKind.value or t.value==PatchType.LoosenConditionKind.value or t.value==PatchType.IfExitKind.value or \
                             t.value==PatchType.GuardKind.value or t.value==PatchType.SpecialGuardKind.value or t.value==PatchType.ConditionKind.value
                 case_info = CaseInfo(type_info, int(c), is_condition)
+
+                current_score=None
+                for prophet_score in switches['prophet_scores']:
+                  if prophet_score['case']==int(c):
+                    current_score=prophet_score['scores']
+                    break
+              
+                for score in current_score:
+                  case_info.prophet_score.append(score)
+                  type_info.prophet_score.append(score)
+                  switch_info.prophet_score.append(score)
+                  line_info.prophet_score.append(score)
+                  file_info.prophet_score.append(score)
+
                 if state.use_cpr_space and type_info.patch_type==PatchType.ConditionKind: # CPR only includes ConditionKind
                   if state.var_counts[f'{switch_info.switch_number}-{case_info.case_number}']>0:
                     case_list.append(case_info)
