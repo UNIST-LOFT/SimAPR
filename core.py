@@ -843,8 +843,10 @@ class MSVState:
   msv_result: List[dict]   # List of json object by MSVResult.to_json_object()
   failed_positive_test: Set[int] # Set of positive test that failed
   profile_diff: ProfileDiff
-  tmp_dir = "/tmp"
-  max_dist = 100.0
+  tmp_dir: str
+  max_dist: float
+  function_to_location_map: Dict[str, List[Tuple[str, int, int]]] # function_name -> [(file_name, line_start, line_end)]
+  test_to_location: Dict[int, Dict[str, Set[int]]] # test_number -> {file_name: set(line_number)}
   def __init__(self) -> None:
     self.mode = MSVMode.guided
     self.msv_path = ""
@@ -881,3 +883,7 @@ class MSVState:
     self.critical_map = dict()
     self.profile_diff = None
     self.timeout = 60000
+    self.tmp_dir = "/tmp"
+    self.max_dist = 100.0
+    self.function_to_location_map = dict()
+    self.test_to_location = dict()
