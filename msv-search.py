@@ -208,6 +208,14 @@ def read_info(state: MSVState) -> None:
       temp_score: float = priority["score"]
       store = (temp_file, temp_line, temp_score)
       state.priority_list.append(store)
+    for file in info["func_locations"]:
+      file_name = file["file"]
+      for func in file["functions"]:
+        func_name = func["function"]
+        begin = func["begin"]
+        end = func["end"]
+        state.function_to_location_map[func_name] = (file_name, begin, end)
+
   #Add original to switch_case_map
   temp_file = FileInfo('original')
   temp_line = LineInfo(temp_file, 0)
