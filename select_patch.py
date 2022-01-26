@@ -256,6 +256,8 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     if state.use_condition_synthesis:
       if not selected_case_info.processed:
         selected_case_info.processed=True
+        init_prophet_score=selected_case_info.prophet_score.copy()
+        selected_case_info.prophet_score.clear()
         for op in OperatorType:
           if op==OperatorType.ALL_1:
             operator=OperatorInfo(selected_case_info,op,1)
@@ -270,7 +272,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
           else:
             operator=OperatorInfo(selected_case_info,op,state.var_counts[f'{selected_switch_info.switch_number}-{selected_case_info.case_number}'])
             if op!=OperatorType.EQ:
-              for score in selected_case_info.prophet_score:
+              for score in init_prophet_score:
                 operator.prophet_score.append(score)
                 selected_case_info.prophet_score.append(score)
                 selected_type_info.prophet_score.append(score)
@@ -280,7 +282,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
 
             for i in range(operator.var_count):
               new_var=VariableInfo(operator,i)
-              new_var.prophet_score=selected_case_info.prophet_score[i]
+              new_var.prophet_score=init_prophet_score[i]
               const_zero=ConstantInfo(new_var,0)
               new_var.constant_info_list.append(const_zero)
               new_var.used_const.add(0)

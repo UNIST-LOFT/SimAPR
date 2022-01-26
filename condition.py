@@ -449,9 +449,9 @@ class MyCondition:
   def remove_same_record(self,conditions:List[ConstantInfo],result:bool) -> None:
     for cond in conditions:
       patch=[PatchInfo(cond.variable.parent.parent,cond.variable.parent,cond.variable,cond)]
-      result_handler.remove_patch(self.state,patch)
       result_handler.update_result(self.state, patch, result, 1, self.state.negative_test[0])
       result_handler.append_result(self.state, patch, result)
+      result_handler.remove_patch(self.state,patch)
 
   def get_same_record(self,record:list,values:list,node:ConstantInfo,conditions:List[ConstantInfo]):
     current_var=node.variable
@@ -474,10 +474,10 @@ class MyCondition:
     (pass_result, fail_tests) = run_test.run_pass_test(self.state, patch, False)
     self.state.msv_logger.info(f'Pass test {"pass" if pass_result else "fail"} with {patch[0].to_str()}')
     conditions.remove(target)
-    result_handler.remove_patch(self.state,patch)
     result_handler.update_result(self.state, patch, True, 1, self.state.negative_test[0], self.new_env)
     result_handler.update_result_positive(self.state, patch, pass_result, fail_tests)
     result_handler.append_result(self.state, patch, pass_result,pass_result)
+    result_handler.remove_patch(self.state,patch)
 
     ## if pass, remove from tree
     if pass_result:
@@ -497,10 +497,10 @@ class MyCondition:
         if not run_result:
           self.state.msv_logger.info(f"Test {str(fail_tests)} fail with {patch_next[0].to_str()}")
           conditions.remove(condition)
-          result_handler.remove_patch(self.state,patch_next)
           result_handler.update_result(self.state, patch_next, True, 1, self.state.negative_test[0], self.new_env)
           result_handler.update_result_positive(self.state, patch_next, result, fail_tests)
           result_handler.append_result(self.state, patch_next, True,result)
+          result_handler.remove_patch(self.state,patch_next)
         else:
           self.state.msv_logger.info(f"Test {str(fail_tests)} pass with {patch_next[0].to_str()}")
 
