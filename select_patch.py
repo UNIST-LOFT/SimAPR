@@ -282,7 +282,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
 
             for i in range(operator.var_count):
               new_var=VariableInfo(operator,i)
-              new_var.prophet_score=selected_case_info.prophet_score[i]
+              new_var.prophet_score=init_prophet_score[i]
               const_zero=ConstantInfo(new_var,0)
               new_var.constant_info_list.append(const_zero)
               new_var.used_const.add(0)
