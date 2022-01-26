@@ -649,11 +649,9 @@ class PatchInfo:
         self.switch_info.prophet_score.remove(self.operator_info.prophet_score[0])
         self.line_info.prophet_score.remove(self.operator_info.prophet_score[0])
         self.file_info.prophet_score.remove(self.operator_info.prophet_score[0])
-        del self.operator_info
       else:
         if not state.use_condition_synthesis:
           self.variable_info.constant_info_list.remove(self.constant_info)
-          del self.constant_info
           if len(self.variable_info.constant_info_list) == 0:
             self.operator_info.variable_info_list.remove(self.variable_info)
             self.operator_info.prophet_score.remove(self.variable_info.prophet_score)
@@ -662,10 +660,8 @@ class PatchInfo:
             self.switch_info.prophet_score.remove(self.variable_info.prophet_score)
             self.line_info.prophet_score.remove(self.variable_info.prophet_score)
             self.file_info.prophet_score.remove(self.variable_info.prophet_score)
-            del self.variable_info
           if len(self.operator_info.variable_info_list) == 0:
             self.case_info.operator_info_list.remove(self.operator_info)
-            del self.operator_info
 
         else:
           node=self.constant_info
@@ -710,7 +706,6 @@ class PatchInfo:
             node.parent.left=next
           elif node.parent.right == node:
             node.parent.right=next
-          del node
 
           is_remove=True
           for var in self.operator_info.variable_info_list:
@@ -724,13 +719,11 @@ class PatchInfo:
               self.switch_info.prophet_score.remove(score)
               self.line_info.prophet_score.remove(score)
               self.file_info.prophet_score.remove(score)
-            del self.operator_info
 
       if len(self.case_info.operator_info_list) == 0:
         self.type_info.case_info_list.remove(self.case_info)
         with open(os.path.join(state.out_dir, "p1.log"),'a') as f:
           f.write(f'{self.file_info.file_name}-{self.line_info.line_number}-{self.switch_info.switch_number}-{self.type_info.patch_type}-{self.case_info.case_number}: {self.case_info.pf.pass_count}/{self.case_info.pf.pass_count+self.case_info.pf.fail_count}\n')
-        del self.case_info
 
     else:
       self.type_info.case_info_list.remove(self.case_info)
@@ -741,20 +734,15 @@ class PatchInfo:
         self.file_info.prophet_score.remove(score)
       with open(os.path.join(state.out_dir, "p1.log"),'a') as f:
         f.write(f'{self.file_info.file_name}-{self.line_info.line_number}-{self.switch_info.switch_number}-{self.type_info.patch_type}-{self.case_info.case_number}: {self.case_info.pf.pass_count}/{self.case_info.pf.pass_count+self.case_info.pf.fail_count}\n')
-      del self.case_info
 
     if len(self.type_info.case_info_list) == 0:
       self.switch_info.type_info_list.remove(self.type_info)
-      del self.type_info
     if len(self.switch_info.type_info_list) == 0:
       self.line_info.switch_info_list.remove(self.switch_info)
-      del self.switch_info
     if len(self.line_info.switch_info_list) == 0:
       self.file_info.line_info_list.remove(self.line_info)
-      del self.line_info
     if len(self.file_info.line_info_list) == 0:
       state.patch_info_list.remove(self.file_info)
-      del self.file_info
 
 
   def to_json_object(self) -> dict:
