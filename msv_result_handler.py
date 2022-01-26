@@ -5,7 +5,7 @@ from typing import List, Set, Dict, Tuple
 def update_result(state: MSVState, selected_patch: List[PatchInfo], run_result: bool, n: float, test: int, new_env: Dict[str, str]) -> None:
   #if state.use_hierarchical_selection >= 2:
   update_result_out_dist(state, selected_patch, run_result, test, new_env)
-  update_result_critical(state, selected_patch, run_result, test)
+  # update_result_critical(state, selected_patch, run_result, test)
   for patch in selected_patch:
     patch.update_result(run_result, n,state.use_fixed_beta)
 
