@@ -510,12 +510,12 @@ class MyCondition:
     (result,record)=self.get_record()
     if record is None:
       self.state.msv_logger.warn(f'No record found')
-      result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0])
+      result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0],self.new_env)
       result_handler.append_result(self.state, [self.patch], False)
       result_handler.remove_patch(self.state, [self.patch])
       return None
 
-    values=self.collect_value(os.path.join(self.state.tmp_dir, f"{self.patch.to_str_sw_cs()}.tmp"),record)
+    values,new_env=self.collect_value(os.path.join(self.state.tmp_dir, f"{self.patch.to_str_sw_cs()}.tmp"),record)
     if values is None or len(values)==0:
       self.state.msv_logger.warn(f'No values found')
       result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0], self.new_env)

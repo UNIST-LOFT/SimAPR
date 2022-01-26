@@ -35,7 +35,7 @@ class MSV:
     result_handler.save_result(self.state)
 
   # Run one test with selected_patch (which can be multiple patches)
-  def run_test(self, selected_patch: List[PatchInfo], selected_test: int) -> bool:
+  def run_test(self, selected_patch: List[PatchInfo], selected_test: int,is_init:bool=False) -> bool:
 
     # prophet condition synthesis
     if selected_patch[0].case_info.is_condition and not self.state.use_condition_synthesis and \
@@ -59,6 +59,8 @@ class MSV:
       new_env = MSVEnvVar.get_new_env(self.state, selected_patch, selected_test)
       # run test
       run_result, is_timeout = run_test.run_fail_test(self.state, selected_patch, selected_test, new_env)
+      if is_init:
+        return run_result
 
       if self.state.use_pass_test and run_result:
         self.state.msv_logger.info("Run pass test!")
@@ -82,11 +84,18 @@ class MSV:
     # run original program and get original profile
     cs = self.state.switch_case_map["0-0"]
     patch = PatchInfo(cs, None, None, None)
-    for neg in self.state.negative_test:
-      run_result = self.run_test([patch], neg)
-      profile = Profile(self.state, f"{neg}-0-0")
-      self.state.profile_map[neg] = profile
-      self.state.critical_map[neg] = dict()
+    for neg in self.state.negative_test.copy():
+      run_result = self.run_test([patch], neg,True)
+      if run_result:
+        self.state.negative_test.remove(neg)
+        self.state.msv_logger.warning(f"Fail test {neg} pass in original program, remove from fail test!")
+        if len(self.state.negative_test)==0:
+          self.state.msv_logger.warning("Fail test not exist, exit!")
+          exit(0)
+      else:
+        profile = Profile(self.state, f"{neg}-0-0")
+        self.state.profile_map[neg] = profile
+        self.state.critical_map[neg] = dict()
     
     if not self.state.skip_valid:
       self.state.msv_logger.info(f"Validating {len(self.state.positive_test)} pass tests")
