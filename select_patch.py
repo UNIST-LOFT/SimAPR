@@ -394,7 +394,7 @@ def select_patch_seapr(state: MSVState, test: int) -> PatchInfo:
       max_ochiai = ochiai
       target = loc
   if not flag:
-    return select_patch_prophet(state)
+    return select_patch_SPR(state)
   if target is None:
     state.msv_logger.fatal("No target found")
     #return select_patch_seapr(state, test)
