@@ -27,6 +27,39 @@ def update_result_out_dist(state: MSVState, selected_patch: List[PatchInfo], run
     patch.update_result_out_dist(run_result, dist, state.use_fixed_beta)
   return dist
 
+def compare_patch_location(state: MSVState, base_loc: FileLine, other_loc: FileLine) -> PassFail:
+  # base_loc = base.location
+  # other_loc = other.location
+  if base_loc.file_info.file_name != other_loc.file_info.file_name:
+    return PassFail(0, 1)
+  if base_loc.line_info.line_number == other_loc.line_info.line_number:
+    return PassFail(1, 0)
+  for func in state.function_to_location_map:
+    loc = state.function_to_location_map[func]
+    if loc[0] == base_loc.file_info.file_name:
+      if loc[1] >= base_loc.line_info.line_number and loc[2] >= base_loc.line_info.line_number:
+        if loc[1] <= other_loc.line_info.line_number and loc[2] <= other_loc.line_info.line_number:
+          return PassFail(1, 0)
+        else:
+          return PassFail(0, 1)
+  return PassFail(0, 1)
+
+def update_result_seapr(state: MSVState, selected_patch: List[PatchInfo], is_high_quality: bool, test: int) -> None:
+  for patch in selected_patch:
+    case_info = patch.case_info
+    base_fl = case_info.location
+    for fl_str in state.priority_map:
+      fl = state.priority_map[fl_str]
+      loc_diff = compare_patch_location(state, base_fl, fl)
+      fl.seapr_e_pf.update(is_high_quality, loc_diff.pass_count)
+      fl.seapr_e_pf.update(not is_high_quality, loc_diff.fail_count)
+      fl.seapr_n_pf.update(not is_high_quality, loc_diff.pass_count)
+      fl.seapr_n_pf.update(is_high_quality, loc_diff.fail_count)
+      for cs in fl.case_map:
+        current_case = fl.case_map[cs]
+        current_case.seapr_e_pf.update(is_high_quality, loc_diff.pass_count)
+        current_case.seapr_e_pf.update(is_high_quality, loc_diff.fail_count)
+
 def update_result_critical(state: MSVState, selected_patch: List[PatchInfo], run_result: bool, test: int) -> None:
   critical_pf = PassFail()
   original_profile = state.profile_map[test]

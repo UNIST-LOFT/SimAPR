@@ -19,6 +19,7 @@ class MSVMode(Enum):
   positive = 5
   validation = 6
   spr = 7
+  seapr = 8
 
 class PatchType(Enum):
   TightenConditionKind = 0
@@ -174,6 +175,9 @@ class CaseInfo:
     self.out_dist: float = 0.0
     self.update_count: int = 0
     self.prophet_score:list=[]
+    self.location: FileLine = None
+    self.seapr_e_pf: PassFail = PassFail()
+    self.seapr_n_pf: PassFail = PassFail()
   def __hash__(self) -> int:
     return hash(self.case_number)
   def __eq__(self, other) -> bool:
@@ -261,6 +265,9 @@ class FileLine:
     self.file_info = fi
     self.line_info = li
     self.score = score
+    self.case_map: Dict[str, CaseInfo] = dict() # switch_number-case_number -> CaseInfo
+    self.seapr_e_pf: PassFail = PassFail()
+    self.seapr_n_pf: PassFail = PassFail()
   def to_str(self) -> str:
     return f"{self.file_info.file_name}:{self.line_info.line_number}"
   def __str__(self) -> str:
@@ -513,6 +520,7 @@ class MSVEnvVar:
         else:
           # Do not use __PID
           del new_env["__PID"]
+          del new_env["MSV_OUTPUT_DISTANCE_FILE"]
         if patch_info.is_condition:
           new_env[f"__{sw}_{cs}__OPERATOR"] = str(patch_info.operator_info.operator_type.value)
           if not patch_info.operator_info.operator_type==OperatorType.ALL_1:
@@ -845,7 +853,7 @@ class MSVState:
   profile_diff: ProfileDiff
   tmp_dir: str
   max_dist: float
-  function_to_location_map: Dict[str, List[Tuple[str, int, int]]] # function_name -> [(file_name, line_start, line_end)]
+  function_to_location_map: Dict[str, Tuple[str, int, int]] # function_name -> (file_name, line_start, line_end)
   test_to_location: Dict[int, Dict[str, Set[int]]] # test_number -> {file_name: set(line_number)}
   def __init__(self) -> None:
     self.mode = MSVMode.guided

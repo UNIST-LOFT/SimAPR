@@ -138,8 +138,9 @@ def read_info(state: MSVState) -> None:
         line_info.fl_score = score / max_priority * max_value
         if file_info.fl_score<line_info.fl_score:
           file_info.fl_score=line_info.fl_score
-        state.priority_map[f"{file_info.file_name}:{line_info.line_number}"] = FileLine(file_info, line_info, score)
-    
+        file_line = FileLine(file_info, line_info, score)
+        state.priority_map[f"{file_info.file_name}:{line_info.line_number}"] = file_line
+
         line_list.append(line_info)
         switch_list = line_info.switch_info_list
         for switches in line['switches']:
@@ -167,6 +168,7 @@ def read_info(state: MSVState) -> None:
                 is_condition = t.value == PatchType.TightenConditionKind.value or t.value==PatchType.LoosenConditionKind.value or t.value==PatchType.IfExitKind.value or \
                             t.value==PatchType.GuardKind.value or t.value==PatchType.SpecialGuardKind.value or t.value==PatchType.ConditionKind.value
                 case_info = CaseInfo(type_info, int(c), is_condition)
+                case_info.location = file_line
 
                 current_score=None
                 for prophet_score in switches['prophet_scores']:
@@ -190,8 +192,9 @@ def read_info(state: MSVState) -> None:
                 else:
                   if f'{switch_info.switch_number}-{case_info.case_number}' not in state.var_counts.keys() or state.var_counts[f'{switch_info.switch_number}-{case_info.case_number}']>0:
                     case_list.append(case_info)
-                
-                state.switch_case_map[f"{switch_info.switch_number}-{case_info.case_number}"] = case_info
+                sw_cs_key = f'{switch_info.switch_number}-{case_info.case_number}'
+                state.switch_case_map[sw_cs_key] = case_info
+                file_line.case_map[sw_cs_key] = case_info
 
               if len(type_info.case_info_list)==0:
                 type_list.remove(type_info)

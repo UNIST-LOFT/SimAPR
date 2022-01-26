@@ -359,12 +359,25 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     p3.clear()
     return PatchInfo(selected_case_info, selected_operator_info, selected_variable_info, selected_constant_info)
 
+def select_patch_seapr(state: MSVState, test: int) -> PatchInfo:
+  if test < 0:
+    test = state.negative_test[0]
+  target: CaseInfo = None
+  for cs in state.switch_case_map:
+    if cs == "0-0":
+      continue
+    case_info = state.switch_case_map[cs]
+    
+
+
 def select_patch(state: MSVState, mode: MSVMode, test: int) -> List[PatchInfo]:
   selected_patch = list()
   if mode == MSVMode.prophet:
     return [select_patch_prophet(state)]
   elif mode==MSVMode.spr:
     return [select_patch_SPR(state)]
+  if mode == MSVMode.seapr:
+    return [select_patch_seapr(state, test)]
 
   for _ in range(state.use_multi_line):
     result = select_patch_guided(state, mode,selected_patch, test)
