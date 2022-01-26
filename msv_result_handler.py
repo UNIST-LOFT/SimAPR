@@ -5,7 +5,8 @@ from typing import List, Set, Dict, Tuple
 def update_result(state: MSVState, selected_patch: List[PatchInfo], run_result: bool, n: float, test: int, new_env: Dict[str, str]) -> None:
   #if state.use_hierarchical_selection >= 2:
   update_result_out_dist(state, selected_patch, run_result, test, new_env)
-  update_result_critical(state, selected_patch, run_result, test)
+  #update_result_critical(state, selected_patch, run_result, test)
+  update_result_seapr(state, selected_patch, run_result, test)
   for patch in selected_patch:
     patch.update_result(run_result, n,state.use_fixed_beta)
 
@@ -52,13 +53,11 @@ def update_result_seapr(state: MSVState, selected_patch: List[PatchInfo], is_hig
       fl = state.priority_map[fl_str]
       loc_diff = compare_patch_location(state, base_fl, fl)
       fl.seapr_e_pf.update(is_high_quality, loc_diff.pass_count)
-      fl.seapr_e_pf.update(not is_high_quality, loc_diff.fail_count)
-      fl.seapr_n_pf.update(not is_high_quality, loc_diff.pass_count)
       fl.seapr_n_pf.update(is_high_quality, loc_diff.fail_count)
-      for cs in fl.case_map:
-        current_case = fl.case_map[cs]
-        current_case.seapr_e_pf.update(is_high_quality, loc_diff.pass_count)
-        current_case.seapr_e_pf.update(is_high_quality, loc_diff.fail_count)
+      # for cs in fl.case_map:
+      #   current_case = fl.case_map[cs]
+      #   current_case.seapr_e_pf.update(is_high_quality, loc_diff.pass_count)
+      #   current_case.seapr_e_pf.update(is_high_quality, loc_diff.fail_count)
 
 def update_result_critical(state: MSVState, selected_patch: List[PatchInfo], run_result: bool, test: int) -> None:
   critical_pf = PassFail()
@@ -152,7 +151,7 @@ def save_result(state: MSVState) -> None:
     json.dump(obj, f, indent=2)
 # Append result list, save result to file periodically
 def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result: bool,pass_test_result:bool=False) -> None:
-  save_interval = 60 # 30 minutes
+  save_interval = 1800 # 30 minutes
   tm = time.time()
   tm_interval = tm - state.start_time
   result = MSVResult(state.cycle, tm_interval, selected_patch, 
@@ -168,3 +167,15 @@ def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result:
 def remove_patch(state: MSVState, patches: List[PatchInfo]) -> None:
   for patch in patches:
     patch.remove_patch(state)
+  if state.mode == MSVMode.seapr:
+    for patch in patches:
+      case_info = patch.case_info
+      case_map = case_info.location.case_map
+      loc_str = case_info.location.to_str()
+      if case_info.is_condition:
+        if case_info.processed and len(case_info.operator_info_list) == 0:
+          del case_map[case_info.to_str()]
+      else:
+        del case_map[case_info.to_str()]
+      if len(case_map) == 0:
+        del state.priority_map[loc_str]

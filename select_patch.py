@@ -374,12 +374,42 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
 def select_patch_seapr(state: MSVState, test: int) -> PatchInfo:
   if test < 0:
     test = state.negative_test[0]
-  target: CaseInfo = None
-  for cs in state.switch_case_map:
-    if cs == "0-0":
-      continue
-    case_info = state.switch_case_map[cs]
-    
+  
+  target: FileLine = None
+  max_ochiai: float = -1.0
+  flag = False
+  for fl in state.priority_map:
+    loc = state.priority_map[fl]
+    e_f = loc.seapr_e_pf.pass_count
+    e_p = loc.seapr_e_pf.fail_count
+    n_f = loc.seapr_n_pf.pass_count
+    n_p = loc.seapr_n_pf.fail_count
+    ochiai = 0.0
+    if e_f > 0:
+      flag = True
+      ochiai = e_f / (((e_f + n_f) * (e_f + e_p)) ** 0.5)
+    if ochiai > max_ochiai:
+      max_ochiai = ochiai
+      target = loc
+  if not flag:
+    return select_patch_prophet(state)
+  if target is None:
+    state.msv_logger.fatal("No target found")
+    #return select_patch_seapr(state, test)
+  for cs in target.case_map:
+    case_info = target.case_map[cs]
+    if not case_info.is_condition:
+      return PatchInfo(case_info, None, None, None)
+    if not case_info.processed:
+      return PatchInfo(case_info, None, None, None)
+    for op_info in case_info.operator_info_list:
+      if op_info.operator_type == OperatorType.ALL_1:
+        return PatchInfo(case_info, op_info, None, None)
+      for var_info in op_info.variable_info_list:
+        if len(var_info.constant_info_list) == 0:
+          continue
+        for const_info in var_info.constant_info_list:
+          return PatchInfo(case_info, op_info, var_info, const_info)
 
 
 def select_patch(state: MSVState, mode: MSVMode, test: int) -> List[PatchInfo]:
