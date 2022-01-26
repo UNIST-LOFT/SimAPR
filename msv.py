@@ -85,7 +85,7 @@ class MSV:
     cs = self.state.switch_case_map["0-0"]
     patch = PatchInfo(cs, None, None, None)
     for neg in self.state.negative_test.copy():
-      run_result = self.run_test([patch], neg)
+      run_result = self.run_test([patch], neg,True)
       if run_result:
         self.state.negative_test.remove(neg)
         self.state.msv_logger.warning(f"Fail test {neg} pass in original program, remove from fail test!")
