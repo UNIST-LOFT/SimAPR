@@ -259,12 +259,24 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
         for op in OperatorType:
           if op==OperatorType.ALL_1:
             operator=OperatorInfo(selected_case_info,op,1)
-            operator.prophet_score.append(sorted(selected_case_info.prophet_score)[-1])
+            current_score=sorted(selected_case_info.prophet_score)[-1]
+            operator.prophet_score.append(current_score)
+            selected_case_info.prophet_score.append(current_score)
+            selected_type_info.prophet_score.append(current_score)
+            selected_switch_info.prophet_score.append(current_score)
+            selected_line_info.prophet_score.append(current_score)
+            selected_file_info.prophet_score.append(current_score)
             selected_case_info.operator_info_list.append(operator)
           else:
             operator=OperatorInfo(selected_case_info,op,state.var_counts[f'{selected_switch_info.switch_number}-{selected_case_info.case_number}'])
-            for score in selected_case_info.prophet_score:
-              operator.prophet_score.append(score)
+            if op!=OperatorType.EQ:
+              for score in selected_case_info.prophet_score:
+                operator.prophet_score.append(score)
+                selected_case_info.prophet_score.append(score)
+                selected_type_info.prophet_score.append(score)
+                selected_switch_info.prophet_score.append(score)
+                selected_line_info.prophet_score.append(score)
+                selected_file_info.prophet_score.append(score)
 
             for i in range(operator.var_count):
               new_var=VariableInfo(operator,i)
