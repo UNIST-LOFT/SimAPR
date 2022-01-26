@@ -170,6 +170,9 @@ def read_info(state: MSVState) -> None:
 
                 current_score=None
                 for prophet_score in switches['prophet_scores']:
+                  if prophet_score==[]:
+                    current_score=0
+                    break
                   if prophet_score['case']==int(c):
                     current_score=prophet_score['scores']
                     break
