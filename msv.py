@@ -40,6 +40,7 @@ class MSV:
     # prophet condition synthesis
     if selected_patch[0].case_info.is_condition and not self.state.use_condition_synthesis and \
           not selected_patch[0].case_info.processed:
+      self.state.msv_logger.info('Run prophet condition synthesis')
       prophet_cond=condition.ProphetCondition(selected_patch[0],self.state,self.state.negative_test,self.state.positive_test)
       opers=prophet_cond.get_condition()
       if opers is not None and len(opers)>0:
@@ -51,11 +52,13 @@ class MSV:
     
     # our condition synthesis
     elif self.state.use_condition_synthesis and selected_patch[0].case_info.is_condition and selected_patch[0].operator_info.operator_type!=OperatorType.ALL_1 and len(selected_patch)==1:
+      self.state.msv_logger.info('Run our condition synthesis')
       cond_syn=condition.MyCondition(selected_patch[0],self.state,self.state.negative_test,self.state.positive_test)
       cond_syn.run()
       
     else: ## basic patch, or conditional patch if condition-synthesis is turned off
       # set environment variables
+      self.state.msv_logger.info('Run normal patch')
       new_env = MSVEnvVar.get_new_env(self.state, selected_patch, selected_test)
       # run test
       run_result, is_timeout = run_test.run_fail_test(self.state, selected_patch, selected_test, new_env)
@@ -132,6 +135,7 @@ class MSV:
     while self.is_alive():
       neg = self.state.negative_test[0]
       patch = select_patch.select_patch(self.state, self.state.mode, neg)
+      self.state.msv_logger.info(f'Patch {patch[0].switch_info.switch_number}-{patch[0].case_info.case_number} selected')
       run_result = self.run_test(patch, neg)
       # self.update_result(patch, run_result, 1, neg)
       # self.append_result(patch, run_result)
