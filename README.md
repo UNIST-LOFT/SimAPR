@@ -52,7 +52,7 @@ plot.py -i input-dir -o out-file.png -t title -c correct-patch
 * `--skip-valid` : Skip initial validation
 
 ## 5. Project Structure
-
+```
 .
 ├── msv-search.py
 ├── core.py
@@ -67,6 +67,7 @@ plot.py -i input-dir -o out-file.png -t title -c correct-patch
 ├── README.md
 ├── cpr/
 └── venv/
+```
 
 * msv-search.py: Entry point, read config files.
 * core.py: Most of data structures are defined
