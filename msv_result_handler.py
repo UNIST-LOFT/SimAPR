@@ -28,30 +28,28 @@ def update_result_out_dist(state: MSVState, selected_patch: List[PatchInfo], run
     patch.update_result_out_dist(run_result, dist, state.use_fixed_beta)
   return dist
 
-def compare_patch_location(state: MSVState, base_loc: FileLine, other_loc: FileLine) -> PassFail:
-  # base_loc = base.location
-  # other_loc = other.location
-  if base_loc.file_info.file_name != other_loc.file_info.file_name:
-    return PassFail(0, 1)
-  if base_loc.line_info.line_number == other_loc.line_info.line_number:
-    return PassFail(1, 0)
+def find_func_loc(state: MSVState, base_loc: FileLine) -> Tuple[str, int, int]:
   for func in state.function_to_location_map:
     loc = state.function_to_location_map[func]
     if loc[0] == base_loc.file_info.file_name:
       if loc[1] <= base_loc.line_info.line_number and base_loc.line_info.line_number <= loc[2]:
-        if loc[1] <= other_loc.line_info.line_number and other_loc.line_info.line_number <= loc[2]:
-          return PassFail(1, 0)
-        else:
-          return PassFail(0, 1)
-  return PassFail(0, 1)
+        return loc
+  return None
 
 def update_result_seapr(state: MSVState, selected_patch: List[PatchInfo], is_high_quality: bool, test: int) -> None:
   for patch in selected_patch:
     case_info = patch.case_info
     base_fl = case_info.location
+    base_loc = find_func_loc(state, base_fl)
+    loc_diff = PassFail(0, 1)
+    if base_loc is None:
+      state.msv_logger.warning(f"No function location for {base_fl}")
     for fl_str in state.priority_map:
       fl = state.priority_map[fl_str]
-      loc_diff = compare_patch_location(state, base_fl, fl)
+      if fl.file_info.file_name == base_fl.file_info.file_name:
+        if base_loc is not None:
+          if base_loc[1] <= fl.line_info.line_number and fl.line_info.line_number <= base_loc[2]:
+            loc_diff = PassFail(1, 0)
       fl.seapr_e_pf.update(is_high_quality, loc_diff.pass_count)
       fl.seapr_n_pf.update(is_high_quality, loc_diff.fail_count)
       # for cs in fl.case_map:
