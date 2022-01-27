@@ -38,6 +38,7 @@ def find_func_loc(state: MSVState, base_loc: FileLine) -> Tuple[str, int, int]:
 
 def update_result_seapr(state: MSVState, selected_patch: List[PatchInfo], is_high_quality: bool, test: int) -> None:
   for patch in selected_patch:
+    base_type = patch.type_info.patch_type
     case_info = patch.case_info
     base_fl = case_info.location
     base_loc = find_func_loc(state, base_fl)
@@ -52,10 +53,20 @@ def update_result_seapr(state: MSVState, selected_patch: List[PatchInfo], is_hig
             loc_diff = PassFail(1, 0)
       fl.seapr_e_pf.update(is_high_quality, loc_diff.pass_count)
       fl.seapr_n_pf.update(is_high_quality, loc_diff.fail_count)
-      # for cs in fl.case_map:
-      #   current_case = fl.case_map[cs]
-      #   current_case.seapr_e_pf.update(is_high_quality, loc_diff.pass_count)
-      #   current_case.seapr_e_pf.update(is_high_quality, loc_diff.fail_count)
+      if state.use_pattern:
+        type_diff = PassFail(0, 0)
+        for cs in fl.case_map:
+          current_case = fl.case_map[cs]
+          current_type = current_case.parent.patch_type
+          type_diff.update(current_type == base_type, 1)
+          # if current_type in fl.type_map:
+          #   fl.type_map[current_type][0].update(is_high_quality, type_diff.pass_count)
+          #   fl.type_map[current_type][1].update(is_high_quality, type_diff.fail_count)
+          # else:
+          #   fl.type_map[current_type] = [type_diff.copy(), type_diff.copy()]
+          current_case.seapr_e_pf.update(is_high_quality, type_diff.pass_count)
+          current_case.seapr_e_pf.update(is_high_quality, type_diff.fail_count)
+
 
 def update_result_critical(state: MSVState, selected_patch: List[PatchInfo], run_result: bool, test: int) -> None:
   critical_pf = PassFail()

@@ -20,7 +20,7 @@ def parse_args(argv: list) -> MSVState:
   longopts = ["help", "outdir=", "workdir=", "timeout=", "msv-path=", "time-limit=", "cycle-limit=",
               "mode=", "max-parallel-cpu=",'skip-valid','use-fixed-beta','use-cpr-space','use-fixed-const',
               "use-condition-synthesis", "use-fl", "use-hierarchical-selection=", "use-pass-test",
-              "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=']
+              "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern"]
   opts, args = getopt.getopt(argv[1:], "ho:w:p:t:m:c:j:T:E:M:S:", longopts)
   state = MSVState()
   state.original_args = argv
@@ -71,6 +71,8 @@ def parse_args(argv: list) -> MSVState:
       state.use_cpr_space=True
     elif o in ['--use-fixed-const']:
       state.use_fixed_const=True
+    elif o in ['--use-pattern']:
+      state.use_pattern = True
   if sub_dir != "":
     state.out_dir = os.path.join(state.out_dir, sub_dir)
   if not os.path.exists(state.out_dir):

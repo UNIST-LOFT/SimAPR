@@ -71,6 +71,8 @@ class PassFail:
     self.fail_count += other.fail_count*self.__fixed_beta__(use_fixed_beta,self.pass_count,self.fail_count)
   def expect_probability(self,additional_score:float=0) -> float:
     return self.beta_mode(self.pass_count + 1.5+additional_score, self.fail_count + 2.0)
+  def copy(self) -> 'PassFail':
+    return PassFail(self.pass_count, self.fail_count)
   @staticmethod
   def select_by_probability(probability: List[float]) -> int:   # pf_list: list of PassFail
     # probability=[]
@@ -268,6 +270,7 @@ class FileLine:
     self.case_map: Dict[str, CaseInfo] = dict() # switch_number-case_number -> CaseInfo
     self.seapr_e_pf: PassFail = PassFail()
     self.seapr_n_pf: PassFail = PassFail()
+    # self.type_map: Dict[PatchType, Tuple[PassFail, PassFail]] = dict()
   def to_str(self) -> str:
     return f"{self.file_info.file_name}:{self.line_info.line_number}"
   def __str__(self) -> str:
@@ -855,6 +858,7 @@ class MSVState:
   max_dist: float
   function_to_location_map: Dict[str, Tuple[str, int, int]] # function_name -> (file_name, line_start, line_end)
   test_to_location: Dict[int, Dict[str, Set[int]]] # test_number -> {file_name: set(line_number)}
+  use_pattern: bool      # For SeAPR mode
   def __init__(self) -> None:
     self.mode = MSVMode.guided
     self.msv_path = ""
@@ -895,3 +899,4 @@ class MSVState:
     self.max_dist = 100.0
     self.function_to_location_map = dict()
     self.test_to_location = dict()
+    self.use_pattern = False
