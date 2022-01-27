@@ -38,8 +38,8 @@ def compare_patch_location(state: MSVState, base_loc: FileLine, other_loc: FileL
   for func in state.function_to_location_map:
     loc = state.function_to_location_map[func]
     if loc[0] == base_loc.file_info.file_name:
-      if loc[1] >= base_loc.line_info.line_number and loc[2] >= base_loc.line_info.line_number:
-        if loc[1] <= other_loc.line_info.line_number and loc[2] <= other_loc.line_info.line_number:
+      if loc[1] <= base_loc.line_info.line_number and base_loc.line_info.line_number <= loc[2]:
+        if loc[1] <= other_loc.line_info.line_number and other_loc.line_info.line_number <= loc[2]:
           return PassFail(1, 0)
         else:
           return PassFail(0, 1)
