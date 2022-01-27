@@ -88,7 +88,7 @@ class ProphetCondition:
       # run test
 
       #temp_file=f"/tmp/{self.patch.switch_info.switch_number}-{self.patch.case_info.case_number}.tmp"
-      temp_file = os.path.join(self.state.tmp_dir, f"{self.patch.to_str_sw_cs()}.tmp")
+      temp_file = f"/tmp/{self.patch.to_str_sw_cs()}.tmp"
       try:
         if os.path.exists(temp_file):
           os.remove(temp_file)
@@ -344,7 +344,7 @@ class ProphetCondition:
       return None
 
     self.state.msv_logger.info('Collecting values...')
-    values=self.collect_value(os.path.join(self.state.tmp_dir, f"{self.patch.to_str_sw_cs()}.tmp"),paths)
+    values=self.collect_value(f"/tmp/{self.patch.to_str_sw_cs()}.tmp",paths)
     if values==None:
       self.state.msv_logger.info('Fail at collecting')
       result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0])
@@ -450,7 +450,7 @@ class MyCondition:
   def remove_same_record(self,conditions:List[ConstantInfo],result:bool) -> None:
     for cond in conditions:
       patch=[PatchInfo(cond.variable.parent.parent,cond.variable.parent,cond.variable,cond)]
-      result_handler.update_result(self.state, patch, result, 1, self.state.negative_test[0])
+      result_handler.update_result(self.state, patch, result, 1, self.state.negative_test[0],self.new_env)
       result_handler.append_result(self.state, patch, result)
       result_handler.remove_patch(self.state,patch)
 
@@ -516,7 +516,7 @@ class MyCondition:
       result_handler.remove_patch(self.state, [self.patch])
       return None
 
-    values,new_env=self.collect_value(os.path.join(self.state.tmp_dir, f"{self.patch.to_str_sw_cs()}.tmp"),record)
+    values=self.collect_value(f"/tmp/{self.patch.to_str_sw_cs()}.tmp",record)
     if values is None or len(values)==0:
       self.state.msv_logger.warn(f'No values found')
       result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0], self.new_env)

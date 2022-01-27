@@ -485,8 +485,8 @@ class MSVEnvVar:
     new_env["MSV_OUTPUT_DISTANCE_FILE"] = os.path.join(state.tmp_dir, f"{msv_uuid}.out")
     new_env["MSV_TMP_DIR"] = state.tmp_dir
     new_env["MSV_PATH"] = state.msv_path
-    tmp_file = os.path.join(state.tmp_dir, f"{patch[0].to_str_sw_cs()}.tmp")
-    log_file = os.path.join(state.tmp_dir, f"{patch[0].to_str_sw_cs()}.log")
+    tmp_file = f"/tmp/{patch[0].to_str_sw_cs()}.tmp"
+    log_file = f"/tmp/{patch[0].to_str_sw_cs()}.log"
     for patch_info in patch:
       sw = patch_info.switch_info.switch_number
       cs = patch_info.case_info.case_number
