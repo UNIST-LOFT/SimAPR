@@ -260,6 +260,7 @@ class ProphetCondition:
       self.patch.switch_info.prophet_score.remove(score)
       self.patch.line_info.prophet_score.remove(score)
       self.patch.file_info.prophet_score.remove(score)
+    current_score=self.patch.case_info.prophet_score.copy()
     self.patch.case_info.prophet_score.clear()
     
     # create empty operators/variables
@@ -269,7 +270,7 @@ class ProphetCondition:
       if op!=OperatorType.ALL_1:
         for i in range(len(values[0])):
           new_variable=VariableInfo(new_operator,i)
-          new_variable.prophet_score=self.patch.case_info.prophet_score[i]
+          new_variable.prophet_score=current_score[i]
           new_operator.variable_info_list.append(new_variable)
           new_operator.prophet_score.append(new_variable.prophet_score)
           
@@ -280,12 +281,12 @@ class ProphetCondition:
           self.patch.file_info.prophet_score.append(new_variable.prophet_score)
       else:
         new_operator.var_count=1
-        new_operator.prophet_score.append(sorted(self.patch.case_info.prophet_score)[-1])
-        self.patch.case_info.prophet_score.append(sorted(self.patch.case_info.prophet_score)[-1])
-        self.patch.type_info.prophet_score.append(sorted(self.patch.case_info.prophet_score)[-1])
-        self.patch.switch_info.prophet_score.append(sorted(self.patch.case_info.prophet_score)[-1])
-        self.patch.line_info.prophet_score.append(sorted(self.patch.case_info.prophet_score)[-1])
-        self.patch.file_info.prophet_score.append(sorted(self.patch.case_info.prophet_score)[-1])
+        new_operator.prophet_score.append(sorted(current_score)[-1])
+        self.patch.case_info.prophet_score.append(sorted(current_score)[-1])
+        self.patch.type_info.prophet_score.append(sorted(current_score)[-1])
+        self.patch.switch_info.prophet_score.append(sorted(current_score)[-1])
+        self.patch.line_info.prophet_score.append(sorted(current_score)[-1])
+        self.patch.file_info.prophet_score.append(sorted(current_score)[-1])
 
       operators.append(new_operator)
 
