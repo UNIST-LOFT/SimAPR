@@ -119,7 +119,7 @@ class ProphetCondition:
         if 0 not in record:
           self.state.msv_logger.info(f'Fail at recording {test}')
           return None
-        if os.path.exists(temp_file):
+        if os.path.exists(new_env["MSV_OUTPUT_DISTANCE_FILE"]):
           os.remove(new_env["MSV_OUTPUT_DISTANCE_FILE"])
 
       if result:
