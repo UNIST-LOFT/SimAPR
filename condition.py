@@ -368,40 +368,39 @@ class MyCondition:
     self.state=state
     self.new_env = dict()
 
-  def get_record(self) -> Tuple[bool, List[int]]:
+  def get_record(self) -> Tuple[bool, List[int],int]:
     # set arguments
-    selected_test=self.fail_test[0]
-    self.state.msv_logger.info(f"@{self.state.cycle + 1} Record [{selected_test}]  with {self.patch}")
-    # set environment variables
-    patch=[self.patch]
-    new_env = MSVEnvVar.get_new_env(self.state, patch, selected_test,EnvVarMode.basic)
-    self.new_env = new_env
-    temp_file = new_env["TMP_FILE"]
-    # run test
-    # temp_file=f"/tmp/{self.patch.switch_info.switch_number}-{self.patch.case_info.case_number}.tmp"
-    try:
-      if os.path.exists(temp_file):
-        os.remove(temp_file)
-    except:
-      pass
-    
-    run_result, is_timeout = run_test.run_fail_test(self.state, patch, selected_test, new_env)
-    if is_timeout:
-      return False, None
+    for selected_test in self.fail_test:
+      self.state.msv_logger.info(f"@{self.state.cycle + 1} Record [{selected_test}]  with {self.patch}")
+      # set environment variables
+      patch=[self.patch]
+      new_env = MSVEnvVar.get_new_env(self.state, patch, selected_test,EnvVarMode.basic)
+      self.new_env = new_env
+      temp_file = new_env["TMP_FILE"]
+      # run test
+      # temp_file=f"/tmp/{self.patch.switch_info.switch_number}-{self.patch.case_info.case_number}.tmp"
+      try:
+        if os.path.exists(temp_file):
+          os.remove(temp_file)
+      except:
+        pass
+      
+      run_result, is_timeout = run_test.run_fail_test(self.state, patch, selected_test, new_env)
+      if is_timeout:
+        continue
 
-    record=parse_record(temp_file)
-    if record is None:
-      return False,None
-    write_record_terminate(temp_file)
-    result = False
-    if run_result:
-      self.state.msv_logger.info("Result: PASS")
-      result = True
+      record=parse_record(temp_file)
+      if record is None:
+        continue
+      write_record_terminate(temp_file)
+      if run_result:
+        self.state.msv_logger.info("Result: PASS")
+        return True,record,selected_test
     
-    return result,record
+    return False,None,-1
 
-  def collect_value(self, temp_file: str, record: List[int]) -> List[List[int]]:
-    selected_test=self.fail_test[0]
+  def collect_value(self, temp_file: str, record: List[int],passed_test:int) -> List[List[int]]:
+    selected_test=passed_test
     write_record(temp_file,record)
     # log_file=f"/tmp/{self.patch.switch_info.switch_number}-{self.patch.case_info.case_number}.log"
     new_env = MSVEnvVar.get_new_env(self.state, [self.patch], selected_test,EnvVarMode.collect_neg)
@@ -509,7 +508,7 @@ class MyCondition:
       self.remove_by_pass_test(conditions,root)
     
   def run(self) -> None:
-    (result,record)=self.get_record()
+    (result,record,passed_test)=self.get_record()
     if record is None:
       self.state.msv_logger.warn(f'No record found')
       result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0],self.new_env)
@@ -517,7 +516,7 @@ class MyCondition:
       result_handler.remove_patch(self.state, [self.patch])
       return None
 
-    values=self.collect_value(f"/tmp/{self.patch.to_str_sw_cs()}.tmp",record)
+    values=self.collect_value(f"/tmp/{self.patch.to_str_sw_cs()}.tmp",record,passed_test)
     if values is None or len(values)==0:
       self.state.msv_logger.warn(f'No values found')
       result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0], self.new_env)
