@@ -47,7 +47,7 @@ def run_pass_test(state: MSVState, patch: List[PatchInfo], is_initialize: bool =
     group_num = 1
   args = state.args
   args = args[0:1] + ['-i', patch[0].to_str(), '-j',
-                      str(state.max_parallel_cpu),'-t',str(state.timeout/1000)] + args[1:]
+                      str(state.max_parallel_cpu),'-t',str(int(state.timeout/1000))] + args[1:]
   for i in range(group_num):
     tests = list()
     if len(pass_tests) > 0:
