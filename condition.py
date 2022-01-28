@@ -199,6 +199,9 @@ class ProphetCondition:
     result=True
     # check fail test with records
     for record,value in zip(records,values[:len(records)]):
+      if len(value) <= variable:
+        result=False
+        break
       current_values=value[variable]
       for path,const in zip(record,current_values):
         if operator==OperatorType.EQ:
