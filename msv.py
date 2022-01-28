@@ -132,6 +132,7 @@ class MSV:
         f.write("Regression Cases: Tot 0\n")
   def run(self) -> None:
     self.initialize()
+    self.state.start_time=time.time()
     while self.is_alive():
       neg = self.state.negative_test[0]
       self.state.msv_logger.info(f'[{self.state.cycle}]: executing')
