@@ -29,6 +29,10 @@ def run_fail_test(state: MSVState, selected_patch: List[PatchInfo], selected_tes
     state.msv_logger.info("Result: FAIL")
     return False, is_timeout
   state.msv_logger.debug(result_str)
+
+  if '\n' in result_str:
+    result_str=result_str.splitlines()[0]
+  result_str.strip()
   if int(result_str) == selected_test:
     state.msv_logger.warning("Result: PASS")
     return True, is_timeout
@@ -48,7 +52,7 @@ def run_pass_test(state: MSVState, patch: List[PatchInfo], is_initialize: bool =
     group_num = 1
   args = state.args
   args = args[0:1] + ['-i', patch[0].to_str(), '-j',
-                      str(state.max_parallel_cpu),'-t',str(state.timeout/1000)] + args[1:]
+                      str(state.max_parallel_cpu),'-t',str(int(state.timeout/1000))] + args[1:]
   new_env = MSVEnvVar.get_new_env(
         state, patch, 0, set_tmp_file=False)
   if is_initialize:
@@ -73,6 +77,8 @@ def run_pass_test(state: MSVState, patch: List[PatchInfo], is_initialize: bool =
           t = state.positive_test[j]
           if t not in state.failed_positive_test:
             tests.append(str(t))
+    if len(tests)==0:
+      return True,set()
     current_args = args + tests
     state.msv_logger.debug(' '.join(current_args))
 
