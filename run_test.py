@@ -67,6 +67,8 @@ def run_pass_test(state: MSVState, patch: List[PatchInfo], is_initialize: bool =
           t = state.positive_test[j]
           if t not in state.failed_positive_test:
             tests.append(str(t))
+    if len(tests)==0:
+      return True,set()
     current_args = args + tests
     state.msv_logger.debug(' '.join(current_args))
 
