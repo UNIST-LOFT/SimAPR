@@ -303,8 +303,8 @@ class ProphetCondition:
       for i,var in enumerate(test):
         if self.state.use_fixed_const:
           # use fixed constant(-100 ≤ c ≤ 100) instead of constants from test execution
-          for i in range(-100,101):
-            available_const[i].add(i)
+          for j in range(-100,101):
+            available_const[i].add(j)
         else:
           for value in var:
             ## Get available constants
