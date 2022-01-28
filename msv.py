@@ -129,6 +129,7 @@ class MSV:
   def run(self) -> None:
     self.initialize()
     self.state.start_time=time.time()
+    self.state.cycle=0
     while self.is_alive():
       neg = self.state.negative_test[0]
       self.state.msv_logger.info(f'[{self.state.cycle}]: executing')
