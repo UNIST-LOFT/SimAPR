@@ -173,6 +173,7 @@ class CaseInfo:
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
     self.processed=False # for prophet condition
+    self.failed = False # for simulation mode
     self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = 0.0
     self.update_count: int = 0
@@ -824,6 +825,8 @@ class MSVState:
   msv_path: str
   work_dir: str
   out_dir: str
+  use_simulation_mode: bool
+  prev_data: str
   cycle: int
   timeout: int
   start_time: float
@@ -859,6 +862,7 @@ class MSVState:
   function_to_location_map: Dict[str, Tuple[str, int, int]] # function_name -> (file_name, line_start, line_end)
   test_to_location: Dict[int, Dict[str, Set[int]]] # test_number -> {file_name: set(line_number)}
   use_pattern: bool      # For SeAPR mode
+  simulation_data: Dict[str, MSVResult]
   def __init__(self) -> None:
     self.mode = MSVMode.guided
     self.msv_path = ""
@@ -900,3 +904,6 @@ class MSVState:
     self.function_to_location_map = dict()
     self.test_to_location = dict()
     self.use_pattern = False
+    self.use_simulation_mode = False
+    self.prev_data = ""
+    self.simulation_data = dict()

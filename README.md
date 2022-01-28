@@ -50,6 +50,7 @@ plot.py -i input-dir -o out-file.png -t title -c correct-patch
 * `--max-parallel-cpu` procs : 
     Set how many test to run in parallel, for p3
 * `--skip-valid` : Skip initial validation
+* `--use-simulation-mode` previous/msv-result.json : Use result of previous experiment instead of actually run the test.
 
 ## 5. Project Structure
 ```

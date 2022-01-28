@@ -20,7 +20,7 @@ def parse_args(argv: list) -> MSVState:
   longopts = ["help", "outdir=", "workdir=", "timeout=", "msv-path=", "time-limit=", "cycle-limit=",
               "mode=", "max-parallel-cpu=",'skip-valid','use-fixed-beta','use-cpr-space','use-fixed-const',
               "use-condition-synthesis", "use-fl", "use-hierarchical-selection=", "use-pass-test",
-              "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern"]
+              "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern", "use-simulation-mode="]
   opts, args = getopt.getopt(argv[1:], "ho:w:p:t:m:c:j:T:E:M:S:", longopts)
   state = MSVState()
   state.original_args = argv
@@ -73,6 +73,9 @@ def parse_args(argv: list) -> MSVState:
       state.use_fixed_const=True
     elif o in ['--use-pattern']:
       state.use_pattern = True
+    elif o in ['--use-simulation-mode']:
+      state.use_simulation_mode = True
+      state.prev_data = a
   if sub_dir != "":
     state.out_dir = os.path.join(state.out_dir, sub_dir)
   if not os.path.exists(state.out_dir):
@@ -235,6 +238,41 @@ def read_info(state: MSVState) -> None:
   temp_case = CaseInfo(temp_type, 0, False)
   temp_type.case_info_list.append(temp_case)
   state.switch_case_map["0-0"] = temp_case
+  if state.use_simulation_mode:
+    with open(state.prev_data, "r") as f:
+      prev_info = json.load(f)
+      for data in prev_info:
+        iter = data["iteration"]
+        tm = data["time"]
+        result = data["result"]
+        pass_result = data["pass_result"]
+        output_distance = data["output_distance"]
+        config = data["config"]
+        patch_list = list()
+        for conf in config:
+          sw = conf["switch"]
+          cs = conf["case"]
+          is_cond = conf["is_cond"]
+          op = None
+          var = None
+          con = None
+          if "operator" in conf:
+            op = conf["operator"]
+          if "variable" in conf:
+            var = config["var"]
+          if "constant" in conf:
+            con = config["constant"]
+          case_info = state.switch_case_map[f'{sw}-{cs}']
+          if case_info.is_condition:
+            if op is None:
+              case_info.failed = True
+            else:
+              case_info.processed = True
+              case_info.operator_info_list = list()
+              #op_info = OperatorInfo(case_info, op)
+          patch_info = PatchInfo(case_info, None, None, None)
+          patch_list.append(patch_info)
+          state.simulation_data[patch_info.to_str()] = MSVResult(iter, tm, [patch_info], result, pass_result, output_distance)
 
 def read_var_count(state:MSVState,sizes:list):
   for object in sizes:

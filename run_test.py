@@ -10,6 +10,15 @@ def run_fail_test(state: MSVState, selected_patch: List[PatchInfo], selected_tes
   args = state.args + [str(selected_test)]
   args = args[0:1] + ['-i', selected_patch[0].to_str(),'-t',str(state.timeout)] + args[1:]
   state.msv_logger.debug(' '.join(args))
+  # In simulation mode, we don't need to run the test
+  if state.use_simulation_mode:
+    if selected_patch[0].to_str() in state.simulation_data:
+      msv_result = state.simulation_data[selected_patch[0].to_str()]
+      if "MSV_OUTPUT_DISTANCE_FILE" in new_env:
+        with open(new_env["MSV_OUTPUT_DISTANCE_FILE"], "w") as f:
+          f.write(str(msv_result.output_distance))
+      return msv_result.result, False
+  # Otherwise, run the test
   test_proc = subprocess.Popen(
         args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
   so: bytes
