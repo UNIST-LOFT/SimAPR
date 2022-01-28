@@ -28,6 +28,9 @@ def run_fail_test(state: MSVState, selected_patch: List[PatchInfo], selected_tes
     state.msv_logger.info("Result: FAIL")
     return False, is_timeout
   state.msv_logger.debug(result_str)
+
+  if '\n' in result_str:
+    result_str=result_str.splitlines()[0]
   if int(result_str) == selected_test:
     state.msv_logger.warning("Result: PASS")
     return True, is_timeout
