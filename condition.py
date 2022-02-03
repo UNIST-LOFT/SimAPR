@@ -226,7 +226,7 @@ class ProphetCondition:
             break
     
     # check pass test with all 0
-    if self.state.use_pass_test:
+    if self.state.use_pass_test and not result:
       for value in values[len(records):]:
         if len(value)==0:
           continue
