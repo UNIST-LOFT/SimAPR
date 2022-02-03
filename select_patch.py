@@ -154,7 +154,6 @@ def select_patch_prophet(state: MSVState) -> PatchInfo:
 def update_out_dist_list(state: MSVState, out_dist: List[float]) -> None:
   if len(out_dist) == 0:
     return
-  new_list = list()
   tot = 0.0
   cnt = 0
   for dist in out_dist:
@@ -162,13 +161,17 @@ def update_out_dist_list(state: MSVState, out_dist: List[float]) -> None:
       continue
     tot += dist
     cnt += 1
+  if cnt == 0:
+    for i in range(len(out_dist)):
+      out_dist[i] = 1.0
+    return
   avg = tot / cnt
   tot += avg * 2 * (len(out_dist) - cnt) # Set uninitialized to avg * 2
   for i in range(len(out_dist)):
     if out_dist[i] < 0:
-      new_list.append(tot - (avg * 2))
+      out_dist[i] = (tot - (avg * 2))
     else:
-      new_list.append(tot - out_dist[i])
+      out_dist[i] = (tot - out_dist[i])
   
 def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[PatchInfo]=[], test: int = -1) -> PatchInfo:
   # Select patch for guided, random
