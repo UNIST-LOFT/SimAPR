@@ -17,9 +17,13 @@ def update_result_out_dist(state: MSVState, selected_patch: List[PatchInfo], run
     if os.path.exists(output_dist_file):
       with open(output_dist_file, 'r') as f:
         distance_file = f.read()
-        dist = float(distance_file.strip())
-        if dist > state.max_dist:
-          state.max_dist = dist
+        try:
+          dist = float(distance_file.strip())
+          if dist > state.max_dist:
+            state.max_dist = dist
+        except:
+          dist = state.max_dist * 2
+          state.msv_logger.warning(f"Invalid distance file: {distance_file} in {output_dist_file}")
       os.remove(output_dist_file)
     else:
       state.msv_logger.warning(f"File {output_dist_file} does not exist")
