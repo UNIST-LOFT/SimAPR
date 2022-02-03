@@ -259,16 +259,16 @@ def read_info(state: MSVState) -> None:
           if "operator" in conf:
             op = conf["operator"]
           if "variable" in conf:
-            var = config["var"]
+            var = conf["variable"]
           if "constant" in conf:
-            con = config["constant"]
+            con = conf["constant"]
           case_info = state.switch_case_map[f'{sw}-{cs}']
           if case_info.is_condition:
             if op is None:
               case_info.failed = True
-            else:
-              case_info.processed = True
-              case_info.operator_info_list = list()
+            # else:
+            #   case_info.processed = True
+            #   case_info.operator_info_list = list()
               #op_info = OperatorInfo(case_info, op)
           patch_info = PatchInfo(case_info, None, None, None)
           patch_list.append(patch_info)
