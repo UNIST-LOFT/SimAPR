@@ -12,6 +12,8 @@ def run_fail_test(state: MSVState, selected_patch: List[PatchInfo], selected_tes
   state.msv_logger.debug(' '.join(args))
   # In simulation mode, we don't need to run the test
   if state.use_simulation_mode:
+    if selected_patch[0].case_info.failed:
+      return False, False
     if selected_patch[0].to_str() in state.simulation_data:
       msv_result = state.simulation_data[selected_patch[0].to_str()]
       if "MSV_OUTPUT_DISTANCE_FILE" in new_env:

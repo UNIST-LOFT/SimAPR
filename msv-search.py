@@ -266,7 +266,8 @@ def read_info(state: MSVState) -> None:
           if case_info.is_condition:
             if op is None:
               case_info.failed = True
-            # else:
+            else:
+              continue
             #   case_info.processed = True
             #   case_info.operator_info_list = list()
               #op_info = OperatorInfo(case_info, op)
