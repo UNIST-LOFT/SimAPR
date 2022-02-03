@@ -177,22 +177,26 @@ def read_info(state: MSVState) -> None:
                     current_score=prophet_score['scores']
                     break
               
-                for score in current_score:
-                  case_info.prophet_score.append(score)
-                  type_info.prophet_score.append(score)
-                  switch_info.prophet_score.append(score)
-                  line_info.prophet_score.append(score)
-                  file_info.prophet_score.append(score)
-
-                if state.use_cpr_space and type_info.patch_type==PatchType.ConditionKind: # CPR only includes ConditionKind
-                  if state.var_counts[f'{switch_info.switch_number}-{case_info.case_number}']>0:
-                    case_list.append(case_info)
-                elif state.mode==MSVMode.prophet and type_info.patch_type!=PatchType.ConditionKind: # Original Prophet doesn't have ConditionKind
-                  if f'{switch_info.switch_number}-{case_info.case_number}' not in state.var_counts.keys() or state.var_counts[f'{switch_info.switch_number}-{case_info.case_number}']>0:
-                    case_list.append(case_info)
+                if state.use_cpr_space:
+                  if type_info.patch_type==PatchType.ConditionKind: # CPR only includes ConditionKind
+                    if state.var_counts[f'{switch_info.switch_number}-{case_info.case_number}']>0:
+                      case_list.append(case_info)
+                      for score in current_score:
+                        case_info.prophet_score.append(score)
+                        type_info.prophet_score.append(score)
+                        switch_info.prophet_score.append(score)
+                        line_info.prophet_score.append(score)
+                        file_info.prophet_score.append(score)
                 else:
-                  if f'{switch_info.switch_number}-{case_info.case_number}' not in state.var_counts.keys() or state.var_counts[f'{switch_info.switch_number}-{case_info.case_number}']>0:
-                    case_list.append(case_info)
+                  if type_info.patch_type!=PatchType.ConditionKind: # Original Prophet doesn't have ConditionKind
+                    if f'{switch_info.switch_number}-{case_info.case_number}' not in state.var_counts.keys() or state.var_counts[f'{switch_info.switch_number}-{case_info.case_number}']>0:
+                      case_list.append(case_info)
+                      for score in current_score:
+                        case_info.prophet_score.append(score)
+                        type_info.prophet_score.append(score)
+                        switch_info.prophet_score.append(score)
+                        line_info.prophet_score.append(score)
+                        file_info.prophet_score.append(score)
                 
                 state.switch_case_map[f"{switch_info.switch_number}-{case_info.case_number}"] = case_info
 
