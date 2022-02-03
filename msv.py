@@ -143,8 +143,7 @@ class MSV:
         prophet_cond=condition.ProphetCondition(patch[0],self.state,self.state.negative_test,self.state.positive_test)
         opers=prophet_cond.get_condition()
         if opers is not None and len(opers)>0:
-          for info in opers.values():
-            patch[0].case_info.operator_info_list.append(info)
+          patch[0].case_info.operator_info_list=opers
           continue
         else:
           patch[0].case_info.operator_info_list=[]
