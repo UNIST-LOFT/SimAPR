@@ -480,7 +480,7 @@ class MyCondition:
     conditions.remove(target)
     result_handler.update_result(self.state, patch, True, 1, self.state.negative_test[0], self.new_env)
     result_handler.update_result_positive(self.state, patch, pass_result, fail_tests)
-    result_handler.append_result(self.state, patch, pass_result,pass_result)
+    result_handler.append_result(self.state, patch, True,pass_result)
     result_handler.remove_patch(self.state,patch)
 
     ## if pass, remove from tree
