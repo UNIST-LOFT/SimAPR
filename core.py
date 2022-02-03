@@ -100,7 +100,7 @@ class FileInfo:
     self.positive_pf = PassFail()
     self.fl_score=-1
     self.profile_diff: 'ProfileDiff' = None
-    self.out_dist: float = 0.0
+    self.out_dist: float = -1.0
     self.update_count: int = 0
     self.prophet_score:list=[]
 
@@ -119,7 +119,7 @@ class LineInfo:
     self.positive_pf = PassFail()
     self.fl_score=0
     self.profile_diff: 'ProfileDiff' = None
-    self.out_dist: float = 0.0
+    self.out_dist: float = -1.0
     self.update_count: int = 0
     self.prophet_score:list=[]
   def __hash__(self) -> int:
@@ -137,7 +137,7 @@ class SwitchInfo:
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
     self.profile_diff: 'ProfileDiff' = None
-    self.out_dist: float = 0.0
+    self.out_dist: float = -1.0
     self.update_count: int = 0
     self.prophet_score:list=[]
   def __hash__(self) -> int:
@@ -154,7 +154,7 @@ class TypeInfo:
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
     self.profile_diff: 'ProfileDiff' = None
-    self.out_dist: float = 0.0
+    self.out_dist: float = -1.0
     self.update_count: int = 0
     self.prophet_score:list=[]
   def __hash__(self) -> int:
@@ -175,7 +175,7 @@ class CaseInfo:
     self.processed=False # for prophet condition
     self.failed = False # for simulation mode
     self.profile_diff: 'ProfileDiff' = None
-    self.out_dist: float = 0.0
+    self.out_dist: float = -1.0
     self.update_count: int = 0
     self.prophet_score:list=[]
     self.location: FileLine = None
@@ -201,7 +201,7 @@ class OperatorInfo:
     self.positive_pf = PassFail()
     self.var_count=var_count
     self.profile_diff: 'ProfileDiff' = None
-    self.out_dist: float = 0.0
+    self.out_dist: float = -1.0
     self.update_count: int = 0
     self.prophet_score:list=[]
   def __hash__(self) -> int:
@@ -221,7 +221,7 @@ class VariableInfo:
     self.positive_pf = PassFail()
     self.used_const=set()
     self.profile_diff: 'ProfileDiff' = None
-    self.out_dist: float = 0.0
+    self.out_dist: float = -1.0
     self.update_count: int = 0
     self.prophet_score:int
   def to_str(self) -> str:
@@ -244,7 +244,7 @@ class ConstantInfo:
     self.left:ConstantInfo=None
     self.right:ConstantInfo=None
     self.profile_diff: 'ProfileDiff' = None
-    self.out_dist: float = 0.0
+    self.out_dist: float = -1.0
     self.update_count: int = 0
   def __hash__(self) -> int:
     return hash(self.constant_value)
@@ -825,6 +825,7 @@ class MSVState:
   msv_path: str
   work_dir: str
   out_dir: str
+  msv_uuid: str
   use_simulation_mode: bool
   prev_data: str
   cycle: int
@@ -866,6 +867,7 @@ class MSVState:
   def __init__(self) -> None:
     self.mode = MSVMode.guided
     self.msv_path = ""
+    self.msv_uuid = str(uuid.uuid4())
     self.cycle = 0
     self.start_time = time.time()
     self.last_save_time = self.start_time
