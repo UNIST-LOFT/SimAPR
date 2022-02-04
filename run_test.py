@@ -20,7 +20,8 @@ def run_fail_test(state: MSVState, selected_patch: List[PatchInfo], selected_tes
     state.msv_logger.info("Timeout!")
     pid=test_proc.pid
     for child in psutil.Process(pid).children(True):
-      child.kill()
+      if psutil.pid_exists(child.pid):
+        child.kill()
     test_proc.kill()
     return False,True
   result_str = so.decode('utf-8').strip()
