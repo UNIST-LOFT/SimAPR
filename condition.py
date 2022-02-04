@@ -80,15 +80,15 @@ class ProphetCondition:
     self.state=state
     self.new_env = dict()
 
-  def record(self) -> List[List[bool]]:
+  def record(self) -> Tuple[List[List[bool]],str]:
     records=[]
     # set arguments
     for test in self.fail_test:
       patch=[self.patch]
       # run test
 
-      #temp_file=f"/tmp/{self.patch.switch_info.switch_number}-{self.patch.case_info.case_number}.tmp"
-      temp_file = f"/tmp/{self.patch.to_str_sw_cs()}.tmp"
+      new_env = MSVEnvVar.get_new_env(self.state, patch, test,EnvVarMode.record_it)
+      temp_file = new_env['TMP_FILE']
       try:
         if os.path.exists(temp_file):
           os.remove(temp_file)
@@ -96,13 +96,11 @@ class ProphetCondition:
         pass
       result=False
       for i in range(10):
-        new_env = MSVEnvVar.get_new_env(self.state, patch, test,EnvVarMode.record_it)
         self.new_env = new_env
-        temp_file = new_env["TMP_FILE"]
         self.state.msv_logger.info(f"@{self.state.cycle + 1} Record [{test}]  with {self.patch.to_str()}")
         run_result, is_timeout = run_test.run_fail_test(self.state, patch, test, new_env)
         if is_timeout:
-          return None
+          return None,''
 
         record=parse_record(temp_file)
         if record==None:
@@ -118,7 +116,7 @@ class ProphetCondition:
         
         if 0 not in record:
           self.state.msv_logger.info(f'Fail at recording {test}')
-          return None
+          return None,''
         if os.path.exists(new_env["MSV_OUTPUT_DISTANCE_FILE"]):
           os.remove(new_env["MSV_OUTPUT_DISTANCE_FILE"])
 
@@ -130,12 +128,12 @@ class ProphetCondition:
       temp_file = new_env["TMP_FILE"]
       run_result, is_timeout = run_test.run_fail_test(self.state, patch, test, new_env)
       if is_timeout:
-        return None
+        return None,''
 
       record = parse_record(temp_file)
       if record is None:
         self.state.msv_logger.info(f'Empty record! {test}')
-        return None
+        return None,''
       write_record_terminate(temp_file)
 
       if run_result:
@@ -143,9 +141,9 @@ class ProphetCondition:
         records.append(record)
       else:
         self.state.msv_logger.info(f'Fail at recording {test}')
-        return None
+        return None,''
     
-    return records
+    return records,temp_file
   
   def collect_value(self,temp_file: str, records: List[List[bool]]) -> List[List[List[int]]]:
     values=[]
@@ -339,7 +337,7 @@ class ProphetCondition:
 
   def get_condition(self):
     self.patch.case_info.processed=True
-    paths=self.record()
+    paths,tmp_file=self.record()
     if paths==None:
       self.state.msv_logger.info('Fail at recording')
       result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0], self.new_env)
@@ -348,7 +346,7 @@ class ProphetCondition:
       return None
 
     self.state.msv_logger.info('Collecting values...')
-    values=self.collect_value(f"/tmp/{self.patch.to_str_sw_cs()}.tmp",paths)
+    values=self.collect_value(tmp_file,paths)
     if values==None:
       self.state.msv_logger.info('Fail at collecting')
       result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0])
@@ -371,7 +369,7 @@ class MyCondition:
     self.state=state
     self.new_env = dict()
 
-  def get_record(self) -> Tuple[bool, List[int],int]:
+  def get_record(self) -> Tuple[bool, List[int],int,str]:
     # set arguments
     for selected_test in self.fail_test:
       self.state.msv_logger.info(f"@{self.state.cycle + 1} Record [{selected_test}]  with {self.patch}")
@@ -381,7 +379,6 @@ class MyCondition:
       self.new_env = new_env
       temp_file = new_env["TMP_FILE"]
       # run test
-      # temp_file=f"/tmp/{self.patch.switch_info.switch_number}-{self.patch.case_info.case_number}.tmp"
       try:
         if os.path.exists(temp_file):
           os.remove(temp_file)
@@ -398,9 +395,9 @@ class MyCondition:
       write_record_terminate(temp_file)
       if run_result:
         self.state.msv_logger.info("Result: PASS")
-        return True,record,selected_test
+        return True,record,selected_test,temp_file
     
-    return False,None,-1
+    return False,None,-1,''
 
   def collect_value(self, temp_file: str, record: List[int],passed_test:int) -> List[List[int]]:
     selected_test=passed_test
@@ -511,7 +508,7 @@ class MyCondition:
       self.remove_by_pass_test(conditions,root)
     
   def run(self) -> None:
-    (result,record,passed_test)=self.get_record()
+    (result,record,passed_test,tmp_file)=self.get_record()
     if record is None:
       self.state.msv_logger.warn(f'No record found')
       result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0],self.new_env)
@@ -519,7 +516,7 @@ class MyCondition:
       result_handler.remove_patch(self.state, [self.patch])
       return None
 
-    values=self.collect_value(f"/tmp/{self.patch.to_str_sw_cs()}.tmp",record,passed_test)
+    values=self.collect_value(tmp_file,record,passed_test)
     if values is None or len(values)==0:
       self.state.msv_logger.warn(f'No values found')
       result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0], self.new_env)
