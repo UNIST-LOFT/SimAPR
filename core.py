@@ -480,13 +480,12 @@ class MSVEnvVar:
   def get_new_env(state: 'MSVState', patch: List['PatchInfo'], test: int, mode: EnvVarMode = EnvVarMode.basic,set_tmp_file=True) -> Dict[str, str]:
     new_env = os.environ.copy()
     new_env["__PID"] = f"{test}-{patch[0].to_str_sw_cs()}"
-    msv_uuid  = str(uuid.uuid4())
-    new_env["MSV_UUID"] = msv_uuid
-    new_env["MSV_OUTPUT_DISTANCE_FILE"] = os.path.join(state.tmp_dir, f"{msv_uuid}.out")
+    new_env["MSV_UUID"] = state.uuid
+    new_env["MSV_OUTPUT_DISTANCE_FILE"] = os.path.join(state.tmp_dir, f"{state.uuid}.out")
     new_env["MSV_TMP_DIR"] = state.tmp_dir
     new_env["MSV_PATH"] = state.msv_path
-    tmp_file = f"/tmp/{patch[0].to_str_sw_cs()}.tmp"
-    log_file = f"/tmp/{patch[0].to_str_sw_cs()}.log"
+    tmp_file = f"/tmp/{state.uuid}-{patch[0].to_str_sw_cs()}.tmp"
+    log_file = f"/tmp/{state.uuid}-{patch[0].to_str_sw_cs()}.log"
     for patch_info in patch:
       sw = patch_info.switch_info.switch_number
       cs = patch_info.case_info.case_number
@@ -881,3 +880,4 @@ class MSVState:
     self.critical_map = dict()
     self.profile_diff = None
     self.timeout = 60000
+    self.uuid=uuid.uuid1()

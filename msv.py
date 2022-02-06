@@ -69,11 +69,12 @@ class MSV:
       result_handler.append_result(self.state, selected_patch, True,pass_result)
       result_handler.remove_patch(self.state, selected_patch)
       self.state.msv_logger.info("Result: PASS" if pass_result else "Result: FAIL")
-    # Do not update result for original program
-    if selected_patch[0].to_str_sw_cs() == "0-0":
-      return pass_result
+
+      # Do not update result for original program
+      if selected_patch[0].to_str_sw_cs() == "0-0":
+        return pass_result
     
-    if not final_result or not self.state.use_pass_test:
+    else:
       result_handler.update_result(self.state, selected_patch, pass_exist, 1, selected_test, new_env)
       result_handler.append_result(self.state, selected_patch, pass_exist,False)
       result_handler.remove_patch(self.state, selected_patch)
