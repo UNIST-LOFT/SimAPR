@@ -158,6 +158,8 @@ def read_info(state: MSVState) -> None:
             if t == PatchType.ConditionKind:
               if not state.use_cpr_space:
                 continue
+            if t==PatchType.ReplaceStringKind:
+              continue
             if len(types[t.value]) > 0:
               type_info = TypeInfo(switch_info, t)
               type_list.append(type_info)
