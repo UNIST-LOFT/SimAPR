@@ -26,7 +26,7 @@ def select_by_probability_hierarchical(state: MSVState, n: int, p1: List[float],
     p2_total = 16
     for i in range(p2_total):
       p2_select.append(PassFail.select_by_probability(p2_select_pf))
-      p3_select_pf.append(p3[p2_select[i]])
+      p3_select_pf.append(p3[p1_select[p2_select[i]]])
     return p1_select[p2_select[PassFail.select_by_probability(p3_select_pf)]]
 
 def __select_prophet_condition(selected_case:CaseInfo,state:MSVState):
