@@ -20,7 +20,17 @@ Make plot from result
 plot.py -i input-dir -o out-file.png -t title -c correct-patch
 ```
 
-## 3. Options
+## 3. Mode
+* guided: default
+* prophet: using prophet method
+* spr: using spr method
+* random: random
+* seapr: using SeAPR
+* original: run original program
+* validation: validation
+
+
+## 4. Options
 * `-p` path-to-msv (`--msv-path`)
 * `-o` output-directory (`--outdir`)
 * `-w` work-directory (`--workdir`)
@@ -40,3 +50,31 @@ plot.py -i input-dir -o out-file.png -t title -c correct-patch
 * `--max-parallel-cpu` procs : 
     Set how many test to run in parallel, for p3
 * `--skip-valid` : Skip initial validation
+* `--use-simulation-mode` previous/msv-result.json : Use result of previous experiment instead of actually run the test.
+
+## 5. Project Structure
+```
+.
+├── msv-search.py
+├── core.py
+├── msv.py
+├── select_patch.py
+├── run_test.py
+├── condition.py
+├── msv_result_handler.py
+├── plot.py
+├── requirements.txt
+├── .gitignore
+├── README.md
+├── cpr/
+└── venv/
+```
+
+* msv-search.py: Entry point, read config files.
+* core.py: Most of data structures are defined
+* msv.py: Run MSV
+* select_patch.py: Algorithms to select patch from patch space.
+* run_test.py: Run test and get result.
+* condition.py: Need by conditional patches.
+* msv_result_handler.py: Update data using result, remove used patches.
+* plot.py: Plot graph from result.

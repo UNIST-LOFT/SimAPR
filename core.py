@@ -19,6 +19,7 @@ class MSVMode(Enum):
   positive = 5
   validation = 6
   spr = 7
+  seapr = 8
 
 class PatchType(Enum):
   TightenConditionKind = 0
@@ -70,6 +71,8 @@ class PassFail:
     self.fail_count += other.fail_count*self.__fixed_beta__(use_fixed_beta,self.pass_count,self.fail_count)
   def expect_probability(self,additional_score:float=0) -> float:
     return self.beta_mode(self.pass_count + 1.5+additional_score, self.fail_count + 2.0)
+  def copy(self) -> 'PassFail':
+    return PassFail(self.pass_count, self.fail_count)
   @staticmethod
   def select_by_probability(probability: List[float]) -> int:   # pf_list: list of PassFail
     # probability=[]
@@ -97,7 +100,7 @@ class FileInfo:
     self.positive_pf = PassFail()
     self.fl_score=-1
     self.profile_diff: 'ProfileDiff' = None
-    self.out_dist: float = 0.0
+    self.out_dist: float = -1.0
     self.update_count: int = 0
     self.prophet_score:list=[]
 
@@ -116,7 +119,7 @@ class LineInfo:
     self.positive_pf = PassFail()
     self.fl_score=0
     self.profile_diff: 'ProfileDiff' = None
-    self.out_dist: float = 0.0
+    self.out_dist: float = -1.0
     self.update_count: int = 0
     self.prophet_score:list=[]
   def __hash__(self) -> int:
@@ -134,7 +137,7 @@ class SwitchInfo:
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
     self.profile_diff: 'ProfileDiff' = None
-    self.out_dist: float = 0.0
+    self.out_dist: float = -1.0
     self.update_count: int = 0
     self.prophet_score:list=[]
   def __hash__(self) -> int:
@@ -151,7 +154,7 @@ class TypeInfo:
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
     self.profile_diff: 'ProfileDiff' = None
-    self.out_dist: float = 0.0
+    self.out_dist: float = -1.0
     self.update_count: int = 0
     self.prophet_score:list=[]
   def __hash__(self) -> int:
@@ -170,10 +173,14 @@ class CaseInfo:
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
     self.processed=False # for prophet condition
+    self.failed = False # for simulation mode
     self.profile_diff: 'ProfileDiff' = None
-    self.out_dist: float = 0.0
+    self.out_dist: float = -1.0
     self.update_count: int = 0
     self.prophet_score:list=[]
+    self.location: FileLine = None
+    self.seapr_e_pf: PassFail = PassFail()
+    self.seapr_n_pf: PassFail = PassFail()
   def __hash__(self) -> int:
     return hash(self.case_number)
   def __eq__(self, other) -> bool:
@@ -194,7 +201,7 @@ class OperatorInfo:
     self.positive_pf = PassFail()
     self.var_count=var_count
     self.profile_diff: 'ProfileDiff' = None
-    self.out_dist: float = 0.0
+    self.out_dist: float = -1.0
     self.update_count: int = 0
     self.prophet_score:list=[]
   def __hash__(self) -> int:
@@ -214,7 +221,7 @@ class VariableInfo:
     self.positive_pf = PassFail()
     self.used_const=set()
     self.profile_diff: 'ProfileDiff' = None
-    self.out_dist: float = 0.0
+    self.out_dist: float = -1.0
     self.update_count: int = 0
     self.prophet_score:int
   def to_str(self) -> str:
@@ -237,7 +244,7 @@ class ConstantInfo:
     self.left:ConstantInfo=None
     self.right:ConstantInfo=None
     self.profile_diff: 'ProfileDiff' = None
-    self.out_dist: float = 0.0
+    self.out_dist: float = -1.0
     self.update_count: int = 0
   def __hash__(self) -> int:
     return hash(self.constant_value)
@@ -261,6 +268,10 @@ class FileLine:
     self.file_info = fi
     self.line_info = li
     self.score = score
+    self.case_map: Dict[str, CaseInfo] = dict() # switch_number-case_number -> CaseInfo
+    self.seapr_e_pf: PassFail = PassFail()
+    self.seapr_n_pf: PassFail = PassFail()
+    # self.type_map: Dict[PatchType, Tuple[PassFail, PassFail]] = dict()
   def to_str(self) -> str:
     return f"{self.file_info.file_name}:{self.line_info.line_number}"
   def __str__(self) -> str:
@@ -511,7 +522,8 @@ class MSVEnvVar:
           new_env["TMP_FILE"] = tmp_file
         else:
           # Do not use __PID
-          del new_env["__PID"]
+          # del new_env["__PID"]
+          del new_env["MSV_OUTPUT_DISTANCE_FILE"]
         if patch_info.is_condition:
           new_env[f"__{sw}_{cs}__OPERATOR"] = str(patch_info.operator_info.operator_type.value)
           if not patch_info.operator_info.operator_type==OperatorType.ALL_1:
@@ -812,6 +824,9 @@ class MSVState:
   msv_path: str
   work_dir: str
   out_dir: str
+  msv_uuid: str
+  use_simulation_mode: bool
+  prev_data: str
   cycle: int
   timeout: int
   start_time: float
@@ -842,11 +857,16 @@ class MSVState:
   msv_result: List[dict]   # List of json object by MSVResult.to_json_object()
   failed_positive_test: Set[int] # Set of positive test that failed
   profile_diff: ProfileDiff
-  tmp_dir = "/tmp"
-  max_dist = 100.0
+  tmp_dir: str
+  max_dist: float
+  function_to_location_map: Dict[str, Tuple[str, int, int]] # function_name -> (file_name, line_start, line_end)
+  test_to_location: Dict[int, Dict[str, Set[int]]] # test_number -> {file_name: set(line_number)}
+  use_pattern: bool      # For SeAPR mode
+  simulation_data: Dict[str, MSVResult]
   def __init__(self) -> None:
     self.mode = MSVMode.guided
     self.msv_path = ""
+    self.msv_uuid = str(uuid.uuid4())
     self.cycle = 0
     self.start_time = time.time()
     self.last_save_time = self.start_time
@@ -881,3 +901,11 @@ class MSVState:
     self.profile_diff = None
     self.timeout = 60000
     self.uuid=uuid.uuid1()
+    self.tmp_dir = "/tmp"
+    self.max_dist = 100.0
+    self.function_to_location_map = dict()
+    self.test_to_location = dict()
+    self.use_pattern = False
+    self.use_simulation_mode = False
+    self.prev_data = ""
+    self.simulation_data = dict()

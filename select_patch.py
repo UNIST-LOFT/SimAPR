@@ -151,7 +151,28 @@ def select_patch_prophet(state: MSVState) -> PatchInfo:
     # if patch is not condition, return it
     return PatchInfo(selected_case,None,None,None)
 
-
+def update_out_dist_list(state: MSVState, out_dist: List[float]) -> None:
+  if len(out_dist) == 0:
+    return
+  tot = 0.0
+  cnt = 0
+  for dist in out_dist:
+    if dist < 0:
+      continue
+    tot += dist
+    cnt += 1
+  if cnt == 0:
+    for i in range(len(out_dist)):
+      out_dist[i] = 1.0
+    return
+  avg = tot / cnt
+  tot += avg * 2 * (len(out_dist) - cnt) # Set uninitialized to avg * 2
+  for i in range(len(out_dist)):
+    if out_dist[i] < 0:
+      out_dist[i] = (tot - (avg * 2))
+    else:
+      out_dist[i] = (tot - out_dist[i])
+  
 def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[PatchInfo]=[], test: int = -1) -> PatchInfo:
   # Select patch for guided, random
   if test < 0:
@@ -177,8 +198,10 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
         p1.append(adjusted_pf.expect_probability())
       else:
         p1.append(file_info.pf.expect_probability())
-      p2.append(ProfileDiff.get_diff(file_info.profile_diff, test, original_profile))
+      #p2.append(ProfileDiff.get_diff(file_info.profile_diff, test, original_profile))
+      p2.append(file_info.out_dist)
       p3.append(file_info.positive_pf.expect_probability())
+  update_out_dist_list(state, p2)
   selected_file = select_by_probability_hierarchical(state, n, p1, p2, p3)
   selected_file_info = state.patch_info_list[selected_file]
   p1.clear()
@@ -196,8 +219,10 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
         p1.append(adjusted_pf.expect_probability())
       else:
         p1.append(line_info.pf.expect_probability())
-      p2.append(ProfileDiff.get_diff(line_info.profile_diff, test, original_profile))
+      #p2.append(ProfileDiff.get_diff(line_info.profile_diff, test, original_profile))
+      p2.append(line_info.out_dist)
       p3.append(line_info.positive_pf.expect_probability())
+  update_out_dist_list(state, p2)
   selected_line = select_by_probability_hierarchical(state, n, p1, p2, p3)
   selected_line_info = selected_file_info.line_info_list[selected_line]
   p1.clear()
@@ -209,8 +234,10 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       p1.append(pf_rand.expect_probability())
     else:
       p1.append(switch_info.pf.expect_probability())
-      p2.append(ProfileDiff.get_diff(switch_info.profile_diff, test, original_profile))
+      #p2.append(ProfileDiff.get_diff(switch_info.profile_diff, test, original_profile))
+      p2.append(switch_info.out_dist)
       p3.append(switch_info.positive_pf.expect_probability())
+  update_out_dist_list(state, p2)
   selected_switch = select_by_probability_hierarchical(state, n, p1, p2, p3)
   selected_switch_info = selected_line_info.switch_info_list[selected_switch]
   p1.clear()
@@ -222,8 +249,10 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       p1.append(pf_rand.expect_probability())
     else:
       p1.append(type_info.pf.expect_probability())
-      p2.append(ProfileDiff.get_diff(type_info.profile_diff, test, original_profile))
+      #p2.append(ProfileDiff.get_diff(type_info.profile_diff, test, original_profile))
+      p2.append(type_info.out_dist)
       p3.append(type_info.positive_pf.expect_probability())
+  update_out_dist_list(state, p2)
   selected_type = select_by_probability_hierarchical(state, n, p1, p2, p3)
   selected_type_info = selected_switch_info.type_info_list[selected_type]
   p1.clear()
@@ -237,8 +266,10 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       p1.append(-1)
     else:
       p1.append(case_info.pf.expect_probability())
-      p2.append(ProfileDiff.get_diff(case_info.profile_diff, test, original_profile))
+      #p2.append(ProfileDiff.get_diff(case_info.profile_diff, test, original_profile))
+      p2.append(case_info.out_dist)
       p3.append(case_info.positive_pf.expect_probability())
+  update_out_dist_list(state, p2)
   selected_case = select_by_probability_hierarchical(state, n, p1, p2, p3)
   selected_case_info = selected_type_info.case_info_list[selected_case]
   p1.clear()
@@ -332,8 +363,10 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
         p1.append(pf_rand.expect_probability())
       else:
         p1.append(op_info.pf.expect_probability())
-        p2.append(ProfileDiff.get_diff(op_info.profile_diff, test, original_profile))
+        #p2.append(ProfileDiff.get_diff(op_info.profile_diff, test, original_profile))
+        p2.append(op_info.out_dist)
         p3.append(op_info.positive_pf.expect_probability())
+    update_out_dist_list(state, p2)
     selected_operator = select_by_probability_hierarchical(state, n, p1, p2, p3)
     selected_operator_info = selected_case_info.operator_info_list[selected_operator]
     p1.clear()
@@ -351,8 +384,10 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
           p1.append(-1)
         else:
           p1.append(var_info.pf.expect_probability())
-        p2.append(ProfileDiff.get_diff(var_info.profile_diff, test, original_profile))
+        #p2.append(ProfileDiff.get_diff(var_info.profile_diff, test, original_profile))
+        p2.append(var_info.out_dist)
         p3.append(var_info.positive_pf.expect_probability())
+    update_out_dist_list(state, p2)
     selected_variable = select_by_probability_hierarchical(state, n, p1, p2, p3)
     selected_variable_info = selected_operator_info.variable_info_list[selected_variable]
     p1.clear()
@@ -364,8 +399,10 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
         p1.append(pf_rand.expect_probability())
       else:
         p1.append(const_info.pf.expect_probability())
-        p2.append(ProfileDiff.get_diff(const_info.profile_diff, test, original_profile))      
+        #p2.append(ProfileDiff.get_diff(const_info.profile_diff, test, original_profile))      
+        p2.append(const_info.out_dist)
         p3.append(const_info.positive_pf.expect_probability())
+    update_out_dist_list(state, p2)
     selected_constant = select_by_probability_hierarchical(state, n, p1, p2, p3)
     selected_constant_info = selected_variable_info.constant_info_list[selected_constant]
     p1.clear()
@@ -373,12 +410,81 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     p3.clear()
     return PatchInfo(selected_case_info, selected_operator_info, selected_variable_info, selected_constant_info)
 
+def get_ochiai(e_f: float, e_p: float, n_f: float, n_p: float) -> float:
+  if e_f == 0.0:
+    return 0.0
+  return e_f / (((e_f + n_f) * (e_f + e_p)) ** 0.5)
+
+def select_patch_seapr(state: MSVState, test: int) -> PatchInfo:
+  if test < 0:
+    test = state.negative_test[0]
+  
+  target: FileLine = None
+  case_info: CaseInfo = None
+  max_ochiai: float = -1.0
+  flag = False
+  for fl in state.priority_map:
+    loc = state.priority_map[fl]
+    e_f = loc.seapr_e_pf.pass_count
+    e_p = loc.seapr_e_pf.fail_count
+    n_f = loc.seapr_n_pf.pass_count
+    n_p = loc.seapr_n_pf.fail_count
+    if state.use_pattern:
+      for cs in loc.case_map:
+        current_case_info = loc.case_map[cs]
+        e_f += current_case_info.seapr_e_pf.pass_count
+        e_p += current_case_info.seapr_e_pf.fail_count
+        n_f += current_case_info.seapr_n_pf.pass_count
+        n_p += current_case_info.seapr_n_pf.fail_count
+        ochiai = get_ochiai(e_f, e_p, n_f, n_p)
+        if e_f > 0:
+          flag = True
+        if ochiai > max_ochiai:
+          max_ochiai = ochiai
+          target = loc
+          case_info = current_case_info
+    else:
+      if e_f > 0:
+        flag = True
+      ochiai = get_ochiai(e_f, e_p, n_f, n_p)
+      if ochiai > max_ochiai:
+        max_ochiai = ochiai
+        target = loc
+  if not flag:
+    return select_patch_SPR(state)
+
+  if target is None:
+    state.msv_logger.fatal("No target found")
+    state.is_alive = False
+    return PatchInfo(state.switch_case_map["0-0"], None, None, None)
+
+  for cs in target.case_map:
+    if case_info is not None:
+      break
+    case_info = target.case_map[cs]
+
+  if not case_info.is_condition:
+    return PatchInfo(case_info, None, None, None)
+  if not case_info.processed:
+    return PatchInfo(case_info, None, None, None)
+  for op_info in case_info.operator_info_list:
+    if op_info.operator_type == OperatorType.ALL_1:
+      return PatchInfo(case_info, op_info, None, None)
+    for var_info in op_info.variable_info_list:
+      if len(var_info.constant_info_list) == 0:
+        continue
+      for const_info in var_info.constant_info_list:
+        return PatchInfo(case_info, op_info, var_info, const_info)
+
+
 def select_patch(state: MSVState, mode: MSVMode, test: int) -> List[PatchInfo]:
   selected_patch = list()
   if mode == MSVMode.prophet:
     return [select_patch_prophet(state)]
   elif mode==MSVMode.spr:
     return [select_patch_SPR(state)]
+  if mode == MSVMode.seapr:
+    return [select_patch_seapr(state, test)]
 
   for _ in range(state.use_multi_line):
     result = select_patch_guided(state, mode,selected_patch, test)

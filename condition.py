@@ -165,7 +165,7 @@ class ProphetCondition:
       run_result, is_timeout = run_test.run_fail_test(self.state, patch, test, new_env)
       if is_timeout:
         values.append([])
-      if not run_result:
+      elif not run_result:
         self.state.msv_logger.warn("Terrible fail at collecting value!")
         values.append([])
       

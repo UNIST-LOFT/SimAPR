@@ -6,6 +6,7 @@ def update_result(state: MSVState, selected_patch: List[PatchInfo], run_result: 
   #if state.use_hierarchical_selection >= 2:
   update_result_out_dist(state, selected_patch, run_result, test, new_env)
   # update_result_critical(state, selected_patch, run_result, test)
+  update_result_seapr(state, selected_patch, run_result, test)
   for patch in selected_patch:
     patch.update_result(run_result, n,state.use_fixed_beta)
 
@@ -16,9 +17,13 @@ def update_result_out_dist(state: MSVState, selected_patch: List[PatchInfo], run
     if os.path.exists(output_dist_file):
       with open(output_dist_file, 'r') as f:
         distance_file = f.read()
-        dist = float(distance_file.strip())
-        if dist > state.max_dist:
-          state.max_dist = dist
+        try:
+          dist = float(distance_file.strip())
+          if dist > state.max_dist:
+            state.max_dist = dist
+        except:
+          dist = state.max_dist * 2
+          state.msv_logger.warning(f"Invalid distance file: {distance_file} in {output_dist_file}")
       os.remove(output_dist_file)
     else:
       state.msv_logger.warning(f"File {output_dist_file} does not exist")
@@ -26,6 +31,46 @@ def update_result_out_dist(state: MSVState, selected_patch: List[PatchInfo], run
   for patch in selected_patch:
     patch.update_result_out_dist(run_result, dist, state.use_fixed_beta)
   return dist
+
+def find_func_loc(state: MSVState, base_loc: FileLine) -> Tuple[str, int, int]:
+  for func in state.function_to_location_map:
+    loc = state.function_to_location_map[func]
+    if loc[0] == base_loc.file_info.file_name:
+      if loc[1] <= base_loc.line_info.line_number and base_loc.line_info.line_number <= loc[2]:
+        return loc
+  return None
+
+def update_result_seapr(state: MSVState, selected_patch: List[PatchInfo], is_high_quality: bool, test: int) -> None:
+  for patch in selected_patch:
+    base_type = patch.type_info.patch_type
+    case_info = patch.case_info
+    base_fl = case_info.location
+    base_loc = find_func_loc(state, base_fl)
+    loc_diff = PassFail(0, 1)
+    if base_loc is None:
+      state.msv_logger.warning(f"No function location for {base_fl}")
+    for fl_str in state.priority_map:
+      fl = state.priority_map[fl_str]
+      if fl.file_info.file_name == base_fl.file_info.file_name:
+        if base_loc is not None:
+          if base_loc[1] <= fl.line_info.line_number and fl.line_info.line_number <= base_loc[2]:
+            loc_diff = PassFail(1, 0)
+      fl.seapr_e_pf.update(is_high_quality, loc_diff.pass_count)
+      fl.seapr_n_pf.update(is_high_quality, loc_diff.fail_count)
+      if state.use_pattern:
+        type_diff = PassFail(0, 0)
+        for cs in fl.case_map:
+          current_case = fl.case_map[cs]
+          current_type = current_case.parent.patch_type
+          type_diff.update(current_type == base_type, 1)
+          # if current_type in fl.type_map:
+          #   fl.type_map[current_type][0].update(is_high_quality, type_diff.pass_count)
+          #   fl.type_map[current_type][1].update(is_high_quality, type_diff.fail_count)
+          # else:
+          #   fl.type_map[current_type] = [type_diff.copy(), type_diff.copy()]
+          current_case.seapr_e_pf.update(is_high_quality, type_diff.pass_count)
+          current_case.seapr_e_pf.update(is_high_quality, type_diff.fail_count)
+
 
 def update_result_critical(state: MSVState, selected_patch: List[PatchInfo], run_result: bool, test: int) -> None:
   critical_pf = PassFail()
@@ -119,7 +164,7 @@ def save_result(state: MSVState) -> None:
     json.dump(obj, f, indent=2)
 # Append result list, save result to file periodically
 def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result: bool,pass_test_result:bool=False) -> None:
-  save_interval = 60 # 30 minutes
+  save_interval = 1800 # 30 minutes
   tm = time.time()
   tm_interval = tm - state.start_time
   result = MSVResult(state.cycle, tm_interval, selected_patch, 
@@ -135,3 +180,15 @@ def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result:
 def remove_patch(state: MSVState, patches: List[PatchInfo]) -> None:
   for patch in patches:
     patch.remove_patch(state)
+  if state.mode == MSVMode.seapr:
+    for patch in patches:
+      case_info = patch.case_info
+      case_map = case_info.location.case_map
+      loc_str = case_info.location.to_str()
+      if case_info.is_condition:
+        if case_info.processed and len(case_info.operator_info_list) == 0:
+          del case_map[case_info.to_str()]
+      else:
+        del case_map[case_info.to_str()]
+      if len(case_map) == 0:
+        del state.priority_map[loc_str]

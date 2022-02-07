@@ -20,7 +20,7 @@ def parse_args(argv: list) -> MSVState:
   longopts = ["help", "outdir=", "workdir=", "timeout=", "msv-path=", "time-limit=", "cycle-limit=",
               "mode=", "max-parallel-cpu=",'skip-valid','use-fixed-beta','use-cpr-space','use-fixed-const',
               "use-condition-synthesis", "use-fl", "use-hierarchical-selection=", "use-pass-test",
-              "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=']
+              "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern", "use-simulation-mode="]
   opts, args = getopt.getopt(argv[1:], "ho:w:p:t:m:c:j:T:E:M:S:", longopts)
   state = MSVState()
   state.original_args = argv
@@ -71,6 +71,11 @@ def parse_args(argv: list) -> MSVState:
       state.use_cpr_space=True
     elif o in ['--use-fixed-const']:
       state.use_fixed_const=True
+    elif o in ['--use-pattern']:
+      state.use_pattern = True
+    elif o in ['--use-simulation-mode']:
+      state.use_simulation_mode = True
+      state.prev_data = a
   if sub_dir != "":
     state.out_dir = os.path.join(state.out_dir, sub_dir)
   if not os.path.exists(state.out_dir):
@@ -138,8 +143,9 @@ def read_info(state: MSVState) -> None:
         line_info.fl_score = score / max_priority * max_value
         if file_info.fl_score<line_info.fl_score:
           file_info.fl_score=line_info.fl_score
-        state.priority_map[f"{file_info.file_name}:{line_info.line_number}"] = FileLine(file_info, line_info, score)
-    
+        file_line = FileLine(file_info, line_info, score)
+        state.priority_map[f"{file_info.file_name}:{line_info.line_number}"] = file_line
+
         line_list.append(line_info)
         switch_list = line_info.switch_info_list
         for switches in line['switches']:
@@ -169,6 +175,7 @@ def read_info(state: MSVState) -> None:
                 is_condition = t.value == PatchType.TightenConditionKind.value or t.value==PatchType.LoosenConditionKind.value or t.value==PatchType.IfExitKind.value or \
                             t.value==PatchType.GuardKind.value or t.value==PatchType.SpecialGuardKind.value or t.value==PatchType.ConditionKind.value
                 case_info = CaseInfo(type_info, int(c), is_condition)
+                case_info.location = file_line
 
                 current_score=None
                 for prophet_score in switches['prophet_scores']:
@@ -201,6 +208,9 @@ def read_info(state: MSVState) -> None:
                         file_info.prophet_score.append(score)
                 
                 state.switch_case_map[f"{switch_info.switch_number}-{case_info.case_number}"] = case_info
+                sw_cs_key = f'{switch_info.switch_number}-{case_info.case_number}'
+                state.switch_case_map[sw_cs_key] = case_info
+                file_line.case_map[sw_cs_key] = case_info
 
               if len(type_info.case_info_list)==0:
                 type_list.remove(type_info)
@@ -217,6 +227,14 @@ def read_info(state: MSVState) -> None:
       temp_score: float = priority["score"]
       store = (temp_file, temp_line, temp_score)
       state.priority_list.append(store)
+    for file in info["func_locations"]:
+      file_name = file["file"]
+      for func in file["functions"]:
+        func_name = func["function"]
+        begin = func["begin"]
+        end = func["end"]
+        state.function_to_location_map[func_name] = (file_name, begin, end)
+
   #Add original to switch_case_map
   temp_file = FileInfo('original')
   temp_line = LineInfo(temp_file, 0)
@@ -228,6 +246,42 @@ def read_info(state: MSVState) -> None:
   temp_case = CaseInfo(temp_type, 0, False)
   temp_type.case_info_list.append(temp_case)
   state.switch_case_map["0-0"] = temp_case
+  if state.use_simulation_mode:
+    with open(state.prev_data, "r") as f:
+      prev_info = json.load(f)
+      for data in prev_info:
+        iter = data["iteration"]
+        tm = data["time"]
+        result = data["result"]
+        pass_result = data["pass_result"]
+        output_distance = data["output_distance"]
+        config = data["config"]
+        patch_list = list()
+        for conf in config:
+          sw = conf["switch"]
+          cs = conf["case"]
+          is_cond = conf["is_cond"]
+          op = None
+          var = None
+          con = None
+          if "operator" in conf:
+            op = conf["operator"]
+          if "variable" in conf:
+            var = conf["variable"]
+          if "constant" in conf:
+            con = conf["constant"]
+          case_info = state.switch_case_map[f'{sw}-{cs}']
+          if case_info.is_condition:
+            if op is None:
+              case_info.failed = True
+            else:
+              continue
+            #   case_info.processed = True
+            #   case_info.operator_info_list = list()
+              #op_info = OperatorInfo(case_info, op)
+          patch_info = PatchInfo(case_info, None, None, None)
+          patch_list.append(patch_info)
+          state.simulation_data[patch_info.to_str()] = MSVResult(iter, tm, [patch_info], result, pass_result, output_distance)
 
 def read_var_count(state:MSVState,sizes:list):
   for object in sizes:
