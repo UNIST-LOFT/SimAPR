@@ -34,7 +34,13 @@ def __select_prophet_condition(selected_case:CaseInfo,state:MSVState):
   if selected_operator.operator_type==OperatorType.ALL_1:
     return selected_operator
   else:
-    return selected_operator.variable_info_list[0].constant_info_list[0]
+    selected_var=selected_operator.variable_info_list[0]
+    for var in selected_operator.variable_info_list:
+      if len(var.constant_info_list)>0:
+        selected_var=var
+        break
+
+    return selected_var.constant_info_list[0]
 
 
 def select_patch_SPR(state: MSVState) -> PatchInfo:
@@ -451,7 +457,7 @@ def select_patch_seapr(state: MSVState, test: int) -> PatchInfo:
         max_ochiai = ochiai
         target = loc
   if not flag:
-    return select_patch_SPR(state)
+    case_info= select_patch_SPR(state).case_info
 
   if target is None:
     state.msv_logger.fatal("No target found")
@@ -466,7 +472,76 @@ def select_patch_seapr(state: MSVState, test: int) -> PatchInfo:
   if not case_info.is_condition:
     return PatchInfo(case_info, None, None, None)
   if not case_info.processed:
-    return PatchInfo(case_info, None, None, None)
+    if state.use_condition_synthesis:
+      case_info.processed=True
+      init_prophet_score=case_info.prophet_score.copy()
+      case_info.prophet_score.clear()
+      for op in OperatorType:
+        if op==OperatorType.ALL_1:
+          operator=OperatorInfo(case_info,op,1)
+          current_score=sorted(case_info.prophet_score)[-1]
+          operator.prophet_score.append(current_score)
+          case_info.prophet_score.append(current_score)
+          case_info.parent.prophet_score.append(current_score)
+          case_info.parent.parent.prophet_score.append(current_score)
+          case_info.parent.parent.parent.prophet_score.append(current_score)
+          case_info.parent.parent.parent.parent.prophet_score.append(current_score)
+          case_info.operator_info_list.append(operator)
+        else:
+          operator=OperatorInfo(case_info,op,state.var_counts[f'{case_info.parent.parent.switch_number}-{case_info.case_number}'])
+          if op!=OperatorType.EQ:
+            for score in init_prophet_score:
+              operator.prophet_score.append(score)
+              case_info.prophet_score.append(score)
+              case_info.parent.prophet_score.append(score)
+              case_info.parent.parent.prophet_score.append(score)
+              case_info.parent.parent.parent.prophet_score.append(score)
+              case_info.parent.parent.parent.parent.prophet_score.append(score)
+
+          for i in range(operator.var_count):
+            new_var=VariableInfo(operator,i)
+            new_var.prophet_score=init_prophet_score[i]
+            const_zero=ConstantInfo(new_var,0)
+            new_var.constant_info_list.append(const_zero)
+            new_var.used_const.add(0)
+            current_const=const_zero
+
+            if state.use_cpr_space:
+              # use fixed constant(-10 ≤ c ≤ 10) for CPR search space
+              for j in range(-1,-11,-1):
+                const_left=ConstantInfo(new_var,j)
+                const_left.parent=current_const
+                current_const.left=const_left
+                current_const=const_left
+                new_var.used_const.add(j)
+              current_const=const_zero
+              for j in range(1,11):
+                const_right=ConstantInfo(new_var,j)
+                const_right.parent=current_const
+                current_const.right=const_right
+                current_const=const_right
+                new_var.used_const.add(j)
+            
+            elif state.use_fixed_const:
+              # use fixed constant(-100 ≤ c ≤ 100) for comparing with Prophet
+              for j in range(-1,-101,-1):
+                const_left=ConstantInfo(new_var,j)
+                const_left.parent=current_const
+                current_const.left=const_left
+                current_const=const_left
+                new_var.used_const.add(j)
+              current_const=const_zero
+              for j in range(1,101):
+                const_right=ConstantInfo(new_var,j)
+                const_right.parent=current_const
+                current_const.right=const_right
+                current_const=const_right
+                new_var.used_const.add(j)
+            operator.variable_info_list.append(new_var)
+          case_info.operator_info_list.append(operator)
+
+    else:
+      return PatchInfo(case_info, None, None, None)
   for op_info in case_info.operator_info_list:
     if op_info.operator_type == OperatorType.ALL_1:
       return PatchInfo(case_info, op_info, None, None)
