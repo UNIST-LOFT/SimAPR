@@ -480,7 +480,7 @@ class MSVEnvVar:
   def get_new_env(state: 'MSVState', patch: List['PatchInfo'], test: int, mode: EnvVarMode = EnvVarMode.basic,set_tmp_file=True) -> Dict[str, str]:
     new_env = os.environ.copy()
     new_env["__PID"] = f"{test}-{patch[0].to_str_sw_cs()}"
-    new_env["MSV_UUID"] = state.uuid
+    new_env["MSV_UUID"] = str(state.uuid)
     new_env["MSV_OUTPUT_DISTANCE_FILE"] = os.path.join(state.tmp_dir, f"{state.uuid}.out")
     new_env["MSV_TMP_DIR"] = state.tmp_dir
     new_env["MSV_PATH"] = state.msv_path
