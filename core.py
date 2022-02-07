@@ -801,13 +801,18 @@ class MSVResult:
     self.result = result
     self.pass_result=pass_test_result
     self.output_distance = output_distance
-  def to_json_object(self) -> dict:
+  def to_json_object(self,total_searched_patch:int=0,total_passed_patch:int=0,total_plausible_patch:int=0) -> dict:
     object = dict()
     object["iteration"] = self.iteration
     object["time"] = self.time
     object["result"] = self.result
     object['pass_result']=self.pass_result
     object["output_distance"] = self.output_distance
+
+    # This total counts include this result
+    object['total_searched']=total_searched_patch
+    object['total_passed']=total_passed_patch
+    object['total_plausible']=total_plausible_patch
     conf_list = list()
     for patch in self.config:
       conf = patch.to_json_object()
@@ -832,7 +837,6 @@ class MSVState:
   start_time: float
   last_save_time: float
   is_alive: bool
-  correct_patch: str
   use_condition_synthesis: bool
   use_fl: bool
   use_hierarchical_selection: int
@@ -909,3 +913,7 @@ class MSVState:
     self.use_simulation_mode = False
     self.prev_data = ""
     self.simulation_data = dict()
+    self.correct_patch:PatchInfo=None
+    self.total_searched_patch=0
+    self.total_passed_patch=0
+    self.total_plausible_patch=0

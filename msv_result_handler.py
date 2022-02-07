@@ -169,10 +169,17 @@ def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result:
   tm_interval = tm - state.start_time
   result = MSVResult(state.cycle, tm_interval, selected_patch, 
           test_result, pass_test_result, selected_patch[0].out_dist)
-  state.msv_result.append(result.to_json_object())
+  
+  if result.result:
+    state.total_passed_patch+=1
+  if result.pass_result:
+    state.total_plausible_patch+=1
+  state.total_searched_patch+=1
+  
+  state.msv_result.append(result.to_json_object(state.total_searched_patch,state.total_passed_patch,state.total_plausible_patch))
   state.used_patch.append(result)
   with open(os.path.join(state.out_dir, "msv-result.csv"), 'a') as f:
-    f.write(json.dumps(result.to_json_object()))
+    f.write(json.dumps(result.to_json_object(state.total_searched_patch,state.total_passed_patch,state.total_plausible_patch)))
     f.write("\n")
   if (tm - state.last_save_time) > save_interval:
     save_result(state)
