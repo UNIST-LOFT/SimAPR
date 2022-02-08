@@ -43,7 +43,7 @@ class MSV:
       for test in self.state.negative_test:
         # set environment variables
         self.state.msv_logger.info('Run normal patch')
-        new_env = MSVEnvVar.get_new_env(self.state, selected_patch, test)
+        new_env = MSVEnvVar.get_new_env(self.state, selected_patch, test,False)
         # run test
         run_result, is_timeout = run_test.run_fail_test(self.state, selected_patch, test, new_env)
         if not run_result:
@@ -53,7 +53,7 @@ class MSV:
     else:
       # set environment variables
       self.state.msv_logger.info('Run normal patch')
-      new_env = MSVEnvVar.get_new_env(self.state, selected_patch, selected_test)
+      new_env = MSVEnvVar.get_new_env(self.state, selected_patch, selected_test,False)
       # run test
       run_result, is_timeout = run_test.run_fail_test(self.state, selected_patch, selected_test, new_env)
       final_result=run_result
