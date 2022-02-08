@@ -167,7 +167,7 @@ def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result:
   save_interval = 1800 # 30 minutes
   tm = time.time()
   tm_interval = tm - state.start_time
-  result = MSVResult(state.cycle, tm_interval, selected_patch, 
+  result = MSVResult(state.cycle,state.iteration,tm_interval, selected_patch, 
           test_result, pass_test_result, selected_patch[0].out_dist)
   
   if result.result:
