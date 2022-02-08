@@ -795,8 +795,9 @@ class MSVResult:
   config: List[PatchInfo]
   result: bool
   output_distance: float
-  def __init__(self, iteration: int, time: float, config: List[PatchInfo], result: bool,pass_test_result:bool=False, output_distance: float = 100.0) -> None:
-    self.iteration = iteration
+  def __init__(self, execution: int, iteration:int,time: float, config: List[PatchInfo], result: bool,pass_test_result:bool=False, output_distance: float = 100.0) -> None:
+    self.execution = execution
+    self.iteration=iteration
     self.time = time
     self.config = config
     self.result = result
@@ -804,7 +805,8 @@ class MSVResult:
     self.output_distance = output_distance
   def to_json_object(self,total_searched_patch:int=0,total_passed_patch:int=0,total_plausible_patch:int=0) -> dict:
     object = dict()
-    object["iteration"] = self.iteration
+    object["execution"] = self.execution
+    object['iteration']=self.iteration
     object["time"] = self.time
     object["result"] = self.result
     object['pass_result']=self.pass_result
@@ -918,3 +920,4 @@ class MSVState:
     self.total_searched_patch=0
     self.total_passed_patch=0
     self.total_plausible_patch=0
+    self.iteration=0

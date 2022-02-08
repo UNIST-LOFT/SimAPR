@@ -250,6 +250,7 @@ def read_info(state: MSVState) -> None:
     with open(state.prev_data, "r") as f:
       prev_info = json.load(f)
       for data in prev_info:
+        exec=data['execution']
         iter = data["iteration"]
         tm = data["time"]
         result = data["result"]
@@ -281,7 +282,7 @@ def read_info(state: MSVState) -> None:
               #op_info = OperatorInfo(case_info, op)
           patch_info = PatchInfo(case_info, None, None, None)
           patch_list.append(patch_info)
-          state.simulation_data[patch_info.to_str()] = MSVResult(iter, tm, [patch_info], result, pass_result, output_distance)
+          state.simulation_data[patch_info.to_str()] = MSVResult(exec,iter, tm, [patch_info], result, pass_result, output_distance)
 
 def read_var_count(state:MSVState,sizes:list):
   for object in sizes:
