@@ -197,5 +197,5 @@ def remove_patch(state: MSVState, patches: List[PatchInfo]) -> None:
           del case_map[case_info.to_str()]
       else:
         del case_map[case_info.to_str()]
-      if len(case_map) == 0:
+      if len(case_map) == 0 and loc_str in state.priority_map.keys():
         del state.priority_map[loc_str]
