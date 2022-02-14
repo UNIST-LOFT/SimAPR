@@ -302,6 +302,70 @@ def msv_plot(in_dir: str, title: str, out_file: str, ignore_iteration: bool = Fa
     msv_plot_multiple(in_dir, files, out_file, title,
                       ignore_iteration, correct_patch, use_time=True)
 
+def total_plausible_patch(guided_result: Dict[str,list],other_result: Dict[str,list]) -> Dict[str,List[int]]:
+  """
+    Get total plausible patch by each search strategy.
+    Returns totals at each iteration(execution).
+    All lists in return have same length.
+
+    guided_result: names and lists of search output directory pair, searched by guided strategy. May be executed 10 times.
+    other_result: names and lists of search output directory pair, searched by deterministic strategy(i.e. prophet, SPR, SeAPR, SeAPR++). May be executed 1 time.
+  """
+  final_total=dict()
+  max_len=0
+  for name,results in guided_result:
+    total=[]
+    for result in results:
+      file=open(result+'/msv-result.json','rt')
+      root=json.load(file)
+      file.close()
+
+      for element in root:
+        iteration=element['iteration']
+        execution=element['execution']
+        is_pass=element['pass_result']
+
+        # Padding until execution
+        while len(total) < execution:
+          total.append(0)
+        
+        if is_pass:
+          for i in range(execution,len(total)):
+            total[i]+=1
+    final_total[name]=total
+    if len(total) > max_len:
+      max_len=len(total)
+
+  for name,results in other_result:
+    total=[]
+    for result in results:
+      file=open(result+'/msv-result.json','rt')
+      root=json.load(file)
+      file.close()
+
+      for element in root:
+        iteration=element['iteration']
+        execution=element['execution']
+        is_pass=element['pass_result']
+
+        # Padding until execution
+        while len(total) < execution:
+          total.append(0)
+        
+        if is_pass:
+          for i in range(execution,len(total)):
+            total[i]+=10
+    final_total[name]=total
+    if len(total) > max_len:
+      max_len=len(total)
+
+  # Padding all final results to max length
+  for name,results in final_total:
+    while len(results) < max_len:
+      results.append(results[-1])
+  
+  return final_total
+
 def main(argv):
   opts, args = getopt.getopt(argv[1:], "hi:o:t:nm:c:w:")
   result_file = ""
