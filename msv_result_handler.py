@@ -16,14 +16,14 @@ def update_result_out_dist(state: MSVState, selected_patch: List[PatchInfo], run
   if output_dist_file != "":
     if os.path.exists(output_dist_file):
       with open(output_dist_file, 'r') as f:
-        distance_file = f.read()
         try:
+          distance_file = f.read()
           dist = float(distance_file.strip())
           if dist > state.max_dist:
             state.max_dist = dist
         except:
           dist = state.max_dist * 2
-          state.msv_logger.warning(f"Invalid distance file: {distance_file} in {output_dist_file}")
+          state.msv_logger.warning(f"Invalid distance file: {output_dist_file}")
       os.remove(output_dist_file)
     else:
       state.msv_logger.warning(f"File {output_dist_file} does not exist")
@@ -197,5 +197,5 @@ def remove_patch(state: MSVState, patches: List[PatchInfo]) -> None:
           del case_map[case_info.to_str()]
       else:
         del case_map[case_info.to_str()]
-      if len(case_map) == 0:
+      if len(case_map) == 0 and loc_str in state.priority_map.keys():
         del state.priority_map[loc_str]

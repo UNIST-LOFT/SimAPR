@@ -171,7 +171,7 @@ class ProphetCondition:
       
       values.append(parse_value(log_file))
 
-    if self.state.use_pass_test:
+    if self.state.use_pass_test and False:
       # collect values from pass test
       self.state.msv_logger.info('Collecting values from pass test')
       for test in self.state.positive_test:
