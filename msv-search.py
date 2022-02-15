@@ -190,6 +190,11 @@ def read_info(state: MSVState) -> None:
                   if type_info.patch_type==PatchType.ConditionKind: # CPR only includes ConditionKind
                     if state.var_counts[f'{switch_info.switch_number}-{case_info.case_number}']>0:
                       case_list.append(case_info)
+                      state.switch_case_map[f"{switch_info.switch_number}-{case_info.case_number}"] = case_info
+                      sw_cs_key = f'{switch_info.switch_number}-{case_info.case_number}'
+                      state.switch_case_map[sw_cs_key] = case_info
+                      file_line.case_map[sw_cs_key] = case_info
+
                       for score in current_score:
                         case_info.prophet_score.append(score)
                         type_info.prophet_score.append(score)
@@ -200,6 +205,10 @@ def read_info(state: MSVState) -> None:
                   if type_info.patch_type!=PatchType.ConditionKind: # Original Prophet doesn't have ConditionKind
                     if f'{switch_info.switch_number}-{case_info.case_number}' not in state.var_counts.keys() or state.var_counts[f'{switch_info.switch_number}-{case_info.case_number}']>0:
                       case_list.append(case_info)
+                      state.switch_case_map[f"{switch_info.switch_number}-{case_info.case_number}"] = case_info
+                      sw_cs_key = f'{switch_info.switch_number}-{case_info.case_number}'
+                      state.switch_case_map[sw_cs_key] = case_info
+                      file_line.case_map[sw_cs_key] = case_info
                       for score in current_score:
                         case_info.prophet_score.append(score)
                         type_info.prophet_score.append(score)
@@ -207,11 +216,6 @@ def read_info(state: MSVState) -> None:
                         line_info.prophet_score.append(score)
                         file_info.prophet_score.append(score)
                 
-                state.switch_case_map[f"{switch_info.switch_number}-{case_info.case_number}"] = case_info
-                sw_cs_key = f'{switch_info.switch_number}-{case_info.case_number}'
-                state.switch_case_map[sw_cs_key] = case_info
-                file_line.case_map[sw_cs_key] = case_info
-
               if len(type_info.case_info_list)==0:
                 type_list.remove(type_info)
 
