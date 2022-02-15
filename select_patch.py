@@ -45,16 +45,19 @@ def __select_prophet_condition(selected_case:CaseInfo,state:MSVState):
 
 def select_patch_SPR(state: MSVState) -> PatchInfo:
   # Select file and line by priority
-  file_line: FileLine
+  file_line: FileLine=None
   while len(state.priority_list) > 0:
     (p_file, p_line, p_score) = state.priority_list.pop(0)
     fl_str = f"{p_file}:{p_line}"
     if fl_str in state.priority_map:
       file_line = state.priority_map[fl_str]
       # If it still has switch, use it
-      if (len(file_line.line_info.switch_info_list) > 0):
+      if (len(file_line.line_info.switch_info_list) > 1):
         state.priority_list.insert(0, (p_file, p_line, p_score))
         break
+  
+  if file_line is None:
+    file_line=state.priority_map.popitem()[1]
   selected_file = file_line.file_info
   selected_line = file_line.line_info
   # # select file

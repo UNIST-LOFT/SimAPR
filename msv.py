@@ -30,6 +30,8 @@ class MSV:
       self.state.is_alive = False
     elif self.state.time_limit > 0 and (time.time() - self.state.start_time) > self.state.time_limit:
       self.state.is_alive = False
+    elif len(self.state.priority_map) == 0 or len(self.state.priority_list) == 0:
+      self.state.is_alive = False
     return self.state.is_alive
 
   def save_result(self) -> None:

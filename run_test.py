@@ -8,7 +8,7 @@ def run_fail_test(state: MSVState, selected_patch: List[PatchInfo], selected_tes
   state.msv_logger.warning(
       f"@{state.cycle} Test [{selected_test}]  with {PatchInfo.list_to_str(selected_patch)}")
   args = state.args + [str(selected_test)]
-  args = args[0:1] + ['-i', selected_patch[0].to_str(),'-t',str(state.timeout)] + args[1:]
+  args = args[0:1] + ['-i', selected_patch[0].to_str(),'-t',str(int(state.timeout/1000))] + args[1:]
   state.msv_logger.debug(' '.join(args))
   # In simulation mode, we don't need to run the test
   if state.use_simulation_mode:
@@ -27,13 +27,17 @@ def run_fail_test(state: MSVState, selected_patch: List[PatchInfo], selected_tes
   se: bytes
   is_timeout = False
   try:
-    so, se = test_proc.communicate(timeout=(state.timeout/1000))
+    so, se = test_proc.communicate()
   except:  # timeout
     state.msv_logger.info("Timeout!")
     pid=test_proc.pid
-    for child in psutil.Process(pid).children(True):
+    children=[]
+    for child in psutil.Process(pid).children(False):
       if psutil.pid_exists(child.pid):
-        child.kill()
+        children.append(child)
+
+    for child in children:
+      child.kill()
     test_proc.kill()
     return False,True
   result_str = so.decode('utf-8').strip()
@@ -128,8 +132,8 @@ def run_pass_test(state: MSVState, patch: List[PatchInfo], is_initialize: bool =
         return_tests.add(test)
         if not is_initialize:
           state.failed_positive_test.add(test)
-    if is_initialize:
-      parse_location(state, new_env, success)
+    # if is_initialize:
+    #   parse_location(state, new_env, success)
     if not result:
       state.msv_logger.warning(f"Result: FAIL at {return_tests}")
       return False, return_tests
