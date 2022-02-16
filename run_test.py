@@ -49,10 +49,15 @@ def run_fail_test(state: MSVState, selected_patch: List[PatchInfo], selected_tes
   if '\n' in result_str:
     result_str=result_str.splitlines()[0]
   result_str.strip()
-  if int(result_str) == selected_test:
-    state.msv_logger.warning("Result: PASS")
-    return True, is_timeout
-  else:
+  try:
+    if int(result_str) == selected_test:
+      state.msv_logger.warning("Result: PASS")
+      return True, is_timeout
+    else:
+      state.msv_logger.warning("Result: FAIL")
+      return False, is_timeout
+  except:
+    state.msv_logger.warning("Cannot parse result")
     state.msv_logger.warning("Result: FAIL")
     return False, is_timeout
 
