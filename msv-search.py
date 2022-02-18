@@ -297,7 +297,7 @@ def read_repair_conf(state: MSVState) -> None:
   conf_dict = dict()
   with open(os.path.join(state.work_dir, "repair.conf"), "r") as repair_conf:
     for line in repair_conf.readlines():
-      if line.startswith("#"):
+      if line.startswith("#") or len(line) <= 2:
         continue
       line = line.strip()
       key = line.split("=")[0]
