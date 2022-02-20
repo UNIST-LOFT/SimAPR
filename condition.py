@@ -485,7 +485,7 @@ class MyCondition:
       self.state.is_alive = False
     elif self.state.time_limit > 0 and (time.time() - self.state.start_time) > self.state.time_limit:
       self.state.is_alive = False
-    if self.state.is_alive:
+    if not self.state.is_alive:
       return None
 
     ## if pass, remove from tree
@@ -500,7 +500,7 @@ class MyCondition:
         self.state.is_alive = False
       elif self.state.time_limit > 0 and (time.time() - self.state.start_time) > self.state.time_limit:
         self.state.is_alive = False
-      if self.state.is_alive:
+      if not self.state.is_alive:
         return None
 
       for condition in cp_conds:
@@ -522,7 +522,7 @@ class MyCondition:
           self.state.is_alive = False
         elif self.state.time_limit > 0 and (time.time() - self.state.start_time) > self.state.time_limit:
           self.state.is_alive = False
-        if self.state.is_alive:
+        if not self.state.is_alive:
           return None
 
       self.remove_by_pass_test(conditions,root)
@@ -539,7 +539,7 @@ class MyCondition:
       self.state.is_alive = False
     elif self.state.time_limit > 0 and (time.time() - self.state.start_time) > self.state.time_limit:
       self.state.is_alive = False
-    if self.state.is_alive:
+    if not self.state.is_alive:
       return None
 
     values=self.collect_value(tmp_file,record,passed_test)
@@ -553,7 +553,7 @@ class MyCondition:
       self.state.is_alive = False
     elif self.state.time_limit > 0 and (time.time() - self.state.start_time) > self.state.time_limit:
       self.state.is_alive = False
-    if self.state.is_alive:
+    if not self.state.is_alive:
       return None
 
     # CPR use concrete constant: -10 ≤ c ≤ 10
