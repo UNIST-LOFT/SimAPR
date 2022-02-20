@@ -361,6 +361,8 @@ class ProphetCondition:
       return None
     return conditions
 
+import time
+
 class MyCondition:
   def __init__(self,patch: PatchInfo,state: MSVState, fail_test: list, pass_test: list) -> None:
     self.patch=patch
@@ -479,6 +481,12 @@ class MyCondition:
     result_handler.update_result_positive(self.state, patch, pass_result, fail_tests)
     result_handler.append_result(self.state, patch, True,pass_result)
     result_handler.remove_patch(self.state,patch)
+    if self.state.cycle_limit > 0 and self.state.cycle >= self.state.cycle_limit:
+      self.state.is_alive = False
+    elif self.state.time_limit > 0 and (time.time() - self.state.start_time) > self.state.time_limit:
+      self.state.is_alive = False
+    if self.state.is_alive:
+      return None
 
     ## if pass, remove from tree
     if pass_result:
@@ -488,6 +496,12 @@ class MyCondition:
       fail_test_str=[]
       for i in fail_tests:
         fail_test_str.append(str(i))
+      if self.state.cycle_limit > 0 and self.state.cycle >= self.state.cycle_limit:
+        self.state.is_alive = False
+      elif self.state.time_limit > 0 and (time.time() - self.state.start_time) > self.state.time_limit:
+        self.state.is_alive = False
+      if self.state.is_alive:
+        return None
 
       for condition in cp_conds:
         patch_next=[PatchInfo(condition.variable.parent.parent,condition.variable.parent,condition.variable,condition)]
@@ -504,6 +518,12 @@ class MyCondition:
           result_handler.remove_patch(self.state,patch_next)
         else:
           self.state.msv_logger.info(f"Test {str(fail_tests)} pass with {patch_next[0].to_str()}")
+        if self.state.cycle_limit > 0 and self.state.cycle >= self.state.cycle_limit:
+          self.state.is_alive = False
+        elif self.state.time_limit > 0 and (time.time() - self.state.start_time) > self.state.time_limit:
+          self.state.is_alive = False
+        if self.state.is_alive:
+          return None
 
       self.remove_by_pass_test(conditions,root)
     
@@ -515,6 +535,12 @@ class MyCondition:
       result_handler.append_result(self.state, [self.patch], False)
       result_handler.remove_patch(self.state, [self.patch])
       return None
+    elif self.state.cycle_limit > 0 and self.state.cycle >= self.state.cycle_limit:
+      self.state.is_alive = False
+    elif self.state.time_limit > 0 and (time.time() - self.state.start_time) > self.state.time_limit:
+      self.state.is_alive = False
+    if self.state.is_alive:
+      return None
 
     values=self.collect_value(tmp_file,record,passed_test)
     if values is None or len(values)==0:
@@ -522,6 +548,12 @@ class MyCondition:
       result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0], self.new_env)
       result_handler.append_result(self.state, [self.patch], False)
       result_handler.remove_patch(self.state, [self.patch])
+      return None
+    elif self.state.cycle_limit > 0 and self.state.cycle >= self.state.cycle_limit:
+      self.state.is_alive = False
+    elif self.state.time_limit > 0 and (time.time() - self.state.start_time) > self.state.time_limit:
+      self.state.is_alive = False
+    if self.state.is_alive:
       return None
 
     # CPR use concrete constant: -10 ≤ c ≤ 10
