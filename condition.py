@@ -572,6 +572,13 @@ class MyCondition:
         self.remove_same_record(conditions,result)
       else:
         self.remove_by_pass_test(conditions,var.constant_info_list[0])
+        
+      if self.state.cycle_limit > 0 and self.state.cycle >= self.state.cycle_limit:
+        self.state.is_alive = False
+      elif self.state.time_limit > 0 and (time.time() - self.state.start_time) > self.state.time_limit:
+        self.state.is_alive = False
+      if not self.state.is_alive:
+        return None
 
 def check_expr(record,values,operator,constant) -> bool:
   for path,value in zip(record,values):
