@@ -1,7 +1,7 @@
 import os
 import subprocess
 from typing import List, Tuple, Dict
-from core import CaseInfo, ConstantInfo, EnvVarMode, MSVEnvVar, MSVState, OperatorInfo, OperatorType, PatchInfo, VariableInfo
+from core import CaseInfo, ConstantInfo, EnvVarMode, MSVEnvVar, MSVState, OperatorInfo, OperatorType, PatchInfo, RecordInfo, VariableInfo
 import msv_result_handler as result_handler
 import run_test
 
@@ -63,7 +63,7 @@ def parse_value(log_file: str) -> List[List[int]]:
     return []
 
 
-def write_record(temp_file: str, record: List[int]) -> None:
+def write_record(temp_file: str, record: List[bool]) -> None:
   file=open(temp_file,'w')
   file.write(f'{len(record)}')
   for i in record:
@@ -595,3 +595,207 @@ def check_expr(record,values,operator,constant) -> bool:
       if (value<constant and path==0) or (value>=constant and path==1):
         return False
   return True
+
+class GuidedPathCondition:
+  def __init__(self,patch: PatchInfo,state: MSVState, fail_test: list, record: List[bool]):
+    self.patch=patch
+    self.fail_test=fail_test
+    self.state=state
+    self.record=record
+    self.new_env = dict()
+  
+  def collect_value(self) -> Tuple[int,List[List[int]]]:
+    """
+      Execute fail test with specific record, and get passed fail test and it's values.
+
+      Return (passed fail test, values) pair if one of fail test passed, otherwise None.
+    """
+    self.state.msv_logger.info('Collecting values from fail test')
+    for test in self.fail_test:
+      new_env = MSVEnvVar.get_new_env(self.state, patch, test,EnvVarMode.collect_neg)
+      tmp_file=new_env['NEG_ARG']
+      log_file = new_env["TMP_FILE"]
+      write_record(tmp_file,self.record)
+
+      patch=[self.patch]
+      self.new_env = new_env
+      try:
+        if os.path.exists(log_file):
+          os.remove(log_file)
+      except:
+        pass
+      run_result, is_timeout = run_test.run_fail_test(self.state, patch, test, new_env)
+
+      # If we failed, try next fail test
+      if is_timeout:
+        continue
+      elif not run_result:
+        self.state.msv_logger.warn("Terrible fail at collecting value!")
+        continue
+      
+      return test,parse_value(log_file)
+
+    # If we failed all fail test, give up
+    return None
+  
+  def extend_record_tree(self,new_len: int):
+    """
+      Extend record tree if patch need more records.
+
+      new_len: length of records after execution.
+    """
+    if new_len > 0:
+      if self.patch.case_info.record_left is None:
+        self.patch.case_info.record_left=RecordInfo(self.patch.case_info,None,False)
+      if self.patch.case_info.record_right is None:
+        self.patch.case_info.record_right=RecordInfo(self.patch.case_info,None,True)
+
+    def search(cur_node,cur_index):
+      if cur_index-1 < new_len:
+        if cur_node.left is None:
+          cur_node.left=RecordInfo(self.patch.case_info,cur_node,False)
+        if cur_node.right is None:
+          cur_node.right=RecordInfo(self.patch.case_info,cur_node,True)
+        
+        search(cur_node.left,cur_index+1)
+        search(cur_node.right,cur_index+1)
+
+    search(self.patch.case_info.record_left,0)
+    search(self.patch.case_info.record_right,0)
+
+  def __check_condition(self, records: List[bool], values: List[List[int]], 
+          operator: OperatorType, variable: int, constant: int) -> bool:
+    result=True
+    # check fail test with records
+    if len(values) <= variable:
+      return False
+
+    current_values=values[variable]
+    for path,const in zip(records,current_values):
+      if operator==OperatorType.EQ:
+        cond=path == (const == constant)
+        if not cond:
+          result=False
+          break
+      elif operator==OperatorType.NE:
+        cond=path == (const != constant)
+        if not cond:
+          result=False
+          break
+      elif operator==OperatorType.GT:
+        cond=path == (const > constant)
+        if not cond:
+          result=False
+          break
+      elif operator==OperatorType.LT:
+        cond=path == (const < constant)
+        if not cond:
+          result=False
+          break
+    
+    return result
+
+  def synthesize(self, values: List[List[int]]) -> Dict[OperatorType, OperatorInfo]:
+    """
+      Generate actual condition with values.
+
+      values: collected values by collect_value
+    """
+    MAGIC_NUMBER=-123456789
+
+    # Remove temp score for selecting condition
+    for score in self.patch.case_info.prophet_score:
+      self.patch.type_info.prophet_score.remove(score)
+      self.patch.switch_info.prophet_score.remove(score)
+      self.patch.line_info.prophet_score.remove(score)
+      self.patch.file_info.prophet_score.remove(score)
+    current_score=self.patch.case_info.prophet_score.copy()
+    self.patch.case_info.prophet_score.clear()
+    
+    # create empty operators/variables
+    operators: List[OperatorInfo]=[]
+    for op in OperatorType:
+      new_operator=OperatorInfo(self.patch.case_info,op)
+      if op!=OperatorType.ALL_1:
+        for i in range(len(values)):
+          new_variable=VariableInfo(new_operator,i)
+          new_variable.prophet_score=current_score[i]
+          new_operator.variable_info_list.append(new_variable)
+          new_operator.prophet_score.append(new_variable.prophet_score)
+          
+          self.patch.case_info.prophet_score.append(new_variable.prophet_score)
+          self.patch.type_info.prophet_score.append(new_variable.prophet_score)
+          self.patch.switch_info.prophet_score.append(new_variable.prophet_score)
+          self.patch.line_info.prophet_score.append(new_variable.prophet_score)
+          self.patch.file_info.prophet_score.append(new_variable.prophet_score)
+      else:
+        new_operator.var_count=1
+        new_operator.prophet_score.append(sorted(current_score)[-1])
+        self.patch.case_info.prophet_score.append(sorted(current_score)[-1])
+        self.patch.type_info.prophet_score.append(sorted(current_score)[-1])
+        self.patch.switch_info.prophet_score.append(sorted(current_score)[-1])
+        self.patch.line_info.prophet_score.append(sorted(current_score)[-1])
+        self.patch.file_info.prophet_score.append(sorted(current_score)[-1])
+
+      operators.append(new_operator)
+
+    available_const=[]
+
+    for _ in range(len(values)):
+      available_const.append(set())
+      
+    # collect all available constants
+    for i,var in enumerate(values):
+      if self.state.use_fixed_const:
+        # use fixed constant(-100 ≤ c ≤ 100) instead of constants from test execution
+        for j in range(-100,101):
+          available_const[i].add(j)
+      else:
+        for value in var:
+          ## Get available constants
+          if -1000 < value < 1000:
+            available_const[i].add(int(value))
+    
+    for var in available_const:
+      if MAGIC_NUMBER in var:
+        var.clear()
+        continue
+              
+    ## Create condition infos
+    for op in operators:
+      if op.operator_type!=OperatorType.ALL_1:
+        for i,consts in enumerate(available_const):
+          for const in consts:
+            if self.__check_condition(self.record,values,op.operator_type,i,const):
+              new_constant=ConstantInfo(op.variable_info_list[i],const)
+              self.state.msv_logger.info(f'Create new condition: {op.operator_type}, {i}, {const}')
+              op.variable_info_list[i].constant_info_list.append(new_constant)          
+    
+    for op in operators[:4].copy():
+      for var in op.variable_info_list.copy():
+        if len(var.constant_info_list)==0:
+          op.variable_info_list.remove(var)
+      if len(op.variable_info_list)==0:
+        operators.remove(op)
+    return operators
+
+  def get_condition(self):
+    self.patch.case_info.processed=True
+    self.state.msv_logger.info('Try fail tests...')
+    passed_test,values=self.collect_value()
+    if values==None:
+      self.state.msv_logger.info('Fail!')
+      result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0])
+      result_handler.append_result(self.state, [self.patch], False)
+      result_handler.remove_patch(self.state, [self.patch])
+      return None
+    else:
+      self.state.msv_logger.info(f'Pass {passed_test} with this record!')
+    self.extend_record_tree(len(values[0]))
+
+    self.state.msv_logger.info('Generating actual conditions')
+    conditions=self.synthesize(values)
+    if len(conditions)==0:
+      self.state.msv_logger.info('Fail to generate actual condition')
+      return None
+    return conditions
