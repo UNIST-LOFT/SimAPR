@@ -195,7 +195,8 @@ class RecordInfo:
   def __init__(self, case_info: CaseInfo, parent: 'RecordInfo', is_true: bool) -> None:
     self.case_info = case_info
     self.parent = parent
-    self.is_true = is_true
+    self.is_root_node = self.parent is None
+    self.is_true = is_true # For root node, it's meaningless
     self.pf = PassFail()
     self.left: 'RecordInfo' = None
     self.right: 'RecordInfo' = None
@@ -208,6 +209,16 @@ class RecordInfo:
     return node
   def is_leaf(self) -> bool:
     return self.left is None and self.right is None
+  def remove_leaf(self) -> None:
+    node = self
+    while(not node.is_root()):
+      if not node.is_leaf():
+        return
+      if node.parent.left is node:
+        node.parent.left = None
+      else:
+        node.parent.right = None
+      node = node.parent
   def get_path(self) -> List['RecordInfo']:
     path: List['RecordInfo'] = list()
     node: 'RecordInfo' = self
@@ -579,6 +590,7 @@ class PatchInfo:
     self.variable_info = var_info
     self.constant_info = con_info
     self.record_info = rec_info
+    self.record_path: List[RecordInfo] = None
     if rec_info is not None:
       self.record_path = rec_info.get_path()
     self.profile_diff: ProfileDiff = None
