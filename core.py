@@ -190,6 +190,23 @@ class CaseInfo:
   def __str__(self) -> str:
     return self.to_str()
 
+class RecordInfo:
+  def __init__(self, case_info: CaseInfo, parent: 'RecordInfo', is_true: bool) -> None:
+    self.case_info = case_info
+    self.parent = parent
+    self.is_true = is_true
+    self.pf = PassFail()
+    self.left: 'RecordInfo' = None
+    self.right: 'RecordInfo' = None
+  def __eq__(self, __o: object) -> bool:
+    return isinstance(__o, RecordInfo) and self.case_info == __o.case_info and self.is_true == __o.is_true
+  def __str__(self) -> str:
+    if self.is_true:
+      return "1"
+    else:
+      return "0"
+
+
 class OperatorInfo:
   def __init__(self, parent: CaseInfo, operator_type: OperatorType, var_count:int=0) -> None:
     self.operator_type = operator_type
