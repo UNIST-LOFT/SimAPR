@@ -181,6 +181,7 @@ class CaseInfo:
     self.location: FileLine = None
     self.seapr_e_pf: PassFail = PassFail()
     self.seapr_n_pf: PassFail = PassFail()
+    self.record_tree: RecordInfo = None
   def __hash__(self) -> int:
     return hash(self.case_number)
   def __eq__(self, other) -> bool:
@@ -198,6 +199,23 @@ class RecordInfo:
     self.pf = PassFail()
     self.left: 'RecordInfo' = None
     self.right: 'RecordInfo' = None
+  def is_root(self) -> bool:
+    return self.parent is None
+  def get_root(self) -> 'RecordInfo':
+    node: 'RecordInfo' = self
+    while(not node.is_root()):
+      node = node.parent
+    return node
+  def is_leaf(self) -> bool:
+    return self.left is None and self.right is None
+  def get_path(self) -> List['RecordInfo']:
+    path: List['RecordInfo'] = list()
+    node: 'RecordInfo' = self
+    while(not node.is_root()):
+      path.append(node)
+      node = node.parent
+    path.reverse()
+    return path
   def __eq__(self, __o: object) -> bool:
     return isinstance(__o, RecordInfo) and self.case_info == __o.case_info and self.is_true == __o.is_true
   def __str__(self) -> str:
@@ -550,7 +568,7 @@ class MSVEnvVar:
     return new_env
 
 class PatchInfo:
-  def __init__(self, case_info: CaseInfo, op_info: OperatorInfo, var_info: VariableInfo, con_info: ConstantInfo) -> None:
+  def __init__(self, case_info: CaseInfo, op_info: OperatorInfo, var_info: VariableInfo, con_info: ConstantInfo, rec_info: RecordInfo = None) -> None:
     self.case_info = case_info
     self.type_info = case_info.parent
     self.switch_info = self.type_info.parent
@@ -560,6 +578,9 @@ class PatchInfo:
     self.operator_info = op_info
     self.variable_info = var_info
     self.constant_info = con_info
+    self.record_info = rec_info
+    if rec_info is not None:
+      self.record_path = rec_info.get_path()
     self.profile_diff: ProfileDiff = None
     self.out_dist = -1.0
   def update_result(self, result: bool, n: float,use_fixed_beta:bool) -> None:

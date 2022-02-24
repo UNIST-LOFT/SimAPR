@@ -29,6 +29,37 @@ def select_by_probability_hierarchical(state: MSVState, n: int, p1: List[float],
       p3_select_pf.append(p3[p1_select[p2_select[i]]])
     return p1_select[p2_select[PassFail.select_by_probability(p3_select_pf)]]
 
+def select_conditional_patch_by_record(state: MSVState, selected_case: CaseInfo) -> PatchInfo:
+  if not selected_case.is_condition:
+    return PatchInfo(selected_case, None, None, None)
+  if not selected_case.processed:
+    return PatchInfo(selected_case, None, None, None)
+  node = selected_case.record_tree
+  if node is None:
+    return PatchInfo(selected_case, None, None, None)
+  p1 = [0, 0]
+  p2 = [0, 0]
+  p3 = [0, 0]
+  while(not node.is_leaf()):
+    left = node.left
+    right = node.right
+    # If one of the child is None, select the other one
+    if left is None:
+      node = right
+    elif right is None:
+      node = left
+    else:
+      # If both are not None, select the one with the probability
+      p1[0] = left.pf.expect_probability()
+      p1[1] = left.pf.expect_probability()
+      selected = select_by_probability_hierarchical(state, 1, p1, p2, p3)
+      if selected == 0:
+        node = left
+      else:
+        node = right
+  return PatchInfo(selected_case, None, None, None, node)
+
+
 def __select_prophet_condition(selected_case:CaseInfo,state:MSVState):
   selected_operator=selected_case.operator_info_list[0]
   if selected_operator.operator_type==OperatorType.ALL_1:
