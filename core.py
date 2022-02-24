@@ -181,8 +181,6 @@ class CaseInfo:
     self.location: FileLine = None
     self.seapr_e_pf: PassFail = PassFail()
     self.seapr_n_pf: PassFail = PassFail()
-    self.record_left=None
-    self.record_right=None
     self.record_tree: RecordInfo = None
   def __hash__(self) -> int:
     return hash(self.case_number)

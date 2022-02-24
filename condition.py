@@ -644,14 +644,9 @@ class GuidedPathCondition:
 
       new_len: length of records after execution.
     """
-    if new_len > 0:
-      if self.patch.case_info.record_left is None:
-        self.patch.case_info.record_left=RecordInfo(self.patch.case_info,None,False)
-      if self.patch.case_info.record_right is None:
-        self.patch.case_info.record_right=RecordInfo(self.patch.case_info,None,True)
 
     def search(cur_node,cur_index):
-      if cur_index-1 < new_len:
+      if cur_index < new_len:
         if cur_node.left is None:
           cur_node.left=RecordInfo(self.patch.case_info,cur_node,False)
         if cur_node.right is None:
@@ -660,8 +655,7 @@ class GuidedPathCondition:
         search(cur_node.left,cur_index+1)
         search(cur_node.right,cur_index+1)
 
-    search(self.patch.case_info.record_left,0)
-    search(self.patch.case_info.record_right,0)
+    search(self.patch.case_info.record_tree,0)
 
   def __check_condition(self, records: List[bool], values: List[List[int]], 
           operator: OperatorType, variable: int, constant: int) -> bool:
