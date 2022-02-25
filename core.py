@@ -237,6 +237,7 @@ class RecordInfo:
         path_str += "1"
       else:
         path_str += "0"
+    return path_str
   def get_path_from_str(self, path_str: str) -> List['RecordInfo']:
     node = self.get_root()
     path = list()

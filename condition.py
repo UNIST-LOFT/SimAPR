@@ -636,7 +636,7 @@ class GuidedPathCondition:
       return test,parse_value(log_file)
 
     # If we failed all fail test, give up
-    return None
+    return None, None
   
   def extend_record_tree(self,new_len: int):
     """
@@ -779,7 +779,7 @@ class GuidedPathCondition:
     passed_test,values=self.collect_value()
     if values==None:
       self.state.msv_logger.info('Fail!')
-      result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0])
+      result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0], self.new_env)
       result_handler.append_result(self.state, [self.patch], False)
       result_handler.remove_patch(self.state, [self.patch])
       return None

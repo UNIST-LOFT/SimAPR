@@ -462,7 +462,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
         
     else: # if use prophet condition syn, return basic patch for cond syn
       if not selected_case_info.processed:
-        return PatchInfo(selected_case_info, None, None, None)
+        return PatchInfo(selected_case_info, None, None, None, selected_case_info.record_tree.right)
 
     #return select_conditional_patch_by_record(state, selected_case_info)
     # Select operator
