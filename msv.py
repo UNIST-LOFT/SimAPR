@@ -140,18 +140,33 @@ class MSV:
       patch = select_patch.select_patch(self.state, self.state.mode, neg)
       self.state.msv_logger.info(f'Patch {patch[0].switch_info.switch_number}-{patch[0].case_info.case_number} selected')
 
-      # prophet condition synthesis
       if patch[0].case_info.is_condition and not self.state.use_condition_synthesis and \
             not patch[0].case_info.processed:
-        self.state.msv_logger.info('Run prophet condition synthesis')
-        prophet_cond=condition.ProphetCondition(patch[0],self.state,self.state.negative_test,self.state.positive_test)
-        opers=prophet_cond.get_condition()
-        if opers is not None and len(opers)>0:
-          patch[0].case_info.operator_info_list=opers
-          continue
+        # Our guided conditino synthesis
+        if self.state.mode==MSVMode.guided:
+          self.state.msv_logger.info('Run path guide condition synthesis')
+          record_bool=[]
+          for record in patch[0].record_path:
+            record_bool.append(record.is_true)
+          guided_cond=condition.GuidedPathCondition(patch[0],self.state,self.state.negative_test,record_bool)
+          opers=guided_cond.get_condition()
+          if opers is not None and len(opers)>0:
+            patch[0].case_info.operator_info_list=opers
+            continue
+          else:
+            patch[0].case_info.operator_info_list=[]
+            continue
+        # prophet condition synthesis
         else:
-          patch[0].case_info.operator_info_list=[]
-          continue
+          self.state.msv_logger.info('Run prophet condition synthesis')
+          prophet_cond=condition.ProphetCondition(patch[0],self.state,self.state.negative_test,self.state.positive_test)
+          opers=prophet_cond.get_condition()
+          if opers is not None and len(opers)>0:
+            patch[0].case_info.operator_info_list=opers
+            continue
+          else:
+            patch[0].case_info.operator_info_list=[]
+            continue
 
       # our condition synthesis
       elif self.state.use_condition_synthesis and patch[0].case_info.is_condition and patch[0].operator_info.operator_type!=OperatorType.ALL_1 and len(patch)==1:
