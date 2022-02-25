@@ -195,11 +195,11 @@ class RecordInfo:
   def __init__(self, case_info: CaseInfo, parent: 'RecordInfo', is_true: bool) -> None:
     self.case_info = case_info
     self.parent = parent
-    self.is_root_node = self.parent is None
     self.is_true = is_true # For root node, it's meaningless
+    self.used_record_map: Dict[str, bool] = None # Maintained in root node
     self.pf = PassFail()
-    self.left: 'RecordInfo' = None
-    self.right: 'RecordInfo' = None
+    self.left: 'RecordInfo' = None  # False
+    self.right: 'RecordInfo' = None # True
   def is_root(self) -> bool:
     return self.parent is None
   def get_root(self) -> 'RecordInfo':
@@ -227,6 +227,29 @@ class RecordInfo:
       node = node.parent
     path.reverse()
     return path
+  def get_path_str(self, path: List['RecordInfo'] = None) -> str:
+    if path is None:
+      path = self.get_path()
+    path_str = ""
+    for node in path:
+      if node.is_true:
+        path_str += "1"
+      else:
+        path_str += "0"
+  def get_path_from_str(self, path_str: str) -> List['RecordInfo']:
+    node = self.get_root()
+    path = list()
+    for c in path_str:
+      if c == "1":
+        node = node.right
+      else:
+        node = node.left
+      path.append(node)
+  def update_used_record_map(self, record_str: str) -> None:
+    root = self.get_root()
+    if root.used_record_map is None:
+      root.used_record_map = dict()
+    root.used_record_map[record_str] = True
   def __eq__(self, __o: object) -> bool:
     return isinstance(__o, RecordInfo) and self.case_info == __o.case_info and self.is_true == __o.is_true
   def __str__(self) -> str:
