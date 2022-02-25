@@ -612,12 +612,12 @@ class GuidedPathCondition:
     """
     self.state.msv_logger.info('Collecting values from fail test')
     for test in self.fail_test:
+      patch=[self.patch]
       new_env = MSVEnvVar.get_new_env(self.state, patch, test,EnvVarMode.collect_neg)
       tmp_file=new_env['NEG_ARG']
       log_file = new_env["TMP_FILE"]
       write_record(tmp_file,self.record)
 
-      patch=[self.patch]
       self.new_env = new_env
       try:
         if os.path.exists(log_file):

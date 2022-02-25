@@ -146,8 +146,9 @@ class MSV:
         if self.state.mode==MSVMode.guided:
           self.state.msv_logger.info('Run path guide condition synthesis')
           record_bool=[]
-          for record in patch[0].record_path:
-            record_bool.append(record.is_true)
+          if patch[0].record_path is not None:
+            for record in patch[0].record_path:
+              record_bool.append(record.is_true)
           guided_cond=condition.GuidedPathCondition(patch[0],self.state,self.state.negative_test,record_bool)
           opers=guided_cond.get_condition()
           if opers is not None and len(opers)>0:

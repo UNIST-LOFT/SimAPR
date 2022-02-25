@@ -219,6 +219,7 @@ class RecordInfo:
       else:
         node.parent.right = None
       node = node.parent
+  # Only for leaf node
   def get_path(self) -> List['RecordInfo']:
     path: List['RecordInfo'] = list()
     node: 'RecordInfo' = self
