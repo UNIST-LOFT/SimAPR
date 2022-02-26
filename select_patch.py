@@ -57,7 +57,74 @@ def select_conditional_patch_by_record(state: MSVState, selected_case: CaseInfo)
         node = left
       else:
         node = right
-  return PatchInfo(selected_case, None, None, None, node)
+  selected_leaf = node
+  path = selected_leaf.get_path()
+  path_str = selected_leaf.get_path_str(path)
+  def check_path_str(root: RecordInfo, path_str: str) -> bool:
+    if path_str in root.used_record_map:
+      if root.used_record_map[path_str]:
+        return True
+    return False
+  def get_path_str_from_node(node: RecordInfo) -> str:
+    if node is None:
+      return ""
+    result = ""
+    p1 = [0, 0]
+    p2 = [0, 0]
+    p3 = [0, 0]
+    while(not node.is_leaf()):
+      if node.left is None:
+        node = node.right
+      elif node.right is None:
+        node = node.left
+      else:
+        p1[0] = left.pf.expect_probability()
+        p1[1] = left.pf.expect_probability()
+        selected = select_by_probability_hierarchical(state, 1, p1, p2, p3)
+        if selected == 0:
+          node = left
+        else:
+          node = right
+      result += str(node)
+    return result
+  if check_path_str(selected_case.record_tree, path_str):
+    # Already used this path!
+    # Use the other path...
+    n = len(path_str)
+    converted_leaf = path_str[:n-1]
+    if path_str[n-1] == '0':
+      converted_leaf += '1'
+    else:
+      converted_leaf += '0'
+    if check_path_str(selected_case.record_tree, converted_leaf):
+      for i in range(n - 1):
+        index = n - i - 1
+        if path_str[index] == '0':
+          path_str = path_str[:index] + '1'
+        else:
+          path_str = path_str[:index] + '0'
+        path_str += get_path_str_from_node(path[index])
+        if not check_path_str(selected_case.record_tree, path_str):
+          break
+    # n = len(path)
+    # for i in range(n):
+    #   tmp =  path[n - i - 1]
+    #   if tmp.is_true:
+    #     if tmp.parent.left is not None:
+    #       path[n - i - 1] = tmp.parent.left
+    #   else:
+    #     if tmp.parent.right is not None:
+    #       path[n - i - 1] = tmp.parent.right
+    #   path_str = selected_case.record_tree.get_path_str(path)
+    #   if path_str in selected_case.record_tree.used_record_map:
+    #     if selected_case.record_tree.used_record_map[path_str]:
+    #       continue
+    #     else:
+    #       break
+    #   else:
+    #     break
+  path = selected_case.record_tree.get_path_from_str(path_str)
+  return PatchInfo(selected_case, None, None, None, path[-1])
 
 
 def __select_prophet_condition(selected_case:CaseInfo,state:MSVState):
@@ -395,7 +462,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
         
     else: # if use prophet condition syn, return basic patch for cond syn
       if not selected_case_info.processed:
-        return PatchInfo(selected_case_info, None, None, None)
+        return PatchInfo(selected_case_info, None, None, None, selected_case_info.record_tree.right)
 
     #return select_conditional_patch_by_record(state, selected_case_info)
     # Select operator
