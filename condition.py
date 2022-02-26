@@ -785,6 +785,8 @@ class GuidedPathCondition:
       return None
     else:
       self.state.msv_logger.info(f'Pass {passed_test} with this record!')
+    if len(values)==0:
+      return None
     self.extend_record_tree(len(values[0]))
 
     self.state.msv_logger.info('Generating actual conditions')
