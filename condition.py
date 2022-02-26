@@ -777,7 +777,7 @@ class GuidedPathCondition:
     self.patch.case_info.processed=True
     self.state.msv_logger.info('Try fail tests...')
     passed_test,values=self.collect_value()
-    if values==None:
+    if values==None or len(values)==0:
       self.state.msv_logger.info('Fail!')
       result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0], self.new_env)
       result_handler.append_result(self.state, [self.patch], False)
@@ -785,8 +785,6 @@ class GuidedPathCondition:
       return None
     else:
       self.state.msv_logger.info(f'Pass {passed_test} with this record!')
-    if len(values)==0:
-      return None
     self.extend_record_tree(len(values[0]))
 
     self.state.msv_logger.info('Generating actual conditions')
