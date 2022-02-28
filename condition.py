@@ -792,7 +792,8 @@ class GuidedPathCondition:
     elif passed_test is None:
       # All fail test failed
       self.state.msv_logger.info('Failed at collecting values')
-      self.extend_record_tree(len(values[0]))
+      if len(values[0])<=20:
+        self.extend_record_tree(len(values[0]))
       result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0], self.new_env)
       result_handler.append_result(self.state, [self.patch], False)
       return None
