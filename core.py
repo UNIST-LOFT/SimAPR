@@ -200,6 +200,8 @@ class RecordInfo:
     self.pf = PassFail()
     self.left: 'RecordInfo' = None  # False
     self.right: 'RecordInfo' = None # True
+    if self.is_root():
+      self.used_record_map = dict()
   def is_root(self) -> bool:
     return self.parent is None
   def get_root(self) -> 'RecordInfo':
@@ -247,6 +249,7 @@ class RecordInfo:
       else:
         node = node.left
       path.append(node)
+    return path
   def update_used_record_map(self, record_str: str) -> None:
     root = self.get_root()
     if root.used_record_map is None:

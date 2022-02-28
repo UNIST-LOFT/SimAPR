@@ -32,8 +32,6 @@ def select_by_probability_hierarchical(state: MSVState, n: int, p1: List[float],
 def select_conditional_patch_by_record(state: MSVState, selected_case: CaseInfo) -> PatchInfo:
   if not selected_case.is_condition:
     return PatchInfo(selected_case, None, None, None)
-  if not selected_case.processed:
-    return PatchInfo(selected_case, None, None, None)
   node = selected_case.record_tree
   if node is None:
     return PatchInfo(selected_case, None, None, None)
@@ -462,9 +460,9 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
         
     else: # if use prophet condition syn, return basic patch for cond syn
       if not selected_case_info.processed:
-        return PatchInfo(selected_case_info, None, None, None, selected_case_info.record_tree.right)
+        return select_conditional_patch_by_record(state, selected_case_info)
 
-    return select_conditional_patch_by_record(state, selected_case_info)
+    # return select_conditional_patch_by_record(state, selected_case_info)
     # Select operator
     for op_info in selected_case_info.operator_info_list:
       if is_rand:
