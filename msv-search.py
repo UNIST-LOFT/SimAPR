@@ -19,7 +19,7 @@ from msv import MSV
 def parse_args(argv: list) -> MSVState:
   longopts = ["help", "outdir=", "workdir=", "timeout=", "msv-path=", "time-limit=", "cycle-limit=",
               "mode=", "max-parallel-cpu=",'skip-valid','use-fixed-beta','use-cpr-space','use-fixed-const',
-              "use-condition-synthesis", "use-fl", "use-hierarchical-selection=", "use-pass-test",
+              "use-condition-synthesis", "use-fl", "use-hierarchical-selection=", "use-pass-test", "use-partial-validation",
               "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern", "use-simulation-mode="]
   opts, args = getopt.getopt(argv[1:], "ho:w:p:t:m:c:j:T:E:M:S:", longopts)
   state = MSVState()
@@ -76,6 +76,8 @@ def parse_args(argv: list) -> MSVState:
     elif o in ['--use-simulation-mode']:
       state.use_simulation_mode = True
       state.prev_data = a
+    elif o in ['--use-partial-validation']:
+      state.use_partial_validation = True
   if sub_dir != "":
     state.out_dir = os.path.join(state.out_dir, sub_dir)
   if not os.path.exists(state.out_dir):

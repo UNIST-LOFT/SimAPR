@@ -920,6 +920,7 @@ class MSVState:
   use_hierarchical_selection: int
   use_pass_test: bool
   use_multi_line: int
+  use_partial_validation: bool
   time_limit: int
   cycle_limit: int
   max_parallel_cpu: int
@@ -996,3 +997,4 @@ class MSVState:
     self.total_passed_patch=0
     self.total_plausible_patch=0
     self.iteration=0
+    self.use_partial_validation = False

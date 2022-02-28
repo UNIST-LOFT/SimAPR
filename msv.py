@@ -50,6 +50,8 @@ class MSV:
         run_result, is_timeout = run_test.run_fail_test(self.state, selected_patch, test, new_env)
         if not run_result:
           final_result=False
+          if self.state.use_partial_validation:
+            break
         else:
           pass_exist=True
     else:

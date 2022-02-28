@@ -464,7 +464,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       if not selected_case_info.processed:
         return PatchInfo(selected_case_info, None, None, None, selected_case_info.record_tree.right)
 
-    #return select_conditional_patch_by_record(state, selected_case_info)
+    return select_conditional_patch_by_record(state, selected_case_info)
     # Select operator
     for op_info in selected_case_info.operator_info_list:
       if is_rand:
