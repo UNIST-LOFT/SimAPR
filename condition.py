@@ -788,6 +788,10 @@ class GuidedPathCondition:
       self.state.msv_logger.info('No values found')
       result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0], self.new_env)
       result_handler.append_result(self.state, [self.patch], False)
+      if len(self.patch.case_info.record_tree.used_record_map) >= 2 ** len(self.patch.record_path):
+        # No condition found
+        self.state.msv_logger.info('No record left! Remove patch!')
+        result_handler.remove_patch(self.state, [self.patch])
       return None
     elif passed_test is None:
       # All fail test failed
@@ -796,6 +800,10 @@ class GuidedPathCondition:
         self.extend_record_tree(len(values[0]))
       result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0], self.new_env)
       result_handler.append_result(self.state, [self.patch], False)
+      if len(self.patch.case_info.record_tree.used_record_map) >= 2 ** len(self.patch.record_path):
+        # No condition found
+        self.state.msv_logger.info('No record left! Remove patch!')
+        result_handler.remove_patch(self.state, [self.patch])
       return None
     else:
       # One of fail test passed

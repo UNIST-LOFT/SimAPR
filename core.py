@@ -618,7 +618,7 @@ class PatchInfo:
     self.variable_info = var_info
     self.constant_info = con_info
     self.record_info = rec_info
-    self.record_path: List[RecordInfo] = None
+    self.record_path: List[RecordInfo] = []
     if rec_info is not None:
       self.record_path = rec_info.get_path()
     self.profile_diff: ProfileDiff = None
