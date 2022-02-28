@@ -611,12 +611,14 @@ class GuidedPathCondition:
       Return (passed fail test, values) pair if one of fail test passed, otherwise None.
     """
     self.state.msv_logger.info('Collecting values from fail test')
+    max_len_record=[]
     for test in self.fail_test:
       patch=[self.patch]
       new_env = MSVEnvVar.get_new_env(self.state, patch, test,EnvVarMode.collect_neg)
       tmp_file=new_env['NEG_ARG']
       log_file = new_env["TMP_FILE"]
       write_record(tmp_file,self.record)
+      self.state.msv_logger.debug(f'Try with {self.record}!')
 
       self.new_env = new_env
       try:
@@ -629,14 +631,19 @@ class GuidedPathCondition:
       # If we failed, try next fail test
       if is_timeout:
         continue
-      elif not run_result:
-        self.state.msv_logger.warn("Terrible fail at collecting value!")
+
+      cur_record=parse_value(log_file)
+      if len(max_len_record) < len(cur_record):
+        max_len_record=cur_record
+
+      if not run_result:
+        self.state.msv_logger.warn("Fail at collecting value!")
         continue
       
       return test,parse_value(log_file)
 
     # If we failed all fail test, give up
-    return None, None
+    return None, max_len_record
   
   def extend_record_tree(self,new_len: int):
     """
@@ -777,18 +784,27 @@ class GuidedPathCondition:
     self.state.msv_logger.info('Try fail tests...')
     passed_test,values=self.collect_value()
     if values==None or len(values)==0:
-      self.state.msv_logger.info('Fail!')
+      # No values found
+      self.state.msv_logger.info('No values found')
+      result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0], self.new_env)
+      result_handler.append_result(self.state, [self.patch], False)
+      return None
+    elif passed_test is None:
+      # All fail test failed
+      self.state.msv_logger.info('Failed at collecting values')
+      self.extend_record_tree(len(values[0]))
       result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0], self.new_env)
       result_handler.append_result(self.state, [self.patch], False)
       return None
     else:
+      # One of fail test passed
       self.state.msv_logger.info(f'Pass {passed_test} with this record!')
-    self.extend_record_tree(len(values[0]))
+      self.extend_record_tree(len(values[0]))
 
-    self.state.msv_logger.info('Generating actual conditions')
-    conditions=self.synthesize(values)
-    if len(conditions)==0:
-      self.state.msv_logger.info('Fail to generate actual condition')
-      return None
-    self.patch.case_info.processed=True
-    return conditions
+      self.state.msv_logger.info('Generating actual conditions')
+      conditions=self.synthesize(values)
+      if len(conditions)==0:
+        self.state.msv_logger.info('Fail to generate actual condition')
+        return None
+      self.patch.case_info.processed=True
+      return conditions
