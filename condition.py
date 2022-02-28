@@ -756,6 +756,7 @@ class GuidedPathCondition:
           ## Get available constants
           if -1000 < value < 1000:
             available_const[i].add(int(value))
+        available_const[i].add(0)
     
     for var in available_const:
       if MAGIC_NUMBER in var:
@@ -808,4 +809,5 @@ class GuidedPathCondition:
         self.state.msv_logger.info('Fail to generate actual condition')
         return None
       self.patch.case_info.processed=True
+      result_handler.update_result(self.state, [self.patch], True, 1, self.state.negative_test[0], self.new_env)
       return conditions
