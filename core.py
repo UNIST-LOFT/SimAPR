@@ -200,6 +200,8 @@ class RecordInfo:
     self.pf = PassFail()
     self.left: 'RecordInfo' = None  # False
     self.right: 'RecordInfo' = None # True
+    if self.is_root():
+      self.used_record_map = dict()
   def is_root(self) -> bool:
     return self.parent is None
   def get_root(self) -> 'RecordInfo':
@@ -247,6 +249,7 @@ class RecordInfo:
       else:
         node = node.left
       path.append(node)
+    return path
   def update_used_record_map(self, record_str: str) -> None:
     root = self.get_root()
     if root.used_record_map is None:
@@ -615,7 +618,7 @@ class PatchInfo:
     self.variable_info = var_info
     self.constant_info = con_info
     self.record_info = rec_info
-    self.record_path: List[RecordInfo] = None
+    self.record_path: List[RecordInfo] = []
     if rec_info is not None:
       self.record_path = rec_info.get_path()
     self.profile_diff: ProfileDiff = None
@@ -920,6 +923,7 @@ class MSVState:
   use_hierarchical_selection: int
   use_pass_test: bool
   use_multi_line: int
+  use_partial_validation: bool
   time_limit: int
   cycle_limit: int
   max_parallel_cpu: int
@@ -996,3 +1000,4 @@ class MSVState:
     self.total_passed_patch=0
     self.total_plausible_patch=0
     self.iteration=0
+    self.use_partial_validation = False

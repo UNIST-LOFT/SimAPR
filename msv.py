@@ -50,6 +50,8 @@ class MSV:
         run_result, is_timeout = run_test.run_fail_test(self.state, selected_patch, test, new_env)
         if not run_result:
           final_result=False
+          if self.state.use_partial_validation:
+            break
         else:
           pass_exist=True
     else:
@@ -138,7 +140,7 @@ class MSV:
       neg = self.state.negative_test[0]
       self.state.msv_logger.info(f'[{self.state.cycle}]: executing')
       patch = select_patch.select_patch(self.state, self.state.mode, neg)
-      self.state.msv_logger.info(f'Patch {patch[0].switch_info.switch_number}-{patch[0].case_info.case_number} selected')
+      self.state.msv_logger.info(f'Patch {patch[0].to_str()} selected')
 
       if patch[0].case_info.is_condition and not self.state.use_condition_synthesis and \
             not patch[0].case_info.processed:
