@@ -85,6 +85,7 @@ def select_conditional_patch_by_record(state: MSVState, selected_case: CaseInfo)
           node = right
       result += str(node)
     return result
+  found_new_path = False
   if check_path_str(selected_case.record_tree, path_str):
     # Already used this path!
     # Use the other path...
@@ -94,8 +95,11 @@ def select_conditional_patch_by_record(state: MSVState, selected_case: CaseInfo)
       converted_leaf += '1'
     else:
       converted_leaf += '0'
+    path_str = converted_leaf
     if check_path_str(selected_case.record_tree, converted_leaf):
       for i in range(n - 1):
+        if found_new_path:
+          break
         index = n - i - 1
         if path_str[index] == '0':
           path_str = path_str[:index] + '1'
@@ -106,7 +110,11 @@ def select_conditional_patch_by_record(state: MSVState, selected_case: CaseInfo)
           if check_path_str(selected_case.record_tree, path_str + format(j, "b").zfill(i)):
             path_str = path_str + format(j, "b").zfill(i)
             if not check_path_str(selected_case.record_tree, path_str):
+              found_new_path = True
               break
+          else:
+            found_new_path = True
+            break
     # n = len(path)
     # for i in range(n):
     #   tmp =  path[n - i - 1]
