@@ -128,6 +128,7 @@ def select_conditional_patch_by_record(state: MSVState, selected_case: CaseInfo)
     #       break
     #   else:
     #     break
+  state.msv_logger.info(f"Selecting record path: {selected_case.to_str()} {path_str}")
   path = selected_case.record_tree.get_path_from_str(path_str)
   return PatchInfo(selected_case, None, None, None, path[-1])
 
