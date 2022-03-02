@@ -800,8 +800,9 @@ class GuidedPathCondition:
       self.state.msv_logger.info('Failed at collecting values')
       if len(values[0])<=20:
         self.extend_record_tree(len(values[0]))
-      result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0], self.new_env)
-      result_handler.append_result(self.state, [self.patch], False)
+      if len(values[0]) <= len(self.record):
+        result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0], self.new_env)
+        result_handler.append_result(self.state, [self.patch], False)
       if len(self.patch.case_info.record_tree.used_record_map) >= 2 ** len(self.patch.record_path):
         # No condition found
         self.state.msv_logger.info('No record left! Remove patch!')
