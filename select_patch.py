@@ -107,12 +107,8 @@ def select_conditional_patch_by_record(state: MSVState, selected_case: CaseInfo)
           path_str = path_str[:index] + '0'
         #path_str += get_path_str_from_node(path[index])
         for j in range(2 ** i):
-          if check_path_str(selected_case.record_tree, path_str + format(j, "b").zfill(i)):
+          if not check_path_str(selected_case.record_tree, path_str + format(j, "b").zfill(i)):
             path_str = path_str + format(j, "b").zfill(i)
-            if not check_path_str(selected_case.record_tree, path_str):
-              found_new_path = True
-              break
-          else:
             found_new_path = True
             break
     # n = len(path)
