@@ -95,6 +95,7 @@ def select_conditional_patch_by_record(state: MSVState, selected_case: CaseInfo)
       converted_leaf += '1'
     else:
       converted_leaf += '0'
+    path_str = converted_leaf
     if check_path_str(selected_case.record_tree, converted_leaf):
       for i in range(n - 1):
         if found_new_path:
