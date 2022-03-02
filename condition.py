@@ -311,6 +311,7 @@ class ProphetCondition:
             ## Get available constants
             if -1000 < value < 1000:
               available_const[i].add(int(value))
+          available_const[i].add(0)
     
     for var in available_const:
       if MAGIC_NUMBER in var:
