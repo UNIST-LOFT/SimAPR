@@ -798,6 +798,7 @@ class GuidedPathCondition:
     elif passed_test is None:
       # All fail test failed
       self.state.msv_logger.info('Failed at collecting values')
+      # If this patch executed more than 20 times, we assume this patch cause infinite loop
       if len(values[0])<=20:
         self.extend_record_tree(len(values[0]))
       if len(values[0]) <= len(self.record):
