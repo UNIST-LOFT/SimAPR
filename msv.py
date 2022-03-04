@@ -154,10 +154,9 @@ class MSV:
           opers=guided_cond.get_condition()
           if opers is not None and len(opers)>0:
             patch[0].case_info.operator_info_list=opers
-            continue
           else:
             patch[0].case_info.operator_info_list=[]
-            continue
+            
         # prophet condition synthesis
         else:
           self.state.msv_logger.info('Run prophet condition synthesis')
@@ -165,10 +164,8 @@ class MSV:
           opers=prophet_cond.get_condition()
           if opers is not None and len(opers)>0:
             patch[0].case_info.operator_info_list=opers
-            continue
           else:
             patch[0].case_info.operator_info_list=[]
-            continue
 
       # our condition synthesis
       elif self.state.use_condition_synthesis and patch[0].case_info.is_condition and patch[0].operator_info.operator_type!=OperatorType.ALL_1 and len(patch)==1:
