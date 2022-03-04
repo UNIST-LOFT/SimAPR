@@ -292,6 +292,10 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     test = state.negative_test[0]
   original_profile = state.profile_map[test]
   is_rand = (mode == MSVMode.random)
+  # Initially, select patch with prophet strategy
+  MAX_INITIAL_TRIAL = 200
+  if state.iteration < MAX_INITIAL_TRIAL:
+    return select_patch_prophet(state)
   n = state.use_hierarchical_selection
   if is_rand:
     n = 1
