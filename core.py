@@ -949,6 +949,7 @@ class MSVState:
   test_to_location: Dict[int, Dict[str, Set[int]]] # test_number -> {file_name: set(line_number)}
   use_pattern: bool      # For SeAPR mode
   simulation_data: Dict[str, MSVResult]
+  max_initial_trial: int
   def __init__(self) -> None:
     self.mode = MSVMode.guided
     self.msv_path = ""
@@ -1001,3 +1002,4 @@ class MSVState:
     self.total_plausible_patch=0
     self.iteration=0
     self.use_partial_validation = False
+    self.max_initial_trial = 100

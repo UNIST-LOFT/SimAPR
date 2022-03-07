@@ -143,6 +143,24 @@ class MSV:
         f.write("\n")
         f.write("Regression Cases: Tot 0\n")
   
+  def restore_removed_case_info(self, removed_case_info: List[CaseInfo]) -> None:
+    for case_info in removed_case_info:
+      self.state.msv_logger.info(f"Restore removed case info: {case_info.to_str()}")
+      type_info = case_info.parent
+      if case_info not in type_info.case_info_list:
+        type_info.case_info_list.append(case_info)
+      switch_info = type_info.parent
+      if type_info not in switch_info.type_info_list:
+        switch_info.type_info_list.append(type_info)
+      line_info = switch_info.parent
+      if switch_info not in line_info.switch_info_list:
+        line_info.switch_info_list.append(switch_info)
+      file_info = line_info.parent
+      if line_info not in file_info.line_info_list:
+        file_info.line_info_list.append(line_info)
+      if file_info not in self.state.patch_info_list:
+        self.state.patch_info_list.append(file_info)
+  
   def run(self) -> None:
     self.initialize()
     self.state.start_time=time.time()
@@ -150,6 +168,9 @@ class MSV:
     tmp_removed_case_info_list: List[CaseInfo] = list()
     while self.is_alive():
       self.state.iteration+=1
+      if (self.state.iteration + 1) == self.state.max_initial_trial:
+        self.state.msv_logger.info("Max initial trial reached, restore tmp removed cases!")
+        self.restore_removed_case_info(tmp_removed_case_info_list)
       neg = self.state.negative_test[0]
       self.state.msv_logger.info(f'[{self.state.cycle}]: executing')
       patch = select_patch.select_patch(self.state, self.state.mode, neg)
@@ -161,7 +182,7 @@ class MSV:
           self.state.msv_logger.info('Run path guide condition synthesis')
           for i in range(10):
             if patch[0].case_info not in patch[0].case_info.parent.case_info_list:
-              self.state.msv_logger.debug("Consumed all record path!")
+              self.state.msv_logger.info("Consumed all record path!")
               break
             tmp_patch = select_patch.select_conditional_patch_by_record(self.state, patch[0].case_info)
             record_bool=[]
@@ -170,13 +191,14 @@ class MSV:
             guided_cond=condition.GuidedPathCondition(tmp_patch,self.state,self.state.negative_test,record_bool)
             opers=guided_cond.get_condition()
             if opers is not None and len(opers)>0:
+              self.state.msv_logger.info(f'Found angelic path: {tmp_patch.to_str()} {tmp_patch.record_info.get_path_str()}')
               patch[0] = tmp_patch
               patch[0].case_info.operator_info_list=opers
               break
             else:
               patch[0].case_info.operator_info_list=[]
               if i == 9:
-                self.state.msv_logger.warning('Guided condition synthesis failed')
+                self.state.msv_logger.info(f'Guided condition synthesis failed: tmp remove {tmp_patch.to_str()}')
                 tmp_removed_case_info_list.append(patch[0].case_info)
                 result_handler.remove_patch(self.state, patch)
   
