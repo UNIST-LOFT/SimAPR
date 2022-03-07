@@ -2,9 +2,13 @@ from matplotlib.patches import Patch
 from core import *
 from typing import List, Set, Dict, Tuple
 
-def update_result(state: MSVState, selected_patch: List[PatchInfo], run_result: bool, n: float, test: int, new_env: Dict[str, str]) -> None:
+def update_result(state: MSVState, selected_patch: List[PatchInfo], run_result: bool, n: float, test: int, new_env: Dict[str, str], update_out_dist: bool = True) -> None:
   #if state.use_hierarchical_selection >= 2:
-  update_result_out_dist(state, selected_patch, run_result, test, new_env)  
+  if update_out_dist:
+    update_result_out_dist(state, selected_patch, run_result, test, new_env)
+  else:
+    for patch in selected_patch:
+      patch.update_result_out_dist(run_result, 0.0, state.use_fixed_beta)
   # update_result_critical(state, selected_patch, run_result, test)
   if state.mode == MSVMode.seapr:
     update_result_seapr(state, selected_patch, run_result, test)
