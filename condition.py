@@ -835,7 +835,7 @@ class GuidedPathCondition:
               generated_length+=1
               op.variable_info_list[i].constant_info_list.append(new_constant)
               new_patch=PatchInfo(self.patch.case_info,op,op.variable_info_list[i],new_constant)
-              result_handler.update_result(self.state, [new_patch], True, 1, self.state.negative_test[0], self.new_env)
+              result_handler.update_result(self.state, [new_patch], True, 1, self.state.negative_test[0], self.new_env, False)
     
     for op in operators[:4].copy():
       for var in op.variable_info_list.copy():
