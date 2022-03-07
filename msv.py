@@ -142,10 +142,12 @@ class MSV:
           f.write(f"{pt} ")
         f.write("\n")
         f.write("Regression Cases: Tot 0\n")
+  
   def run(self) -> None:
     self.initialize()
     self.state.start_time=time.time()
     self.state.cycle=0
+    tmp_removed_case_info_list: List[CaseInfo] = list()
     while self.is_alive():
       self.state.iteration+=1
       neg = self.state.negative_test[0]
@@ -154,19 +156,30 @@ class MSV:
       self.state.msv_logger.info(f'Patch {patch[0].to_str()} selected')
       if patch[0].case_info.is_condition and not self.state.use_condition_synthesis and \
             not patch[0].case_info.processed:
-        # Our guided conditino synthesis
+        # Our guided condition synthesis
         if self.state.mode==MSVMode.guided:
           self.state.msv_logger.info('Run path guide condition synthesis')
-          record_bool=[]
-          for record in patch[0].record_path:
-            record_bool.append(record.is_true)
-          guided_cond=condition.GuidedPathCondition(patch[0],self.state,self.state.negative_test,record_bool)
-          opers=guided_cond.get_condition()
-          if opers is not None and len(opers)>0:
-            patch[0].case_info.operator_info_list=opers
-          else:
-            patch[0].case_info.operator_info_list=[]
-            
+          for i in range(10):
+            if patch[0].case_info not in patch[0].case_info.parent.case_info_list:
+              self.state.msv_logger.debug("Consumed all record path!")
+              break
+            tmp_patch = select_patch.select_conditional_patch_by_record(self.state, patch[0].case_info)
+            record_bool=[]
+            for record in tmp_patch.record_path:
+              record_bool.append(record.is_true)
+            guided_cond=condition.GuidedPathCondition(tmp_patch,self.state,self.state.negative_test,record_bool)
+            opers=guided_cond.get_condition()
+            if opers is not None and len(opers)>0:
+              patch[0] = tmp_patch
+              patch[0].case_info.operator_info_list=opers
+              break
+            else:
+              patch[0].case_info.operator_info_list=[]
+              if i == 9:
+                self.state.msv_logger.warning('Guided condition synthesis failed')
+                tmp_removed_case_info_list.append(patch[0].case_info)
+                result_handler.remove_patch(self.state, patch)
+  
         # prophet condition synthesis
         else:
           self.state.msv_logger.info('Run prophet condition synthesis')
