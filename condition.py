@@ -120,7 +120,7 @@ def remove_same_pass_record(state: MSVState,patch: PatchInfo,test: int) -> None:
     return
 
   record=parse_record(temp_file)
-  if record is None or len(record)>=20:
+  if record is None or len(record)>=20 or run_result:
     return
   write_record_terminate(temp_file)
 
