@@ -764,6 +764,7 @@ class GuidedPathCondition:
         var.clear()
         continue
               
+    generated_length=0
     ## Create condition infos
     for op in operators:
       if op.operator_type!=OperatorType.ALL_1:
@@ -772,6 +773,7 @@ class GuidedPathCondition:
             if self.__check_condition(self.record,values,op.operator_type,i,const):
               new_constant=ConstantInfo(op.variable_info_list[i],const)
               self.state.msv_logger.info(f'Create new condition: {op.operator_type}, {i}, {const}')
+              generated_length+=1
               op.variable_info_list[i].constant_info_list.append(new_constant)          
     
     for op in operators[:4].copy():
@@ -780,7 +782,7 @@ class GuidedPathCondition:
           op.variable_info_list.remove(var)
       if len(op.variable_info_list)==0:
         operators.remove(op)
-    return operators
+    return generated_length,operators
 
   def get_condition(self):
     self.state.msv_logger.info('Try fail tests...')
@@ -815,10 +817,10 @@ class GuidedPathCondition:
       self.extend_record_tree(len(values[0]))
 
       self.state.msv_logger.info('Generating actual conditions')
-      conditions=self.synthesize(values)
+      length,conditions=self.synthesize(values)
       if len(conditions)==0:
         self.state.msv_logger.info('Fail to generate actual condition')
         return None
       self.patch.case_info.processed=True
-      result_handler.update_result(self.state, [self.patch], True, 1, self.state.negative_test[0], self.new_env)
+      result_handler.update_result(self.state, [self.patch], True, length, self.state.negative_test[0], self.new_env)
       return conditions
