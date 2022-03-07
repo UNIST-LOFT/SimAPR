@@ -144,6 +144,7 @@ def remove_same_pass_record(state: MSVState,patch: PatchInfo,test: int) -> None:
   for op in operators:
     if op.operator_type==OperatorType.ALL_1:
       if False not in record or patch.operator_info.operator_type==OperatorType.ALL_1:
+        new_patch=PatchInfo(patch.case_info,op,None,None)
         result_handler.update_result_positive(state,[new_patch],False,{test})
         result_handler.append_result(state,[new_patch],True,False)
         result_handler.remove_patch(state,[new_patch])
@@ -153,7 +154,6 @@ def remove_same_pass_record(state: MSVState,patch: PatchInfo,test: int) -> None:
           if check_condition(record,value,op.operator_type,var.variable,const.constant_value) or (op==patch.operator_info and var==patch.variable_info and const==patch.constant_info):
             state.msv_logger.info(f'Remove {op.operator_type}-{var.variable}-{const.constant_value}')
             new_patch=PatchInfo(patch.case_info,op,var,const)
-            new_patch.remove_patch(state)
             
             result_handler.update_result_positive(state,[new_patch],False,{test})
             result_handler.append_result(state,[new_patch],True,False)
@@ -447,6 +447,9 @@ class ProphetCondition:
     conditions=self.synthesize(paths,values)
     if len(conditions)==0:
       self.state.msv_logger.info('Fail to generate actual condition')
+      result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0])
+      result_handler.append_result(self.state, [self.patch], False)
+      result_handler.remove_patch(self.state, [self.patch])
       return None
     return conditions
 
@@ -878,6 +881,9 @@ class GuidedPathCondition:
       length,conditions=self.synthesize(values)
       if len(conditions)==0:
         self.state.msv_logger.info('Fail to generate actual condition')
+        result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0], self.new_env)
+        result_handler.append_result(self.state, [self.patch], False)
+        result_handler.remove_patch(self.state, [self.patch])
         return None
       self.patch.case_info.processed=True
       return conditions
