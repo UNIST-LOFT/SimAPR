@@ -147,19 +147,23 @@ class MSV:
     for case_info in removed_case_info:
       self.state.msv_logger.info(f"Restore removed case info: {case_info.to_str()}")
       type_info = case_info.parent
-      if case_info not in type_info.case_info_list:
-        type_info.case_info_list.append(case_info)
       switch_info = type_info.parent
-      if type_info not in switch_info.type_info_list:
-        switch_info.type_info_list.append(type_info)
       line_info = switch_info.parent
-      if switch_info not in line_info.switch_info_list:
-        line_info.switch_info_list.append(switch_info)
       file_info = line_info.parent
-      if line_info not in file_info.line_info_list:
-        file_info.line_info_list.append(line_info)
       if file_info not in self.state.patch_info_list:
         self.state.patch_info_list.append(file_info)
+      elif line_info not in file_info.line_info_list:
+        file_info.line_info_list.append(line_info)
+        file_info.prophet_score+=line_info.prophet_score
+      elif switch_info not in line_info.switch_info_list:
+        line_info.switch_info_list.append(switch_info)
+        line_info.prophet_score+=switch_info.prophet_score
+      elif type_info not in switch_info.type_info_list:
+        switch_info.type_info_list.append(type_info)
+        switch_info.prophet_score+=type_info.prophet_score
+      elif case_info not in type_info.case_info_list:
+        type_info.case_info_list.append(case_info)
+        type_info.prophet_score+=case_info.prophet_score
   
   def run(self) -> None:
     self.initialize()
