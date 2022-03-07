@@ -68,11 +68,22 @@ class MSV:
     if self.state.use_pass_test and final_result:
       self.state.msv_logger.info("Run pass test!")
       (pass_result, fail_tests) = run_test.run_pass_test(self.state, selected_patch, False)
-      result_handler.update_result(self.state, selected_patch, True, 1, selected_test, new_env)
-      result_handler.update_result_positive(self.state, selected_patch, pass_result, fail_tests)
-      result_handler.append_result(self.state, selected_patch, True,pass_result)
-      result_handler.remove_patch(self.state, selected_patch)
-      self.state.msv_logger.info("Result: PASS" if pass_result else "Result: FAIL")
+
+      if self.state.mode==MSVMode.guided and not self.state.use_condition_synthesis:
+        if pass_result:
+          result_handler.update_result_positive(self.state, selected_patch, pass_result, fail_tests)
+          result_handler.append_result(self.state, selected_patch, True,pass_result)
+          result_handler.remove_patch(self.state, selected_patch)
+          self.state.msv_logger.info("Result: PASS")
+        else:
+          failed_list=list(fail_tests)
+          condition.remove_same_pass_record(self.state,selected_patch[0],failed_list[0])
+      else:
+        result_handler.update_result(self.state, selected_patch, True, 1, selected_test, new_env)
+        result_handler.update_result_positive(self.state, selected_patch, pass_result, fail_tests)
+        result_handler.append_result(self.state, selected_patch, True,pass_result)
+        result_handler.remove_patch(self.state, selected_patch)
+        self.state.msv_logger.info("Result: PASS" if pass_result else "Result: FAIL")
 
       # Do not update result for original program
       if selected_patch[0].to_str_sw_cs() == "0-0":

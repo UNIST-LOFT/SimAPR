@@ -71,6 +71,87 @@ def write_record(temp_file: str, record: List[bool]) -> None:
   file.write('\n')
   file.close()
 
+def __check_condition(records: List[bool], values: List[List[int]], 
+        operator: OperatorType, variable: int, constant: int) -> bool:
+  result=True
+  # check fail test with records
+  if len(values) <= variable:
+    return False
+
+  current_values=values[variable]
+  for path,const in zip(records,current_values):
+    if operator==OperatorType.EQ:
+      cond=path == (const == constant)
+      if not cond:
+        result=False
+        break
+    elif operator==OperatorType.NE:
+      cond=path == (const != constant)
+      if not cond:
+        result=False
+        break
+    elif operator==OperatorType.GT:
+      cond=path == (const > constant)
+      if not cond:
+        result=False
+        break
+    elif operator==OperatorType.LT:
+      cond=path == (const < constant)
+      if not cond:
+        result=False
+        break
+  
+  return result
+
+def remove_same_pass_record(state: MSVState,patch: PatchInfo,test: int) -> None:
+  state.msv_logger.info(
+      f"@{state.cycle} Remove pass test [{test}] with {patch.to_str()}")
+  new_env=MSVEnvVar.get_new_env(state,[patch],test,EnvVarMode.basic)
+  temp_file = new_env["TMP_FILE"]
+  # Get record of failed pass test
+  try:
+    if os.path.exists(temp_file):
+      os.remove(temp_file)
+  except:
+    pass
+  
+  run_result, is_timeout = run_test.run_fail_test(state, patch, test, new_env)
+  if is_timeout:
+    return
+
+  record=parse_record(temp_file)
+  if record is None or len(record)>=20:
+    return
+  write_record_terminate(temp_file)
+
+  # Get values of failed pass test
+  write_record(temp_file,record)
+  # log_file=f"/tmp/{self.patch.switch_info.switch_number}-{self.patch.case_info.case_number}.log"
+  new_env = MSVEnvVar.get_new_env(state, [patch], test,EnvVarMode.collect_neg)
+  log_file = new_env["TMP_FILE"]
+  try:
+    if os.path.exists(log_file):
+      os.remove(log_file)
+  except:
+    pass
+  run_result, is_timeout = run_test.run_fail_test(state, [patch], test, new_env)
+  if is_timeout:
+    return None
+  value= parse_value(log_file)
+
+  # Remove same record condition
+  operators=patch.case_info.operator_info_list
+  for op in operators:
+    for var in op.variable_info_list:
+      for const in var.constant_info_list:
+        if __check_condition(record,value,op.operator_type,var.variable,const.constant_value) or (op==patch.operator_info and var==patch.variable_info and const==patch.constant_info):
+          state.msv_logger.info(f'Remove {op.operator_type}-{var.variable}-{const.constant_value}')
+          new_patch=PatchInfo(patch.case_info,op,var,const)
+          new_patch.remove_patch(state)
+          
+          result_handler.update_result_positive(state,[new_patch],False,{test})
+          result_handler.append_result(state,[new_patch],True,False)
+
 
 class ProphetCondition:
   def __init__(self,patch: PatchInfo,state: MSVState, fail_test: list, pass_test: list):
@@ -665,38 +746,6 @@ class GuidedPathCondition:
 
     search(self.patch.case_info.record_tree,0)
 
-  def __check_condition(self, records: List[bool], values: List[List[int]], 
-          operator: OperatorType, variable: int, constant: int) -> bool:
-    result=True
-    # check fail test with records
-    if len(values) <= variable:
-      return False
-
-    current_values=values[variable]
-    for path,const in zip(records,current_values):
-      if operator==OperatorType.EQ:
-        cond=path == (const == constant)
-        if not cond:
-          result=False
-          break
-      elif operator==OperatorType.NE:
-        cond=path == (const != constant)
-        if not cond:
-          result=False
-          break
-      elif operator==OperatorType.GT:
-        cond=path == (const > constant)
-        if not cond:
-          result=False
-          break
-      elif operator==OperatorType.LT:
-        cond=path == (const < constant)
-        if not cond:
-          result=False
-          break
-    
-    return result
-
   def synthesize(self, values: List[List[int]]) -> Dict[OperatorType, OperatorInfo]:
     """
       Generate actual condition with values.
@@ -770,11 +819,13 @@ class GuidedPathCondition:
       if op.operator_type!=OperatorType.ALL_1:
         for i,consts in enumerate(available_const):
           for const in consts:
-            if self.__check_condition(self.record,values,op.operator_type,i,const):
+            if __check_condition(self.record,values,op.operator_type,i,const):
               new_constant=ConstantInfo(op.variable_info_list[i],const)
               self.state.msv_logger.info(f'Create new condition: {op.operator_type}, {i}, {const}')
               generated_length+=1
-              op.variable_info_list[i].constant_info_list.append(new_constant)          
+              op.variable_info_list[i].constant_info_list.append(new_constant)
+              new_patch=PatchInfo(self.patch.case_info,op,op.variable_info_list[i],new_constant)
+              result_handler.update_result(self.state, [new_patch], True, 1, self.state.negative_test[0], self.new_env)
     
     for op in operators[:4].copy():
       for var in op.variable_info_list.copy():
@@ -822,5 +873,4 @@ class GuidedPathCondition:
         self.state.msv_logger.info('Fail to generate actual condition')
         return None
       self.patch.case_info.processed=True
-      result_handler.update_result(self.state, [self.patch], True, length, self.state.negative_test[0], self.new_env)
       return conditions
