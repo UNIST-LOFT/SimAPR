@@ -292,19 +292,20 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     test = state.negative_test[0]
   original_profile = state.profile_map[test]
   is_rand = (mode == MSVMode.random)
+  n = state.use_hierarchical_selection
+  if is_rand:
+    n = 1
+  pf_rand = PassFail()
+  # Select file
+  p1 = list()
+  p2 = list()
+  p3 = list()
+
   # Initially, select patch with prophet strategy
   MAX_INITIAL_TRIAL = 100
   if state.iteration < MAX_INITIAL_TRIAL:
     selected_case_info= select_patch_prophet(state).case_info
   else:
-    n = state.use_hierarchical_selection
-    if is_rand:
-      n = 1
-    pf_rand = PassFail()
-    # Select file
-    p1 = list()
-    p2 = list()
-    p3 = list()
     for file_info in state.patch_info_list:
       if is_rand:
         p1.append(pf_rand.expect_probability())
