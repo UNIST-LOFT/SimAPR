@@ -295,108 +295,110 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
   # Initially, select patch with prophet strategy
   MAX_INITIAL_TRIAL = 100
   if state.iteration < MAX_INITIAL_TRIAL:
-    return select_patch_prophet(state)
-  n = state.use_hierarchical_selection
-  if is_rand:
-    n = 1
-  pf_rand = PassFail()
-  # Select file
-  p1 = list()
-  p2 = list()
-  p3 = list()
-  for file_info in state.patch_info_list:
+    selected_case_info= select_patch_prophet(state).case_info
+  else:
+    n = state.use_hierarchical_selection
     if is_rand:
-      p1.append(pf_rand.expect_probability())
-    else:
-      if state.use_fl:
-        adjusted_pf = PassFail()
-        adjusted_pf.update_with_pf(file_info.pf)
-        adjusted_pf.update(file_info.fl_score > 0, abs(file_info.fl_score))
-        p1.append(adjusted_pf.expect_probability())
+      n = 1
+    pf_rand = PassFail()
+    # Select file
+    p1 = list()
+    p2 = list()
+    p3 = list()
+    for file_info in state.patch_info_list:
+      if is_rand:
+        p1.append(pf_rand.expect_probability())
       else:
-        p1.append(file_info.pf.expect_probability())
-      #p2.append(ProfileDiff.get_diff(file_info.profile_diff, test, original_profile))
-      p2.append(file_info.out_dist)
-      p3.append(file_info.positive_pf.expect_probability())
-  update_out_dist_list(state, p2)
-  selected_file = select_by_probability_hierarchical(state, n, p1, p2, p3)
-  selected_file_info = state.patch_info_list[selected_file]
-  p1.clear()
-  p2.clear()
-  p3.clear()
-  # Select line
-  for line_info in selected_file_info.line_info_list:
-    if is_rand:
-      p1.append(pf_rand.expect_probability())
-    else:
-      if state.use_fl:
-        adjusted_pf = PassFail()
-        adjusted_pf.update_with_pf(line_info.pf)
-        adjusted_pf.update(line_info.fl_score > 0, abs(line_info.fl_score))
-        p1.append(adjusted_pf.expect_probability())
+        if state.use_fl:
+          adjusted_pf = PassFail()
+          adjusted_pf.update_with_pf(file_info.pf)
+          adjusted_pf.update(file_info.fl_score > 0, abs(file_info.fl_score))
+          p1.append(adjusted_pf.expect_probability())
+        else:
+          p1.append(file_info.pf.expect_probability())
+        #p2.append(ProfileDiff.get_diff(file_info.profile_diff, test, original_profile))
+        p2.append(file_info.out_dist)
+        p3.append(file_info.positive_pf.expect_probability())
+    update_out_dist_list(state, p2)
+    selected_file = select_by_probability_hierarchical(state, n, p1, p2, p3)
+    selected_file_info = state.patch_info_list[selected_file]
+    p1.clear()
+    p2.clear()
+    p3.clear()
+    # Select line
+    for line_info in selected_file_info.line_info_list:
+      if is_rand:
+        p1.append(pf_rand.expect_probability())
       else:
-        p1.append(line_info.pf.expect_probability())
-      #p2.append(ProfileDiff.get_diff(line_info.profile_diff, test, original_profile))
-      p2.append(line_info.out_dist)
-      p3.append(line_info.positive_pf.expect_probability())
-  update_out_dist_list(state, p2)
-  selected_line = select_by_probability_hierarchical(state, n, p1, p2, p3)
-  selected_line_info = selected_file_info.line_info_list[selected_line]
-  p1.clear()
-  p2.clear()
-  p3.clear()
-  # Select switch
-  for switch_info in selected_line_info.switch_info_list:
-    if is_rand:
-      p1.append(pf_rand.expect_probability())
-    else:
-      p1.append(switch_info.pf.expect_probability())
-      #p2.append(ProfileDiff.get_diff(switch_info.profile_diff, test, original_profile))
-      p2.append(switch_info.out_dist)
-      p3.append(switch_info.positive_pf.expect_probability())
-  update_out_dist_list(state, p2)
-  selected_switch = select_by_probability_hierarchical(state, n, p1, p2, p3)
-  selected_switch_info = selected_line_info.switch_info_list[selected_switch]
-  p1.clear()
-  p2.clear()
-  p3.clear()
-  # Select type
-  for type_info in selected_switch_info.type_info_list:
-    if is_rand:
-      p1.append(pf_rand.expect_probability())
-    else:
-      p1.append(type_info.pf.expect_probability())
-      #p2.append(ProfileDiff.get_diff(type_info.profile_diff, test, original_profile))
-      p2.append(type_info.out_dist)
-      p3.append(type_info.positive_pf.expect_probability())
-  update_out_dist_list(state, p2)
-  selected_type = select_by_probability_hierarchical(state, n, p1, p2, p3)
-  selected_type_info = selected_switch_info.type_info_list[selected_type]
-  p1.clear()
-  p2.clear()
-  p3.clear()
-  # Select case
-  for case_info in selected_type_info.case_info_list:
-    if is_rand:
-      p1.append(pf_rand.expect_probability())
-    elif not state.use_condition_synthesis and len(selected_patch)>0 and not case_info.processed: # do not select multi-line patch if patch is not processed at prophet cond syn
-      p1.append(-1)
-    else:
-      p1.append(case_info.pf.expect_probability())
-      #p2.append(ProfileDiff.get_diff(case_info.profile_diff, test, original_profile))
-      p2.append(case_info.out_dist)
-      p3.append(case_info.positive_pf.expect_probability())
-  update_out_dist_list(state, p2)
-  selected_case = select_by_probability_hierarchical(state, n, p1, p2, p3)
-  selected_case_info = selected_type_info.case_info_list[selected_case]
-  p1.clear()
-  p2.clear()
-  p3.clear()
-  state.msv_logger.debug(f"{selected_file_info.file_name}({len(selected_file_info.line_info_list)}):" +
-          f"{selected_line_info.line_number}({len(selected_line_info.switch_info_list)}):" +
-          f"{selected_switch_info.switch_number}({len(selected_switch_info.type_info_list)}):" +
-          f"{selected_type_info.patch_type.name}({len(selected_type_info.case_info_list)}):" +
-                         f"{selected_case_info.case_number}")  # ({len(selected_case_info.operator_info_list)})
+        if state.use_fl:
+          adjusted_pf = PassFail()
+          adjusted_pf.update_with_pf(line_info.pf)
+          adjusted_pf.update(line_info.fl_score > 0, abs(line_info.fl_score))
+          p1.append(adjusted_pf.expect_probability())
+        else:
+          p1.append(line_info.pf.expect_probability())
+        #p2.append(ProfileDiff.get_diff(line_info.profile_diff, test, original_profile))
+        p2.append(line_info.out_dist)
+        p3.append(line_info.positive_pf.expect_probability())
+    update_out_dist_list(state, p2)
+    selected_line = select_by_probability_hierarchical(state, n, p1, p2, p3)
+    selected_line_info = selected_file_info.line_info_list[selected_line]
+    p1.clear()
+    p2.clear()
+    p3.clear()
+    # Select switch
+    for switch_info in selected_line_info.switch_info_list:
+      if is_rand:
+        p1.append(pf_rand.expect_probability())
+      else:
+        p1.append(switch_info.pf.expect_probability())
+        #p2.append(ProfileDiff.get_diff(switch_info.profile_diff, test, original_profile))
+        p2.append(switch_info.out_dist)
+        p3.append(switch_info.positive_pf.expect_probability())
+    update_out_dist_list(state, p2)
+    selected_switch = select_by_probability_hierarchical(state, n, p1, p2, p3)
+    selected_switch_info = selected_line_info.switch_info_list[selected_switch]
+    p1.clear()
+    p2.clear()
+    p3.clear()
+    # Select type
+    for type_info in selected_switch_info.type_info_list:
+      if is_rand:
+        p1.append(pf_rand.expect_probability())
+      else:
+        p1.append(type_info.pf.expect_probability())
+        #p2.append(ProfileDiff.get_diff(type_info.profile_diff, test, original_profile))
+        p2.append(type_info.out_dist)
+        p3.append(type_info.positive_pf.expect_probability())
+    update_out_dist_list(state, p2)
+    selected_type = select_by_probability_hierarchical(state, n, p1, p2, p3)
+    selected_type_info = selected_switch_info.type_info_list[selected_type]
+    p1.clear()
+    p2.clear()
+    p3.clear()
+    # Select case
+    for case_info in selected_type_info.case_info_list:
+      if is_rand:
+        p1.append(pf_rand.expect_probability())
+      elif not state.use_condition_synthesis and len(selected_patch)>0 and not case_info.processed: # do not select multi-line patch if patch is not processed at prophet cond syn
+        p1.append(-1)
+      else:
+        p1.append(case_info.pf.expect_probability())
+        #p2.append(ProfileDiff.get_diff(case_info.profile_diff, test, original_profile))
+        p2.append(case_info.out_dist)
+        p3.append(case_info.positive_pf.expect_probability())
+    update_out_dist_list(state, p2)
+    selected_case = select_by_probability_hierarchical(state, n, p1, p2, p3)
+    selected_case_info = selected_type_info.case_info_list[selected_case]
+    p1.clear()
+    p2.clear()
+    p3.clear()
+    state.msv_logger.debug(f"{selected_file_info.file_name}({len(selected_file_info.line_info_list)}):" +
+            f"{selected_line_info.line_number}({len(selected_line_info.switch_info_list)}):" +
+            f"{selected_switch_info.switch_number}({len(selected_switch_info.type_info_list)}):" +
+            f"{selected_type_info.patch_type.name}({len(selected_type_info.case_info_list)}):" +
+                          f"{selected_case_info.case_number}")  # ({len(selected_case_info.operator_info_list)})
+
   if selected_case_info.is_condition == False:
     return PatchInfo(selected_case_info, None, None, None)
   else:
