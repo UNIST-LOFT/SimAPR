@@ -202,9 +202,10 @@ class MSV:
             else:
               patch[0].case_info.operator_info_list=[]
               if i == 9:
-                self.state.msv_logger.info(f'Guided condition synthesis failed: tmp remove {tmp_patch.to_str()}')
-                tmp_removed_case_info_list.append(patch[0].case_info)
-                result_handler.remove_patch(self.state, patch)
+                if self.state.iteration < self.state.max_initial_trial:
+                  self.state.msv_logger.info(f'Guided condition synthesis failed: tmp remove {tmp_patch.to_str()}')
+                  tmp_removed_case_info_list.append(patch[0].case_info)
+                  result_handler.remove_patch(self.state, patch)
   
         # prophet condition synthesis
         else:
