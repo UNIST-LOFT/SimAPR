@@ -185,15 +185,15 @@ class MSV:
         if self.state.mode==MSVMode.guided:
           self.state.msv_logger.info('Run path guide condition synthesis')
           for i in range(10):
+            if patch[0].case_info not in patch[0].case_info.parent.case_info_list:
+              self.state.msv_logger.info("Consumed all record path!")
+              break
             tmp_patch = select_patch.select_conditional_patch_by_record(self.state, patch[0].case_info)
             record_bool=[]
             for record in tmp_patch.record_path:
               record_bool.append(record.is_true)
             guided_cond=condition.GuidedPathCondition(tmp_patch,self.state,self.state.negative_test,record_bool)
             opers=guided_cond.get_condition()
-            if patch[0].case_info not in patch[0].case_info.parent.case_info_list:
-              self.state.msv_logger.info("Consumed all record path!")
-              break
             if opers is not None and len(opers)>0:
               self.state.msv_logger.info(f'Found angelic path: {tmp_patch.to_str()} {tmp_patch.record_info.get_path_str()}')
               patch[0] = tmp_patch
