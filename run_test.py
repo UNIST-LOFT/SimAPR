@@ -75,7 +75,7 @@ def run_pass_test(state: MSVState, patch: List[PatchInfo], is_initialize: bool =
   args = args[0:1] + ['-i', patch[0].to_str(), '-j',
                       str(state.max_parallel_cpu),'-t',str(int(state.timeout/1000))] + args[1:]
   new_env = MSVEnvVar.get_new_env(
-        state, patch, 0, set_tmp_file=False)
+        state, patch, 0)
   if is_initialize:
     new_env['__PID'] = new_env['MSV_UUID']
     new_env['MSV_RUN_ORIGINAL'] = "1"
