@@ -1003,3 +1003,10 @@ class MSVState:
     self.iteration=0
     self.use_partial_validation = False
     self.max_initial_trial = 100
+
+def remove_file_or_pass(file:str):
+  try:
+    if os.path.exists(file):
+      os.remove(file)
+  except:
+    pass
