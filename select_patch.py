@@ -399,6 +399,10 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
             f"{selected_type_info.patch_type.name}({len(selected_type_info.case_info_list)}):" +
                           f"{selected_case_info.case_number}")  # ({len(selected_case_info.operator_info_list)})
 
+  selected_type_info = selected_case_info.parent
+  selected_switch_info = selected_type_info.parent
+  selected_line_info = selected_switch_info.parent
+  selected_file_info = selected_line_info.parent
   if selected_case_info.is_condition == False:
     return PatchInfo(selected_case_info, None, None, None)
   else:
