@@ -632,7 +632,8 @@ class PatchInfo:
     self.type_info = case_info.parent
     self.switch_info = self.type_info.parent
     self.line_info = self.switch_info.parent
-    self.file_info = self.line_info.parent
+    self.func_info = self.line_info.parent
+    self.file_info = self.func_info.parent
     self.is_condition = case_info.is_condition
     self.operator_info = op_info
     self.variable_info = var_info
@@ -668,6 +669,9 @@ class PatchInfo:
     tmp = self.line_info.update_count * self.line_info.out_dist
     self.line_info.out_dist = (tmp + dist) / (self.line_info.update_count + 1)
     self.line_info.update_count += 1
+    tmp = self.func_info.out_dist * self.func_info.update_count
+    self.func_info.out_dist = (tmp + dist) / (self.func_info.update_count + 1)
+    self.func_info.update_count += 1
     tmp = self.file_info.update_count * self.file_info.out_dist
     self.file_info.out_dist = (tmp + dist) / (self.file_info.update_count + 1)
     self.file_info.update_count += 1
@@ -743,6 +747,7 @@ class PatchInfo:
     self.type_info.positive_pf.update(result, n)
     self.switch_info.positive_pf.update(result, n)
     self.line_info.positive_pf.update(result, n)
+    self.func_info.positive_pf.update(result, n)
     self.file_info.positive_pf.update(result, n)
     if self.is_condition and self.operator_info is not None:
       self.operator_info.positive_pf.update(result, n)
@@ -758,6 +763,7 @@ class PatchInfo:
         self.type_info.prophet_score.remove(self.operator_info.prophet_score[0])
         self.switch_info.prophet_score.remove(self.operator_info.prophet_score[0])
         self.line_info.prophet_score.remove(self.operator_info.prophet_score[0])
+        self.func_info.prophet_score.remove(self.operator_info.prophet_score[0])
         self.file_info.prophet_score.remove(self.operator_info.prophet_score[0])
       else:
         if not state.use_condition_synthesis:
@@ -769,6 +775,7 @@ class PatchInfo:
             self.type_info.prophet_score.remove(self.variable_info.prophet_score)
             self.switch_info.prophet_score.remove(self.variable_info.prophet_score)
             self.line_info.prophet_score.remove(self.variable_info.prophet_score)
+            self.func_info.prophet_score.remove(self.variable_info.prophet_score)
             self.file_info.prophet_score.remove(self.variable_info.prophet_score)
           if len(self.operator_info.variable_info_list) == 0:
             self.case_info.operator_info_list.remove(self.operator_info)
@@ -831,12 +838,14 @@ class PatchInfo:
               self.file_info.prophet_score.remove(score)
 
       if len(self.case_info.operator_info_list) == 0:
-        self.type_info.case_info_list.remove(self.case_info)
+        del self.type_info.case_info_map[self.case_info.case_number]
+        #self.type_info.case_info_list.remove(self.case_info)
         with open(os.path.join(state.out_dir, "p1.log"),'a') as f:
           f.write(f'{self.file_info.file_name}-{self.line_info.line_number}-{self.switch_info.switch_number}-{self.type_info.patch_type}-{self.case_info.case_number}: {self.case_info.pf.pass_count}/{self.case_info.pf.pass_count+self.case_info.pf.fail_count}\n')
 
     else:
-      self.type_info.case_info_list.remove(self.case_info)
+      #self.type_info.case_info_list.remove(self.case_info)
+      del self.type_info.case_info_map[self.case_info.case_number]
       for score in self.case_info.prophet_score:
         self.type_info.prophet_score.remove(score)
         self.switch_info.prophet_score.remove(score)
@@ -845,14 +854,16 @@ class PatchInfo:
       with open(os.path.join(state.out_dir, "p1.log"),'a') as f:
         f.write(f'{self.file_info.file_name}-{self.line_info.line_number}-{self.switch_info.switch_number}-{self.type_info.patch_type}-{self.case_info.case_number}: {self.case_info.pf.pass_count}/{self.case_info.pf.pass_count+self.case_info.pf.fail_count}\n')
 
-    if len(self.type_info.case_info_list) == 0:
-      self.switch_info.type_info_list.remove(self.type_info)
-    if len(self.switch_info.type_info_list) == 0:
-      self.line_info.switch_info_list.remove(self.switch_info)
-    if len(self.line_info.switch_info_list) == 0:
-      self.file_info.line_info_list.remove(self.line_info)
-    if len(self.file_info.line_info_list) == 0:
-      state.patch_info_list.remove(self.file_info)
+    if len(self.type_info.case_info_map) == 0:
+      del self.switch_info.type_info_map[self.type_info.patch_type]
+    if len(self.switch_info.type_info_map) == 0:
+      del self.line_info.switch_info_map[self.switch_info.switch_number]
+    if len(self.line_info.switch_info_map) == 0:
+      del self.func_info.line_info_map[self.line_info.line_number]
+    if len(self.func_info.line_info_map) == 0:
+      del self.file_info.func_info_map[self.func_info.func_name]
+    if len(self.file_info.func_info_map) == 0:
+      del state.file_info_map[self.file_info.file_name]
 
 
   def to_json_object(self) -> dict:
