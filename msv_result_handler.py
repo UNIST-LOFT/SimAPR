@@ -39,6 +39,7 @@ def update_result_out_dist(state: MSVState, selected_patch: List[PatchInfo], run
   state.msv_logger.debug(f"Output distance at {output_dist_file}: {dist}")
   for patch in selected_patch:
     patch.update_result_out_dist(run_result, dist, state.use_fixed_beta)
+  remove_file_or_pass(output_dist_file)
   return dist
 
 def find_func_loc(state: MSVState, base_loc: FileLine) -> Tuple[str, int, int]:

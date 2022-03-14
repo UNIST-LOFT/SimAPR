@@ -1,7 +1,7 @@
 import os
 import subprocess
 from typing import List, Tuple, Dict
-from core import CaseInfo, ConstantInfo, EnvVarMode, MSVEnvVar, MSVState, OperatorInfo, OperatorType, PatchInfo, RecordInfo, VariableInfo
+from core import CaseInfo, ConstantInfo, EnvVarMode, MSVEnvVar, MSVState, OperatorInfo, OperatorType, PatchInfo, RecordInfo, VariableInfo, remove_file_or_pass
 import msv_result_handler as result_handler
 import run_test
 
@@ -109,18 +109,16 @@ def remove_same_pass_record(state: MSVState,patch: PatchInfo,test: int) -> None:
   new_env=MSVEnvVar.get_new_env(state,[patch],test,EnvVarMode.basic)
   temp_file = new_env["TMP_FILE"]
   # Get record of failed pass test
-  try:
-    if os.path.exists(temp_file):
-      os.remove(temp_file)
-  except:
-    pass
-  
+  remove_file_or_pass(temp_file)
+
   run_result, is_timeout = run_test.run_fail_test(state, [patch], test, new_env)
   if is_timeout:
+    remove_file_or_pass(temp_file)
     return
 
   record=parse_record(temp_file)
   if record is None or len(record)>=20 or run_result:
+    remove_file_or_pass(temp_file)
     return
   write_record_terminate(temp_file)
 
@@ -129,13 +127,12 @@ def remove_same_pass_record(state: MSVState,patch: PatchInfo,test: int) -> None:
   # log_file=f"/tmp/{self.patch.switch_info.switch_number}-{self.patch.case_info.case_number}.log"
   new_env = MSVEnvVar.get_new_env(state, [patch], test,EnvVarMode.collect_neg)
   log_file = new_env["TMP_FILE"]
-  try:
-    if os.path.exists(log_file):
-      os.remove(log_file)
-  except:
-    pass
+  remove_file_or_pass(log_file)
+
   run_result, is_timeout = run_test.run_fail_test(state, [patch], test, new_env)
   if is_timeout:
+    remove_file_or_pass(temp_file)
+    remove_file_or_pass(log_file)
     return None
   value= parse_value(log_file)
 
@@ -158,6 +155,9 @@ def remove_same_pass_record(state: MSVState,patch: PatchInfo,test: int) -> None:
             result_handler.update_result_positive(state,[new_patch],False,{test})
             result_handler.append_result(state,[new_patch],True,False)
             result_handler.remove_patch(state,[new_patch])
+  
+  remove_file_or_pass(temp_file)
+  remove_file_or_pass(log_file)
 
 
 class ProphetCondition:
@@ -177,17 +177,14 @@ class ProphetCondition:
 
       new_env = MSVEnvVar.get_new_env(self.state, patch, test,EnvVarMode.record_it)
       temp_file = new_env['TMP_FILE']
-      try:
-        if os.path.exists(temp_file):
-          os.remove(temp_file)
-      except:
-        pass
+      remove_file_or_pass(temp_file)
       result=False
       for i in range(10):
         self.new_env = new_env
         self.state.msv_logger.info(f"@{self.state.cycle + 1} Record [{test}]  with {self.patch.to_str()}")
         run_result, is_timeout = run_test.run_fail_test(self.state, patch, test, new_env)
         if is_timeout:
+          remove_file_or_pass(temp_file)
           return None,''
 
         record=parse_record(temp_file)
@@ -204,9 +201,8 @@ class ProphetCondition:
         
         if 0 not in record:
           self.state.msv_logger.info(f'Fail at recording {test}')
+          remove_file_or_pass(temp_file)
           return None,''
-        if os.path.exists(new_env["MSV_OUTPUT_DISTANCE_FILE"]):
-          os.remove(new_env["MSV_OUTPUT_DISTANCE_FILE"])
 
       if result:
         continue
@@ -216,11 +212,13 @@ class ProphetCondition:
       temp_file = new_env["TMP_FILE"]
       run_result, is_timeout = run_test.run_fail_test(self.state, patch, test, new_env)
       if is_timeout:
+        remove_file_or_pass(temp_file)
         return None,''
 
       record = parse_record(temp_file)
       if record is None:
         self.state.msv_logger.info(f'Empty record! {test}')
+        remove_file_or_pass(temp_file)
         return None,''
       write_record_terminate(temp_file)
 
@@ -229,8 +227,9 @@ class ProphetCondition:
         records.append(record)
       else:
         self.state.msv_logger.info(f'Fail at recording {test}')
+        remove_file_or_pass(temp_file)
         return None,''
-    
+    remove_file_or_pass(temp_file)
     return records,temp_file
   
   def collect_value(self,temp_file: str, records: List[List[bool]]) -> List[List[List[int]]]:
@@ -245,11 +244,7 @@ class ProphetCondition:
       new_env = MSVEnvVar.get_new_env(self.state, patch, test,EnvVarMode.collect_neg)
       self.new_env = new_env
       log_file = new_env["TMP_FILE"]
-      try:
-        if os.path.exists(log_file):
-          os.remove(log_file)
-      except:
-        pass
+      remove_file_or_pass(log_file)
       run_result, is_timeout = run_test.run_fail_test(self.state, patch, test, new_env)
       if is_timeout:
         values.append([])
@@ -258,6 +253,7 @@ class ProphetCondition:
         values.append([])
       
       values.append(parse_value(log_file))
+      remove_file_or_pass(log_file)
 
     if self.state.use_pass_test and False:
       # collect values from pass test
@@ -267,17 +263,17 @@ class ProphetCondition:
         new_env = MSVEnvVar.get_new_env(self.state, patch, test,EnvVarMode.collect_pos)
         self.new_env = new_env
         log_file = new_env["TMP_FILE"]
-        try:
-          if os.path.exists(log_file):
-            os.remove(log_file)
-        except:
-          pass
+        remove_file_or_pass(log_file)
         run_result, is_timeout = run_test.run_fail_test(self.state, patch, test, new_env)
+        
         if run_result:
           values.append(parse_value(log_file))
         else:
           self.state.msv_logger.info("Terrible fail at collecting value!")
           values.append([])
+        remove_file_or_pass(log_file)
+
+    remove_file_or_pass(temp_file)
     return values
     
   def __check_condition(self, records: List[List[bool]], values: List[List[List[int]]], 
@@ -473,11 +469,7 @@ class MyCondition:
       self.new_env = new_env
       temp_file = new_env["TMP_FILE"]
       # run test
-      try:
-        if os.path.exists(temp_file):
-          os.remove(temp_file)
-      except:
-        pass
+      remove_file_or_pass(temp_file)
       
       run_result, is_timeout = run_test.run_fail_test(self.state, patch, selected_test, new_env)
       if is_timeout:
@@ -489,8 +481,10 @@ class MyCondition:
       write_record_terminate(temp_file)
       if run_result:
         self.state.msv_logger.info("Result: PASS")
+        remove_file_or_pass(temp_file)
         return True,record,selected_test,temp_file
     
+    remove_file_or_pass(temp_file)
     return False,None,-1,''
 
   def collect_value(self, temp_file: str, record: List[int],passed_test:int) -> List[List[int]]:
@@ -500,15 +494,15 @@ class MyCondition:
     new_env = MSVEnvVar.get_new_env(self.state, [self.patch], selected_test,EnvVarMode.collect_neg)
     self.new_env = new_env
     log_file = new_env["TMP_FILE"]
-    try:
-      if os.path.exists(log_file):
-        os.remove(log_file)
-    except:
-      pass
-    run_result, is_timeout = run_test.run_fail_test(self.state, [self.patch], selected_test, new_env)
+    remove_file_or_pass(log_file)
+    run_result, is_timeout = run_test.run_fail_test(self.state, [self.patch], selected_test, new_env)    
     if is_timeout:
       return None
-    return parse_value(log_file)
+
+    result= parse_value(log_file)
+    remove_file_or_pass(log_file)
+    remove_file_or_pass(temp_file)
+    return result
 
   def extend_bst(self, values: List[List[int]]) -> None:
     for i,atom in enumerate(self.patch.operator_info.variable_info_list):
@@ -567,6 +561,7 @@ class MyCondition:
 
     patch=[PatchInfo(target.variable.parent.parent,target.variable.parent,target.variable,target)]
     (pass_result, fail_tests) = run_test.run_pass_test(self.state, patch, False)
+    
     self.state.msv_logger.info(f'Pass test {"pass" if pass_result else "fail"} with {patch[0].to_str()}')
     conditions.remove(target)
     result_handler.update_result(self.state, patch, True, 1, self.state.negative_test[0], self.new_env)
@@ -713,11 +708,7 @@ class GuidedPathCondition:
       self.state.msv_logger.debug(f'Try with {self.record}!')
 
       self.new_env = new_env
-      try:
-        if os.path.exists(log_file):
-          os.remove(log_file)
-      except:
-        pass
+      remove_file_or_pass(log_file)
       run_result, is_timeout = run_test.run_fail_test(self.state, patch, test, new_env)
 
       # If we failed, try next fail test
@@ -732,9 +723,14 @@ class GuidedPathCondition:
         self.state.msv_logger.warn("Fail at collecting value!")
         continue
       
-      return test,parse_value(log_file)
+      result=parse_value(log_file)
+      remove_file_or_pass(tmp_file)
+      remove_file_or_pass(log_file)
+      return test,result
 
     # If we failed all fail test, give up
+    remove_file_or_pass(tmp_file)
+    remove_file_or_pass(log_file)
     return None, max_len_record
   
   def extend_record_tree(self,new_len: int):
