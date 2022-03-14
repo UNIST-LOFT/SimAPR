@@ -300,16 +300,20 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     n = 1
   pf_rand = PassFail()
   # Select file
+  selected = list()
   p1 = list()
   p2 = list()
   p3 = list()
 
   # Initially, select patch with prophet strategy
+  state.max_initial_trial = 0
   if state.iteration < state.max_initial_trial:
     selected_case_info= select_patch_prophet(state).case_info
   else:
-    for file_info in state.patch_info_list:
-      if len(file_info.line_info_list) == 0:
+    for file_name in state.file_info_map:
+      file_info = state.file_info_map[file_name]
+      selected.append(file_info)
+      if len(file_info.func_info_map) == 0:
         state.msv_logger.warning(f"No line info in file: {file_info.file_name}")
         p1.append(-1)
         continue
@@ -328,13 +332,44 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
         p3.append(file_info.positive_pf.expect_probability())
     update_out_dist_list(state, p2)
     selected_file = select_by_probability_hierarchical(state, n, p1, p2, p3)
-    selected_file_info = state.patch_info_list[selected_file]
+    selected_file_info: FileInfo = selected[selected_file]
+    selected.clear()
+    p1.clear()
+    p2.clear()
+    p3.clear()
+    # Select function
+    for func_name in selected_file_info.func_info_map:
+      func_info = selected_file_info.func_info_map[func_name]
+      selected.append(func_info)
+      if len(func_info.line_info_map) == 0:
+        state.msv_logger.warning(f"No line info in function: {func_info.func_name}")
+        p1.append(-1)
+        continue
+      if is_rand:
+        p1.append(pf_rand.expect_probability())
+      else:
+        if state.use_fl:
+          adjusted_pf = PassFail()
+          adjusted_pf.update_with_pf(func_info.pf)
+          adjusted_pf.update(func_info.fl_score > 0, abs(func_info.fl_score))
+          p1.append(adjusted_pf.expect_probability())
+        else:
+          p1.append(func_info.pf.expect_probability())
+        #p2.append(ProfileDiff.get_diff(func_info.profile_diff, test, original_profile))
+        p2.append(func_info.out_dist)
+        p3.append(func_info.positive_pf.expect_probability())
+    update_out_dist_list(state, p2)
+    selected_func = select_by_probability_hierarchical(state, n, p1, p2, p3)
+    selected_func_info: FuncInfo = selected[selected_func]
+    selected.clear()
     p1.clear()
     p2.clear()
     p3.clear()
     # Select line
-    for line_info in selected_file_info.line_info_list:
-      if len(line_info.switch_info_list) == 0:
+    for line_num in selected_func_info.line_info_map:
+      line_info = selected_func_info.line_info_map[line_num]
+      selected.append(line_info)
+      if len(line_info.switch_info_map) == 0:
         state.msv_logger.warning(f"No switch info in line: {selected_file_info.file_name}: {line_info.line_number}")
         p1.append(-1)
         continue
@@ -353,13 +388,16 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
         p3.append(line_info.positive_pf.expect_probability())
     update_out_dist_list(state, p2)
     selected_line = select_by_probability_hierarchical(state, n, p1, p2, p3)
-    selected_line_info = selected_file_info.line_info_list[selected_line]
+    selected_line_info: LineInfo = selected[selected_line]
+    selected.clear()
     p1.clear()
     p2.clear()
     p3.clear()
     # Select switch
-    for switch_info in selected_line_info.switch_info_list:
-      if len(switch_info.type_info_list) == 0:
+    for switch_num in selected_line_info.switch_info_map:
+      switch_info = selected_line_info.switch_info_map[switch_num]
+      selected.append(switch_info)
+      if len(switch_info.type_info_map) == 0:
         state.msv_logger.warning(f"No type info in switch: {selected_file_info.file_name}: {selected_line_info.line_number}: {switch_info.switch_number}")
         p1.append(-1)
         continue
@@ -374,13 +412,16 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     selected_switch = select_by_probability_hierarchical(state, n, p1, p2, p3)
     if selected_switch < 0:
       state.msv_logger.error(f"Switch info list is empty: {selected_file_info.line_info_list} {selected_line_info.switch_info_list}")
-    selected_switch_info = selected_line_info.switch_info_list[selected_switch]
+    selected_switch_info: SwitchInfo = selected[selected_switch]
+    selected.clear()
     p1.clear()
     p2.clear()
     p3.clear()
     # Select type
-    for type_info in selected_switch_info.type_info_list:
-      if len(type_info.case_info_list) == 0:
+    for patch_type in selected_switch_info.type_info_map:
+      type_info = selected_switch_info.type_info_map[patch_type]
+      selected.append(type_info)
+      if len(type_info.case_info_map) == 0:
         state.msv_logger.warning(f"No case info in type: {selected_file_info.file_name}: {selected_line_info.line_number}: {selected_switch_info.switch_number}: {type_info.patch_type}")
         p1.append(-1)
         continue
@@ -393,12 +434,15 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
         p3.append(type_info.positive_pf.expect_probability())
     update_out_dist_list(state, p2)
     selected_type = select_by_probability_hierarchical(state, n, p1, p2, p3)
-    selected_type_info = selected_switch_info.type_info_list[selected_type]
+    selected_type_info: TypeInfo = selected[selected_type]
+    selected.clear()
     p1.clear()
     p2.clear()
     p3.clear()
     # Select case
-    for case_info in selected_type_info.case_info_list:
+    for case_num in selected_type_info.case_info_map:
+      case_info = selected_type_info.case_info_map[case_num]
+      selected.append(case_info)
       if is_rand:
         p1.append(pf_rand.expect_probability())
       elif not state.use_condition_synthesis and len(selected_patch)>0 and not case_info.processed: # do not select multi-line patch if patch is not processed at prophet cond syn
@@ -410,20 +454,22 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
         p3.append(case_info.positive_pf.expect_probability())
     update_out_dist_list(state, p2)
     selected_case = select_by_probability_hierarchical(state, n, p1, p2, p3)
-    selected_case_info = selected_type_info.case_info_list[selected_case]
+    selected_case_info: CaseInfo = selected[selected_case]
+    selected.clear()
     p1.clear()
     p2.clear()
     p3.clear()
-    state.msv_logger.debug(f"{selected_file_info.file_name}({len(selected_file_info.line_info_list)}):" +
-            f"{selected_line_info.line_number}({len(selected_line_info.switch_info_list)}):" +
-            f"{selected_switch_info.switch_number}({len(selected_switch_info.type_info_list)}):" +
-            f"{selected_type_info.patch_type.name}({len(selected_type_info.case_info_list)}):" +
-                          f"{selected_case_info.case_number}")  # ({len(selected_case_info.operator_info_list)})
+    # state.msv_logger.debug(f"{selected_file_info.file_name}({len(selected_file_info.line_info_list)}):" +
+    #         f"{selected_line_info.line_number}({len(selected_line_info.switch_info_list)}):" +
+    #         f"{selected_switch_info.switch_number}({len(selected_switch_info.type_info_list)}):" +
+    #         f"{selected_type_info.patch_type.name}({len(selected_type_info.case_info_list)}):" +
+    #                       f"{selected_case_info.case_number}")  # ({len(selected_case_info.operator_info_list)})
 
   selected_type_info = selected_case_info.parent
   selected_switch_info = selected_type_info.parent
   selected_line_info = selected_switch_info.parent
-  selected_file_info = selected_line_info.parent
+  selected_func_info = selected_line_info.parent
+  selected_file_info = selected_func_info.parent
   if selected_case_info.is_condition == False:
     return PatchInfo(selected_case_info, None, None, None)
   else:

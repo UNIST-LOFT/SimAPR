@@ -24,7 +24,7 @@ class MSV:
     self.state = state
 
   def is_alive(self) -> bool:
-    if len(self.state.patch_info_list) == 0:
+    if len(self.state.file_info_map) == 0:
       self.state.is_alive = False
     if self.state.cycle_limit > 0 and self.state.cycle >= self.state.cycle_limit:
       self.state.is_alive = False
@@ -144,6 +144,7 @@ class MSV:
         f.write("Regression Cases: Tot 0\n")
   
   def restore_removed_case_info(self, removed_case_info: List[CaseInfo]) -> None:
+    return
     for case_info in removed_case_info:
       self.state.msv_logger.info(f"Restore removed case info: {case_info.to_str()}")
       type_info = case_info.parent
@@ -191,7 +192,7 @@ class MSV:
               record_bool.append(record.is_true)
             guided_cond=condition.GuidedPathCondition(tmp_patch,self.state,self.state.negative_test,record_bool)
             opers=guided_cond.get_condition()
-            if patch[0].case_info not in patch[0].case_info.parent.case_info_list:
+            if patch[0].case_info.case_number not in patch[0].case_info.parent.case_info_map:
               self.state.msv_logger.info("Consumed all record path!")
               break
             if opers is not None and len(opers)>0:

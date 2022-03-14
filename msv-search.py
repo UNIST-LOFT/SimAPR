@@ -130,7 +130,7 @@ def read_info(state: MSVState) -> None:
 
     #file_map = state.patch_info_map
     max_priority = info['priority'][0]['score']
-    file_list = state.patch_info_list
+    # file_list = state.patch_info_list
     file_map = state.file_info_map
     ff_map: Dict[str, Dict[str, Tuple[int, int]]] = dict()
     for file in info["func_locations"]:

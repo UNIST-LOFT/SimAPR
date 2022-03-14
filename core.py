@@ -960,7 +960,6 @@ class MSVState:
   max_parallel_cpu: int
   new_revlog: str
   patch_info_map: Dict[str, FileInfo]  # fine_name: str -> FileInfo
-  patch_info_list: List[FileInfo]      # Root of tree of patch data structure
   file_info_map: Dict[str, FileInfo]   # file_name: str -> FileInfo
   switch_case_map: Dict[str, CaseInfo] # f"{switch_number}-{case_number}" -> SwitchCase
   selected_patch: List[PatchInfo] # Unused
@@ -1004,7 +1003,6 @@ class MSVState:
     self.patch_info_map = dict()
     self.switch_case_map = dict()
     self.selected_patch = None
-    self.patch_info_list = list()
     self.file_info_map = dict()
     self.negative_test = list()
     self.positive_test = list()
