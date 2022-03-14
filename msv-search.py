@@ -131,25 +131,55 @@ def read_info(state: MSVState) -> None:
     #file_map = state.patch_info_map
     max_priority = info['priority'][0]['score']
     file_list = state.patch_info_list
+    file_map = state.file_info_map
+    ff_map: Dict[str, Dict[str, Tuple[int, int]]] = dict()
+    for file in info["func_locations"]:
+      file_name = file["file"]
+      ff_map[file_name] = dict()
+      for func in file["functions"]:
+        func_name = func["function"]
+        begin = func["begin"]
+        end = func["end"]
+        ff_map[file_name][func_name] = (begin, end)
+        state.function_to_location_map[func_name] = (file_name, begin, end)
     for file in info['rules']:
       if len(file['lines']) == 0:
         continue
       file_info = FileInfo(file['file_name'])
-      file_list.append(file_info)
-      line_list = file_info.line_info_list
+      file_name = file['file_name']
+      # file_list.append(file_info)
+      # line_list = file_info.line_info_list
+      file_map[file['file_name']] = file_info
       for line in file['lines']:
+        func_info = None
+        line_info = None
         if len(line['switches']) == 0:
           continue
-        line_info = LineInfo(file_info, int(line['line']))
+        for func in ff_map[file_name]:
+          fn_range = ff_map[file_name][func]
+          line_num = int(line['line'])
+          if fn_range[0] <= line_num <= fn_range[1]:
+            if func not in file_info.func_info_map:
+              func_info = FuncInfo(file_info, func)
+              file_info.func_info_map[func] = func_info
+            else:
+              func_info = file_info.func_info_map[func]
+            line_info = LineInfo(func_info, int(line['line']))
+            func_info.line_info_map[int(line['line'])] = line_info
+            break
+        #line_info = LineInfo(file_info, int(line['line']))
         score=get_score(file_info.file_name,line_info.line_number)
         line_info.fl_score = score / max_priority * max_value
         if file_info.fl_score<line_info.fl_score:
           file_info.fl_score=line_info.fl_score
+        if func_info.fl_score < line_info.fl_score:
+          func_info.fl_score = line_info.fl_score
         file_line = FileLine(file_info, line_info, score)
         state.priority_map[f"{file_info.file_name}:{line_info.line_number}"] = file_line
 
-        line_list.append(line_info)
-        switch_list = line_info.switch_info_list
+        #line_list.append(line_info)
+        #switch_list = line_info.switch_info_list
+        switch_map = line_info.switch_info_map
         for switches in line['switches']:
           if len(switches['types']) == 0:
             continue
@@ -157,9 +187,11 @@ def read_info(state: MSVState) -> None:
             if len(switches['types'][PatchType.ConditionKind.value])==0:
               continue
           switch_info = SwitchInfo(line_info, int(switches['switch']))
-          switch_list.append(switch_info)
+          switch_map[int(switches['switch'])] = switch_info
+          #switch_list.append(switch_info)
           types = switches['types']
-          type_list = switch_info.type_info_list
+          #type_list = switch_info.type_info_list
+          type_map = switch_info.type_info_map
           for t in PatchType: 
             if t == PatchType.Original or t.value >= len(types):
               continue
@@ -170,9 +202,10 @@ def read_info(state: MSVState) -> None:
               continue
             if len(types[t.value]) > 0:
               type_info = TypeInfo(switch_info, t)
-              type_list.append(type_info)
-              #case_map = type_info.case_info_map
-              case_list = type_info.case_info_list
+              type_map[t] = type_info
+              #type_list.append(type_info)
+              case_map = type_info.case_info_map
+              #case_list = type_info.case_info_list
               for c in types[t.value]:
                 is_condition = t.value == PatchType.TightenConditionKind.value or t.value==PatchType.LoosenConditionKind.value or t.value==PatchType.IfExitKind.value or \
                             t.value==PatchType.GuardKind.value or t.value==PatchType.SpecialGuardKind.value or t.value==PatchType.ConditionKind.value
@@ -193,7 +226,8 @@ def read_info(state: MSVState) -> None:
                 if state.use_cpr_space:
                   if type_info.patch_type==PatchType.ConditionKind: # CPR only includes ConditionKind
                     if state.var_counts[f'{switch_info.switch_number}-{case_info.case_number}']>0:
-                      case_list.append(case_info)
+                      #case_list.append(case_info)
+                      case_map[int(c)] = case_info
                       state.switch_case_map[f"{switch_info.switch_number}-{case_info.case_number}"] = case_info
                       sw_cs_key = f'{switch_info.switch_number}-{case_info.case_number}'
                       state.switch_case_map[sw_cs_key] = case_info
@@ -208,7 +242,8 @@ def read_info(state: MSVState) -> None:
                 else:
                   if type_info.patch_type!=PatchType.ConditionKind: # Original Prophet doesn't have ConditionKind
                     if f'{switch_info.switch_number}-{case_info.case_number}' not in state.var_counts.keys() or state.var_counts[f'{switch_info.switch_number}-{case_info.case_number}']>0:
-                      case_list.append(case_info)
+                      #case_list.append(case_info)
+                      case_map[int(c)] = case_info
                       state.switch_case_map[f"{switch_info.switch_number}-{case_info.case_number}"] = case_info
                       sw_cs_key = f'{switch_info.switch_number}-{case_info.case_number}'
                       state.switch_case_map[sw_cs_key] = case_info
@@ -220,39 +255,34 @@ def read_info(state: MSVState) -> None:
                         line_info.prophet_score.append(score)
                         file_info.prophet_score.append(score)
                 
-              if len(type_info.case_info_list)==0:
-                type_list.remove(type_info)
-
-          if len(switch_info.type_info_list)==0:
-            switch_list.remove(switch_info)
-        if len(line_info.switch_info_list)==0:
-          line_list.remove(line_info)
-      if len(file_info.line_info_list)==0:
-        file_list.remove(file_info)
+              if len(type_info.case_info_map)==0:
+                del switch_info.type_info_map[t]
+          if len(switch_info.type_info_map)==0:
+            del line_info.switch_info_map[switch_info.switch_number]
+        if len(line_info.switch_info_map)==0:
+          del func_info.line_info_map[line_info.line_number]
+      if len(file_info.func_info_map)==0:
+        del state.file_info_map[file_info.file_name]
     for priority in info['priority']:
       temp_file: str = priority["file"]
       temp_line: int = priority["line"]
       temp_score: float = priority["score"]
       store = (temp_file, temp_line, temp_score)
       state.priority_list.append(store)
-    for file in info["func_locations"]:
-      file_name = file["file"]
-      for func in file["functions"]:
-        func_name = func["function"]
-        begin = func["begin"]
-        end = func["end"]
-        state.function_to_location_map[func_name] = (file_name, begin, end)
 
   #Add original to switch_case_map
-  temp_file = FileInfo('original')
-  temp_line = LineInfo(temp_file, 0)
-  temp_file.line_info_list.append(temp_line)
+  temp_file: FileInfo = FileInfo('original')
+  temp_func = FuncInfo(temp_file, "original_fn")
+  temp_file.func_info_map["original_fn"] = temp_func
+  temp_line: LineInfo = LineInfo(temp_func, 0)
+  # temp_file.line_info_list.append(temp_line)
+  temp_func.line_info_map[0] = temp_line
   temp_switch = SwitchInfo(temp_line, 0)
-  temp_line.switch_info_list.append(temp_switch)
+  temp_line.switch_info_map[0] = temp_switch
   temp_type = TypeInfo(temp_switch, PatchType.Original)
-  temp_switch.type_info_list.append(temp_type)
+  temp_switch.type_info_map[PatchType.Original] = temp_type
   temp_case = CaseInfo(temp_type, 0, False)
-  temp_type.case_info_list.append(temp_case)
+  temp_type.case_info_map[0] = temp_case
   state.switch_case_map["0-0"] = temp_case
   if state.use_simulation_mode:
     with open(state.prev_data, "r") as f:

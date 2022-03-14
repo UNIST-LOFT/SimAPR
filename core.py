@@ -94,7 +94,8 @@ class PassFail:
 class FileInfo:
   def __init__(self, file_name: str) -> None:
     self.file_name = file_name
-    self.line_info_list: List[LineInfo] = list()
+    #self.line_info_list: List[LineInfo] = list()
+    self.func_info_map: Dict[str, FuncInfo] = dict()
     self.pf = PassFail()
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
@@ -103,16 +104,34 @@ class FileInfo:
     self.out_dist: float = -1.0
     self.update_count: int = 0
     self.prophet_score:list=[]
-
   def __hash__(self) -> int:
     return hash(self.file_name)
   def __eq__(self, other) -> bool:
     return self.file_name == other.file_name
 
+class FuncInfo:
+  def __init__(self, parent: FileInfo, func_name: str) -> None:
+    self.parent = parent
+    self.func_name = func_name
+    #self.line_info_list: List[LineInfo] = list()
+    self.line_info_map: Dict[int, LineInfo] = dict()
+    self.pf = PassFail()
+    self.positive_pf = PassFail()
+    self.fl_score: float = -1.0
+    self.out_dist: float = -1.0
+    self.update_count: int = 0
+    self.prophet_score: List[float] = []
+  def __hash__(self) -> int:
+    return hash(self.func_name)
+  def __eq__(self, other) -> bool:
+    return self.func_name == other.func_name
+
+
 class LineInfo:
-  def __init__(self, parent: FileInfo, line_number: int) -> None:
+  def __init__(self, parent: FuncInfo, line_number: int) -> None:
     self.line_number = line_number
-    self.switch_info_list: List[SwitchInfo] = list()
+    #self.switch_info_list: List[SwitchInfo] = list()
+    self.switch_info_map: Dict[int, SwitchInfo] = dict()
     self.parent = parent
     self.pf = PassFail()
     self.critical_pf = PassFail()
@@ -131,7 +150,7 @@ class SwitchInfo:
   def __init__(self, parent: LineInfo, switch_number: int) -> None:
     self.switch_number = switch_number
     self.parent = parent
-    self.type_info_list: List[TypeInfo] = list()
+    #self.type_info_list: List[TypeInfo] = list()
     self.type_info_map: Dict[PatchType, TypeInfo] = dict()
     self.pf = PassFail()
     self.critical_pf = PassFail()
@@ -149,7 +168,8 @@ class TypeInfo:
   def __init__(self, parent: SwitchInfo, patch_type: PatchType) -> None:
     self.patch_type = patch_type
     self.parent = parent
-    self.case_info_list: List[CaseInfo] = list()
+    #self.case_info_list: List[CaseInfo] = list()
+    self.case_info_map: Dict[int, CaseInfo] = dict()
     self.pf = PassFail()
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
@@ -930,6 +950,7 @@ class MSVState:
   new_revlog: str
   patch_info_map: Dict[str, FileInfo]  # fine_name: str -> FileInfo
   patch_info_list: List[FileInfo]      # Root of tree of patch data structure
+  file_info_map: Dict[str, FileInfo]   # file_name: str -> FileInfo
   switch_case_map: Dict[str, CaseInfo] # f"{switch_number}-{case_number}" -> SwitchCase
   selected_patch: List[PatchInfo] # Unused
   selected_test: List[int]        # Unused
@@ -973,6 +994,7 @@ class MSVState:
     self.switch_case_map = dict()
     self.selected_patch = None
     self.patch_info_list = list()
+    self.file_info_map = dict()
     self.negative_test = list()
     self.positive_test = list()
     self.profile_map = dict()
