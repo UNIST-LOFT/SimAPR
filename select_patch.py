@@ -105,34 +105,60 @@ def select_patch_SPR(state: MSVState) -> PatchInfo:
 
 def select_patch_prophet(state: MSVState) -> PatchInfo:
   # select file
-  selected_file=state.patch_info_list[0]
-  for file in state.patch_info_list:
-    if sorted(file.prophet_score)[-1] > sorted(selected_file.prophet_score)[-1]:
+  selected_file = None
+  init = True
+  max_score = 0.0
+  for file_name in state.file_info_map:
+    file = state.file_info_map[file_name]
+    if max(file.prophet_score) > max_score or init:
+      init = False
+      max_score = max(file.prophet_score)
       selected_file=file
-
+  # select function
+  selected_func = None
+  init = True
+  for func_name in selected_file.func_info_map:
+    func = selected_file.func_info_map[func_name]
+    if max(func.prophet_score) > max_score or init:
+      init = False
+      max_score = max(func.prophet_score)
+      selected_func = func
   # select line
-  selected_line=selected_file.line_info_list[0]
-  for line in selected_file.line_info_list:
-    if sorted(line.prophet_score)[-1] > sorted(selected_line.prophet_score)[-1]:
-      selected_line=line
-  
+  selected_line = None
+  init = True
+  for line_num in selected_func.line_info_map:
+    line = selected_func.line_info_map[line_num]
+    if max(line.prophet_score) > max_score or init:
+      init = False
+      max_score = max(line.prophet_score)
+      selected_line = line  
   # select switch
-  selected_switch=selected_line.switch_info_list[0]
-  for switch in selected_line.switch_info_list:
-    if sorted(switch.prophet_score)[-1] > sorted(selected_switch.prophet_score)[-1]:
-      selected_switch=switch
-
+  selected_switch = None
+  init = True
+  for switch_num in selected_line.switch_info_map:
+    switch = selected_line.switch_info_map[switch_num]
+    if max(switch.prophet_score) > max_score or init:
+      init = False
+      max_score = max(switch.prophet_score)
+      selected_switch = switch
   # select type
-  selected_type=selected_switch.type_info_list[0]
-  for type in selected_switch.type_info_list:
-    if sorted(type.prophet_score)[-1] > sorted(selected_type.prophet_score)[-1]:
-      selected_type=type
-
+  selected_type = None
+  init = True
+  for type_num in selected_switch.type_info_map:
+    type_ = selected_switch.type_info_map[type_num]
+    if max(type_.prophet_score) > max_score or init:
+      init = False
+      max_score = max(type_.prophet_score)
+      selected_type = type_
   # select case
-  selected_case=selected_type.case_info_list[0]
-  for case in selected_type.case_info_list:
-    if sorted(case.prophet_score)[-1] > sorted(selected_case.prophet_score)[-1]:
-      selected_case=case
+  selected_case = None
+  init = True
+  for case_num in selected_type.case_info_map:
+    case = selected_type.case_info_map[case_num]
+    if max(case.prophet_score) > max_score or init:
+      init = False
+      max_score = max(case.prophet_score)
+      selected_case = case
 
   # handle condition patch
   if selected_case.is_condition:
@@ -203,7 +229,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
   p3 = list()
 
   # Initially, select patch with prophet strategy
-  state.max_initial_trial = 0
+  selected_case_info = None
   if state.iteration < state.max_initial_trial:
     selected_case_info= select_patch_prophet(state).case_info
   else:

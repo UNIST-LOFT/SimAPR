@@ -235,6 +235,7 @@ def read_info(state: MSVState) -> None:
                         type_info.prophet_score.append(score)
                         switch_info.prophet_score.append(score)
                         line_info.prophet_score.append(score)
+                        func_info.prophet_score.append(score)
                         file_info.prophet_score.append(score)
                 else:
                   if type_info.patch_type!=PatchType.ConditionKind: # Original Prophet doesn't have ConditionKind
@@ -250,6 +251,7 @@ def read_info(state: MSVState) -> None:
                         type_info.prophet_score.append(score)
                         switch_info.prophet_score.append(score)
                         line_info.prophet_score.append(score)
+                        func_info.prophet_score.append(score)
                         file_info.prophet_score.append(score)
                 
               if len(type_info.case_info_map)==0:
