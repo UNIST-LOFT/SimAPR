@@ -169,12 +169,8 @@ class MSV:
     self.initialize()
     self.state.start_time=time.time()
     self.state.cycle=0
-    tmp_removed_case_info_list: List[CaseInfo] = list()
     while self.is_alive():
       self.state.iteration+=1
-      if self.state.mode == MSVMode.guided and (self.state.iteration + 1) == self.state.max_initial_trial:
-        self.state.msv_logger.info("Max initial trial reached, restore tmp removed cases!")
-        self.restore_removed_case_info(tmp_removed_case_info_list)
       neg = self.state.negative_test[0]
       self.state.msv_logger.info(f'[{self.state.cycle}]: executing')
       patch = select_patch.select_patch(self.state, self.state.mode, neg)
@@ -184,23 +180,18 @@ class MSV:
         # Our guided condition synthesis
         if self.state.mode==MSVMode.guided:
           self.state.msv_logger.info('Run path guide condition synthesis')
-          for i in range(10):
-            new_patch=PatchInfo(patch[0].case_info,None,None,None)
-            guided_cond=condition.GuidedPathCondition(new_patch,self.state,self.state.negative_test)
-            opers=guided_cond.get_condition()
-            if new_patch.case_info not in new_patch.case_info.parent.case_info_list:
-              self.state.msv_logger.info("Consumed all record path!")
-              break
-            if opers is not None and len(opers)>0:
-              self.state.msv_logger.info(f'Found angelic path: {new_patch.to_str()} {new_patch.case_info.current_record}')
-              new_patch.case_info.operator_info_list=opers
-              break
-            else:
-              new_patch.case_info.operator_info_list=[]
-              if i == 9:
-                if self.state.iteration < self.state.max_initial_trial:
-                  self.state.msv_logger.info(f'Guided condition synthesis failed: tmp remove {new_patch.to_str()}')
-                  tmp_removed_case_info_list.append(new_patch.case_info)
+          # new_patch=PatchInfo(patch[0].case_info,None,None,None)
+          new_patch=patch[0]
+          guided_cond=condition.GuidedPathCondition(new_patch,self.state,self.state.negative_test)
+          opers=guided_cond.get_condition()
+          if new_patch.case_info not in new_patch.case_info.parent.case_info_list:
+            self.state.msv_logger.info("Consumed all record path!")
+          elif opers is not None and len(opers)>0:
+            self.state.msv_logger.info(f'Found angelic path: {new_patch.to_str()} {new_patch.case_info.current_record}')
+            new_patch.case_info.operator_info_list=opers
+          else:
+            self.state.msv_logger.info(f'Fail to generate condition: {new_patch.to_str()}')
+            new_patch.case_info.operator_info_list=[]
   
         # prophet condition synthesis
         else:

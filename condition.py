@@ -706,7 +706,10 @@ class GuidedPathCondition:
       write_record_terminate(temp_file)
 
     self.new_env = new_env
-    self.state.msv_logger.info(f"@{self.state.cycle + 1} Record [{test}]  with {self.patch.to_str()} and {self.patch.record}")
+    if not is_all_1:
+      self.state.msv_logger.info(f"@{self.state.cycle + 1} Record [{test}]  with {self.patch.to_str()} and {self.patch.record}")
+    else:
+      self.state.msv_logger.info(f"@{self.state.cycle + 1} Record [{test}]  with {self.patch.to_str()} and ALL_1")
     run_result, is_timeout = run_test.run_fail_test(self.state, patch, test, new_env)
     if is_timeout:
       remove_file_or_pass(temp_file)

@@ -203,6 +203,10 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     selected_case_info= select_patch_prophet(state).case_info
   else:
     for file_info in state.patch_info_list:
+      if len(file_info.line_info_list) == 0:
+        state.msv_logger.warning(f"No line info in file: {file_info.file_name}")
+        p1.append(-1)
+        continue
       if is_rand:
         p1.append(pf_rand.expect_probability())
       else:
@@ -224,6 +228,10 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     p3.clear()
     # Select line
     for line_info in selected_file_info.line_info_list:
+      if len(line_info.switch_info_list) == 0:
+        state.msv_logger.warning(f"No switch info in line: {selected_file_info.file_name}: {line_info.line_number}")
+        p1.append(-1)
+        continue
       if is_rand:
         p1.append(pf_rand.expect_probability())
       else:
@@ -245,6 +253,10 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     p3.clear()
     # Select switch
     for switch_info in selected_line_info.switch_info_list:
+      if len(switch_info.type_info_list) == 0:
+        state.msv_logger.warning(f"No type info in switch: {selected_file_info.file_name}: {selected_line_info.line_number}: {switch_info.switch_number}")
+        p1.append(-1)
+        continue
       if is_rand:
         p1.append(pf_rand.expect_probability())
       else:
@@ -260,6 +272,10 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     p3.clear()
     # Select type
     for type_info in selected_switch_info.type_info_list:
+      if len(type_info.case_info_list) == 0:
+        state.msv_logger.warning(f"No case info in type: {selected_file_info.file_name}: {selected_line_info.line_number}: {selected_switch_info.switch_number}: {type_info.patch_type}")
+        p1.append(-1)
+        continue
       if is_rand:
         p1.append(pf_rand.expect_probability())
       else:
