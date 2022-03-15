@@ -178,9 +178,6 @@ def read_info(state: MSVState) -> None:
                             t.value==PatchType.GuardKind.value or t.value==PatchType.SpecialGuardKind.value or t.value==PatchType.ConditionKind.value
                 case_info = CaseInfo(type_info, int(c), is_condition)
                 case_info.location = file_line
-                case_info.record_tree = RecordInfo(case_info, None, True)
-                case_info.record_tree.left = RecordInfo(case_info, case_info.record_tree, False)
-                case_info.record_tree.right = RecordInfo(case_info, case_info.record_tree, True)
                 current_score=None
                 for prophet_score in switches['prophet_scores']:
                   if prophet_score==[]:

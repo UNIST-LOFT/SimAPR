@@ -185,27 +185,22 @@ class MSV:
         if self.state.mode==MSVMode.guided:
           self.state.msv_logger.info('Run path guide condition synthesis')
           for i in range(10):
-            tmp_patch = select_patch.select_conditional_patch_by_record(self.state, patch[0].case_info)
-            record_bool=[]
-            for record in tmp_patch.record_path:
-              record_bool.append(record.is_true)
-            guided_cond=condition.GuidedPathCondition(tmp_patch,self.state,self.state.negative_test,record_bool)
+            new_patch=PatchInfo(patch[0].case_info,None,None,None)
+            guided_cond=condition.GuidedPathCondition(new_patch,self.state,self.state.negative_test)
             opers=guided_cond.get_condition()
-            if patch[0].case_info not in patch[0].case_info.parent.case_info_list:
+            if new_patch.case_info not in new_patch.case_info.parent.case_info_list:
               self.state.msv_logger.info("Consumed all record path!")
               break
             if opers is not None and len(opers)>0:
-              self.state.msv_logger.info(f'Found angelic path: {tmp_patch.to_str()} {tmp_patch.record_info.get_path_str()}')
-              patch[0] = tmp_patch
-              patch[0].case_info.operator_info_list=opers
+              self.state.msv_logger.info(f'Found angelic path: {new_patch.to_str()} {new_patch.case_info.current_record}')
+              new_patch.case_info.operator_info_list=opers
               break
             else:
-              patch[0].case_info.operator_info_list=[]
+              new_patch.case_info.operator_info_list=[]
               if i == 9:
                 if self.state.iteration < self.state.max_initial_trial:
-                  self.state.msv_logger.info(f'Guided condition synthesis failed: tmp remove {tmp_patch.to_str()}')
-                  tmp_removed_case_info_list.append(patch[0].case_info)
-                  result_handler.remove_patch(self.state, patch)
+                  self.state.msv_logger.info(f'Guided condition synthesis failed: tmp remove {new_patch.to_str()}')
+                  tmp_removed_case_info_list.append(new_patch.case_info)
   
         # prophet condition synthesis
         else:
