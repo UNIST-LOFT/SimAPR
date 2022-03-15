@@ -95,7 +95,7 @@ class FileInfo:
   def __init__(self, file_name: str) -> None:
     self.file_name = file_name
     #self.line_info_list: List[LineInfo] = list()
-    self.func_info_map: Dict[str, FuncInfo] = dict()
+    self.func_info_map: Dict[str, FuncInfo] = dict() # f"{func_name}:{func_line_begin}-{func_line_end}"
     self.pf = PassFail()
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
@@ -110,11 +110,14 @@ class FileInfo:
     return self.file_name == other.file_name
 
 class FuncInfo:
-  def __init__(self, parent: FileInfo, func_name: str) -> None:
+  def __init__(self, parent: FileInfo, func_name: str, begin: int, end: int) -> None:
     self.parent = parent
     self.func_name = func_name
+    self.begin = begin
+    self.end = end
+    self.id = f"{self.func_name}:{self.begin}-{self.end}"
     #self.line_info_list: List[LineInfo] = list()
-    self.line_info_map: Dict[int, LineInfo] = dict()
+    self.line_info_map: Dict[uuid.UUID, LineInfo] = dict()
     self.pf = PassFail()
     self.positive_pf = PassFail()
     self.fl_score: float = -1.0
@@ -122,13 +125,13 @@ class FuncInfo:
     self.update_count: int = 0
     self.prophet_score: List[float] = []
   def __hash__(self) -> int:
-    return hash(self.func_name)
+    return hash(self.id)
   def __eq__(self, other) -> bool:
-    return self.func_name == other.func_name
-
+    return self.id == other.id
 
 class LineInfo:
   def __init__(self, parent: FuncInfo, line_number: int) -> None:
+    self.uuid = uuid.uuid4()
     self.line_number = line_number
     #self.switch_info_list: List[SwitchInfo] = list()
     self.switch_info_map: Dict[int, SwitchInfo] = dict()
@@ -142,9 +145,9 @@ class LineInfo:
     self.update_count: int = 0
     self.prophet_score:list=[]
   def __hash__(self) -> int:
-    return hash(self.line_number)
+    return hash(self.uuid)
   def __eq__(self, other) -> bool:
-    return self.line_number == other.line_number
+    return self.uuid == other.uuid
 
 class SwitchInfo:
   def __init__(self, parent: LineInfo, switch_number: int) -> None:
@@ -787,9 +790,9 @@ class PatchInfo:
     if len(self.switch_info.type_info_map) == 0:
       del self.line_info.switch_info_map[self.switch_info.switch_number]
     if len(self.line_info.switch_info_map) == 0:
-      del self.func_info.line_info_map[self.line_info.line_number]
+      del self.func_info.line_info_map[self.line_info.uuid]
     if len(self.func_info.line_info_map) == 0:
-      del self.file_info.func_info_map[self.func_info.func_name]
+      del self.file_info.func_info_map[self.func_info.id]
     if len(self.file_info.func_info_map) == 0:
       del state.file_info_map[self.file_info.file_name]
 

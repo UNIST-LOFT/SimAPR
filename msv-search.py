@@ -140,7 +140,8 @@ def read_info(state: MSVState) -> None:
         func_name = func["function"]
         begin = func["begin"]
         end = func["end"]
-        ff_map[file_name][func_name] = (begin, end)
+        func_id = f"{func_name}:{begin}-{end}"
+        ff_map[file_name][func_id] = (begin, end)
         state.function_to_location_map[func_name] = (file_name, begin, end)
     for file in info['rules']:
       if len(file['lines']) == 0:
@@ -155,17 +156,17 @@ def read_info(state: MSVState) -> None:
         line_info = None
         if len(line['switches']) == 0:
           continue
-        for func in ff_map[file_name]:
-          fn_range = ff_map[file_name][func]
+        for func_id in ff_map[file_name]:
+          fn_range = ff_map[file_name][func_id]
           line_num = int(line['line'])
           if fn_range[0] <= line_num <= fn_range[1]:
-            if func not in file_info.func_info_map:
-              func_info = FuncInfo(file_info, func)
-              file_info.func_info_map[func] = func_info
+            if func_id not in file_info.func_info_map:
+              func_info = FuncInfo(file_info, func_id.split(":")[0], fn_range[0], fn_range[1])
+              file_info.func_info_map[func_info.id] = func_info
             else:
-              func_info = file_info.func_info_map[func]
+              func_info = file_info.func_info_map[func_id]
             line_info = LineInfo(func_info, int(line['line']))
-            func_info.line_info_map[int(line['line'])] = line_info
+            func_info.line_info_map[line_info.uuid] = line_info
             break
         #line_info = LineInfo(file_info, int(line['line']))
         score=get_score(file_info.file_name,line_info.line_number)
@@ -259,7 +260,7 @@ def read_info(state: MSVState) -> None:
           if len(switch_info.type_info_map)==0:
             del line_info.switch_info_map[switch_info.switch_number]
         if len(line_info.switch_info_map)==0:
-          del func_info.line_info_map[line_info.line_number]
+          del func_info.line_info_map[line_info.uuid]
       if len(file_info.func_info_map)==0:
         del state.file_info_map[file_info.file_name]
     for priority in info['priority']:
@@ -271,11 +272,11 @@ def read_info(state: MSVState) -> None:
 
   #Add original to switch_case_map
   temp_file: FileInfo = FileInfo('original')
-  temp_func = FuncInfo(temp_file, "original_fn")
-  temp_file.func_info_map["original_fn"] = temp_func
+  temp_func = FuncInfo(temp_file, "original_fn", 0, 0)
+  temp_file.func_info_map["original_fn:0-0"] = temp_func
   temp_line: LineInfo = LineInfo(temp_func, 0)
   # temp_file.line_info_list.append(temp_line)
-  temp_func.line_info_map[0] = temp_line
+  temp_func.line_info_map[temp_line.uuid] = temp_line
   temp_switch = SwitchInfo(temp_line, 0)
   temp_line.switch_info_map[0] = temp_switch
   temp_type = TypeInfo(temp_switch, PatchType.Original)

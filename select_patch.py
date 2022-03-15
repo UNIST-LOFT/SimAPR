@@ -120,8 +120,8 @@ def select_patch_prophet(state: MSVState) -> PatchInfo:
   # select function
   selected_func = None
   init = True
-  for func_name in selected_file.func_info_map:
-    func = selected_file.func_info_map[func_name]
+  for func_id in selected_file.func_info_map:
+    func = selected_file.func_info_map[func_id]
     if max(func.prophet_score) > max_score or init:
       init = False
       max_score = max(func.prophet_score)
@@ -129,8 +129,8 @@ def select_patch_prophet(state: MSVState) -> PatchInfo:
   # select line
   selected_line = None
   init = True
-  for line_num in selected_func.line_info_map:
-    line = selected_func.line_info_map[line_num]
+  for line_uuid in selected_func.line_info_map:
+    line = selected_func.line_info_map[line_uuid]
     if max(line.prophet_score) > max_score or init:
       init = False
       max_score = max(line.prophet_score)
@@ -264,8 +264,8 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     p2.clear()
     p3.clear()
     # Select function
-    for func_name in selected_file_info.func_info_map:
-      func_info = selected_file_info.func_info_map[func_name]
+    for func_id in selected_file_info.func_info_map:
+      func_info = selected_file_info.func_info_map[func_id]
       selected.append(func_info)
       if len(func_info.line_info_map) == 0:
         state.msv_logger.warning(f"No line info in function: {func_info.func_name}")
@@ -292,8 +292,8 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     p2.clear()
     p3.clear()
     # Select line
-    for line_num in selected_func_info.line_info_map:
-      line_info = selected_func_info.line_info_map[line_num]
+    for line_uuid in selected_func_info.line_info_map:
+      line_info = selected_func_info.line_info_map[line_uuid]
       selected.append(line_info)
       if len(line_info.switch_info_map) == 0:
         state.msv_logger.warning(f"No switch info in line: {selected_file_info.file_name}: {line_info.line_number}")
@@ -336,8 +336,6 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
         p3.append(switch_info.positive_pf.expect_probability())
     update_out_dist_list(state, p2)
     selected_switch = select_by_probability_hierarchical(state, n, p1, p2, p3)
-    if selected_switch < 0:
-      state.msv_logger.error(f"Switch info list is empty: {selected_file_info.line_info_list} {selected_line_info.switch_info_list}")
     selected_switch_info: SwitchInfo = selected[selected_switch]
     selected.clear()
     p1.clear()
