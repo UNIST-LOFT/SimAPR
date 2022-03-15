@@ -17,7 +17,7 @@ from msv import MSV
 
 
 def parse_args(argv: list) -> MSVState:
-  longopts = ["help", "outdir=", "workdir=", "timeout=", "msv-path=", "time-limit=", "cycle-limit=",
+  longopts = ["help", "outdir=", "workdir=", "timeout=", "msv-path=", "time-limit=", "cycle-limit=", "epsilon-greedy-exploration=",
               "mode=", "max-parallel-cpu=",'skip-valid','use-fixed-beta','use-cpr-space','use-fixed-const',
               "use-condition-synthesis", "use-fl", "use-hierarchical-selection=", "use-pass-test", "use-partial-validation",
               "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern", "use-simulation-mode="]
@@ -44,6 +44,8 @@ def parse_args(argv: list) -> MSVState:
       state.mode = MSVMode[a.lower()]
     elif o in ['-S', '--sub-node']:
       sub_dir = a
+    elif o in ["--epsilon-greedy-exploration"]:
+      state.epsilon_greedy_exploration = int(a) / 100
     elif o in ['-j', '--max-parallel-cpu']:
       state.max_parallel_cpu = int(a)
     elif o in ['-T', '--time-limit']:
