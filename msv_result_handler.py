@@ -14,10 +14,6 @@ def update_result(state: MSVState, selected_patch: List[PatchInfo], run_result: 
     update_result_seapr(state, selected_patch, run_result, test)
   for patch in selected_patch:
     patch.update_result(run_result, n,state.use_fixed_beta)
-    if patch.record_info is not None:
-      patch.record_info.update_used_record_map(patch.record_info.get_path_str(patch.record_path))
-      for record in patch.record_path:
-        record.pf.update(run_result, n, state.use_fixed_beta)
 
 def update_result_out_dist(state: MSVState, selected_patch: List[PatchInfo], run_result: bool, test: int, new_env: Dict[str, str]) -> float:
   dist = state.max_dist * 2

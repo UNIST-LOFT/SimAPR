@@ -1,7 +1,7 @@
 import os
 import subprocess
 from typing import List, Tuple, Dict
-from core import CaseInfo, ConstantInfo, EnvVarMode, MSVEnvVar, MSVState, OperatorInfo, OperatorType, PatchInfo, RecordInfo, VariableInfo, remove_file_or_pass
+from core import CaseInfo, ConstantInfo, EnvVarMode, MSVEnvVar, MSVState, OperatorInfo, OperatorType, PatchInfo, VariableInfo, remove_file_or_pass
 import msv_result_handler as result_handler
 import run_test
 
@@ -684,75 +684,85 @@ def check_expr(record,values,operator,constant) -> bool:
   return True
 
 class GuidedPathCondition:
-  def __init__(self,patch: PatchInfo,state: MSVState, fail_test: list, record: List[bool]):
+  def __init__(self,patch: PatchInfo,state: MSVState, fail_test: list):
     self.patch=patch
     self.fail_test=fail_test
     self.state=state
-    self.record=record
     self.new_env = dict()
+
+  def record(self,is_all_1:bool=False) -> Tuple[List[bool],str]:
+    # set arguments
+    test=self.fail_test[0]
+    patch=[self.patch]
+    # run test
+    if is_all_1:
+      new_env = MSVEnvVar.get_new_env(self.state, patch, test,EnvVarMode.record_all_1)
+    else:
+      new_env = MSVEnvVar.get_new_env(self.state, patch, test,EnvVarMode.record_it)
+    temp_file = new_env['TMP_FILE']
+    remove_file_or_pass(temp_file)
+    if len(self.patch.record)>0:
+      write_record(temp_file,self.patch.record)
+      write_record_terminate(temp_file)
+
+    self.new_env = new_env
+    self.state.msv_logger.info(f"@{self.state.cycle + 1} Record [{test}]  with {self.patch.to_str()} and {self.patch.record}")
+    run_result, is_timeout = run_test.run_fail_test(self.state, patch, test, new_env)
+    if is_timeout:
+      remove_file_or_pass(temp_file)
+      return None,''
+
+    record=parse_record(temp_file)
+    remove_file_or_pass(temp_file)
+    if record==None or record==self.patch.record:
+      self.state.msv_logger.info('No record found')
+      return None,''
+
+    if run_result:
+      self.state.msv_logger.info(f"Pass record {test}")
+      return record,temp_file
+    
+    if False not in record:
+      self.state.msv_logger.info(f'Fail at recording {test}')
+      return None,'fail'
+
+    return record,''
+
   
-  def collect_value(self) -> Tuple[int,List[List[int]]]:
+  def collect_value(self,record) -> List[List[int]]:
     """
       Execute fail test with specific record, and get passed fail test and it's values.
 
       Return (passed fail test, values) pair if one of fail test passed, otherwise None.
     """
     self.state.msv_logger.info('Collecting values from fail test')
-    max_len_record=[]
-    for test in self.fail_test:
-      patch=[self.patch]
-      new_env = MSVEnvVar.get_new_env(self.state, patch, test,EnvVarMode.collect_neg)
-      tmp_file=new_env['NEG_ARG']
-      log_file = new_env["TMP_FILE"]
-      write_record(tmp_file,self.record)
-      self.state.msv_logger.debug(f'Try with {self.record}!')
+    test=self.fail_test[0]
+    patch=[self.patch]
 
-      self.new_env = new_env
-      remove_file_or_pass(log_file)
-      run_result, is_timeout = run_test.run_fail_test(self.state, patch, test, new_env)
+    new_env = MSVEnvVar.get_new_env(self.state, patch, test,EnvVarMode.collect_neg)
+    tmp_file=new_env['NEG_ARG']
+    log_file = new_env["TMP_FILE"]
+    write_record(tmp_file,record)
+    self.state.msv_logger.debug(f'Try with {record}!')
 
-      # If we failed, try next fail test
-      if is_timeout:
-        continue
+    self.new_env = new_env
+    remove_file_or_pass(log_file)
+    run_result, is_timeout = run_test.run_fail_test(self.state, patch, test, new_env)
 
-      cur_record=parse_value(log_file)
-      if len(max_len_record) < len(cur_record):
-        max_len_record=cur_record
+    # If we failed, try next fail test
+    if is_timeout:
+      return None
 
-      if not run_result:
-        self.state.msv_logger.warn("Fail at collecting value!")
-        continue
+    if not run_result:
+      self.state.msv_logger.warn("Fail at collecting value!")
+      return None
       
-      result=parse_value(log_file)
-      remove_file_or_pass(tmp_file)
-      remove_file_or_pass(log_file)
-      return test,result
-
-    # If we failed all fail test, give up
+    result=parse_value(log_file)
     remove_file_or_pass(tmp_file)
     remove_file_or_pass(log_file)
-    return None, max_len_record
+    return result
   
-  def extend_record_tree(self,new_len: int):
-    """
-      Extend record tree if patch need more records.
-
-      new_len: length of records after execution.
-    """
-
-    def search(cur_node,cur_index):
-      if cur_index < new_len:
-        if cur_node.left is None:
-          cur_node.left=RecordInfo(self.patch.case_info,cur_node,False)
-        if cur_node.right is None:
-          cur_node.right=RecordInfo(self.patch.case_info,cur_node,True)
-        
-        search(cur_node.left,cur_index+1)
-        search(cur_node.right,cur_index+1)
-
-    search(self.patch.case_info.record_tree,0)
-
-  def synthesize(self, values: List[List[int]]) -> Dict[OperatorType, OperatorInfo]:
+  def synthesize(self, record,values: List[List[int]]) -> Dict[OperatorType, OperatorInfo]:
     """
       Generate actual condition with values.
 
@@ -825,7 +835,7 @@ class GuidedPathCondition:
       if op.operator_type!=OperatorType.ALL_1:
         for i,consts in enumerate(available_const):
           for const in consts:
-            if check_condition(self.record,values,op.operator_type,i,const):
+            if check_condition(record,values,op.operator_type,i,const):
               new_constant=ConstantInfo(op.variable_info_list[i],const)
               self.state.msv_logger.info(f'Create new condition: {op.operator_type}, {i}, {const}')
               generated_length+=1
@@ -843,38 +853,43 @@ class GuidedPathCondition:
 
   def get_condition(self):
     self.state.msv_logger.info('Try fail tests...')
-    passed_test,values=self.collect_value()
-    if values==None or len(values)==0:
-      # No values found
-      self.state.msv_logger.info('No values found')
+    # Try with this record
+    self.patch.case_info.synthesis_tried+=1
+    record,result=self.record(True if self.patch.case_info.synthesis_tried==11 else False)
+    if record is None:
+      # Terrible fail or all record space searched
+      self.state.msv_logger.info('All record searched')
       result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0], self.new_env)
       result_handler.append_result(self.state, [self.patch], False)
-      if len(self.patch.case_info.record_tree.used_record_map) >= 2 ** len(self.patch.record_path):
-        # No condition found
-        self.state.msv_logger.info('No record left! Remove patch!')
-        result_handler.remove_patch(self.state, [self.patch])
+      result_handler.remove_patch(self.state, [self.patch])
       return None
-    elif passed_test is None:
-      # All fail test failed
-      self.state.msv_logger.info('Failed at collecting values')
-      # If this patch executed more than 20 times, we assume this patch cause infinite loop
-      if len(values[0])<=20:
-        self.extend_record_tree(len(values[0]))
-      if len(values[0]) <= len(self.record):
+    elif result=='':
+      # Fail in iteration
+      self.state.msv_logger.info('Fail in iteration')
+      if self.patch.case_info.synthesis_tried==11 or False not in record:
         result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0], self.new_env)
-      result_handler.append_result(self.state, [self.patch], False)
-      if len(self.patch.case_info.record_tree.used_record_map) >= 2 ** len(self.patch.record_path):
-        # No condition found
-        self.state.msv_logger.info('No record left! Remove patch!')
+        result_handler.append_result(self.state, [self.patch], False)
         result_handler.remove_patch(self.state, [self.patch])
+      else:
+        self.patch.case_info.current_record=record
+      return None
+    
+    # Pass
+    self.patch.case_info.current_record=record
+    self.patch.case_info.processed=True
+    values=self.collect_value(record)
+
+    if values==None or len(values)==0:
+      # No values found, or terrible failed
+      self.state.msv_logger.warn('No values found or terrible failed')
+      result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0], self.new_env)
+      result_handler.append_result(self.state, [self.patch], False)
+      result_handler.remove_patch(self.state, [self.patch])
       return None
     else:
-      # One of fail test passed
-      self.state.msv_logger.info(f'Pass {passed_test} with this record!')
-      self.extend_record_tree(len(values[0]))
-
+      # fail test passed
       self.state.msv_logger.info('Generating actual conditions')
-      length,conditions=self.synthesize(values)
+      length,conditions=self.synthesize(record,values)
       if len(conditions)==0:
         self.state.msv_logger.info('Fail to generate actual condition')
         result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0], self.new_env)
@@ -882,4 +897,5 @@ class GuidedPathCondition:
         result_handler.remove_patch(self.state, [self.patch])
         return None
       self.patch.case_info.processed=True
+      result_handler.update_result(self.state, [self.patch], True, 1, self.state.negative_test[0], self.new_env)
       return conditions
