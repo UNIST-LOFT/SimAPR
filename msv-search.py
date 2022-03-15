@@ -263,6 +263,10 @@ def read_info(state: MSVState) -> None:
             del line_info.switch_info_map[switch_info.switch_number]
         if len(line_info.switch_info_map)==0:
           del func_info.line_info_map[line_info.uuid]
+
+      for func in file_info.func_info_map.copy().values():
+        if len(func.line_info_map)==0:
+          del file_info.func_info_map[func.id]
       if len(file_info.func_info_map)==0:
         del state.file_info_map[file_info.file_name]
     for priority in info['priority']:
