@@ -5,6 +5,9 @@ from core import *
 
 # n: number of hierarchy
 def select_by_probability_hierarchical(state: MSVState, n: int, p1: List[float], p2: List[float] = [], p3: List[float] = []) -> int:
+  if len(p1) == 0:
+    state.msv_logger.critical("Empty probability list!!!!")
+    return -1
   # Select patch for hierarchical
   if n == 1:
     return PassFail.select_by_probability(p1)
@@ -266,6 +269,8 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
         p3.append(switch_info.positive_pf.expect_probability())
     update_out_dist_list(state, p2)
     selected_switch = select_by_probability_hierarchical(state, n, p1, p2, p3)
+    if selected_switch < 0:
+      state.msv_logger.error(f"Switch info list is empty: {selected_file_info.line_info_list} {selected_line_info.switch_info_list}")
     selected_switch_info = selected_line_info.switch_info_list[selected_switch]
     p1.clear()
     p2.clear()
@@ -312,6 +317,10 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
             f"{selected_type_info.patch_type.name}({len(selected_type_info.case_info_list)}):" +
                           f"{selected_case_info.case_number}")  # ({len(selected_case_info.operator_info_list)})
 
+  selected_type_info = selected_case_info.parent
+  selected_switch_info = selected_type_info.parent
+  selected_line_info = selected_switch_info.parent
+  selected_file_info = selected_line_info.parent
   if selected_case_info.is_condition == False:
     return PatchInfo(selected_case_info, None, None, None)
   else:
