@@ -574,6 +574,7 @@ class PatchInfo:
     self.type_info.pf.update(result, n)
     self.switch_info.pf.update(result, n)
     self.line_info.pf.update(result, n)
+    self.func_info.pf.update(result, n)
     self.file_info.pf.update(result, n)
     if self.is_condition and self.operator_info is not None:
       self.operator_info.pf.update(result, n)
@@ -760,6 +761,7 @@ class PatchInfo:
               self.type_info.prophet_score.remove(score)
               self.switch_info.prophet_score.remove(score)
               self.line_info.prophet_score.remove(score)
+              self.func_info.prophet_score.remove(score)
               self.file_info.prophet_score.remove(score)
 
       if len(self.case_info.operator_info_list) == 0:
@@ -775,6 +777,7 @@ class PatchInfo:
         self.type_info.prophet_score.remove(score)
         self.switch_info.prophet_score.remove(score)
         self.line_info.prophet_score.remove(score)
+        self.func_info.prophet_score.remove(score)
         self.file_info.prophet_score.remove(score)
       with open(os.path.join(state.out_dir, "p1.log"),'a') as f:
         f.write(f'{self.file_info.file_name}-{self.line_info.line_number}-{self.switch_info.switch_number}-{self.type_info.patch_type}-{self.case_info.case_number}: {self.case_info.pf.pass_count}/{self.case_info.pf.pass_count+self.case_info.pf.fail_count}\n')

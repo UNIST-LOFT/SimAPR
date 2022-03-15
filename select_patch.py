@@ -56,7 +56,7 @@ def select_patch_SPR(state: MSVState) -> PatchInfo:
     if fl_str in state.priority_map:
       file_line = state.priority_map[fl_str]
       # If it still has switch, use it
-      if (len(file_line.line_info.switch_info_list) > 1):
+      if (len(file_line.line_info.switch_info_map) > 1):
         state.priority_list.insert(0, (p_file, p_line, p_score))
         break
   
@@ -82,11 +82,14 @@ def select_patch_SPR(state: MSVState) -> PatchInfo:
         PatchType.AddInitKind,PatchType.AddAndReplaceKind,PatchType.ReplaceKind,PatchType.ReplaceStringKind)
   for type_ in type_priority:
     selected=False
-    for switch in selected_line.switch_info_list:
-      for type_in_switch in switch.type_info_list:
+    for switch_num in selected_line.switch_info_map:
+      switch = selected_line.switch_info_map[switch_num]
+      for patch_type in switch.type_info_map:
+        type_in_switch = switch.type_info_map[patch_type]
         if type_in_switch.patch_type == type_:
-          if len(type_in_switch.case_info_list) > 0:
-            selected_case = type_in_switch.case_info_list[0]
+          if len(type_in_switch.case_info_map) > 0:
+            case_num, selected_case = type_in_switch.case_info_map.popitem()
+            type_in_switch.case_info_map[case_num] = selected_case
             selected=True
             break
     if selected:
