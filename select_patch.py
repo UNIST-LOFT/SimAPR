@@ -236,6 +236,12 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
   if state.iteration < state.max_initial_trial:
     selected_case_info= select_patch_prophet(state).case_info
   else:
+    explore = state.epsilon_greedy_exploration > random.random()
+    if explore:
+      state.msv_logger.info("Explore!")
+    else:
+      state.msv_logger.info("Exploit!")
+    use_fl = state.use_fl
     for file_name in state.file_info_map:
       file_info = state.file_info_map[file_name]
       selected.append(file_info)
@@ -246,7 +252,14 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       if is_rand:
         p1.append(pf_rand.expect_probability())
       else:
-        if state.use_fl:
+        if explore:
+          adjusted_pf = PassFail()
+          adjusted_pf.update_with_pf(file_info.pf)
+          adjusted_pf.update(file_info.fl_score > 0, abs(file_info.fl_score))
+          temp_p1 = adjusted_pf.expect_probability()
+          coverage = file_info.update_count / file_info.total_case_info
+          p1.append(temp_p1 * (1 - coverage))
+        elif use_fl:
           adjusted_pf = PassFail()
           adjusted_pf.update_with_pf(file_info.pf)
           adjusted_pf.update(file_info.fl_score > 0, abs(file_info.fl_score))
@@ -274,7 +287,14 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       if is_rand:
         p1.append(pf_rand.expect_probability())
       else:
-        if state.use_fl:
+        if explore:
+          adjusted_pf = PassFail()
+          adjusted_pf.update_with_pf(func_info.pf)
+          adjusted_pf.update(func_info.fl_score > 0, abs(func_info.fl_score))
+          temp_p1 = adjusted_pf.expect_probability()
+          coverage = func_info.update_count / func_info.total_case_info
+          p1.append(temp_p1 * (1 - coverage))
+        elif use_fl:
           adjusted_pf = PassFail()
           adjusted_pf.update_with_pf(func_info.pf)
           adjusted_pf.update(func_info.fl_score > 0, abs(func_info.fl_score))
@@ -302,7 +322,14 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       if is_rand:
         p1.append(pf_rand.expect_probability())
       else:
-        if state.use_fl:
+        if explore:
+          adjusted_pf = PassFail()
+          adjusted_pf.update_with_pf(line_info.pf)
+          adjusted_pf.update(line_info.fl_score > 0, abs(line_info.fl_score))
+          temp_p1 = adjusted_pf.expect_probability()
+          coverage = line_info.update_count / line_info.total_case_info
+          p1.append(temp_p1 * (1 - coverage))
+        elif use_fl:
           adjusted_pf = PassFail()
           adjusted_pf.update_with_pf(line_info.pf)
           adjusted_pf.update(line_info.fl_score > 0, abs(line_info.fl_score))
@@ -330,7 +357,12 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       if is_rand:
         p1.append(pf_rand.expect_probability())
       else:
-        p1.append(switch_info.pf.expect_probability())
+        if explore:
+          temp_p1 = switch_info.pf.expect_probability()
+          coverage = switch_info.update_count / switch_info.total_case_info
+          p1.append(temp_p1 * (1 - coverage))
+        else:
+          p1.append(switch_info.pf.expect_probability())
         #p2.append(ProfileDiff.get_diff(switch_info.profile_diff, test, original_profile))
         p2.append(switch_info.out_dist)
         p3.append(switch_info.positive_pf.expect_probability())
@@ -352,7 +384,12 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       if is_rand:
         p1.append(pf_rand.expect_probability())
       else:
-        p1.append(type_info.pf.expect_probability())
+        if explore:
+          temp_p1 = type_info.pf.expect_probability()
+          coverage = type_info.update_count / type_info.total_case_info
+          p1.append(temp_p1 * (1 - coverage))
+        else:
+          p1.append(type_info.pf.expect_probability())
         #p2.append(ProfileDiff.get_diff(type_info.profile_diff, test, original_profile))
         p2.append(type_info.out_dist)
         p3.append(type_info.positive_pf.expect_probability())

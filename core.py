@@ -103,6 +103,7 @@ class FileInfo:
     self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = -1.0
     self.update_count: int = 0
+    self.total_case_info: int = 0
     self.prophet_score:list=[]
   def __hash__(self) -> int:
     return hash(self.file_name)
@@ -123,6 +124,7 @@ class FuncInfo:
     self.fl_score: float = -1.0
     self.out_dist: float = -1.0
     self.update_count: int = 0
+    self.total_case_info: int = 0
     self.prophet_score: List[float] = []
   def __hash__(self) -> int:
     return hash(self.id)
@@ -143,6 +145,7 @@ class LineInfo:
     self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = -1.0
     self.update_count: int = 0
+    self.total_case_info: int = 0
     self.prophet_score:list=[]
   def __hash__(self) -> int:
     return hash(self.uuid)
@@ -161,6 +164,7 @@ class SwitchInfo:
     self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = -1.0
     self.update_count: int = 0
+    self.total_case_info: int = 0
     self.prophet_score:list=[]
   def __hash__(self) -> int:
     return hash(self.switch_number)
@@ -179,6 +183,7 @@ class TypeInfo:
     self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = -1.0
     self.update_count: int = 0
+    self.total_case_info: int = 0
     self.prophet_score:list=[]
   def __hash__(self) -> int:
     return hash(self.patch_type)
@@ -206,6 +211,11 @@ class CaseInfo:
     self.seapr_n_pf: PassFail = PassFail()
     self.current_record:List[bool]=[] # current record, for out condition synthesis
     self.synthesis_tried:int=0 # tried counter for search record, removed after 11
+    self.parent.total_case_info += 1
+    self.parent.parent.total_case_info += 1
+    self.parent.parent.parent.total_case_info += 1
+    self.parent.parent.parent.parent.total_case_info += 1
+    self.parent.parent.parent.parent.parent.total_case_info += 1
   def __hash__(self) -> int:
     return hash(self.case_number)
   def __eq__(self, other) -> bool:
@@ -912,6 +922,7 @@ class MSVState:
   use_pattern: bool      # For SeAPR mode
   simulation_data: Dict[str, MSVResult]
   max_initial_trial: int
+  epsilon_greedy_exploration: float
   def __init__(self) -> None:
     self.mode = MSVMode.guided
     self.msv_path = ""
@@ -965,6 +976,7 @@ class MSVState:
     self.iteration=0
     self.use_partial_validation = False
     self.max_initial_trial = 100
+    self.epsilon_greedy_exploration = 0.1
 
 def remove_file_or_pass(file:str):
   try:
