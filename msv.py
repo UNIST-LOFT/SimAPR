@@ -142,30 +142,7 @@ class MSV:
           f.write(f"{pt} ")
         f.write("\n")
         f.write("Regression Cases: Tot 0\n")
-  
-  def restore_removed_case_info(self, removed_case_info: List[CaseInfo]) -> None:
-    return
-    for case_info in removed_case_info:
-      self.state.msv_logger.info(f"Restore removed case info: {case_info.to_str()}")
-      type_info = case_info.parent
-      switch_info = type_info.parent
-      line_info = switch_info.parent
-      file_info = line_info.parent
-      type_info.prophet_score+=case_info.prophet_score
-      switch_info.prophet_score+=type_info.prophet_score
-      line_info.prophet_score+=switch_info.prophet_score
-      file_info.prophet_score+=line_info.prophet_score
-      if file_info not in self.state.patch_info_list:
-        self.state.patch_info_list.append(file_info)
-      if line_info not in file_info.line_info_list:
-        file_info.line_info_list.append(line_info)
-      if switch_info not in line_info.switch_info_list:
-        line_info.switch_info_list.append(switch_info)
-      if type_info not in switch_info.type_info_list:
-        switch_info.type_info_list.append(type_info)
-      if case_info not in type_info.case_info_list:
-        type_info.case_info_list.append(case_info)
-  
+    
   def run(self) -> None:
     self.initialize()
     self.state.start_time=time.time()
@@ -185,7 +162,7 @@ class MSV:
           new_patch=patch[0]
           guided_cond=condition.GuidedPathCondition(new_patch,self.state,self.state.negative_test)
           opers=guided_cond.get_condition()
-          if new_patch.case_info not in new_patch.case_info.parent.case_info_list:
+          if new_patch.case_info not in new_patch.case_info.parent.case_info_map.values():
             self.state.msv_logger.info("Consumed all record path!")
           elif opers is not None and len(opers)>0:
             self.state.msv_logger.info(f'Found angelic path: {new_patch.to_str()} {new_patch.case_info.current_record}')
