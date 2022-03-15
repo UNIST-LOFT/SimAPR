@@ -24,7 +24,7 @@ class MSV:
     self.state = state
 
   def is_alive(self) -> bool:
-    if len(self.state.patch_info_list) == 0:
+    if len(self.state.file_info_map) == 0:
       self.state.is_alive = False
     if self.state.cycle_limit > 0 and self.state.cycle >= self.state.cycle_limit:
       self.state.is_alive = False
@@ -144,6 +144,7 @@ class MSV:
         f.write("Regression Cases: Tot 0\n")
   
   def restore_removed_case_info(self, removed_case_info: List[CaseInfo]) -> None:
+    return
     for case_info in removed_case_info:
       self.state.msv_logger.info(f"Restore removed case info: {case_info.to_str()}")
       type_info = case_info.parent

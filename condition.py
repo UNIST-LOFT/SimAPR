@@ -345,6 +345,7 @@ class ProphetCondition:
       self.patch.type_info.prophet_score.remove(score)
       self.patch.switch_info.prophet_score.remove(score)
       self.patch.line_info.prophet_score.remove(score)
+      self.patch.func_info.prophet_score.remove(score)
       self.patch.file_info.prophet_score.remove(score)
     current_score=self.patch.case_info.prophet_score.copy()
     self.patch.case_info.prophet_score.clear()
@@ -364,15 +365,17 @@ class ProphetCondition:
           self.patch.type_info.prophet_score.append(new_variable.prophet_score)
           self.patch.switch_info.prophet_score.append(new_variable.prophet_score)
           self.patch.line_info.prophet_score.append(new_variable.prophet_score)
+          self.patch.func_info.prophet_score.append(new_variable.prophet_score)
           self.patch.file_info.prophet_score.append(new_variable.prophet_score)
       else:
         new_operator.var_count=1
-        new_operator.prophet_score.append(sorted(current_score)[-1])
-        self.patch.case_info.prophet_score.append(sorted(current_score)[-1])
-        self.patch.type_info.prophet_score.append(sorted(current_score)[-1])
-        self.patch.switch_info.prophet_score.append(sorted(current_score)[-1])
-        self.patch.line_info.prophet_score.append(sorted(current_score)[-1])
-        self.patch.file_info.prophet_score.append(sorted(current_score)[-1])
+        new_operator.prophet_score.append(max(current_score))
+        self.patch.case_info.prophet_score.append(max(current_score))
+        self.patch.type_info.prophet_score.append(max(current_score))
+        self.patch.switch_info.prophet_score.append(max(current_score))
+        self.patch.line_info.prophet_score.append(max(current_score))
+        self.patch.func_info.prophet_score.append(max(current_score))
+        self.patch.file_info.prophet_score.append(max(current_score))
 
       operators.append(new_operator)
 
@@ -778,6 +781,7 @@ class GuidedPathCondition:
       self.patch.type_info.prophet_score.remove(score)
       self.patch.switch_info.prophet_score.remove(score)
       self.patch.line_info.prophet_score.remove(score)
+      self.patch.func_info.prophet_score.remove(score)
       self.patch.file_info.prophet_score.remove(score)
     current_score=self.patch.case_info.prophet_score.copy()
     self.patch.case_info.prophet_score.clear()
@@ -797,15 +801,17 @@ class GuidedPathCondition:
           self.patch.type_info.prophet_score.append(new_variable.prophet_score)
           self.patch.switch_info.prophet_score.append(new_variable.prophet_score)
           self.patch.line_info.prophet_score.append(new_variable.prophet_score)
+          self.patch.func_info.prophet_score.append(new_variable.prophet_score)
           self.patch.file_info.prophet_score.append(new_variable.prophet_score)
       else:
         new_operator.var_count=1
-        new_operator.prophet_score.append(sorted(current_score)[-1])
-        self.patch.case_info.prophet_score.append(sorted(current_score)[-1])
-        self.patch.type_info.prophet_score.append(sorted(current_score)[-1])
-        self.patch.switch_info.prophet_score.append(sorted(current_score)[-1])
-        self.patch.line_info.prophet_score.append(sorted(current_score)[-1])
-        self.patch.file_info.prophet_score.append(sorted(current_score)[-1])
+        new_operator.prophet_score.append(max(current_score))
+        self.patch.case_info.prophet_score.append(max(current_score))
+        self.patch.type_info.prophet_score.append(max(current_score))
+        self.patch.switch_info.prophet_score.append(max(current_score))
+        self.patch.line_info.prophet_score.append(max(current_score))
+        self.patch.func_info.prophet_score.append(max(current_score))
+        self.patch.file_info.prophet_score.append(max(current_score))
 
       operators.append(new_operator)
 

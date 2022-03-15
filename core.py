@@ -94,7 +94,8 @@ class PassFail:
 class FileInfo:
   def __init__(self, file_name: str) -> None:
     self.file_name = file_name
-    self.line_info_list: List[LineInfo] = list()
+    #self.line_info_list: List[LineInfo] = list()
+    self.func_info_map: Dict[str, FuncInfo] = dict() # f"{func_name}:{func_line_begin}-{func_line_end}"
     self.pf = PassFail()
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
@@ -103,16 +104,37 @@ class FileInfo:
     self.out_dist: float = -1.0
     self.update_count: int = 0
     self.prophet_score:list=[]
-
   def __hash__(self) -> int:
     return hash(self.file_name)
   def __eq__(self, other) -> bool:
     return self.file_name == other.file_name
 
+class FuncInfo:
+  def __init__(self, parent: FileInfo, func_name: str, begin: int, end: int) -> None:
+    self.parent = parent
+    self.func_name = func_name
+    self.begin = begin
+    self.end = end
+    self.id = f"{self.func_name}:{self.begin}-{self.end}"
+    #self.line_info_list: List[LineInfo] = list()
+    self.line_info_map: Dict[uuid.UUID, LineInfo] = dict()
+    self.pf = PassFail()
+    self.positive_pf = PassFail()
+    self.fl_score: float = -1.0
+    self.out_dist: float = -1.0
+    self.update_count: int = 0
+    self.prophet_score: List[float] = []
+  def __hash__(self) -> int:
+    return hash(self.id)
+  def __eq__(self, other) -> bool:
+    return self.id == other.id
+
 class LineInfo:
-  def __init__(self, parent: FileInfo, line_number: int) -> None:
+  def __init__(self, parent: FuncInfo, line_number: int) -> None:
+    self.uuid = uuid.uuid4()
     self.line_number = line_number
-    self.switch_info_list: List[SwitchInfo] = list()
+    #self.switch_info_list: List[SwitchInfo] = list()
+    self.switch_info_map: Dict[int, SwitchInfo] = dict()
     self.parent = parent
     self.pf = PassFail()
     self.critical_pf = PassFail()
@@ -123,15 +145,15 @@ class LineInfo:
     self.update_count: int = 0
     self.prophet_score:list=[]
   def __hash__(self) -> int:
-    return hash(self.line_number)
+    return hash(self.uuid)
   def __eq__(self, other) -> bool:
-    return self.line_number == other.line_number
+    return self.uuid == other.uuid
 
 class SwitchInfo:
   def __init__(self, parent: LineInfo, switch_number: int) -> None:
     self.switch_number = switch_number
     self.parent = parent
-    self.type_info_list: List[TypeInfo] = list()
+    #self.type_info_list: List[TypeInfo] = list()
     self.type_info_map: Dict[PatchType, TypeInfo] = dict()
     self.pf = PassFail()
     self.critical_pf = PassFail()
@@ -149,7 +171,8 @@ class TypeInfo:
   def __init__(self, parent: SwitchInfo, patch_type: PatchType) -> None:
     self.patch_type = patch_type
     self.parent = parent
-    self.case_info_list: List[CaseInfo] = list()
+    #self.case_info_list: List[CaseInfo] = list()
+    self.case_info_map: Dict[int, CaseInfo] = dict()
     self.pf = PassFail()
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
@@ -540,7 +563,8 @@ class PatchInfo:
     self.type_info = case_info.parent
     self.switch_info = self.type_info.parent
     self.line_info = self.switch_info.parent
-    self.file_info = self.line_info.parent
+    self.func_info = self.line_info.parent
+    self.file_info = self.func_info.parent
     self.is_condition = case_info.is_condition
     self.operator_info = op_info
     self.variable_info = var_info
@@ -553,6 +577,7 @@ class PatchInfo:
     self.type_info.pf.update(result, n)
     self.switch_info.pf.update(result, n)
     self.line_info.pf.update(result, n)
+    self.func_info.pf.update(result, n)
     self.file_info.pf.update(result, n)
     if self.is_condition and self.operator_info is not None:
       self.operator_info.pf.update(result, n)
@@ -573,6 +598,9 @@ class PatchInfo:
     tmp = self.line_info.update_count * self.line_info.out_dist
     self.line_info.out_dist = (tmp + dist) / (self.line_info.update_count + 1)
     self.line_info.update_count += 1
+    tmp = self.func_info.out_dist * self.func_info.update_count
+    self.func_info.out_dist = (tmp + dist) / (self.func_info.update_count + 1)
+    self.func_info.update_count += 1
     tmp = self.file_info.update_count * self.file_info.out_dist
     self.file_info.out_dist = (tmp + dist) / (self.file_info.update_count + 1)
     self.file_info.update_count += 1
@@ -648,6 +676,7 @@ class PatchInfo:
     self.type_info.positive_pf.update(result, n)
     self.switch_info.positive_pf.update(result, n)
     self.line_info.positive_pf.update(result, n)
+    self.func_info.positive_pf.update(result, n)
     self.file_info.positive_pf.update(result, n)
     if self.is_condition and self.operator_info is not None:
       self.operator_info.positive_pf.update(result, n)
@@ -663,6 +692,7 @@ class PatchInfo:
         self.type_info.prophet_score.remove(self.operator_info.prophet_score[0])
         self.switch_info.prophet_score.remove(self.operator_info.prophet_score[0])
         self.line_info.prophet_score.remove(self.operator_info.prophet_score[0])
+        self.func_info.prophet_score.remove(self.operator_info.prophet_score[0])
         self.file_info.prophet_score.remove(self.operator_info.prophet_score[0])
       else:
         if not state.use_condition_synthesis:
@@ -674,6 +704,7 @@ class PatchInfo:
             self.type_info.prophet_score.remove(self.variable_info.prophet_score)
             self.switch_info.prophet_score.remove(self.variable_info.prophet_score)
             self.line_info.prophet_score.remove(self.variable_info.prophet_score)
+            self.func_info.prophet_score.remove(self.variable_info.prophet_score)
             self.file_info.prophet_score.remove(self.variable_info.prophet_score)
           if len(self.operator_info.variable_info_list) == 0:
             self.case_info.operator_info_list.remove(self.operator_info)
@@ -733,31 +764,37 @@ class PatchInfo:
               self.type_info.prophet_score.remove(score)
               self.switch_info.prophet_score.remove(score)
               self.line_info.prophet_score.remove(score)
+              self.func_info.prophet_score.remove(score)
               self.file_info.prophet_score.remove(score)
 
       if len(self.case_info.operator_info_list) == 0:
-        self.type_info.case_info_list.remove(self.case_info)
+        del self.type_info.case_info_map[self.case_info.case_number]
+        #self.type_info.case_info_list.remove(self.case_info)
         with open(os.path.join(state.out_dir, "p1.log"),'a') as f:
           f.write(f'{self.file_info.file_name}-{self.line_info.line_number}-{self.switch_info.switch_number}-{self.type_info.patch_type}-{self.case_info.case_number}: {self.case_info.pf.pass_count}/{self.case_info.pf.pass_count+self.case_info.pf.fail_count}\n')
 
     else:
-      self.type_info.case_info_list.remove(self.case_info)
+      #self.type_info.case_info_list.remove(self.case_info)
+      del self.type_info.case_info_map[self.case_info.case_number]
       for score in self.case_info.prophet_score:
         self.type_info.prophet_score.remove(score)
         self.switch_info.prophet_score.remove(score)
         self.line_info.prophet_score.remove(score)
+        self.func_info.prophet_score.remove(score)
         self.file_info.prophet_score.remove(score)
       with open(os.path.join(state.out_dir, "p1.log"),'a') as f:
         f.write(f'{self.file_info.file_name}-{self.line_info.line_number}-{self.switch_info.switch_number}-{self.type_info.patch_type}-{self.case_info.case_number}: {self.case_info.pf.pass_count}/{self.case_info.pf.pass_count+self.case_info.pf.fail_count}\n')
 
-    if len(self.type_info.case_info_list) == 0:
-      self.switch_info.type_info_list.remove(self.type_info)
-    if len(self.switch_info.type_info_list) == 0:
-      self.line_info.switch_info_list.remove(self.switch_info)
-    if len(self.line_info.switch_info_list) == 0:
-      self.file_info.line_info_list.remove(self.line_info)
-    if len(self.file_info.line_info_list) == 0:
-      state.patch_info_list.remove(self.file_info)
+    if len(self.type_info.case_info_map) == 0:
+      del self.switch_info.type_info_map[self.type_info.patch_type]
+    if len(self.switch_info.type_info_map) == 0:
+      del self.line_info.switch_info_map[self.switch_info.switch_number]
+    if len(self.line_info.switch_info_map) == 0:
+      del self.func_info.line_info_map[self.line_info.uuid]
+    if len(self.func_info.line_info_map) == 0:
+      del self.file_info.func_info_map[self.func_info.id]
+    if len(self.file_info.func_info_map) == 0:
+      del state.file_info_map[self.file_info.file_name]
 
 
   def to_json_object(self) -> dict:
@@ -854,7 +891,7 @@ class MSVState:
   max_parallel_cpu: int
   new_revlog: str
   patch_info_map: Dict[str, FileInfo]  # fine_name: str -> FileInfo
-  patch_info_list: List[FileInfo]      # Root of tree of patch data structure
+  file_info_map: Dict[str, FileInfo]   # file_name: str -> FileInfo
   switch_case_map: Dict[str, CaseInfo] # f"{switch_number}-{case_number}" -> SwitchCase
   selected_patch: List[PatchInfo] # Unused
   selected_test: List[int]        # Unused
@@ -897,7 +934,7 @@ class MSVState:
     self.patch_info_map = dict()
     self.switch_case_map = dict()
     self.selected_patch = None
-    self.patch_info_list = list()
+    self.file_info_map = dict()
     self.negative_test = list()
     self.positive_test = list()
     self.profile_map = dict()
