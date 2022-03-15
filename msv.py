@@ -162,7 +162,7 @@ class MSV:
           new_patch=patch[0]
           guided_cond=condition.GuidedPathCondition(new_patch,self.state,self.state.negative_test)
           opers=guided_cond.get_condition()
-          if new_patch.case_info not in new_patch.case_info.parent.case_info_map.values():
+          if new_patch.case_info.case_number not in new_patch.case_info.parent.case_info_map:
             self.state.msv_logger.info("Consumed all record path!")
           elif opers is not None and len(opers)>0:
             self.state.msv_logger.info(f'Found angelic path: {new_patch.to_str()} {new_patch.case_info.current_record}')
