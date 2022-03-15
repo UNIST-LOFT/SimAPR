@@ -201,7 +201,8 @@ class CaseInfo:
     self.location: FileLine = None
     self.seapr_e_pf: PassFail = PassFail()
     self.seapr_n_pf: PassFail = PassFail()
-    self.record_tree: RecordInfo = None
+    self.current_record:List[bool]=[] # current record, for out condition synthesis
+    self.synthesis_tried:int=0 # tried counter for search record, removed after 11
   def __hash__(self) -> int:
     return hash(self.case_number)
   def __eq__(self, other) -> bool:
@@ -210,79 +211,6 @@ class CaseInfo:
     return f"{self.parent.parent.switch_number}-{self.case_number}"
   def __str__(self) -> str:
     return self.to_str()
-
-class RecordInfo:
-  def __init__(self, case_info: CaseInfo, parent: 'RecordInfo', is_true: bool) -> None:
-    self.case_info = case_info
-    self.parent = parent
-    self.is_true = is_true # For root node, it's meaningless
-    self.used_record_map: Dict[str, bool] = None # Maintained in root node
-    self.pf = PassFail()
-    self.left: 'RecordInfo' = None  # False
-    self.right: 'RecordInfo' = None # True
-    if self.is_root():
-      self.used_record_map = dict()
-  def is_root(self) -> bool:
-    return self.parent is None
-  def get_root(self) -> 'RecordInfo':
-    node: 'RecordInfo' = self
-    while(not node.is_root()):
-      node = node.parent
-    return node
-  def is_leaf(self) -> bool:
-    return self.left is None and self.right is None
-  def remove_leaf(self) -> None:
-    node = self
-    while(not node.is_root()):
-      if not node.is_leaf():
-        return
-      if node.parent.left is node:
-        node.parent.left = None
-      else:
-        node.parent.right = None
-      node = node.parent
-  # Only for leaf node
-  def get_path(self) -> List['RecordInfo']:
-    path: List['RecordInfo'] = list()
-    node: 'RecordInfo' = self
-    while(not node.is_root()):
-      path.append(node)
-      node = node.parent
-    path.reverse()
-    return path
-  def get_path_str(self, path: List['RecordInfo'] = None) -> str:
-    if path is None:
-      path = self.get_path()
-    path_str = ""
-    for node in path:
-      if node.is_true:
-        path_str += "1"
-      else:
-        path_str += "0"
-    return path_str
-  def get_path_from_str(self, path_str: str) -> List['RecordInfo']:
-    node = self.get_root()
-    path = list()
-    for c in path_str:
-      if c == "1":
-        node = node.right
-      else:
-        node = node.left
-      path.append(node)
-    return path
-  def update_used_record_map(self, record_str: str) -> None:
-    root = self.get_root()
-    if root.used_record_map is None:
-      root.used_record_map = dict()
-    root.used_record_map[record_str] = True
-  def __eq__(self, __o: object) -> bool:
-    return isinstance(__o, RecordInfo) and self.case_info == __o.case_info and self.is_true == __o.is_true
-  def __str__(self) -> str:
-    if self.is_true:
-      return "1"
-    else:
-      return "0"
-
 
 class OperatorInfo:
   def __init__(self, parent: CaseInfo, operator_type: OperatorType, var_count:int=0) -> None:
@@ -627,7 +555,7 @@ class MSVEnvVar:
     return new_env
 
 class PatchInfo:
-  def __init__(self, case_info: CaseInfo, op_info: OperatorInfo, var_info: VariableInfo, con_info: ConstantInfo, rec_info: RecordInfo = None) -> None:
+  def __init__(self, case_info: CaseInfo, op_info: OperatorInfo, var_info: VariableInfo, con_info: ConstantInfo) -> None:
     self.case_info = case_info
     self.type_info = case_info.parent
     self.switch_info = self.type_info.parent
@@ -638,10 +566,7 @@ class PatchInfo:
     self.operator_info = op_info
     self.variable_info = var_info
     self.constant_info = con_info
-    self.record_info = rec_info
-    self.record_path: List[RecordInfo] = []
-    if rec_info is not None:
-      self.record_path = rec_info.get_path()
+    self.record=case_info.current_record
     self.profile_diff: ProfileDiff = None
     self.out_dist = -1.0
   def update_result(self, result: bool, n: float,use_fixed_beta:bool) -> None:
@@ -1041,3 +966,15 @@ def remove_file_or_pass(file:str):
       os.remove(file)
   except:
     pass
+
+def record_to_int(record: List[bool]) -> List[int]:
+  """
+    Convert boolean written record to binary list.
+
+    record: record written in bool
+    return: record written in 0 or 1
+  """
+  result=[]
+  for path in record:
+    result.append(1 if path else 0)
+  return result
