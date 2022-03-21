@@ -147,6 +147,7 @@ class LineInfo:
     self.update_count: int = 0
     self.total_case_info: int = 0
     self.prophet_score:list=[]
+    self.type_priority=dict()
   def __hash__(self) -> int:
     return hash(self.uuid)
   def __eq__(self, other) -> bool:
@@ -315,6 +316,21 @@ class FileLine:
     return hash(self.to_str())
   def __eq__(self, other) -> bool:
     return self.file_info == other.file_info and self.line_info == other.line_info
+
+class LocationScore:
+  def __init__(self,file:str,line:int,primary_score:int,secondary_score:int):
+    self.file_name=file
+    self.line=line
+    self.primary_score=primary_score
+    self.secondary_score=secondary_score
+  def __eq__(self,object):
+    if object is None or type(object)!=LocationScore:
+      return False
+    else:
+      if self.file_name==object.file_name and self.line==object.line:
+        return True
+      else:
+        return False
 
 class ProfileElement:
   def __init__(self, function: str, variable: str, value: int) -> None:
@@ -775,6 +791,7 @@ class PatchInfo:
 
       if len(self.case_info.operator_info_list) == 0:
         del self.type_info.case_info_map[self.case_info.case_number]
+        self.line_info.type_priority[self.type_info.patch_type].remove(self.case_info)
         #self.type_info.case_info_list.remove(self.case_info)
         with open(os.path.join(state.out_dir, "p1.log"),'a') as f:
           f.write(f'{self.file_info.file_name}-{self.line_info.line_number}-{self.switch_info.switch_number}-{self.type_info.patch_type}-{self.case_info.case_number}: {self.case_info.pf.pass_count}/{self.case_info.pf.pass_count+self.case_info.pf.fail_count}\n')
@@ -782,6 +799,7 @@ class PatchInfo:
     else:
       #self.type_info.case_info_list.remove(self.case_info)
       del self.type_info.case_info_map[self.case_info.case_number]
+      self.line_info.type_priority[self.type_info.patch_type].remove(self.case_info)
       for score in self.case_info.prophet_score:
         self.type_info.prophet_score.remove(score)
         self.switch_info.prophet_score.remove(score)
@@ -795,8 +813,23 @@ class PatchInfo:
       del self.switch_info.type_info_map[self.type_info.patch_type]
     if len(self.switch_info.type_info_map) == 0:
       del self.line_info.switch_info_map[self.switch_info.switch_number]
+
+    def has_patch(file,line):
+      for file_info in state.file_info_map.values():
+        for func_info in file_info.func_info_map.values():
+          for line_info in func_info.line_info_map.values():
+            if file==file_info.file_name and line==line_info.line_number:
+              return True
+      return False
+
+    if len(self.line_info.type_priority[self.type_info.patch_type])==0:
+      del self.line_info.type_priority[self.type_info.patch_type]
+
     if len(self.line_info.switch_info_map) == 0:
       del self.func_info.line_info_map[self.line_info.uuid]
+      state.line_list.remove(self.line_info)
+      if not has_patch(self.file_info.file_name,self.line_info.line_number):
+        state.fl_score.remove(LocationScore(self.file_info.file_name,self.line_info.line_number,0,0))
     if len(self.func_info.line_info_map) == 0:
       del self.file_info.func_info_map[self.func_info.id]
     if len(self.file_info.func_info_map) == 0:
@@ -946,6 +979,8 @@ class MSVState:
     self.positive_test = list()
     self.profile_map = dict()
     self.priority_list = list()
+    self.fl_score:List[LocationScore]=list()
+    self.line_list:List[LineInfo]=list()
     self.msv_result = list()
     self.var_counts=dict()
     self.failed_positive_test = set()

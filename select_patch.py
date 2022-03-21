@@ -49,21 +49,28 @@ def __select_prophet_condition(selected_case:CaseInfo,state:MSVState):
 
 def select_patch_SPR(state: MSVState) -> PatchInfo:
   # Select file and line by priority
-  file_line: FileLine=None
-  while len(state.priority_list) > 0:
-    (p_file, p_line, p_score) = state.priority_list.pop(0)
-    fl_str = f"{p_file}:{p_line}"
-    if fl_str in state.priority_map:
-      file_line = state.priority_map[fl_str]
-      # If it still has switch, use it
-      if (len(file_line.line_info.switch_info_map) > 1):
-        state.priority_list.insert(0, (p_file, p_line, p_score))
-        break
+  first_location=state.fl_score[0]
+  line_info=None
+  for line in state.line_list:
+    if line.line_number==first_location.line and line.parent.parent.file_name==first_location.file_name:
+      line_info=line
+      break
   
-  if file_line is None:
-    file_line=state.priority_map.popitem()[1]
-  selected_file = file_line.file_info
-  selected_line = file_line.line_info
+  # file_line: FileLine=None
+  # while len(state.priority_list) > 0:
+  #   (p_file, p_line, p_score) = state.priority_list.pop(0)
+  #   fl_str = f"{p_file}:{p_line}"
+  #   if fl_str in state.priority_map:
+  #     file_line = state.priority_map[fl_str]
+  #     # If it still has switch, use it
+  #     if (len(file_line.line_info.switch_info_map) > 1):
+  #       state.priority_list.insert(0, (p_file, p_line, p_score))
+  #       break
+  
+  # if file_line is None:
+  #   file_line=state.priority_map.popitem()[1]
+  # selected_file = file_line.file_info
+  # selected_line = file_line.line_info
   # # select file
   # selected_file=state.patch_info_list[0]
   # for file in state.patch_info_list:
@@ -77,33 +84,39 @@ def select_patch_SPR(state: MSVState) -> PatchInfo:
   #     selected_line=line
   
   # select case
-  selected_case=None
+  # selected_case=None
   type_priority=(PatchType.TightenConditionKind,PatchType.LoosenConditionKind,PatchType.IfExitKind,PatchType.GuardKind,PatchType.SpecialGuardKind,
         PatchType.AddInitKind,PatchType.AddAndReplaceKind,PatchType.ReplaceKind,PatchType.ReplaceStringKind)
+  
+  case_info=None
   for type_ in type_priority:
-    selected=False
-    for switch_num in selected_line.switch_info_map:
-      switch = selected_line.switch_info_map[switch_num]
-      for patch_type in switch.type_info_map:
-        type_in_switch = switch.type_info_map[patch_type]
-        if type_in_switch.patch_type == type_:
-          if len(type_in_switch.case_info_map) > 0:
-            case_num, selected_case = type_in_switch.case_info_map.popitem()
-            type_in_switch.case_info_map[case_num] = selected_case
-            selected=True
-            break
-    if selected:
-      break
-  assert selected_case is not None
+    if type_ in line_info.type_priority:
+      case_info=line_info.type_priority[type_][0]
+  assert case_info is not None
+  # for type_ in type_priority:
+  #   selected=False
+  #   for switch_num in selected_line.switch_info_map:
+  #     switch = selected_line.switch_info_map[switch_num]
+  #     for patch_type in switch.type_info_map:
+  #       type_in_switch = switch.type_info_map[patch_type]
+  #       if type_in_switch.patch_type == type_:
+  #         if len(type_in_switch.case_info_map) > 0:
+  #           case_num, selected_case = type_in_switch.case_info_map.popitem()
+  #           type_in_switch.case_info_map[case_num] = selected_case
+  #           selected=True
+  #           break
+  #   if selected:
+  #     break
+  # assert selected_case is not None
 
-  if selected_case.is_condition and selected_case.processed:
-    cond=__select_prophet_condition(selected_case,state)
+  if case_info.is_condition and case_info.processed:
+    cond=__select_prophet_condition(case_info,state)
     if type(cond)==OperatorInfo:
-      return PatchInfo(selected_case,cond,None,None)
+      return PatchInfo(case_info,cond,None,None)
     else:
-      return PatchInfo(selected_case,cond.variable.parent,cond.variable,cond)
+      return PatchInfo(case_info,cond.variable.parent,cond.variable,cond)
       
-  patch = PatchInfo(selected_case, None, None, None)
+  patch = PatchInfo(case_info, None, None, None)
   return patch
 
 def select_patch_prophet(state: MSVState) -> PatchInfo:
