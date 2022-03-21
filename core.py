@@ -105,6 +105,7 @@ class FileInfo:
     self.update_count: int = 0
     self.total_case_info: int = 0
     self.prophet_score:list=[]
+    self.has_init_patch=False
   def __hash__(self) -> int:
     return hash(self.file_name)
   def __eq__(self, other) -> bool:
@@ -126,6 +127,7 @@ class FuncInfo:
     self.update_count: int = 0
     self.total_case_info: int = 0
     self.prophet_score: List[float] = []
+    self.has_init_patch=False
   def __hash__(self) -> int:
     return hash(self.id)
   def __eq__(self, other) -> bool:
@@ -148,6 +150,7 @@ class LineInfo:
     self.total_case_info: int = 0
     self.prophet_score:list=[]
     self.type_priority=dict()
+    self.has_init_patch=False
   def __hash__(self) -> int:
     return hash(self.uuid)
   def __eq__(self, other) -> bool:
@@ -167,6 +170,7 @@ class SwitchInfo:
     self.update_count: int = 0
     self.total_case_info: int = 0
     self.prophet_score:list=[]
+    self.has_init_patch=False
   def __hash__(self) -> int:
     return hash(self.switch_number)
   def __eq__(self, other) -> bool:
@@ -186,6 +190,7 @@ class TypeInfo:
     self.update_count: int = 0
     self.total_case_info: int = 0
     self.prophet_score:list=[]
+    self.has_init_patch=False
   def __hash__(self) -> int:
     return hash(self.patch_type)
   def __eq__(self, other) -> bool:
@@ -212,6 +217,7 @@ class CaseInfo:
     self.seapr_n_pf: PassFail = PassFail()
     self.current_record:List[bool]=[] # current record, for out condition synthesis
     self.synthesis_tried:int=0 # tried counter for search record, removed after 11
+    self.has_init_patch=False
     self.parent.total_case_info += 1
     self.parent.parent.total_case_info += 1
     self.parent.parent.parent.total_case_info += 1
@@ -240,6 +246,7 @@ class OperatorInfo:
     self.out_dist: float = -1.0
     self.update_count: int = 0
     self.prophet_score:list=[]
+    self.has_init_patch=False
   def __hash__(self) -> int:
     return self.operator_type.value
   def __eq__(self, other) -> bool:
@@ -259,7 +266,8 @@ class VariableInfo:
     self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = -1.0
     self.update_count: int = 0
-    self.prophet_score:int
+    self.prophet_score:int=0
+    self.has_init_patch=False
   def to_str(self) -> str:
     return f"{self.parent.parent.parent.parent.switch_number}-{self.parent.parent.case_number}-{self.parent}-{self.variable}"
   def __str__(self) -> str:
@@ -282,6 +290,7 @@ class ConstantInfo:
     self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = -1.0
     self.update_count: int = 0
+    self.has_init_patch=False
   def __hash__(self) -> int:
     return hash(self.constant_value)
   def __eq__(self, other) -> bool:
@@ -603,11 +612,27 @@ class PatchInfo:
     self.line_info.pf.update(result, n)
     self.func_info.pf.update(result, n)
     self.file_info.pf.update(result, n)
+
+    if result:
+      self.case_info.has_init_patch=True
+      self.type_info.has_init_patch=True
+      self.switch_info.has_init_patch=True
+      self.line_info.has_init_patch=True
+      self.func_info.has_init_patch=True
+      self.file_info.has_init_patch=True
+
     if self.is_condition and self.operator_info is not None:
       self.operator_info.pf.update(result, n)
+      if result:
+        self.operator_info.has_init_patch=True
       if self.operator_info.operator_type!=OperatorType.ALL_1:
         self.variable_info.pf.update(result, n)
         self.constant_info.pf.update(result, n)
+        if result:
+          self.variable_info.has_init_patch=True
+          self.constant_info.has_init_patch=True
+
+
   def update_result_out_dist(self, result: bool, dist: float, use_fixed_beta: bool) -> None:
     self.out_dist = dist
     tmp = self.case_info.update_count * self.case_info.out_dist
