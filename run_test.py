@@ -109,7 +109,6 @@ def run_pass_test(state: MSVState, patch: List[PatchInfo], is_initialize: bool =
     so: bytes
     se: bytes
     so, se = test_proc.communicate()
-    remove_file_or_pass(new_env['MSV_OUTPUT_DISTANCE_FILE'])
 
     result_str = so.decode('utf-8').strip()
     if result_str == "":

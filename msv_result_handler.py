@@ -14,6 +14,8 @@ def update_result(state: MSVState, selected_patch: List[PatchInfo], run_result: 
     update_result_seapr(state, selected_patch, run_result, test)
   for patch in selected_patch:
     patch.update_result(run_result, n,state.use_fixed_beta)
+  if 'MSV_OUTPUT_DISTANCE_FILE' in new_env.keys():
+    remove_file_or_pass(new_env["MSV_OUTPUT_DISTANCE_FILE"])
 
 def update_result_out_dist(state: MSVState, selected_patch: List[PatchInfo], run_result: bool, test: int, new_env: Dict[str, str]) -> float:
   dist = state.max_dist * 2
