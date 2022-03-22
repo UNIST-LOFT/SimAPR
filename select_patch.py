@@ -202,7 +202,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
   # Initially, select patch with prophet strategy
   selected_case_info = None
   if state.iteration < state.max_initial_trial:
-    selected_case_info= select_patch_prophet(state).case_info
+    return select_patch_prophet(state)
   else:
     explore = state.epsilon_greedy_exploration > random.random()
     if explore:
