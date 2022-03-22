@@ -870,7 +870,8 @@ class PatchInfo:
     if len(self.line_info.switch_info_map) == 0:
       del self.func_info.line_info_map[self.line_info.uuid]
       state.line_list.remove(self.line_info)
-      if not has_patch(self.file_info.file_name,self.line_info.line_number):
+      temp_loc=LocationScore(self.file_info.file_name,self.line_info.line_number,0,0)
+      if not has_patch(self.file_info.file_name,self.line_info.line_number) and temp_loc in state.fl_score:
         state.fl_score.remove(LocationScore(self.file_info.file_name,self.line_info.line_number,0,0))
     if len(self.func_info.line_info_map) == 0:
       del self.file_info.func_info_map[self.func_info.id]
