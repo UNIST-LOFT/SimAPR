@@ -190,6 +190,7 @@ class ProphetCondition:
         record=parse_record(temp_file)
         if record==None:
           self.state.msv_logger.info('No record found in iteration!')
+          remove_file_or_pass(new_env['MSV_OUTPUT_DISTANCE_FILE'])
           break
         write_record_terminate(temp_file)
 
@@ -197,6 +198,7 @@ class ProphetCondition:
           self.state.msv_logger.info(f"Pass in iteration! {test}")
           records.append(record)
           result=True
+          remove_file_or_pass(new_env['MSV_OUTPUT_DISTANCE_FILE'])
           break
         
         if 0 not in record:
@@ -230,6 +232,7 @@ class ProphetCondition:
         remove_file_or_pass(temp_file)
         return None,''
     remove_file_or_pass(temp_file)
+    remove_file_or_pass(new_env['MSV_OUTPUT_DISTANCE_FILE'])
     return records,temp_file
   
   def collect_value(self,temp_file: str, records: List[List[bool]]) -> List[List[List[int]]]:
@@ -246,6 +249,7 @@ class ProphetCondition:
       log_file = new_env["TMP_FILE"]
       remove_file_or_pass(log_file)
       run_result, is_timeout = run_test.run_fail_test(self.state, patch, test, new_env)
+      remove_file_or_pass(new_env['MSV_OUTPUT_DISTANCE_FILE'])
       if is_timeout:
         values.append([])
       elif not run_result:
@@ -726,12 +730,14 @@ class GuidedPathCondition:
 
     if run_result:
       self.state.msv_logger.info(f"Pass record {test}")
+      remove_file_or_pass(new_env['MSV_OUTPUT_DISTANCE_FILE'])
       return record,temp_file
     
     if False not in record:
       self.state.msv_logger.info(f'Fail at recording {test}')
       return None,'fail'
 
+    remove_file_or_pass(new_env['MSV_OUTPUT_DISTANCE_FILE'])
     return record,''
 
   

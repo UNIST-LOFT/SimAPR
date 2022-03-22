@@ -118,6 +118,23 @@ def set_logger(state: MSVState) -> logging.Logger:
   return logger
 
 
+def read_fl_score(state: MSVState):
+  def has_patch(file,line):
+    for file_info in state.file_info_map.values():
+      for func_info in file_info.func_info_map.values():
+        for line_info in func_info.line_info_map.values():
+          if file==file_info.file_name and line==line_info.line_number:
+            return True
+    return False
+
+  with open(os.path.join(state.work_dir, 'profile_localization.res'),'r') as loc_file:
+    lines=loc_file.readlines()
+    for line in lines:
+      splitted=line.split()
+      line_score=LocationScore(splitted[0],int(splitted[1]),int(splitted[6]),int(splitted[7]))
+      if line_score not in state.fl_score and has_patch(line_score.file_name,line_score.line):
+        state.fl_score.append(line_score)
+
 def read_info(state: MSVState) -> None:
   with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
     info = json.load(f)
@@ -129,6 +146,13 @@ def read_info(state: MSVState) -> None:
         if object['file']==file and object['line']==line:
           return float(object['score'])
       return 0.
+
+    for priority in info['priority']:
+      temp_file: str = priority["file"]
+      temp_line: int = priority["line"]
+      temp_score: float = priority["score"]
+      store = (temp_file, temp_line, temp_score)
+      state.priority_list.append(store)
 
     #file_map = state.patch_info_map
     max_priority = info['priority'][0]['score']
@@ -171,6 +195,7 @@ def read_info(state: MSVState) -> None:
             func_info.line_info_map[line_info.uuid] = line_info
             break
         #line_info = LineInfo(file_info, int(line['line']))
+        state.line_list.append(line_info)
         score=get_score(file_info.file_name,line_info.line_number)
         line_info.fl_score = score / max_priority * max_value
         if file_info.fl_score<line_info.fl_score:
@@ -214,6 +239,9 @@ def read_info(state: MSVState) -> None:
                             t.value==PatchType.GuardKind.value or t.value==PatchType.SpecialGuardKind.value or t.value==PatchType.ConditionKind.value
                 case_info = CaseInfo(type_info, int(c), is_condition)
                 case_info.location = file_line
+                if t not in line_info.type_priority.keys():
+                  line_info.type_priority[t]=[]
+                line_info.type_priority[t].append(case_info)
                 current_score=None
                 for prophet_score in switches['prophet_scores']:
                   if prophet_score==[]:
@@ -263,14 +291,12 @@ def read_info(state: MSVState) -> None:
             del line_info.switch_info_map[switch_info.switch_number]
         if len(line_info.switch_info_map)==0:
           del func_info.line_info_map[line_info.uuid]
+
+      for func in file_info.func_info_map.copy().values():
+        if len(func.line_info_map)==0:
+          del file_info.func_info_map[func.id]
       if len(file_info.func_info_map)==0:
         del state.file_info_map[file_info.file_name]
-    for priority in info['priority']:
-      temp_file: str = priority["file"]
-      temp_line: int = priority["line"]
-      temp_score: float = priority["score"]
-      store = (temp_file, temp_line, temp_score)
-      state.priority_list.append(store)
 
   #Add original to switch_case_map
   temp_file: FileInfo = FileInfo('original')
@@ -378,6 +404,7 @@ def main(argv: list):
   copy_previous_results(state)
   state.msv_logger = set_logger(state)
   read_info(state)
+  read_fl_score(state)
   read_repair_conf(state)
   state.msv_logger.info('Initialized!')
   msv = MSV(state)
