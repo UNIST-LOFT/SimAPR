@@ -106,6 +106,7 @@ class FileInfo:
     self.total_case_info: int = 0
     self.prophet_score:list=[]
     self.has_init_patch=False
+    self.case_update_count: int = 0
   def __hash__(self) -> int:
     return hash(self.file_name)
   def __eq__(self, other) -> bool:
@@ -128,6 +129,7 @@ class FuncInfo:
     self.total_case_info: int = 0
     self.prophet_score: List[float] = []
     self.has_init_patch=False
+    self.case_update_count: int = 0
   def __hash__(self) -> int:
     return hash(self.id)
   def __eq__(self, other) -> bool:
@@ -151,6 +153,7 @@ class LineInfo:
     self.prophet_score:list=[]
     self.type_priority=dict()
     self.has_init_patch=False
+    self.case_update_count: int = 0
   def __hash__(self) -> int:
     return hash(self.uuid)
   def __eq__(self, other) -> bool:
@@ -171,6 +174,7 @@ class SwitchInfo:
     self.total_case_info: int = 0
     self.prophet_score:list=[]
     self.has_init_patch=False
+    self.case_update_count: int = 0
   def __hash__(self) -> int:
     return hash(self.switch_number)
   def __eq__(self, other) -> bool:
@@ -191,6 +195,7 @@ class TypeInfo:
     self.total_case_info: int = 0
     self.prophet_score:list=[]
     self.has_init_patch=False
+    self.case_update_count: int = 0
   def __hash__(self) -> int:
     return hash(self.patch_type)
   def __eq__(self, other) -> bool:
@@ -819,6 +824,11 @@ class PatchInfo:
       if len(self.case_info.operator_info_list) == 0:
         del self.type_info.case_info_map[self.case_info.case_number]
         self.line_info.type_priority[self.type_info.patch_type].remove(self.case_info)
+        self.type_info.case_update_count += 1
+        self.switch_info.case_update_count += 1
+        self.line_info.case_update_count += 1
+        self.func_info.case_update_count += 1
+        self.file_info.case_update_count += 1
         #self.type_info.case_info_list.remove(self.case_info)
         with open(os.path.join(state.out_dir, "p1.log"),'a') as f:
           f.write(f'{self.file_info.file_name}-{self.line_info.line_number}-{self.switch_info.switch_number}-{self.type_info.patch_type}-{self.case_info.case_number}: {self.case_info.pf.pass_count}/{self.case_info.pf.pass_count+self.case_info.pf.fail_count}\n')
@@ -833,6 +843,11 @@ class PatchInfo:
         self.line_info.prophet_score.remove(score)
         self.func_info.prophet_score.remove(score)
         self.file_info.prophet_score.remove(score)
+      self.type_info.case_update_count += 1
+      self.switch_info.case_update_count += 1
+      self.line_info.case_update_count += 1
+      self.func_info.case_update_count += 1
+      self.file_info.case_update_count += 1
       with open(os.path.join(state.out_dir, "p1.log"),'a') as f:
         f.write(f'{self.file_info.file_name}-{self.line_info.line_number}-{self.switch_info.switch_number}-{self.type_info.patch_type}-{self.case_info.case_number}: {self.case_info.pf.pass_count}/{self.case_info.pf.pass_count+self.case_info.pf.fail_count}\n')
 
