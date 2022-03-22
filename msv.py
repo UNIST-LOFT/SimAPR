@@ -156,7 +156,7 @@ class MSV:
       if patch[0].case_info.is_condition and not self.state.use_condition_synthesis and \
             not patch[0].case_info.processed:
         # Our guided condition synthesis
-        if self.state.mode==MSVMode.guided and self.state.iteration < self.state.max_initial_trial:
+        if self.state.mode==MSVMode.guided and self.state.iteration >= self.state.max_initial_trial:
           self.state.msv_logger.info('Run path guide condition synthesis')
           # new_patch=PatchInfo(patch[0].case_info,None,None,None)
           new_patch=patch[0]
