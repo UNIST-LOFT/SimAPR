@@ -451,7 +451,10 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       elif not state.use_condition_synthesis and len(selected_patch)>0 and not case_info.processed: # do not select multi-line patch if patch is not processed at prophet cond syn
         p1.append(-1)
       else:
-        p1.append(case_info.pf.expect_probability())
+        if explore:
+          p1.append(pf_rand.expect_probability())
+        else:
+          p1.append(case_info.pf.expect_probability())
         if not case_info.has_init_patch and min_failed_patch>p1[-1]:
             min_failed_patch=p1[-1]
         elif case_info.has_init_patch:
@@ -566,7 +569,10 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       if is_rand:
         p1.append(pf_rand.expect_probability())
       else:
-        p1.append(op_info.pf.expect_probability())
+        if explore:
+          p1.append(pf_rand.expect_probability())
+        else:
+          p1.append(op_info.pf.expect_probability())
         if not op_info.has_init_patch and min_failed_patch>p1[-1]:
             min_failed_patch=p1[-1]
         elif op_info.has_init_patch:
@@ -598,7 +604,10 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
         if len(var_info.constant_info_list) == 0:
           p1.append(-1)
         else:
-          p1.append(var_info.pf.expect_probability())
+          if explore:
+            p1.append(pf_rand.expect_probability())
+          else:
+            p1.append(var_info.pf.expect_probability())
           if not var_info.has_init_patch and min_failed_patch>p1[-1]:
             min_failed_patch=p1[-1]
           elif var_info.has_init_patch:
