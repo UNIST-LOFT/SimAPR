@@ -228,8 +228,12 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
           adjusted_pf.update_with_pf(file_info.pf)
           adjusted_pf.update(file_info.fl_score > 0, abs(file_info.fl_score))
           temp_p1 = adjusted_pf.expect_probability()
-          coverage = file_info.update_count / file_info.total_case_info
-          p1.append(temp_p1 * (1 - coverage))
+          # coverage = file_info.update_count / file_info.total_case_info
+          min_coverage=1.0
+          for func in file_info.func_info_map.values():
+            if min_coverage>func.update_count/func.total_case_info:
+              min_coverage=func.update_count/func.total_case_info
+          p1.append(temp_p1 * (1 - min_coverage))
         elif use_fl:
           adjusted_pf = PassFail()
           adjusted_pf.update_with_pf(file_info.pf)
@@ -274,8 +278,12 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
           adjusted_pf.update_with_pf(func_info.pf)
           adjusted_pf.update(func_info.fl_score > 0, abs(func_info.fl_score))
           temp_p1 = adjusted_pf.expect_probability()
-          coverage = func_info.update_count / func_info.total_case_info
-          p1.append(temp_p1 * (1 - coverage))
+          # coverage = func_info.update_count / func_info.total_case_info
+          min_coverage=1.0
+          for line in func_info.line_info_map.values():
+            if min_coverage>line.update_count/line.total_case_info:
+              min_coverage=line.update_count/line.total_case_info
+          p1.append(temp_p1 * (1 - min_coverage))
         elif use_fl:
           adjusted_pf = PassFail()
           adjusted_pf.update_with_pf(func_info.pf)
@@ -320,8 +328,12 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
           adjusted_pf.update_with_pf(line_info.pf)
           adjusted_pf.update(line_info.fl_score > 0, abs(line_info.fl_score))
           temp_p1 = adjusted_pf.expect_probability()
-          coverage = line_info.update_count / line_info.total_case_info
-          p1.append(temp_p1 * (1 - coverage))
+          # coverage = line_info.update_count / line_info.total_case_info
+          min_coverage=1.0
+          for switch in line_info.switch_info_map.values():
+            if min_coverage>switch.update_count/switch.total_case_info:
+              min_coverage=switch.update_count/switch.total_case_info
+          p1.append(temp_p1 * (1 - min_coverage))
         elif use_fl:
           adjusted_pf = PassFail()
           adjusted_pf.update_with_pf(line_info.pf)
@@ -363,8 +375,12 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       else:
         if explore:
           temp_p1 = switch_info.pf.expect_probability()
-          coverage = switch_info.update_count / switch_info.total_case_info
-          p1.append(temp_p1 * (1 - coverage))
+          # coverage = switch_info.update_count / switch_info.total_case_info
+          min_coverage=1.0
+          for type_ in switch_info.type_info_map.values():
+            if min_coverage>type_.update_count/type_.total_case_info:
+              min_coverage=type_.update_count/type_.total_case_info
+          p1.append(temp_p1 * (1 - min_coverage))
         else:
           p1.append(switch_info.pf.expect_probability())
           if not switch_info.has_init_patch and min_failed_patch>p1[-1]:
