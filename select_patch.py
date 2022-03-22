@@ -198,6 +198,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
   p2 = list()
   p3 = list()
 
+  explore=False
   # Initially, select patch with prophet strategy
   selected_case_info = None
   if state.iteration < state.max_initial_trial:
