@@ -749,7 +749,6 @@ class GuidedPathCondition:
       self.state.msv_logger.info(f'Fail at recording {test}')
       return None,'fail'
 
-    remove_file_or_pass(new_env['MSV_OUTPUT_DISTANCE_FILE'])
     return record,''
 
   
@@ -899,6 +898,7 @@ class GuidedPathCondition:
         result_handler.remove_patch(self.state, [self.patch])
       else:
         self.patch.case_info.current_record=record
+        result_handler.update_result_out_dist(self.state,[self.patch],False,self.state.negative_test[0],self.new_env)
       return None
     
     # Pass
