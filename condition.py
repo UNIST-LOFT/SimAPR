@@ -114,17 +114,17 @@ def remove_same_pass_record(state: MSVState,patch: PatchInfo,test: int) -> None:
   run_result, is_timeout = run_test.run_fail_test(state, [patch], test, new_env)
   if is_timeout:
     remove_file_or_pass(temp_file)
-    result_handler.update_result_positive(state,[new_patch],False,{test})
-    result_handler.append_result(state,[new_patch],True,False)
-    result_handler.remove_patch(state,[new_patch])
+    result_handler.update_result_positive(state,[patch],False,{test})
+    result_handler.append_result(state,[patch],True,False)
+    result_handler.remove_patch(state,[patch])
     return
 
   record=parse_record(temp_file)
   if record is None or len(record)>=20:
     remove_file_or_pass(temp_file)
-    result_handler.update_result_positive(state,[new_patch],False,{test})
-    result_handler.append_result(state,[new_patch],True,False)
-    result_handler.remove_patch(state,[new_patch])
+    result_handler.update_result_positive(state,[patch],False,{test})
+    result_handler.append_result(state,[patch],True,False)
+    result_handler.remove_patch(state,[patch])
     return
   elif run_result:
     remove_file_or_pass(temp_file)
@@ -142,9 +142,9 @@ def remove_same_pass_record(state: MSVState,patch: PatchInfo,test: int) -> None:
   if is_timeout:
     remove_file_or_pass(temp_file)
     remove_file_or_pass(log_file)
-    result_handler.update_result_positive(state,[new_patch],False,{test})
-    result_handler.append_result(state,[new_patch],True,False)
-    result_handler.remove_patch(state,[new_patch])
+    result_handler.update_result_positive(state,[patch],False,{test})
+    result_handler.append_result(state,[patch],True,False)
+    result_handler.remove_patch(state,[patch])
     return None
   value= parse_value(log_file)
 
