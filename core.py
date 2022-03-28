@@ -8,6 +8,7 @@ import hashlib
 from dataclasses import dataclass
 import logging
 import random
+import numpy as np
 from enum import Enum
 from typing import List, Dict, Tuple, Set
 import uuid
@@ -71,8 +72,20 @@ class PassFail:
     self.fail_count += other.fail_count*self.__fixed_beta__(use_fixed_beta,self.pass_count,self.fail_count)
   def expect_probability(self,additional_score:float=0) -> float:
     return self.beta_mode(self.pass_count + 1.5+additional_score, self.fail_count + 2.0)
+  def select_value(self) -> float: # select a value randomly from the beta distribution
+    return np.random.beta(self.pass_count + 1.5, self.fail_count + 2.0)
   def copy(self) -> 'PassFail':
     return PassFail(self.pass_count, self.fail_count)
+  @staticmethod
+  def softmax(x: List[float]) -> List[float]:
+    npx = np.array(x)
+    x_max = np.max(npx)
+    y = np.exp(npx - x_max)
+    f_x = y / np.sum(y)
+    return f_x.tolist()
+  @staticmethod
+  def argmax(x: List[float]) -> int:
+    return np.argmax(x)
   @staticmethod
   def select_by_probability(probability: List[float]) -> int:   # pf_list: list of PassFail
     # probability=[]
