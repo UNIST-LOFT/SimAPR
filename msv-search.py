@@ -139,23 +139,25 @@ def read_info(state: MSVState) -> None:
   with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
     info = json.load(f)
     read_var_count(state,info['sizes'])
-    max_value = 2
 
     def get_score(file,line):
       for object in info['priority']:
         if object['file']==file and object['line']==line:
-          return float(object['score'])
+          pri = object['primary_score']
+          sec = object['second_score']
+          return pri - sec
       return 0.
 
     for priority in info['priority']:
       temp_file: str = priority["file"]
       temp_line: int = priority["line"]
-      temp_score: float = priority["score"]
-      store = (temp_file, temp_line, temp_score)
+      temp_primary_score: float = priority["primary_score"] # higher, better
+      temp_secondary_score: float = priority["second_score"] # lower, better
+      store = (temp_file, temp_line, temp_primary_score, temp_secondary_score)
       state.priority_list.append(store)
 
     #file_map = state.patch_info_map
-    max_priority = info['priority'][0]['score']
+    max_priority = 1 # info['priority'][0]['score']
     # file_list = state.patch_info_list
     file_map = state.file_info_map
     ff_map: Dict[str, Dict[str, Tuple[int, int]]] = dict()
@@ -196,8 +198,7 @@ def read_info(state: MSVState) -> None:
             break
         #line_info = LineInfo(file_info, int(line['line']))
         state.line_list.append(line_info)
-        score=get_score(file_info.file_name,line_info.line_number)
-        line_info.fl_score = score / max_priority * max_value
+        line_info.fl_score = get_score(file_info.file_name,line_info.line_number)
         if file_info.fl_score<line_info.fl_score:
           file_info.fl_score=line_info.fl_score
         if func_info.fl_score < line_info.fl_score:
@@ -239,7 +240,7 @@ def read_info(state: MSVState) -> None:
                             t.value==PatchType.GuardKind.value or t.value==PatchType.SpecialGuardKind.value or t.value==PatchType.ConditionKind.value
                 case_info = CaseInfo(type_info, int(c), is_condition)
                 case_info.location = file_line
-                if t not in line_info.type_priority.keys():
+                if t not in line_info.type_priority:
                   line_info.type_priority[t]=[]
                 line_info.type_priority[t].append(case_info)
                 current_score=None
