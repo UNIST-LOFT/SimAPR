@@ -50,6 +50,18 @@ class EnvVarMode(Enum):
   collect_pos = 4
   cond_syn = 5
 
+class PT(Enum):
+  selected = 0
+  basic = 1 # basic
+  plau = 2  # plausible
+  fl = 3    # fault localization
+  out = 4   # output difference
+  cov = 5   # coverage
+  odist = 6    # output distance
+  p1 = 7
+  p2 = 8
+  p3 = 9
+
 class PassFail:
   def __init__(self, p: float = 0, f: float = 0) -> None:
     self.pass_count = p
@@ -77,15 +89,29 @@ class PassFail:
   def copy(self) -> 'PassFail':
     return PassFail(self.pass_count, self.fail_count)
   @staticmethod
-  def softmax(x: List[float]) -> List[float]:
+  def normalize(x: List[float]) -> List[float]:
     npx = np.array(x)
     x_max = np.max(npx)
-    y = np.exp(npx - x_max)
+    x_min = np.min(npx)
+    x_diff = x_max - x_min
+    x_norm = (npx - x_min) / x_diff
+    return x_norm.tolist()
+  @staticmethod
+  def softmax(x: List[float]) -> List[float]:
+    npx = np.array(x)
+    y = np.exp(npx)
     f_x = y / np.sum(y)
     return f_x.tolist()
   @staticmethod
   def argmax(x: List[float]) -> int:
     return np.argmax(x)
+  @staticmethod
+  def select_value_normal(x: List[float]) -> List[float]:
+    for i in range(len(x)):
+      val = x[i]
+      sigma = 0.1 / 1.96 # max(0.001, val * (1 - val) / 10)
+      x[i] = np.random.normal(val, sigma)
+    return x
   @staticmethod
   def select_by_probability(probability: List[float]) -> int:   # pf_list: list of PassFail
     # probability=[]
@@ -112,6 +138,7 @@ class FileInfo:
     self.pf = PassFail()
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
+    self.output_pf = PassFail()
     self.fl_score=-1
     self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = -1.0
@@ -136,6 +163,7 @@ class FuncInfo:
     self.line_info_map: Dict[uuid.UUID, LineInfo] = dict()
     self.pf = PassFail()
     self.positive_pf = PassFail()
+    self.output_pf = PassFail()
     self.fl_score: float = -1.0
     self.out_dist: float = -1.0
     self.update_count: int = 0
@@ -158,6 +186,7 @@ class LineInfo:
     self.pf = PassFail()
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
+    self.output_pf = PassFail()
     self.fl_score=0
     self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = -1.0
@@ -181,6 +210,7 @@ class SwitchInfo:
     self.pf = PassFail()
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
+    self.output_pf = PassFail()
     self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = -1.0
     self.update_count: int = 0
@@ -202,6 +232,7 @@ class TypeInfo:
     self.pf = PassFail()
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
+    self.output_pf = PassFail()
     self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = -1.0
     self.update_count: int = 0
@@ -224,6 +255,7 @@ class CaseInfo:
     self.pf = PassFail()
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
+    self.output_pf = PassFail()
     self.processed=False # for prophet condition
     self.failed = False # for simulation mode
     self.profile_diff: 'ProfileDiff' = None
@@ -259,6 +291,7 @@ class OperatorInfo:
     self.pf = PassFail()
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
+    self.output_pf = PassFail()
     self.var_count=var_count
     self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = -1.0
@@ -280,6 +313,7 @@ class VariableInfo:
     self.pf = PassFail()
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
+    self.output_pf = PassFail()
     self.used_const=set()
     self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = -1.0
@@ -303,6 +337,7 @@ class ConstantInfo:
     self.pf = PassFail()
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
+    self.output_pf = PassFail()
     self.left:ConstantInfo=None
     self.right:ConstantInfo=None
     self.profile_diff: 'ProfileDiff' = None
@@ -1008,6 +1043,8 @@ class MSVState:
   simulation_data: Dict[str, MSVResult]
   max_initial_trial: int
   epsilon_greedy_exploration: float
+  c_map: Dict[PT, float]
+  original_output_distance_map: Dict[int, float]
   def __init__(self) -> None:
     self.mode = MSVMode.guided
     self.msv_path = ""
@@ -1064,6 +1101,8 @@ class MSVState:
     self.use_partial_validation = False
     self.max_initial_trial = 100
     self.epsilon_greedy_exploration = 0.1
+    self.c_map = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 1.0}
+    self.original_output_distance_map = dict()
 
 def remove_file_or_pass(file:str):
   try:

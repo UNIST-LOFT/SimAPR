@@ -140,22 +140,38 @@ def read_info(state: MSVState) -> None:
     info = json.load(f)
     read_var_count(state,info['sizes'])
 
-    def get_score(file,line):
+    def get_score(file, line, max_sec_score_map):
       for object in info['priority']:
         if object['file']==file and object['line']==line:
           pri = object['primary_score']
           sec = object['second_score']
-          return pri - sec
+          max_sec = sec + 1
+          if pri in max_sec_score_map:
+            max_sec = max_sec_score_map[pri]
+          return pri - (sec / max_sec)
       return 0.
 
+    max_sec_score = dict()
     for priority in info['priority']:
       temp_file: str = priority["file"]
       temp_line: int = priority["line"]
-      temp_primary_score: float = priority["primary_score"] # higher, better
+      temp_primary_score: int = priority["primary_score"] # higher, better
       temp_secondary_score: float = priority["second_score"] # lower, better
-      store = (temp_file, temp_line, temp_primary_score, temp_secondary_score)
+      if temp_primary_score in max_sec_score:
+        if max_sec_score[temp_primary_score] < temp_secondary_score:
+          max_sec_score[temp_primary_score] = temp_secondary_score
+      else:
+        max_sec_score[temp_primary_score] = temp_secondary_score 
+      #store = (temp_file, temp_line, temp_primary_score, temp_secondary_score)
+      #state.priority_list.append(store)
+    for priority in info['priority']:
+      temp_file: str = priority["file"]
+      temp_line: int = priority["line"]
+      temp_primary_score: int = priority["primary_score"]
+      temp_secondary_score: float = priority["second_score"]
+      max_second_score = max_sec_score[temp_primary_score]
+      store = (temp_file, temp_line, temp_primary_score - (temp_secondary_score / max_second_score))
       state.priority_list.append(store)
-
     #file_map = state.patch_info_map
     max_priority = 1 # info['priority'][0]['score']
     # file_list = state.patch_info_list
@@ -198,7 +214,8 @@ def read_info(state: MSVState) -> None:
             break
         #line_info = LineInfo(file_info, int(line['line']))
         state.line_list.append(line_info)
-        line_info.fl_score = get_score(file_info.file_name,line_info.line_number)
+        score = get_score(file_info.file_name,line_info.line_number,max_sec_score)
+        line_info.fl_score = score
         if file_info.fl_score<line_info.fl_score:
           file_info.fl_score=line_info.fl_score
         if func_info.fl_score < line_info.fl_score:
