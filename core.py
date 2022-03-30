@@ -50,6 +50,7 @@ class EnvVarMode(Enum):
   collect_pos = 4
   cond_syn = 5
 
+# Probability Type
 class PT(Enum):
   selected = 0
   basic = 1 # basic
@@ -94,7 +95,10 @@ class PassFail:
     x_max = np.max(npx)
     x_min = np.min(npx)
     x_diff = x_max - x_min
-    x_norm = (npx - x_min) / x_diff
+    if (x_diff < 1e-6):
+      x_norm = npx - x_min
+    else:
+      x_norm = (npx - x_min) / x_diff
     return x_norm.tolist()
   @staticmethod
   def softmax(x: List[float]) -> List[float]:
@@ -142,6 +146,7 @@ class FileInfo:
     self.fl_score=-1
     self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = -1.0
+    self.out_dist_map: Dict[int, float] = dict()
     self.update_count: int = 0
     self.total_case_info: int = 0
     self.prophet_score:list=[]
@@ -166,6 +171,7 @@ class FuncInfo:
     self.output_pf = PassFail()
     self.fl_score: float = -1.0
     self.out_dist: float = -1.0
+    self.out_dist_map: Dict[int, float] = dict()
     self.update_count: int = 0
     self.total_case_info: int = 0
     self.prophet_score: List[float] = []
@@ -190,6 +196,7 @@ class LineInfo:
     self.fl_score=0
     self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = -1.0
+    self.out_dist_map: Dict[int, float] = dict()
     self.update_count: int = 0
     self.total_case_info: int = 0
     self.prophet_score:list=[]
@@ -213,6 +220,7 @@ class SwitchInfo:
     self.output_pf = PassFail()
     self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = -1.0
+    self.out_dist_map: Dict[int, float] = dict()
     self.update_count: int = 0
     self.total_case_info: int = 0
     self.prophet_score:list=[]
@@ -235,6 +243,7 @@ class TypeInfo:
     self.output_pf = PassFail()
     self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = -1.0
+    self.out_dist_map: Dict[int, float] = dict()
     self.update_count: int = 0
     self.total_case_info: int = 0
     self.prophet_score:list=[]
@@ -260,6 +269,7 @@ class CaseInfo:
     self.failed = False # for simulation mode
     self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = -1.0
+    self.out_dist_map: Dict[int, float] = dict()
     self.update_count: int = 0
     self.prophet_score:list=[]
     self.location: FileLine = None
@@ -295,6 +305,7 @@ class OperatorInfo:
     self.var_count=var_count
     self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = -1.0
+    self.out_dist_map: Dict[int, float] = dict()
     self.update_count: int = 0
     self.prophet_score:list=[]
     self.has_init_patch=False
@@ -317,6 +328,7 @@ class VariableInfo:
     self.used_const=set()
     self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = -1.0
+    self.out_dist_map: Dict[int, float] = dict()
     self.update_count: int = 0
     self.prophet_score:int=0
     self.has_init_patch=False
@@ -342,6 +354,7 @@ class ConstantInfo:
     self.right:ConstantInfo=None
     self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = -1.0
+    self.out_dist_map: Dict[int, float] = dict()
     self.update_count: int = 0
     self.has_init_patch=False
   def __hash__(self) -> int:
@@ -685,38 +698,58 @@ class PatchInfo:
           self.variable_info.has_init_patch=True
           self.constant_info.has_init_patch=True
 
-
-  def update_result_out_dist(self, result: bool, dist: float, use_fixed_beta: bool) -> None:
+  def update_result_out_dist(self, state: 'MSVState', result: bool, dist: float, test: int) -> None:
     self.out_dist = dist
+    is_diff = True
+    if test in state.original_output_distance_map:
+      is_diff = dist != state.original_output_distance_map[test]
     tmp = self.case_info.update_count * self.case_info.out_dist
     self.case_info.out_dist = (tmp + dist) / (self.case_info.update_count + 1)
+    self.case_info.out_dist_map[test] = (tmp + dist) / (self.case_info.update_count + 1)
     self.case_info.update_count += 1
+    self.case_info.output_pf.update(is_diff, 1.0)
     tmp = self.type_info.update_count * self.type_info.out_dist
     self.type_info.out_dist = (tmp + dist) / (self.type_info.update_count + 1)
+    self.type_info.out_dist_map[test] = (tmp + dist) / (self.type_info.update_count + 1)
     self.type_info.update_count += 1
+    self.type_info.output_pf.update(is_diff, 1.0)
     tmp = self.switch_info.update_count * self.switch_info.out_dist
     self.switch_info.out_dist = (tmp + dist) / (self.switch_info.update_count + 1)
+    self.switch_info.out_dist_map[test] = (tmp + dist) / (self.switch_info.update_count + 1)
     self.switch_info.update_count += 1
+    self.switch_info.output_pf.update(is_diff, 1.0)
     tmp = self.line_info.update_count * self.line_info.out_dist
     self.line_info.out_dist = (tmp + dist) / (self.line_info.update_count + 1)
+    self.line_info.out_dist_map[test] = (tmp + dist) / (self.line_info.update_count + 1)
     self.line_info.update_count += 1
+    self.line_info.output_pf.update(is_diff, 1.0)
     tmp = self.func_info.out_dist * self.func_info.update_count
     self.func_info.out_dist = (tmp + dist) / (self.func_info.update_count + 1)
+    self.func_info.out_dist_map[test] = (tmp + dist) / (self.func_info.update_count + 1)
     self.func_info.update_count += 1
+    self.func_info.output_pf.update(is_diff, 1.0)
     tmp = self.file_info.update_count * self.file_info.out_dist
     self.file_info.out_dist = (tmp + dist) / (self.file_info.update_count + 1)
+    self.file_info.out_dist_map[test] = (tmp + dist) / (self.file_info.update_count + 1)
     self.file_info.update_count += 1
+    self.file_info.output_pf.update(is_diff, 1.0)
     if self.is_condition and self.operator_info is not None:
       tmp = self.operator_info.update_count * self.operator_info.out_dist
       self.operator_info.out_dist = (tmp + dist) / (self.operator_info.update_count + 1)
+      self.operator_info.out_dist_map[test] = (tmp + dist) / (self.operator_info.update_count + 1)
       self.operator_info.update_count += 1
+      self.operator_info.output_pf.update(is_diff, 1.0)
       if self.operator_info.operator_type != OperatorType.ALL_1:
         tmp = self.variable_info.update_count * self.variable_info.out_dist
         self.variable_info.out_dist = (tmp + dist) / (self.variable_info.update_count + 1)
+        self.variable_info.out_dist_map[test] = (tmp + dist) / (self.variable_info.update_count + 1)
         self.variable_info.update_count += 1
+        self.variable_info.output_pf.update(is_diff, 1.0)
         tmp = self.constant_info.update_count * self.constant_info.out_dist
         self.constant_info.out_dist = (tmp + dist) / (self.constant_info.update_count + 1)
+        self.constant_info.out_dist_map[test] = (tmp + dist) / (self.constant_info.update_count + 1)
         self.constant_info.update_count += 1
+        self.constant_info.output_pf.update(is_diff, 1.0)
   
   def add_profile(self, test: int, original: Profile, diff_set: Set[ProfileElement]) -> None:
     self.profile_diff = ProfileDiff(test, original, diff_set)
@@ -1101,7 +1134,7 @@ class MSVState:
     self.use_partial_validation = False
     self.max_initial_trial = 100
     self.epsilon_greedy_exploration = 0.1
-    self.c_map = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 1.0}
+    self.c_map = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.3}
     self.original_output_distance_map = dict()
 
 def remove_file_or_pass(file:str):

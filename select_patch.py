@@ -236,14 +236,14 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
   explore=False
   # Initially, select patch with prophet strategy
   selected_case_info = None
-  state.max_initial_trial = 0
+  #state.max_initial_trial = 0
   if state.iteration < state.max_initial_trial:
     return select_patch_prophet(state)
   else:
     explore = state.epsilon_greedy_exploration > random.random()
     if explore:
       state.msv_logger.info("Explore!")
-      c_map[PT.cov] = 1.0
+      c_map[PT.cov] = 2.0
     else:
       state.msv_logger.info("Exploit!")
     use_fl = state.use_fl
