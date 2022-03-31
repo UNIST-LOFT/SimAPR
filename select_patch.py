@@ -215,9 +215,8 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
   original_profile = state.profile_map[test]
   is_rand = (mode == MSVMode.random)
   n = state.use_hierarchical_selection
-  if is_rand:
-    n = 1
   pf_rand = PassFail()
+  rand_cmap = {PT.p1: 1.0}
   # Select file
   selected = list()
   p1 = list()
@@ -232,6 +231,9 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
   p_map = {PT.selected: selected, PT.p1: p1, PT.p2: p2, PT.p3: p3, 
           PT.basic: p_b, PT.plau: p_p, PT.fl: p_fl, PT.out: p_o, PT.cov: p_cov, PT.odist: p_odist}
   c_map = state.c_map.copy()
+  if is_rand:
+    n = 1
+    c_map = rand_cmap
 
   explore=False
   # Initially, select patch with prophet strategy
@@ -241,7 +243,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     return select_patch_prophet(state)
   else:
     explore = state.epsilon_greedy_exploration > random.random()
-    if explore:
+    if explore and not is_rand:
       state.msv_logger.info("Explore!")
       c_map[PT.cov] = 2.0
     else:
@@ -253,13 +255,13 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     DELTA_INIT_PATCH=0.2
     for file_name in state.file_info_map:
       file_info = state.file_info_map[file_name]
-      selected.append(file_info)
       if len(file_info.func_info_map) == 0:
         state.msv_logger.warning(f"No line info in file: {file_info.file_name}")
         p1.append(-1)
         continue
+      selected.append(file_info)
       if is_rand:
-        p1.append(pf_rand.expect_probability())
+        p1.append(pf_rand.select_value())
       else:
         p_fl.append(file_info.fl_score)
         p_b.append(file_info.pf.select_value())
@@ -305,13 +307,13 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     # Select function
     for func_id in selected_file_info.func_info_map:
       func_info = selected_file_info.func_info_map[func_id]
-      selected.append(func_info)
       if len(func_info.line_info_map) == 0:
         state.msv_logger.warning(f"No line info in function: {func_info.func_name}")
         p1.append(-1)
         continue
+      selected.append(func_info)
       if is_rand:
-        p1.append(pf_rand.expect_probability())
+        p1.append(pf_rand.select_value())
       else:
         p_fl.append(func_info.fl_score)
         p_b.append(func_info.pf.select_value())
@@ -357,13 +359,13 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     # Select line
     for line_uuid in selected_func_info.line_info_map:
       line_info = selected_func_info.line_info_map[line_uuid]
-      selected.append(line_info)
       if len(line_info.switch_info_map) == 0:
         state.msv_logger.warning(f"No switch info in line: {selected_file_info.file_name}: {line_info.line_number}")
         p1.append(-1)
         continue
+      selected.append(line_info)
       if is_rand:
-        p1.append(pf_rand.expect_probability())
+        p1.append(pf_rand.select_value())
       else:
         p_fl.append(line_info.fl_score)
         p_b.append(line_info.pf.select_value())
@@ -410,13 +412,13 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     # Select switch
     for switch_num in selected_line_info.switch_info_map:
       switch_info = selected_line_info.switch_info_map[switch_num]
-      selected.append(switch_info)
       if len(switch_info.type_info_map) == 0:
         state.msv_logger.warning(f"No type info in switch: {selected_file_info.file_name}: {selected_line_info.line_number}: {switch_info.switch_number}")
         p1.append(-1)
         continue
+      selected.append(switch_info)
       if is_rand:
-        p1.append(pf_rand.expect_probability())
+        p1.append(pf_rand.select_value())
       else:
         p_b.append(switch_info.pf.select_value())
         p_p.append(switch_info.positive_pf.select_value())
@@ -453,13 +455,13 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     # Select type
     for patch_type in selected_switch_info.type_info_map:
       type_info = selected_switch_info.type_info_map[patch_type]
-      selected.append(type_info)
       if len(type_info.case_info_map) == 0:
         state.msv_logger.warning(f"No case info in type: {selected_file_info.file_name}: {selected_line_info.line_number}: {selected_switch_info.switch_number}: {type_info.patch_type}")
         p1.append(-1)
         continue
+      selected.append(type_info)
       if is_rand:
-        p1.append(pf_rand.expect_probability())
+        p1.append(pf_rand.select_value())
       else:
         p_b.append(type_info.pf.select_value())
         p_p.append(type_info.positive_pf.select_value())
@@ -489,6 +491,8 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     clear_list(state, p_map)
     min_failed_patch=1.0
     passed_once_patches_index=[]
+    if explore:
+      c_map = rand_cmap
     # Select case
     for case_num in selected_type_info.case_info_map:
       case_info = selected_type_info.case_info_map[case_num]
@@ -502,7 +506,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
         p_p.append(case_info.positive_pf.select_value())
         p_o.append(case_info.output_pf.select_value())
         if explore:
-          p1.append(pf_rand.expect_probability())
+          p1.append(pf_rand.select_value())
           p_cov.append(pf_rand.expect_probability())
         else:
           p1.append(case_info.pf.expect_probability())
@@ -613,15 +617,21 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     # return select_conditional_patch_by_record(state, selected_case_info)
     min_failed_patch=1.0
     passed_once_patches_index=[]
+    if explore:
+      c_map = rand_cmap
     # Select operator
     for op_info in selected_case_info.operator_info_list:
+      selected.append(op_info)
       if is_rand:
-        p1.append(pf_rand.expect_probability())
+        p1.append(pf_rand.select_value())
       else:
         if explore:
-          p1.append(pf_rand.expect_probability())
+          p1.append(pf_rand.select_value())
         else:
           p1.append(op_info.pf.expect_probability())
+          p_b.append(op_info.pf.select_value())
+          p_p.append(op_info.positive_pf.select_value())
+          p_o.append(op_info.output_pf.select_value())
         if not op_info.has_init_patch and min_failed_patch>p1[-1]:
             min_failed_patch=p1[-1]
         elif op_info.has_init_patch:
@@ -634,12 +644,11 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       for i in passed_once_patches_index:
         if p1[i]<min_failed_patch+DELTA_INIT_PATCH and p1[i]<0.5:
           p1[i]=min_failed_patch+DELTA_INIT_PATCH
-    selected_operator = select_by_probability_hierarchical(state, n, p1, p2, p3)
+    #selected_operator = select_by_probability_hierarchical(state, n, p1, p2, p3)
+    selected_operator = select_by_probability(state, p_map, c_map)
     selected_operator_info = selected_case_info.operator_info_list[selected_operator]
+    clear_list(state, p_map)
 
-    p1.clear()
-    p2.clear()
-    p3.clear()
     min_failed_patch=1.0
     passed_once_patches_index=[]
     if selected_operator_info.operator_type == OperatorType.ALL_1:
@@ -647,42 +656,47 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     # Select variable
     for var_info in selected_operator_info.variable_info_list:
       # If variable has no constant, skip
+      if len(var_info.constant_info_list) == 0:
+        p1.append(-1)
+        continue
+      selected.append(var_info)
       if is_rand:
-        p1.append(pf_rand.expect_probability())
+        p1.append(pf_rand.select_value())
       else:
-        if len(var_info.constant_info_list) == 0:
-          p1.append(-1)
+        if explore:
+          p1.append(pf_rand.select_value())
         else:
-          if explore:
-            p1.append(pf_rand.expect_probability())
-          else:
-            p1.append(var_info.pf.expect_probability())
-          if not var_info.has_init_patch and min_failed_patch>p1[-1]:
-            min_failed_patch=p1[-1]
-          elif var_info.has_init_patch:
-            passed_once_patches_index.append(len(p1)-1)
-        #p2.append(ProfileDiff.get_diff(var_info.profile_diff, test, original_profile))
-        p2.append(var_info.out_dist)
-        p3.append(var_info.positive_pf.expect_probability())
+          p1.append(var_info.pf.expect_probability())
+          p_b.append(var_info.pf.select_value())
+          p_p.append(var_info.positive_pf.select_value())
+          p_o.append(var_info.output_pf.select_value())
+        if not var_info.has_init_patch and min_failed_patch>p1[-1]:
+          min_failed_patch=p1[-1]
+        elif var_info.has_init_patch:
+          passed_once_patches_index.append(len(p1)-1)
+      #p2.append(ProfileDiff.get_diff(var_info.profile_diff, test, original_profile))
+      p2.append(var_info.out_dist)
+      p3.append(var_info.positive_pf.expect_probability())
     update_out_dist_list(state, p2)
     if min_failed_patch<1.0:
       for i in passed_once_patches_index:
         if p1[i]<min_failed_patch+DELTA_INIT_PATCH and p1[i]<0.5:
           p1[i]=min_failed_patch+DELTA_INIT_PATCH
-    selected_variable = select_by_probability_hierarchical(state, n, p1, p2, p3)
-    selected_variable_info = selected_operator_info.variable_info_list[selected_variable]
-    
-    p1.clear()
-    p2.clear()
-    p3.clear()
+    #selected_variable = select_by_probability_hierarchical(state, n, p1, p2, p3)
+    selected_variable = select_by_probability(state, p_map, c_map)
+    selected_variable_info: VariableInfo = selected[selected_variable]
+    clear_list(state, p_map)
+
+    c_map = rand_cmap
     min_failed_patch=1.0
     passed_once_patches_index=[]
     # Select constant
     for const_info in selected_variable_info.constant_info_list:
       if is_rand:
-        p1.append(pf_rand.expect_probability())
+        p1.append(pf_rand.select_value())
       else:
-        p1.append(const_info.pf.expect_probability())
+        #p1.append(const_info.pf.expect_probability())
+        p1.append(pf_rand.select_value())
         if not const_info.has_init_patch and min_failed_patch>p1[-1]:
             min_failed_patch=p1[-1]
         elif const_info.has_init_patch:
@@ -695,11 +709,10 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       for i in passed_once_patches_index:
         if p1[i]<min_failed_patch+DELTA_INIT_PATCH and p1[i]<0.5:
           p1[i]=min_failed_patch+DELTA_INIT_PATCH
-    selected_constant = select_by_probability_hierarchical(state, n, p1, p2, p3)
+    #selected_constant = select_by_probability_hierarchical(state, n, p1, p2, p3)
+    selected_constant = select_by_probability(state, p_map, c_map)
     selected_constant_info = selected_variable_info.constant_info_list[selected_constant]
-    p1.clear()
-    p2.clear()
-    p3.clear()
+    clear_list(state, p_map)
     return PatchInfo(selected_case_info, selected_operator_info, selected_variable_info, selected_constant_info)
 
 def get_ochiai(e_f: float, e_p: float, n_f: float, n_p: float) -> float:
