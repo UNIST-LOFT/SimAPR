@@ -6,6 +6,9 @@ from sys import argv
 
 
 class Config:
+    """
+        Data class for patch configuration.
+    """
     def __init__(self,switch,case,operator=-1,variable=-1,constant=-1) -> None:
         self.switch = switch
         self.case = case
@@ -14,6 +17,12 @@ class Config:
         self.constant = constant
 
 def insert_patch(original_file:str,backup_file:str,begin_line:int,begin_column:int,end_line:int,end_column:int,patch:str):
+    """
+        Insert a patch string into actual source file, and generate patched file.
+        original_file: original source file
+        backup file: backup file name read from __backup.log
+        patch: patch string read from switch-info.json
+    """
     # line informations may have function declaration for patch generation
     begin_line-=2
     end_line-=2
@@ -58,6 +67,10 @@ def insert_patch(original_file:str,backup_file:str,begin_line:int,begin_column:i
         return 'patched_'+original_file
 
 def replace_actual_condition(config:Config,patch:str):
+    """
+        Replace abstract condition with actual condition.
+        If abstract condition not found(a.k.a. normal patch), do nothing.
+    """
     if patch.find('__is_neg')!=-1:
         start_abst_cond=patch.find('__is_neg')
         end_abst_cond=-1
@@ -112,7 +125,7 @@ def replace_actual_condition(config:Config,patch:str):
         return patch
 
 if __name__=='__main__':
-    opts, args = getopt.getopt(argv[1 :], "gh")
+    opts, args = getopt.getopt(argv[1:], "gh")
     gen_diff=False
     for o, a in opts:
         if o == "-g":
