@@ -58,10 +58,8 @@ class PT(Enum):
   fl = 3    # fault localization
   out = 4   # output difference
   cov = 5   # coverage
-  odist = 6    # output distance
-  p1 = 7
-  p2 = 8
-  p3 = 9
+  rand = 6  # random
+  odist = 7    # output distance
 
 class PassFail:
   def __init__(self, p: float = 0, f: float = 0) -> None:
