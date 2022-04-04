@@ -1,7 +1,8 @@
 
 import getopt
 import json
-from os import chdir, getcwd
+from os import chdir, getcwd, mkdir, path
+import subprocess
 from sys import argv
 
 
@@ -15,6 +16,14 @@ class Config:
         self.operator = operator
         self.variable = variable
         self.constant = constant
+    
+    def __str__(self) -> str:
+        result=f'{self.switch}-{self.case}'
+        if self.operator != -1:
+            result += f'-{self.operator}'
+        if self.variable != -1:
+            result += f'-{self.variable}-{self.constant}'
+        return result
 
 def insert_patch(original_file:str,backup_file:str,begin_line:int,begin_column:int,end_line:int,end_column:int,patch:str):
     """
@@ -124,6 +133,14 @@ def replace_actual_condition(config:Config,patch:str):
     else:
         return patch
 
+def generate_diff(original_file:str,backup_file:str,config:Config):
+    if not path.isdir('patch'):
+        mkdir('patch')
+    
+    output_file=open(f'patch/{config}.patch','w')
+    subprocess.run(['diff','-uNr',backup_file,'patched_'+original_file],stdout=output_file)
+    output_file.close()
+
 if __name__=='__main__':
     opts, args = getopt.getopt(argv[1:], "gh")
     gen_diff=False
@@ -198,5 +215,8 @@ Options:
     patch=replace_actual_condition(config,patch)
     print(f'patch:\n{patch}')
     patched_file=insert_patch(file_name,original_file,begin_line,begin_column,end_line,end_column,patch)
+
+    if gen_diff:
+        generate_diff(file_name,original_file,config)
 
     chdir(orig_dir)
