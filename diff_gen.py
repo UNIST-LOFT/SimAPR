@@ -118,17 +118,15 @@ if __name__=='__main__':
         if o == "-g":
             gen_diff=True
         elif o == '-h':
-            print(f"""
-                Usage: python diff_gen.py [options] <work_dir> <config_str>
+            print(f"""Usage: python diff_gen.py [options] <work_dir> <config_str>
 
-                Generate patched source file with patch configuration. Generated source file will be 'patched_<file>'.
-                <work_dir>: work directory of program.
-                <config_str>: <switch>-<case>[-<operator>[-<variable>-<constant>]].
+Generate patched source file with patch configuration. Generated source file will be 'patched_<file>'.
+<work_dir>: work directory of program.
+<config_str>: <switch>-<case>[-<operator>[-<variable>-<constant>]].
 
-                Options:
-                    -g: generate diff file.
-                    -h: show help.
-            """)
+Options:
+    -g: generate diff file.
+    -h: show help. """)
             exit(0)
 
     work_dir=args[0]
