@@ -4,11 +4,14 @@ from typing import List, Set, Dict, Tuple
 
 def update_result(state: MSVState, selected_patch: List[PatchInfo], run_result: bool, n: float, test: int, new_env: Dict[str, str], update_out_dist: bool = True) -> None:
   #if state.use_hierarchical_selection >= 2:
-  if update_out_dist:
-    update_result_out_dist(state, selected_patch, run_result, test, new_env)
-  else:
-    for patch in selected_patch:
-      patch.update_result_out_dist(run_result, 0.0, state.use_fixed_beta)
+  if test >= 0:
+    if update_out_dist:
+      update_result_out_dist(state, selected_patch, run_result, test, new_env)
+    else:
+      for patch in selected_patch:
+        patch.update_result_out_dist(state, run_result, 0.0, test)
+  # else:
+  #   state.msv_logger.info(f"Test {test} is not a valid test number")
   # update_result_critical(state, selected_patch, run_result, test)
   if state.mode == MSVMode.seapr:
     update_result_seapr(state, selected_patch, run_result, test)
@@ -36,7 +39,7 @@ def update_result_out_dist(state: MSVState, selected_patch: List[PatchInfo], run
       state.msv_logger.warning(f"File {output_dist_file} does not exist")
   state.msv_logger.debug(f"Output distance at {output_dist_file}: {dist}")
   for patch in selected_patch:
-    patch.update_result_out_dist(run_result, dist, state.use_fixed_beta)
+    patch.update_result_out_dist(state, run_result, dist, test)
   remove_file_or_pass(output_dist_file)
   return dist
 

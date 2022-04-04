@@ -29,6 +29,28 @@ def select_by_probability_hierarchical(state: MSVState, n: int, p1: List[float],
       p3_select_pf.append(p3[p1_select[p2_select[i]]])
     return p1_select[p2_select[PassFail.select_by_probability(p3_select_pf)]]
 
+def select_by_probability(state: MSVState, p_map: Dict[PT, List[float]], c_map: Dict[PT, float]) -> int:
+  if len(p_map) == 0:
+    state.msv_logger.critical("Empty p_map!!!!")
+    return -1
+  num = len(p_map[PT.selected])
+  if num == 0:
+    state.msv_logger.critical("Empty selected list!!!!")
+    return -1
+  result = [0 for i in range(num)]
+  for key in c_map:
+    c = c_map[key]
+    p = p_map[key]
+    if len(p) == 0:
+      state.msv_logger.warning(f"Empty p {key}!!!!")
+      continue
+    if key == PT.fl or key == PT.cov:
+      p = PassFail.normalize(p)
+      p = PassFail.select_value_normal(p)
+    prob = PassFail.softmax(p)
+    for i in range(num):
+      result[i] += c * prob[i]
+  return PassFail.argmax(result)
 
 def __select_prophet_condition(selected_case:CaseInfo,state:MSVState):
   selected_operator=selected_case.operator_info_list[0]
@@ -181,7 +203,11 @@ def update_out_dist_list(state: MSVState, out_dist: List[float]) -> None:
       out_dist[i] = (tot - (avg * 2))
     else:
       out_dist[i] = (tot - out_dist[i])
-  
+
+def clear_list(state: MSVState, p_map: Dict[str, List[float]]) -> None:
+  for p in p_map:
+    p_map[p].clear()
+
 def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[PatchInfo]=[], test: int = -1) -> PatchInfo:
   # Select patch for guided, random
   if test < 0:
@@ -189,291 +215,161 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
   original_profile = state.profile_map[test]
   is_rand = (mode == MSVMode.random)
   n = state.use_hierarchical_selection
+  pf_rand = PassFail()
+  rand_cmap = {PT.rand: 1.0}
+  # lists which are used to store the scores of each patch
+  selected = list()
+  p_rand = list() # random
+  p_b = list() # basic
+  p_p = list() # plausible
+  p_fl = list() # fault localization
+  p_o = list() # output
+  p_odist = list() # output distance
+  p_cov = list() # coverage
+  p_map = {PT.selected: selected, PT.rand: p_rand, PT.basic: p_b, 
+          PT.plau: p_p, PT.fl: p_fl, PT.out: p_o, PT.cov: p_cov, PT.odist: p_odist}
+  c_map = state.c_map.copy()
   if is_rand:
     n = 1
-  pf_rand = PassFail()
-  # Select file
-  selected = list()
-  p1 = list()
-  p2 = list()
-  p3 = list()
+    c_map = rand_cmap
 
   explore=False
   # Initially, select patch with prophet strategy
   selected_case_info = None
+  # state.max_initial_trial = 0
   if state.iteration < state.max_initial_trial:
     return select_patch_prophet(state)
   else:
     explore = state.epsilon_greedy_exploration > random.random()
-    if explore:
+    if explore and not is_rand:
       state.msv_logger.info("Explore!")
+      c_map[PT.cov] = 2.0
     else:
       state.msv_logger.info("Exploit!")
     use_fl = state.use_fl
 
-    min_failed_patch=1.0
-    passed_once_patches_index=[]
     DELTA_INIT_PATCH=0.2
     for file_name in state.file_info_map:
       file_info = state.file_info_map[file_name]
-      selected.append(file_info)
       if len(file_info.func_info_map) == 0:
         state.msv_logger.warning(f"No line info in file: {file_info.file_name}")
-        p1.append(-1)
         continue
-      if is_rand:
-        p1.append(pf_rand.expect_probability())
-      else:
-        if explore:
-          adjusted_pf = PassFail()
-          adjusted_pf.update_with_pf(file_info.pf)
-          adjusted_pf.update(file_info.fl_score > 0, abs(file_info.fl_score))
-          temp_p1 = adjusted_pf.expect_probability()
-          # coverage = file_info.update_count / file_info.total_case_info
-          min_coverage=1.0
-          for func in file_info.func_info_map.values():
-            if min_coverage>func.case_update_count/func.total_case_info:
-              min_coverage=func.case_update_count/func.total_case_info
-          p1.append(temp_p1 * (1 - min_coverage))
-        elif use_fl:
-          adjusted_pf = PassFail()
-          adjusted_pf.update_with_pf(file_info.pf)
-          adjusted_pf.update(file_info.fl_score > 0, abs(file_info.fl_score))
-          p1.append(adjusted_pf.expect_probability())
-        else:
-          p1.append(file_info.pf.expect_probability())
-          if not file_info.has_init_patch and min_failed_patch>p1[-1]:
-            min_failed_patch=p1[-1]
-          elif file_info.has_init_patch:
-            passed_once_patches_index.append(len(p1)-1)
-        #p2.append(ProfileDiff.get_diff(file_info.profile_diff, test, original_profile))
-        p2.append(file_info.out_dist)
-        p3.append(file_info.positive_pf.expect_probability())
-    update_out_dist_list(state, p2)
-    if min_failed_patch<1.0:
-      for i in passed_once_patches_index:
-        if p1[i]<min_failed_patch+DELTA_INIT_PATCH and p1[i]<0.5:
-          p1[i]=min_failed_patch+DELTA_INIT_PATCH
-    selected_file = select_by_probability_hierarchical(state, n, p1, p2, p3)
+      selected.append(file_info)
+      p_rand.append(pf_rand.select_value())
+      p_fl.append(file_info.fl_score)
+      p_b.append(file_info.pf.select_value())
+      p_p.append(file_info.positive_pf.select_value())
+      p_o.append(file_info.output_pf.select_value())
+      if not is_rand and explore:
+        min_coverage=1.0
+        for func in file_info.func_info_map.values():
+          if min_coverage>func.case_update_count/func.total_case_info:
+            min_coverage=func.case_update_count/func.total_case_info
+        p_cov.append(1 - min_coverage)
+    selected_file = select_by_probability(state, p_map, c_map)
     selected_file_info: FileInfo = selected[selected_file]
+    clear_list(state, p_map)
 
-    selected.clear()
-    p1.clear()
-    p2.clear()
-    p3.clear()
-    min_failed_patch=1.0
-    passed_once_patches_index=[]
     # Select function
     for func_id in selected_file_info.func_info_map:
       func_info = selected_file_info.func_info_map[func_id]
-      selected.append(func_info)
       if len(func_info.line_info_map) == 0:
         state.msv_logger.warning(f"No line info in function: {func_info.func_name}")
-        p1.append(-1)
         continue
-      if is_rand:
-        p1.append(pf_rand.expect_probability())
-      else:
-        if explore:
-          adjusted_pf = PassFail()
-          adjusted_pf.update_with_pf(func_info.pf)
-          adjusted_pf.update(func_info.fl_score > 0, abs(func_info.fl_score))
-          temp_p1 = adjusted_pf.expect_probability()
-          # coverage = func_info.update_count / func_info.total_case_info
-          min_coverage=1.0
-          for line in func_info.line_info_map.values():
-            if min_coverage>line.case_update_count/line.total_case_info:
-              min_coverage=line.case_update_count/line.total_case_info
-          p1.append(temp_p1 * (1 - min_coverage))
-        elif use_fl:
-          adjusted_pf = PassFail()
-          adjusted_pf.update_with_pf(func_info.pf)
-          adjusted_pf.update(func_info.fl_score > 0, abs(func_info.fl_score))
-          p1.append(adjusted_pf.expect_probability())
-        else:
-          p1.append(func_info.pf.expect_probability())
-          if not func_info.has_init_patch and min_failed_patch>p1[-1]:
-            min_failed_patch=p1[-1]
-          elif func_info.has_init_patch:
-            passed_once_patches_index.append(len(p1)-1)
-        #p2.append(ProfileDiff.get_diff(func_info.profile_diff, test, original_profile))
-        p2.append(func_info.out_dist)
-        p3.append(func_info.positive_pf.expect_probability())
-    update_out_dist_list(state, p2)
-    if min_failed_patch<1.0:
-      for i in passed_once_patches_index:
-        if p1[i]<min_failed_patch+DELTA_INIT_PATCH and p1[i]<0.5:
-          p1[i]=min_failed_patch+DELTA_INIT_PATCH
-    selected_func = select_by_probability_hierarchical(state, n, p1, p2, p3)
+      selected.append(func_info)
+      p_rand.append(pf_rand.select_value())
+      p_fl.append(func_info.fl_score)
+      p_b.append(func_info.pf.select_value())
+      p_p.append(func_info.positive_pf.select_value())
+      p_o.append(func_info.output_pf.select_value())
+      if explore and not is_rand:
+        min_coverage=1.0
+        for line in func_info.line_info_map.values():
+          if min_coverage>line.case_update_count/line.total_case_info:
+            min_coverage=line.case_update_count/line.total_case_info
+        p_cov.append(1 - min_coverage)
+    selected_func = select_by_probability(state, p_map, c_map)
     selected_func_info: FuncInfo = selected[selected_func]
+    clear_list(state, p_map)
 
-    selected.clear()
-    p1.clear()
-    p2.clear()
-    p3.clear()
-    min_failed_patch=1.0
-    passed_once_patches_index=[]
     # Select line
     for line_uuid in selected_func_info.line_info_map:
       line_info = selected_func_info.line_info_map[line_uuid]
-      selected.append(line_info)
       if len(line_info.switch_info_map) == 0:
         state.msv_logger.warning(f"No switch info in line: {selected_file_info.file_name}: {line_info.line_number}")
-        p1.append(-1)
         continue
-      if is_rand:
-        p1.append(pf_rand.expect_probability())
-      else:
-        if explore:
-          adjusted_pf = PassFail()
-          adjusted_pf.update_with_pf(line_info.pf)
-          adjusted_pf.update(line_info.fl_score > 0, abs(line_info.fl_score))
-          temp_p1 = adjusted_pf.expect_probability()
-          # coverage = line_info.update_count / line_info.total_case_info
-          min_coverage=1.0
-          for switch in line_info.switch_info_map.values():
-            if min_coverage>switch.case_update_count/switch.total_case_info:
-              min_coverage=switch.case_update_count/switch.total_case_info
-          p1.append(temp_p1 * (1 - min_coverage))
-        elif use_fl:
-          adjusted_pf = PassFail()
-          adjusted_pf.update_with_pf(line_info.pf)
-          adjusted_pf.update(line_info.fl_score > 0, abs(line_info.fl_score))
-          p1.append(adjusted_pf.expect_probability())
-        else:
-          p1.append(line_info.pf.expect_probability())
-          if not line_info.has_init_patch and min_failed_patch>p1[-1]:
-            min_failed_patch=p1[-1]
-          elif line_info.has_init_patch:
-            passed_once_patches_index.append(len(p1)-1)
-        #p2.append(ProfileDiff.get_diff(line_info.profile_diff, test, original_profile))
-        p2.append(line_info.out_dist)
-        p3.append(line_info.positive_pf.expect_probability())
-    update_out_dist_list(state, p2)
-    if min_failed_patch<1.0:
-      for i in passed_once_patches_index:
-        if p1[i]<min_failed_patch+DELTA_INIT_PATCH and p1[i]<0.5:
-          p1[i]=min_failed_patch+DELTA_INIT_PATCH
-    selected_line = select_by_probability_hierarchical(state, n, p1, p2, p3)
+      selected.append(line_info)
+      p_rand.append(pf_rand.select_value())
+      p_fl.append(line_info.fl_score)
+      p_b.append(line_info.pf.select_value())
+      p_p.append(line_info.positive_pf.select_value())
+      p_o.append(line_info.output_pf.select_value())
+      if explore:
+        min_coverage=1.0
+        for switch in line_info.switch_info_map.values():
+          if min_coverage>switch.case_update_count/switch.total_case_info:
+            min_coverage=switch.case_update_count/switch.total_case_info
+        p_cov.append(1 - min_coverage)
+    selected_line = select_by_probability(state, p_map, c_map)
     selected_line_info: LineInfo = selected[selected_line]
+    clear_list(state, p_map)
+    del c_map[PT.fl] # No fl below line
 
-    selected.clear()
-    p1.clear()
-    p2.clear()
-    p3.clear()
-    min_failed_patch=1.0
-    passed_once_patches_index=[]
     # Select switch
     for switch_num in selected_line_info.switch_info_map:
       switch_info = selected_line_info.switch_info_map[switch_num]
-      selected.append(switch_info)
       if len(switch_info.type_info_map) == 0:
         state.msv_logger.warning(f"No type info in switch: {selected_file_info.file_name}: {selected_line_info.line_number}: {switch_info.switch_number}")
-        p1.append(-1)
         continue
-      if is_rand:
-        p1.append(pf_rand.expect_probability())
-      else:
-        if explore:
-          temp_p1 = switch_info.pf.expect_probability()
-          # coverage = switch_info.update_count / switch_info.total_case_info
-          min_coverage=1.0
-          for type_ in switch_info.type_info_map.values():
-            if min_coverage>type_.case_update_count/type_.total_case_info:
-              min_coverage=type_.case_update_count/type_.total_case_info
-          p1.append(temp_p1 * (1 - min_coverage))
-        else:
-          p1.append(switch_info.pf.expect_probability())
-          if not switch_info.has_init_patch and min_failed_patch>p1[-1]:
-            min_failed_patch=p1[-1]
-          elif switch_info.has_init_patch:
-            passed_once_patches_index.append(len(p1)-1)
-        #p2.append(ProfileDiff.get_diff(switch_info.profile_diff, test, original_profile))
-        p2.append(switch_info.out_dist)
-        p3.append(switch_info.positive_pf.expect_probability())
-    update_out_dist_list(state, p2)
-    if min_failed_patch<1.0:
-      for i in passed_once_patches_index:
-        if p1[i]<min_failed_patch+DELTA_INIT_PATCH and p1[i]<0.5:
-          p1[i]=min_failed_patch+DELTA_INIT_PATCH
-    selected_switch = select_by_probability_hierarchical(state, n, p1, p2, p3)
+      selected.append(switch_info)
+      p_rand.append(pf_rand.select_value())
+      p_b.append(switch_info.pf.select_value())
+      p_p.append(switch_info.positive_pf.select_value())
+      p_o.append(switch_info.output_pf.select_value())
+      if explore:
+        temp_p1 = switch_info.pf.expect_probability()
+        min_coverage=1.0
+        for type_ in switch_info.type_info_map.values():
+          if min_coverage>type_.case_update_count/type_.total_case_info:
+            min_coverage=type_.case_update_count/type_.total_case_info
+        p_cov.append(1 - min_coverage)
+    selected_switch = select_by_probability(state, p_map, c_map)
     selected_switch_info: SwitchInfo = selected[selected_switch]
+    clear_list(state, p_map)
 
-    selected.clear()
-    p1.clear()
-    p2.clear()
-    p3.clear()
-    min_failed_patch=1.0
-    passed_once_patches_index=[]
     # Select type
     for patch_type in selected_switch_info.type_info_map:
       type_info = selected_switch_info.type_info_map[patch_type]
-      selected.append(type_info)
       if len(type_info.case_info_map) == 0:
         state.msv_logger.warning(f"No case info in type: {selected_file_info.file_name}: {selected_line_info.line_number}: {selected_switch_info.switch_number}: {type_info.patch_type}")
-        p1.append(-1)
         continue
-      if is_rand:
-        p1.append(pf_rand.expect_probability())
-      else:
-        if explore:
-          temp_p1 = type_info.pf.expect_probability()
-          coverage = type_info.case_update_count / type_info.total_case_info
-          p1.append(temp_p1 * (1 - coverage))
-        else:
-          p1.append(type_info.pf.expect_probability())
-          if not type_info.has_init_patch and min_failed_patch>p1[-1]:
-            min_failed_patch=p1[-1]
-          elif type_info.has_init_patch:
-            passed_once_patches_index.append(len(p1)-1)
-        #p2.append(ProfileDiff.get_diff(type_info.profile_diff, test, original_profile))
-        p2.append(type_info.out_dist)
-        p3.append(type_info.positive_pf.expect_probability())
-    update_out_dist_list(state, p2)
-    if min_failed_patch<1.0:
-      for i in passed_once_patches_index:
-        if p1[i]<min_failed_patch+DELTA_INIT_PATCH and p1[i]<0.5:
-          p1[i]=min_failed_patch+DELTA_INIT_PATCH
-    selected_type = select_by_probability_hierarchical(state, n, p1, p2, p3)
+      selected.append(type_info)
+      p_rand.append(pf_rand.select_value())
+      p_b.append(type_info.pf.select_value())
+      p_p.append(type_info.positive_pf.select_value())
+      p_o.append(type_info.output_pf.select_value())
+      if explore and not is_rand:
+        coverage = type_info.case_update_count / type_info.total_case_info
+        p_cov.append(1 - coverage)
+    selected_type = select_by_probability(state, p_map, c_map)
     selected_type_info: TypeInfo = selected[selected_type]
+    clear_list(state, p_map)
 
-    selected.clear()
-    p1.clear()
-    p2.clear()
-    p3.clear()
-    min_failed_patch=1.0
-    passed_once_patches_index=[]
+    if explore:
+      c_map = rand_cmap
     # Select case
     for case_num in selected_type_info.case_info_map:
       case_info = selected_type_info.case_info_map[case_num]
+      if not state.use_condition_synthesis and len(selected_patch)>0 and not case_info.processed: # do not select multi-line patch if patch is not processed at prophet cond syn
+        continue
       selected.append(case_info)
-      if is_rand:
-        p1.append(pf_rand.expect_probability())
-      elif not state.use_condition_synthesis and len(selected_patch)>0 and not case_info.processed: # do not select multi-line patch if patch is not processed at prophet cond syn
-        p1.append(-1)
-      else:
-        if explore:
-          p1.append(pf_rand.expect_probability())
-        else:
-          p1.append(case_info.pf.expect_probability())
-        if not case_info.has_init_patch and min_failed_patch>p1[-1]:
-            min_failed_patch=p1[-1]
-        elif case_info.has_init_patch:
-          passed_once_patches_index.append(len(p1)-1)
-        #p2.append(ProfileDiff.get_diff(case_info.profile_diff, test, original_profile))
-      p2.append(case_info.out_dist)
-      p3.append(case_info.positive_pf.expect_probability())
-    update_out_dist_list(state, p2)
-    if min_failed_patch<1.0:
-      for i in passed_once_patches_index:
-        if p1[i]<min_failed_patch+DELTA_INIT_PATCH and p1[i]<0.5:
-          p1[i]=min_failed_patch+DELTA_INIT_PATCH
-    selected_case = select_by_probability_hierarchical(state, n, p1, p2, p3)
+      p_rand.append(pf_rand.select_value())
+      p_b.append(case_info.pf.select_value())
+      p_p.append(case_info.positive_pf.select_value())
+      p_o.append(case_info.output_pf.select_value())
+    selected_case = select_by_probability(state, p_map, c_map)
     selected_case_info: CaseInfo = selected[selected_case]
-    selected.clear()
-    p1.clear()
-    p2.clear()
-    p3.clear()
+    clear_list(state, p_map)
     # state.msv_logger.debug(f"{selected_file_info.file_name}({len(selected_file_info.line_info_list)}):" +
     #         f"{selected_line_info.line_number}({len(selected_line_info.switch_info_list)}):" +
     #         f"{selected_switch_info.switch_number}({len(selected_switch_info.type_info_list)}):" +
@@ -563,95 +459,43 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
         return PatchInfo(selected_case_info,None,None,None)
 
     # return select_conditional_patch_by_record(state, selected_case_info)
-    min_failed_patch=1.0
-    passed_once_patches_index=[]
+    if explore:
+      c_map = rand_cmap
     # Select operator
     for op_info in selected_case_info.operator_info_list:
-      if is_rand:
-        p1.append(pf_rand.expect_probability())
-      else:
-        if explore:
-          p1.append(pf_rand.expect_probability())
-        else:
-          p1.append(op_info.pf.expect_probability())
-        if not op_info.has_init_patch and min_failed_patch>p1[-1]:
-            min_failed_patch=p1[-1]
-        elif op_info.has_init_patch:
-          passed_once_patches_index.append(len(p1)-1)
-        #p2.append(ProfileDiff.get_diff(op_info.profile_diff, test, original_profile))
-      p2.append(op_info.out_dist)
-      p3.append(op_info.positive_pf.expect_probability())
-    update_out_dist_list(state, p2)
-    if min_failed_patch<1.0:
-      for i in passed_once_patches_index:
-        if p1[i]<min_failed_patch+DELTA_INIT_PATCH and p1[i]<0.5:
-          p1[i]=min_failed_patch+DELTA_INIT_PATCH
-    selected_operator = select_by_probability_hierarchical(state, n, p1, p2, p3)
+      selected.append(op_info)
+      p_rand.append(pf_rand.select_value())
+      p_b.append(op_info.pf.select_value())
+      p_p.append(op_info.positive_pf.select_value())
+      p_o.append(op_info.output_pf.select_value())
+    selected_operator = select_by_probability(state, p_map, c_map)
     selected_operator_info = selected_case_info.operator_info_list[selected_operator]
+    clear_list(state, p_map)
 
-    p1.clear()
-    p2.clear()
-    p3.clear()
-    min_failed_patch=1.0
-    passed_once_patches_index=[]
     if selected_operator_info.operator_type == OperatorType.ALL_1:
       return PatchInfo(selected_case_info, selected_operator_info, None, None)
     # Select variable
     for var_info in selected_operator_info.variable_info_list:
       # If variable has no constant, skip
-      if is_rand:
-        p1.append(pf_rand.expect_probability())
-      else:
-        if len(var_info.constant_info_list) == 0:
-          p1.append(-1)
-        else:
-          if explore:
-            p1.append(pf_rand.expect_probability())
-          else:
-            p1.append(var_info.pf.expect_probability())
-          if not var_info.has_init_patch and min_failed_patch>p1[-1]:
-            min_failed_patch=p1[-1]
-          elif var_info.has_init_patch:
-            passed_once_patches_index.append(len(p1)-1)
-        #p2.append(ProfileDiff.get_diff(var_info.profile_diff, test, original_profile))
-        p2.append(var_info.out_dist)
-        p3.append(var_info.positive_pf.expect_probability())
-    update_out_dist_list(state, p2)
-    if min_failed_patch<1.0:
-      for i in passed_once_patches_index:
-        if p1[i]<min_failed_patch+DELTA_INIT_PATCH and p1[i]<0.5:
-          p1[i]=min_failed_patch+DELTA_INIT_PATCH
-    selected_variable = select_by_probability_hierarchical(state, n, p1, p2, p3)
-    selected_variable_info = selected_operator_info.variable_info_list[selected_variable]
-    
-    p1.clear()
-    p2.clear()
-    p3.clear()
-    min_failed_patch=1.0
-    passed_once_patches_index=[]
+      if len(var_info.constant_info_list) == 0:
+        continue
+      selected.append(var_info)
+      p_rand.append(pf_rand.select_value())
+      p_b.append(var_info.pf.select_value())
+      p_p.append(var_info.positive_pf.select_value())
+      p_o.append(var_info.output_pf.select_value())
+    selected_variable = select_by_probability(state, p_map, c_map)
+    selected_variable_info: VariableInfo = selected[selected_variable]
+    clear_list(state, p_map)
+
+    c_map = rand_cmap
     # Select constant
     for const_info in selected_variable_info.constant_info_list:
-      if is_rand:
-        p1.append(pf_rand.expect_probability())
-      else:
-        p1.append(const_info.pf.expect_probability())
-        if not const_info.has_init_patch and min_failed_patch>p1[-1]:
-            min_failed_patch=p1[-1]
-        elif const_info.has_init_patch:
-          passed_once_patches_index.append(len(p1)-1)
-        #p2.append(ProfileDiff.get_diff(const_info.profile_diff, test, original_profile))      
-      p2.append(const_info.out_dist)
-      p3.append(const_info.positive_pf.expect_probability())
-    update_out_dist_list(state, p2)
-    if min_failed_patch<1.0:
-      for i in passed_once_patches_index:
-        if p1[i]<min_failed_patch+DELTA_INIT_PATCH and p1[i]<0.5:
-          p1[i]=min_failed_patch+DELTA_INIT_PATCH
-    selected_constant = select_by_probability_hierarchical(state, n, p1, p2, p3)
+      selected.append(const_info)
+      p_rand.append(pf_rand.select_value())
+    selected_constant = select_by_probability(state, p_map, c_map)
     selected_constant_info = selected_variable_info.constant_info_list[selected_constant]
-    p1.clear()
-    p2.clear()
-    p3.clear()
+    clear_list(state, p_map)
     return PatchInfo(selected_case_info, selected_operator_info, selected_variable_info, selected_constant_info)
 
 def get_ochiai(e_f: float, e_p: float, n_f: float, n_p: float) -> float:
