@@ -17,7 +17,7 @@ def update_result(state: MSVState, selected_patch: List[PatchInfo], run_result: 
     update_result_seapr(state, selected_patch, run_result, test)
   for patch in selected_patch:
     patch.update_result(run_result, n,state.use_fixed_beta)
-  if 'MSV_OUTPUT_DISTANCE_FILE' in new_env.keys():
+  if 'MSV_OUTPUT_DISTANCE_FILE' in new_env:
     remove_file_or_pass(new_env["MSV_OUTPUT_DISTANCE_FILE"])
 
 def update_result_out_dist(state: MSVState, selected_patch: List[PatchInfo], run_result: bool, test: int, new_env: Dict[str, str]) -> float:
@@ -208,5 +208,5 @@ def remove_patch(state: MSVState, patches: List[PatchInfo]) -> None:
           del case_map[case_info.to_str()]
       else:
         del case_map[case_info.to_str()]
-      if len(case_map) == 0 and loc_str in state.priority_map.keys():
+      if len(case_map) == 0 and loc_str in state.priority_map:
         del state.priority_map[loc_str]
