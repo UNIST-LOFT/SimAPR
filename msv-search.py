@@ -18,7 +18,7 @@ from msv import MSV
 
 def parse_args(argv: list) -> MSVState:
   longopts = ["help", "outdir=", "workdir=", "timeout=", "msv-path=", "time-limit=", "cycle-limit=", "epsilon-greedy-exploration=",
-              "mode=", "max-parallel-cpu=",'skip-valid','use-fixed-beta','use-cpr-space','use-fixed-const',
+              "mode=", "max-parallel-cpu=",'skip-valid','use-fixed-beta','use-cpr-space','use-fixed-const', 'params=',
               "use-condition-synthesis", "use-fl", "use-hierarchical-selection=", "use-pass-test", "use-partial-validation",
               "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern", "use-simulation-mode="]
   opts, args = getopt.getopt(argv[1:], "ho:w:p:t:m:c:j:T:E:M:S:", longopts)
@@ -80,6 +80,15 @@ def parse_args(argv: list) -> MSVState:
       state.prev_data = a
     elif o in ['--use-partial-validation']:
       state.use_partial_validation = True
+    elif o in ['--params']:
+      for param in a.split(','):
+        key, value = param.split('=')
+        k = PT[key.strip()]
+        v = float(value.strip())
+        state.params[k] = v
+        if k in state.c_map:
+          state.c_map[k] = v
+
   if sub_dir != "":
     state.out_dir = os.path.join(state.out_dir, sub_dir)
   if not os.path.exists(state.out_dir):
@@ -115,6 +124,7 @@ def set_logger(state: MSVState) -> logging.Logger:
   logger.addHandler(ch)
   logger.info('Logger is set')
   logger.warning(f"MSV-SEARCH: {' '.join(state.original_args)}")
+  logger.info(f'params: {state.params}')
   return logger
 
 
