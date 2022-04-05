@@ -46,7 +46,8 @@ def select_by_probability(state: MSVState, p_map: Dict[PT, List[float]], c_map: 
       continue
     if key == PT.fl or key == PT.cov:
       p = PassFail.normalize(p)
-      p = PassFail.select_value_normal(p)
+      sigma = state.params[PT.sigma]  # default: 0.1 / 1.96
+      p = PassFail.select_value_normal(p, sigma)
     prob = PassFail.softmax(p)
     for i in range(num):
       result[i] += c * prob[i]
@@ -243,7 +244,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     explore = state.epsilon_greedy_exploration > random.random()
     if explore and not is_rand:
       state.msv_logger.info("Explore!")
-      c_map[PT.cov] = 2.0
+      c_map[PT.cov] = state.params[PT.cov] # default = 2.0
     else:
       state.msv_logger.info("Exploit!")
     use_fl = state.use_fl

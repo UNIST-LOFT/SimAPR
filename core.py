@@ -60,6 +60,7 @@ class PT(Enum):
   cov = 5   # coverage
   rand = 6  # random
   odist = 7    # output distance
+  sigma = 8 # standard deviation of normal distribution
 
 class PassFail:
   def __init__(self, p: float = 0, f: float = 0) -> None:
@@ -108,10 +109,10 @@ class PassFail:
   def argmax(x: List[float]) -> int:
     return np.argmax(x)
   @staticmethod
-  def select_value_normal(x: List[float]) -> List[float]:
+  def select_value_normal(x: List[float], sigma: float) -> List[float]:
     for i in range(len(x)):
       val = x[i]
-      sigma = 0.1 / 1.96 # max(0.001, val * (1 - val) / 10)
+      #sigma = 0.1 / 1.96 # max(0.001, val * (1 - val) / 10)
       x[i] = np.random.normal(val, sigma)
     return x
   @staticmethod
@@ -1075,6 +1076,7 @@ class MSVState:
   max_initial_trial: int
   epsilon_greedy_exploration: float
   c_map: Dict[PT, float]
+  params: Dict[PT, float]
   original_output_distance_map: Dict[int, float]
   def __init__(self) -> None:
     self.mode = MSVMode.guided
@@ -1133,6 +1135,7 @@ class MSVState:
     self.max_initial_trial = 100
     self.epsilon_greedy_exploration = 0.1
     self.c_map = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.3}
+    self.params = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.3, PT.cov: 2.0, PT.sigma: 0.1/1.96}
     self.original_output_distance_map = dict()
 
 def remove_file_or_pass(file:str):
