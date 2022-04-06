@@ -516,6 +516,65 @@ def total_plausible_patch(guided_result: Dict[str,list],other_result: Dict[str,l
   
   return final_total
 
+def msv_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_patch: str) -> None:
+  switch_info, switch_case_map = read_info(work_dir)
+  token = correct_patch.split(":")
+  sw_cs = token[0]
+  cond = ""
+  if len(token) == 2:
+    cond = token[1]
+  correct_case = switch_case_map[sw_cs]
+  correct_type = correct_case.parent
+  correct_switch = correct_type.parent
+  correct_line = correct_switch.parent
+  correct_func = correct_line.parent
+  correct_file = correct_func.parent
+  x = list()
+  y = list()
+  with open(msv_result_file, "r") as f:
+    info = json.load(f)
+    total = 0
+    for data in info:
+      iter: int = data["iteration"]
+      tm: float = data["time"]
+      result: bool = data["result"]
+      if result:
+        total += 1
+      config = data["config"][0]
+      #print(config)
+      sw = config["switch"]
+      cs = config["case"]
+      case_info = switch_case_map[f"{sw}-{cs}"]
+      type_info = case_info.parent
+      switch_info = type_info.parent
+      line_info = switch_info.parent
+      func_info = line_info.parent
+      file_info = func_info.parent
+      dist = 6
+      if file_info == correct_file:
+        dist -= 1
+        if func_info == correct_func:
+          dist -= 1
+          if line_info == correct_line:
+            dist -= 1
+            if switch_info == correct_switch:
+              dist -= 1
+              if type_info == correct_type:
+                dist -= 1
+                if correct_case == case_info:
+                  dist -= 1
+      x.append(iter)
+      y.append(dist)
+  y_tick = np.arange(0, 7)
+  y_label = ["case", "type", "switch", "line", "func", "file", "diff"]
+  plt.scatter(x, y, s=1)
+  plt.yticks(y_tick, labels=y_label)
+  plt.title(title)
+  plt.xlabel("iteration")
+  plt.ylabel("distance from correct patch")
+  out_file = os.path.join(os.path.dirname(msv_result_file), "out.png")
+  plt.savefig(out_file)
+
 def main(argv):
   opts, args = getopt.getopt(argv[1:], "hi:o:t:nm:c:w:")
   result_file = ""
@@ -543,6 +602,7 @@ def main(argv):
     else:
       print("afl_plot.py -i input_dir -t title -o output.png -m auto -c correctpatch")
       print("ex) afl_plot.py -i . -o out.png -t php-2adf58 -m auto -c 54-36:0-2-12")
+      print("./plot.py -o out/php/1d984a7 -i out/php/1d984a7/msv-result.json -m correct -t 1d984a7 -w /root/project/MSV-experiment/benchmarks/php/php-case-1d984a7/php-1d984a7-workdir -c 137-145:0-8-355")
       exit(0)
   if output_file == "":
     output_file = os.path.join(os.path.dirname(result_file), "plot.png")
@@ -551,9 +611,10 @@ def main(argv):
   elif mode == "auto":
     msv_plot(result_file, title, output_file, ignore,
               correct_patch=tuple(correct_patch))
+  elif mode == "correct":
+    msv_plot_correct(result_file, title, work_dir, correct_patch)
   else:
-    msv_plot(result_file, title, output_file, ignore,
-              correct_patch=tuple(correct_patch))
+    msv_plot_correct(result_file, title, work_dir, correct_patch)
   return 0
 
 
