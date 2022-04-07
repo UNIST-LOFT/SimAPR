@@ -212,7 +212,7 @@ def read_info(state: MSVState) -> None:
           continue
         for func_id in ff_map[file_name]:
           fn_range = ff_map[file_name][func_id]
-          line_num = int(line['line'])
+          line_num = int(line['line']+1)
           if fn_range[0] <= line_num <= fn_range[1]:
             if func_id not in file_info.func_info_map:
               func_info = FuncInfo(file_info, func_id.split(":")[0], fn_range[0], fn_range[1])
