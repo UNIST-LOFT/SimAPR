@@ -50,7 +50,7 @@ class EnvVarMode(Enum):
   collect_pos = 4
   cond_syn = 5
 
-# Probability Type
+# Parameter Type
 class PT(Enum):
   selected = 0
   basic = 1 # basic
@@ -62,6 +62,9 @@ class PT(Enum):
   odist = 7    # output distance
   sigma = 8 # standard deviation of normal distribution
   halflife = 9 # half life of parameters
+  k = 10    # increase or decrease beta distribution with k
+  alpha = 11 # alpha of beta distribution
+  beta = 12 # beta of beta distribution
 
 class PassFail:
   def __init__(self, p: float = 0, f: float = 0) -> None:

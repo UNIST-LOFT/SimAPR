@@ -234,6 +234,8 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
   decay = 1 - (0.5 ** (iter / state.params[PT.halflife]))
   for key in state.params_decay:
     diff = state.params_decay[key] - state.params[key]
+    if key not in c_map:
+      continue
     c_map[key] += diff * decay
   if is_rand:
     n = 1

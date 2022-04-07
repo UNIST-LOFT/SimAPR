@@ -96,9 +96,6 @@ def parse_args(argv: list) -> MSVState:
           key, value = param.split('=')
           k = PT[key.strip()]
           v = float(value.strip())
-          if k not in state.c_map:
-            print(f"{k} is not in c_map! Skipping...")
-            continue
           state.params_decay[k] = v
 
   if sub_dir != "":
