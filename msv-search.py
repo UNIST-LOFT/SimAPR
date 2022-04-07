@@ -219,7 +219,7 @@ def read_info(state: MSVState) -> None:
               file_info.func_info_map[func_info.id] = func_info
             else:
               func_info = file_info.func_info_map[func_id]
-            line_info = LineInfo(func_info, int(line['line']))
+            line_info = LineInfo(func_info, int(line['line'])+1)
             func_info.line_info_map[line_info.uuid] = line_info
             break
         #line_info = LineInfo(file_info, int(line['line']))
