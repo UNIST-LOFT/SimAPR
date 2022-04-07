@@ -31,8 +31,15 @@ class PatchType(Enum):
   AddInitKind = 5
   ReplaceKind = 6
   ReplaceStringKind = 7
-  AddAndReplaceKind = 8
-  ConditionKind=9
+  ReplaceFunctionKind = 8
+  AddStmtKind=9
+  AddStmtAndReplaceAtomKind=10
+  AddIfStmtKind=11
+  ConditionKind=12
+  MSVExtFunctionReplaceKind=21
+  MSVExtAddConditionKind=22
+  MSVExtReplaceFunctionInConditionKind=23
+  MSVExtRemoveStmtKind=24
   Original = 31
 
 class OperatorType(Enum):
