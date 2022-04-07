@@ -83,13 +83,23 @@ def parse_args(argv: list) -> MSVState:
     elif o in ['--use-full-validation']:
       state.use_partial_validation = False
     elif o in ['--params']:
-      for param in a.split(','):
+      parsed = a.split(";")
+      for param in parsed[0].split(","):
         key, value = param.split('=')
         k = PT[key.strip()]
         v = float(value.strip())
         state.params[k] = v
         if k in state.c_map:
           state.c_map[k] = v
+      if len(parsed) > 1:
+        for param in parsed[1].split(","):
+          key, value = param.split('=')
+          k = PT[key.strip()]
+          v = float(value.strip())
+          if k not in state.c_map:
+            print(f"{k} is not in c_map! Skipping...")
+            continue
+          state.params_decay[k] = v
 
   if sub_dir != "":
     state.out_dir = os.path.join(state.out_dir, sub_dir)

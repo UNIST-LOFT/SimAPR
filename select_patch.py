@@ -46,7 +46,7 @@ def select_by_probability(state: MSVState, p_map: Dict[PT, List[float]], c_map: 
       continue
     if key == PT.fl or key == PT.cov:
       p = PassFail.normalize(p)
-      sigma = state.params[PT.sigma]  # default: 0.1 / 1.96
+      sigma = state.params[PT.sigma]  # default: 0.1
       p = PassFail.select_value_normal(p, sigma)
     prob = PassFail.softmax(p)
     for i in range(num):
@@ -230,6 +230,11 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
   p_map = {PT.selected: selected, PT.rand: p_rand, PT.basic: p_b, 
           PT.plau: p_p, PT.fl: p_fl, PT.out: p_o, PT.cov: p_cov, PT.odist: p_odist}
   c_map = state.c_map.copy()
+  iter = max(0, state.iteration - state.max_initial_trial)
+  decay = 1 - (0.5 ** (iter / state.params[PT.halflife]))
+  for key in state.params_decay:
+    diff = state.params_decay[key] - state.params[key]
+    c_map[key] += diff * decay
   if is_rand:
     n = 1
     c_map = rand_cmap
@@ -245,6 +250,9 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     if explore and not is_rand:
       state.msv_logger.info("Explore!")
       c_map[PT.cov] = state.params[PT.cov] # default = 2.0
+      if PT.cov in state.params_decay:
+        diff = state.params_decay[PT.cov] - state.params[PT.cov]
+        c_map[PT.cov] += diff * decay
     else:
       state.msv_logger.info("Exploit!")
     use_fl = state.use_fl
