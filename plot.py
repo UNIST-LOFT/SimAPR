@@ -588,10 +588,12 @@ def batch_convert(correct_patch_csv: str, in_dir: str) -> None:
       v = token[1]
       all[t][v] = token[2]
   for dir in os.listdir(in_dir):
-    if not os.path.isdir(dir):
+    if not os.path.isdir(os.path.join(in_dir, dir)):
       continue
     print(dir)
-    if os.path.exists(os.path.join(in_dir, dir, "msv-result.json")):
+    result_file = os.path.join(in_dir, dir, "msv-result.json")
+    print(result_file)
+    if os.path.exists(result_file):
       ty = ""
       ver = ""
       cp = ""
