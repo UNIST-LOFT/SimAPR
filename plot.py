@@ -144,9 +144,9 @@ def read_info(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, CaseInfo]]:
     return file_map, switch_case_map
 
 
-def afl_barchart(msv_result_file: str, title: str, work_dir: str, correct_patch: str, switch_info: Dict[str, FileInfo] = None, switch_case_map: Dict[str, CaseInfo] = None, msv_dist_file: str = None, ) -> None:
-  if switch_info is None:
-    switch_info, switch_case_map = read_info(work_dir)
+def afl_barchart(msv_result_file: str, title: str, work_dir: str, correct_patch: str, switch_info_info: Dict[str, FileInfo] = None, switch_case_map: Dict[str, CaseInfo] = None, msv_dist_file: str = None, ) -> None:
+  if switch_info_info is None:
+    switch_info_info, switch_case_map = read_info(work_dir)
   result_file_map: Dict[FileInfo, PassFail] = dict()
   result_func_map: Dict[FuncInfo, PassFail] = dict()
   result_line_map: Dict[LineInfo, PassFail] = dict()
@@ -517,9 +517,9 @@ def total_plausible_patch(guided_result: Dict[str,list],other_result: Dict[str,l
   
   return final_total
 
-def msv_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_patch: str, switch_info: Dict[str, FileInfo] = None, switch_case_map: Dict[str, CaseInfo] = None) -> None:
-  if switch_info is None:
-    switch_info, switch_case_map = read_info(work_dir)
+def msv_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_patch: str, switch_info_info: Dict[str, FileInfo] = None, switch_case_map: Dict[str, CaseInfo] = None) -> None:
+  if switch_info_info is None:
+    switch_info_info, switch_case_map = read_info(work_dir)
   token = correct_patch.split(":")
   sw_cs = token[0]
   cond = ""
