@@ -144,8 +144,9 @@ def read_info(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, CaseInfo]]:
     return file_map, switch_case_map
 
 
-def afl_barchart(msv_result_file: str, title: str, work_dir: str, correct_patch: str, msv_dist_file: str = None) -> None:
-  switch_info, switch_case_map = read_info(work_dir)
+def afl_barchart(msv_result_file: str, title: str, work_dir: str, correct_patch: str, switch_info: Dict[str, FileInfo] = None, switch_case_map: Dict[str, CaseInfo] = None, msv_dist_file: str = None, ) -> None:
+  if switch_info is None:
+    switch_info, switch_case_map = read_info(work_dir)
   result_file_map: Dict[FileInfo, PassFail] = dict()
   result_func_map: Dict[FuncInfo, PassFail] = dict()
   result_line_map: Dict[LineInfo, PassFail] = dict()
@@ -516,8 +517,9 @@ def total_plausible_patch(guided_result: Dict[str,list],other_result: Dict[str,l
   
   return final_total
 
-def msv_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_patch: str) -> None:
-  switch_info, switch_case_map = read_info(work_dir)
+def msv_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_patch: str, switch_info: Dict[str, FileInfo] = None, switch_case_map: Dict[str, CaseInfo] = None) -> None:
+  if switch_info is None:
+    switch_info, switch_case_map = read_info(work_dir)
   token = correct_patch.split(":")
   sw_cs = token[0]
   cond = ""
@@ -567,6 +569,7 @@ def msv_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_pa
       y.append(dist)
   y_tick = np.arange(0, 7)
   y_label = ["case", "type", "switch", "line", "func", "file", "diff"]
+  plt.clf()
   plt.scatter(x, y, s=1)
   plt.yticks(y_tick, labels=y_label)
   plt.title(title)
@@ -587,7 +590,8 @@ def batch_convert(correct_patch_csv: str, in_dir: str) -> None:
         all[t] = dict()
       v = token[1]
       all[t][v] = token[2]
-  for dir in os.listdir(in_dir):
+  info = dict()
+  for dir in sorted(os.listdir(in_dir)):
     if not os.path.isdir(os.path.join(in_dir, dir)):
       continue
     print(dir)
@@ -614,8 +618,11 @@ def batch_convert(correct_patch_csv: str, in_dir: str) -> None:
       if not os.path.exists(workdir):
         workdir = os.path.join("/root/project/MSV-experiment/benchmarks", ty, f"{ty}-case-tests2-{ver}", f"{ty}-tests2-{ver}-workdir")
       print(f"{result_file}, {workdir}")
-      msv_plot_correct(result_file, dir, workdir, cp)
-      afl_barchart(result_file, dir, workdir, cp)
+      if workdir not in info:
+        info[workdir] = read_info(workdir)
+      switch_info, switch_case_map = info[workdir]
+      msv_plot_correct(result_file, dir, workdir, cp, switch_info, switch_case_map)
+      afl_barchart(result_file, dir, workdir, cp, switch_info, switch_case_map)
 
 def main(argv):
   opts, args = getopt.getopt(argv[1:], "hi:o:t:nm:c:w:")
