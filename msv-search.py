@@ -19,7 +19,7 @@ from msv import MSV
 def parse_args(argv: list) -> MSVState:
   longopts = ["help", "outdir=", "workdir=", "timeout=", "msv-path=", "time-limit=", "cycle-limit=", "epsilon-greedy-exploration=",
               "mode=", "max-parallel-cpu=",'skip-valid','use-fixed-beta','use-cpr-space','use-fixed-const', 'params=',
-              "use-condition-synthesis", "use-fl", "use-hierarchical-selection=", "use-pass-test", "use-partial-validation",
+              "use-condition-synthesis", "use-fl", "use-hierarchical-selection=", "use-pass-test", "use-partial-validation", "use-full-validation",
               "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern", "use-simulation-mode="]
   opts, args = getopt.getopt(argv[1:], "ho:w:p:t:m:c:j:T:E:M:S:", longopts)
   state = MSVState()
@@ -80,14 +80,23 @@ def parse_args(argv: list) -> MSVState:
       state.prev_data = a
     elif o in ['--use-partial-validation']:
       state.use_partial_validation = True
+    elif o in ['--use-full-validation']:
+      state.use_partial_validation = False
     elif o in ['--params']:
-      for param in a.split(','):
+      parsed = a.split(";")
+      for param in parsed[0].split(","):
         key, value = param.split('=')
         k = PT[key.strip()]
         v = float(value.strip())
         state.params[k] = v
         if k in state.c_map:
           state.c_map[k] = v
+      if len(parsed) > 1:
+        for param in parsed[1].split(","):
+          key, value = param.split('=')
+          k = PT[key.strip()]
+          v = float(value.strip())
+          state.params_decay[k] = v
 
   if sub_dir != "":
     state.out_dir = os.path.join(state.out_dir, sub_dir)
@@ -298,7 +307,7 @@ def read_info(state: MSVState) -> None:
                         file_info.prophet_score.append(score)
                 else:
                   if type_info.patch_type!=PatchType.ConditionKind: # Original Prophet doesn't have ConditionKind
-                    if f'{switch_info.switch_number}-{case_info.case_number}' not in state.var_counts.keys() or state.var_counts[f'{switch_info.switch_number}-{case_info.case_number}']>0:
+                    if f'{switch_info.switch_number}-{case_info.case_number}' not in state.var_counts or state.var_counts[f'{switch_info.switch_number}-{case_info.case_number}']>0:
                       #case_list.append(case_info)
                       case_map[int(c)] = case_info
                       state.switch_case_map[f"{switch_info.switch_number}-{case_info.case_number}"] = case_info

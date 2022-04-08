@@ -6,83 +6,164 @@ from matplotlib import use
 import matplotlib.pyplot as plt
 from matplotlib.transforms import Bbox
 import json
-from core import PatchInfo, FileInfo, LineInfo, SwitchInfo, TypeInfo, CaseInfo, PatchType, PassFail
+from core import PatchInfo, FileInfo, FuncInfo, LineInfo, SwitchInfo, TypeInfo, CaseInfo, PatchType, PassFail
 from typing import List, Tuple, Dict
 import numpy as np
 
-def read_info(work_dir: str) -> Tuple[List[FileInfo], Dict[str, CaseInfo]]:
-  file_list = list()
-  switch_case_map = dict()
+def read_info(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, CaseInfo]]:
   with open(os.path.join(work_dir, 'switch-info.json'), 'r') as f:
     info = json.load(f)
-    max_value = 2
-    def get_score(file, line):
+    file_map = dict()
+    def get_score(file, line, max_sec_score_map):
       for object in info['priority']:
-        if object['file'] == file and object['line'] == line:
-          return float(object['score'])
-      return 0
+        if object['file']==file and object['line']==line:
+          pri = object['primary_score']
+          sec = object['second_score']
+          max_sec = sec + 1
+          if pri in max_sec_score_map:
+            max_sec = max_sec_score_map[pri]
+          return pri - (sec / max_sec)
+      return 0.
 
     #file_map = state.patch_info_map
-    max_priority = info['priority'][0]['score']
+    max_priority = 1 # info['priority'][0]['score']
+    function_to_location_map = dict()
+    # file_list = state.patch_info_list
+    ff_map: Dict[str, Dict[str, Tuple[int, int]]] = dict()
+    switch_case_map = dict()
+    for file in info["func_locations"]:
+      file_name = file["file"]
+      ff_map[file_name] = dict()
+      for func in file["functions"]:
+        func_name = func["function"]
+        begin = func["begin"]
+        end = func["end"]
+        func_id = f"{func_name}:{begin}-{end}"
+        ff_map[file_name][func_id] = (begin, end)
+        function_to_location_map[func_name] = (file_name, begin, end)
     for file in info['rules']:
       if len(file['lines']) == 0:
         continue
       file_info = FileInfo(file['file_name'])
-      file_list.append(file_info)
-      line_list = file_info.line_info_list
+      file_name = file['file_name']
+      # file_list.append(file_info)
+      # line_list = file_info.line_info_list
+      file_map[file['file_name']] = file_info
       for line in file['lines']:
+        func_info = None
+        line_info = None
         if len(line['switches']) == 0:
           continue
-        line_info = LineInfo(file_info, int(line['line']))
-        score = get_score(file_info.file_name, line_info.line_number)
-        line_info.fl_score = score / max_priority * max_value
-        if file_info.fl_score < line_info.fl_score:
-          file_info.fl_score = line_info.fl_score
-
-        line_list.append(line_info)
-        switch_list = line_info.switch_info_list
+        for func_id in ff_map[file_name]:
+          fn_range = ff_map[file_name][func_id]
+          line_num = int(line['line'])
+          if fn_range[0] <= line_num <= fn_range[1]:
+            if func_id not in file_info.func_info_map:
+              func_info = FuncInfo(file_info, func_id.split(":")[0], fn_range[0], fn_range[1])
+              file_info.func_info_map[func_info.id] = func_info
+            else:
+              func_info = file_info.func_info_map[func_id]
+            line_info = LineInfo(func_info, int(line['line']))
+            func_info.line_info_map[line_info.uuid] = line_info
+            break
+        #line_info = LineInfo(file_info, int(line['line']))
+        # line_info.fl_score = score
+        # if file_info.fl_score<line_info.fl_score:
+        #   file_info.fl_score=line_info.fl_score
+        # if func_info.fl_score < line_info.fl_score:
+        #   func_info.fl_score = line_info.fl_score
+        #line_list.append(line_info)
+        #switch_list = line_info.switch_info_list
+        switch_map = line_info.switch_info_map
         for switches in line['switches']:
           if len(switches['types']) == 0:
             continue
           switch_info = SwitchInfo(line_info, int(switches['switch']))
-          switch_list.append(switch_info)
+          switch_map[int(switches['switch'])] = switch_info
+          #switch_list.append(switch_info)
           types = switches['types']
-          type_list = switch_info.type_info_list
-          for t in PatchType:
+          #type_list = switch_info.type_info_list
+          type_map = switch_info.type_info_map
+          for t in PatchType: 
             if t == PatchType.Original or t.value >= len(types):
+              continue
+            if t == PatchType.ConditionKind:
+              continue
+            if t==PatchType.ReplaceStringKind:
               continue
             if len(types[t.value]) > 0:
               type_info = TypeInfo(switch_info, t)
-              type_list.append(type_info)
-              #case_map = type_info.case_info_map
-              case_list = type_info.case_info_list
+              type_map[t] = type_info
+              #type_list.append(type_info)
+              case_map = type_info.case_info_map
+              #case_list = type_info.case_info_list
               for c in types[t.value]:
-                is_condition = t.value == PatchType.TightenConditionKind.value or t.value == PatchType.LoosenConditionKind.value or t.value == PatchType.IfExitKind.value or \
-                    t.value == PatchType.GuardKind.value or t.value == PatchType.SpecialGuardKind.value or t.value == PatchType.ConditionKind.value
+                is_condition = t.value == PatchType.TightenConditionKind.value or t.value==PatchType.LoosenConditionKind.value or t.value==PatchType.IfExitKind.value or \
+                            t.value==PatchType.GuardKind.value or t.value==PatchType.SpecialGuardKind.value or t.value==PatchType.ConditionKind.value
                 case_info = CaseInfo(type_info, int(c), is_condition)
-                switch_case_map[f"{switch_info.switch_number}-{case_info.case_number}"] = case_info
+                switch_case_map[case_info.to_str()] = case_info
+                if t not in line_info.type_priority:
+                  line_info.type_priority[t]=[]
+                current_score=None
+                for prophet_score in switches['prophet_scores']:
+                  if prophet_score==[]:
+                    current_score=[]
+                    break
+                  if prophet_score['case']==int(c):
+                    current_score=prophet_score['scores']
+                    break
+              
+                else:
+                  if type_info.patch_type!=PatchType.ConditionKind: # Original Prophet doesn't have ConditionKind
+                    if True:
+                      #case_list.append(case_info)
+                      case_map[int(c)] = case_info
+                      switch_case_map[f"{switch_info.switch_number}-{case_info.case_number}"] = case_info
+                      sw_cs_key = f'{switch_info.switch_number}-{case_info.case_number}'
+                      switch_case_map[sw_cs_key] = case_info
+                      for score in current_score:
+                        case_info.prophet_score.append(score)
+                        type_info.prophet_score.append(score)
+                        switch_info.prophet_score.append(score)
+                        line_info.prophet_score.append(score)
+                        func_info.prophet_score.append(score)
+                        file_info.prophet_score.append(score)
+                
+              if len(type_info.case_info_map)==0:
+                del switch_info.type_info_map[t]
+          if len(switch_info.type_info_map)==0:
+            del line_info.switch_info_map[switch_info.switch_number]
+        if len(line_info.switch_info_map)==0:
+          del func_info.line_info_map[line_info.uuid]
 
-              if len(type_info.case_info_list) == 0:
-                type_list.remove(type_info)
-
-          if len(switch_info.type_info_list) == 0:
-            switch_list.remove(switch_info)
-        if len(line_info.switch_info_list) == 0:
-          line_list.remove(line_info)
-      if len(file_info.line_info_list) == 0:
-        file_list.remove(file_info)
-  return file_list, switch_case_map
+      for func in file_info.func_info_map.copy().values():
+        if len(func.line_info_map)==0:
+          del file_info.func_info_map[func.id]
+      if len(file_info.func_info_map)==0:
+        del file_map[file_info.file_name]
+    return file_map, switch_case_map
 
 
-def afl_barchart(msv_result_file: str, title: str, work_dir: str, msv_dist_file: str = None) -> None:
+def afl_barchart(msv_result_file: str, title: str, work_dir: str, correct_patch: str, msv_dist_file: str = None) -> None:
   switch_info, switch_case_map = read_info(work_dir)
   result_file_map: Dict[FileInfo, PassFail] = dict()
+  result_func_map: Dict[FuncInfo, PassFail] = dict()
   result_line_map: Dict[LineInfo, PassFail] = dict()
   result_switch_map: Dict[SwitchInfo, PassFail] = dict()
   if msv_dist_file is None:
     msv_dist_file = os.path.join(os.path.dirname(msv_result_file), "dist-info.json")
     if not os.path.exists(msv_dist_file):
       msv_dist_file = None
+  token = correct_patch.split(":")
+  sw_cs = token[0]
+  cond = ""
+  if len(token) == 2:
+    cond = token[1]
+  correct_case = switch_case_map[sw_cs]
+  correct_switch = correct_case.parent.parent
+  correct_line = correct_switch.parent
+  correct_func = correct_line.parent
+  correct_file = correct_func.parent
   with open(msv_result_file, "r") as f:
     info = json.load(f)
     total = 0
@@ -100,10 +181,14 @@ def afl_barchart(msv_result_file: str, title: str, work_dir: str, msv_dist_file:
       type_info = case_info.parent
       switch_info = type_info.parent
       line_info = switch_info.parent
-      file_info = line_info.parent
+      func_info = line_info.parent
+      file_info = func_info.parent
       if file_info not in result_file_map:
         result_file_map[file_info] = PassFail()
       result_file_map[file_info].update(result, 1)
+      if func_info not in result_func_map:
+        result_func_map[func_info] = PassFail()
+      result_func_map[func_info].update(result, 1)
       if line_info not in result_line_map:
         result_line_map[line_info] = PassFail()
       result_line_map[line_info].update(result, 1)
@@ -141,37 +226,102 @@ def afl_barchart(msv_result_file: str, title: str, work_dir: str, msv_dist_file:
   print(f"total {total}")
   file_list = list()
   file_result_list = list()
+  temp = list()
   for file_info in result_file_map:
+    count = result_file_map[file_info].pass_count + result_file_map[file_info].fail_count
     pass_count = result_file_map[file_info].pass_count
-    if pass_count == 0:
-      continue
-    file_list.append(file_info.file_name)
-    file_result_list.append(result_file_map[file_info].pass_count)
+    t = (file_info.file_name, count)
+    temp.append(t)
+  sorted_t = sorted(temp, key=lambda x: x[1], reverse=True)
+  print(sorted_t)
+  i = 0
+  for t in sorted_t:
+    i += 1
+    if i >= 10:
+      if correct_file.file_name != t[0]:
+        continue
+    if t[0] == correct_file.file_name:
+      file_list.append(f"*file{i}*")
+    else:
+      file_list.append(f"file{i}")
+    file_result_list.append(t[1])
   index = np.arange(len(file_list))
   plt.clf()
   plt.bar(index, file_result_list, color="b")
   plt.title(title)
   plt.xlabel(f"file(total{len(result_file_map)})")
-  plt.ylabel("pass(blue)/fail(red)")
+  plt.ylabel("count")
   plt.xticks(index, file_list)
   out_file = os.path.join(os.path.dirname(msv_result_file), "file-plot.png")
   print(f"save to {out_file}")
   plt.savefig(out_file)
+  temp.clear()
+  func_list = list()
+  func_result_list = list()
+  for func_info in result_func_map:
+    if func_info.parent != correct_file:
+      continue
+    count = result_func_map[func_info].pass_count + result_func_map[func_info].fail_count
+    t = (func_info.id, count)
+    temp.append(t)
+  sorted_t = sorted(temp, key=lambda x: x[1], reverse=True)
+  print(sorted_t)
+  i = 0
+  for t in sorted_t:
+    i += 1
+    if i >= 10:
+      if correct_func.id != t[0]:
+        continue
+    if correct_func.id == t[0]:
+      func_list.append(f"*func{i}*")
+    else:
+      func_list.append(f"func{i}")
+    func_result_list.append(t[1])
+  index = np.arange(len(func_list))
+  plt.clf()
+  plt.bar(index, func_result_list, color="b")
+  plt.title(title)
+  plt.xlabel(f"func(total{len(result_func_map)})")
+  plt.ylabel("count")
+  plt.xticks(index, func_list)
+  out_file = os.path.join(os.path.dirname(msv_result_file), "func-plot.png")
+  print(f"save to {out_file}")
+  plt.savefig(out_file)
+  temp.clear()
   line_list = list()
   line_result_list = list()
   line_dist_list = list()
   for line_info in result_line_map:
+    if line_info.parent != correct_func:
+      continue
+    #count = result_line_map[line_info.uuid].pass_count + result_line_map[line_info.uuid].fail_count
+    count = result_line_map[line_info].pass_count + result_line_map[line_info].fail_count
     pass_count = result_line_map[line_info].pass_count
+    t = (line_info, count)
+    temp.append(t)
     # if pass_count == 0:
     #   continue
-    line_list.append(line_info.line_number)
-    line_dist_list.append(line_info.out_dist)
-    line_result_list.append(int(result_line_map[line_info].pass_count))
+    # line_list.append(line_info.line_number)
+    # line_dist_list.append(line_info.out_dist)
+    # line_result_list.append(int(result_line_map[line_info].pass_count))
+  sorted_t = sorted(temp, key=lambda x: x[1], reverse=True)
+  print(sorted_t)
+  i = 0
+  for t in sorted_t:
+    i += 1
+    if i >= 10:
+      if correct_line.uuid != t[0].uuid:
+        continue
+    if correct_line.uuid == t[0].uuid:
+      line_list.append(f"*{t[0].line_number}*")
+    else:
+      line_list.append(t[0].line_number)
+    line_result_list.append(t[1])
   index = np.arange(len(line_list))
   plt.clf()
   width = 0.15
   plt.bar(index - width, line_result_list, width, color="b")
-  plt.bar(index + width, line_dist_list, width, color="r")
+  #plt.bar(index + width, line_dist_list, width, color="r")
   plt.title(title)
   plt.xlabel(f"line(total{len(result_line_map)})")
   plt.ylabel("pass(blue)/dist(red)")
@@ -179,28 +329,28 @@ def afl_barchart(msv_result_file: str, title: str, work_dir: str, msv_dist_file:
   out_file = os.path.join(os.path.dirname(msv_result_file), "line-plot.png")
   print(f"save to {out_file}")
   plt.savefig(out_file)
-  switch_list = list()
-  switch_result_list = list()
-  switch_dist_list = list()
-  for switch_info in result_switch_map:
-    pass_count = result_switch_map[switch_info].pass_count
-    if pass_count == 0:
-      continue
-    switch_list.append(switch_info.switch_number)
-    switch_dist_list.append(switch_info.out_dist)
-    switch_result_list.append(int(result_switch_map[switch_info].pass_count))
-  index = np.arange(len(switch_list))
-  plt.clf()
-  width = 0.1
-  plt.bar(index + width, switch_result_list, width, color="b")
-  plt.bar(index - width, switch_dist_list, width, color="r")
-  plt.title(title)
-  plt.xlabel(f"switch(total{len(result_switch_map)})")
-  plt.ylabel("pass(blue)/dist(red)")
-  plt.xticks(index, switch_list)
-  out_file = os.path.join(os.path.dirname(msv_result_file), "switch-plot.png")
-  print(f"save to {out_file}")
-  plt.savefig(out_file)
+  # switch_list = list()
+  # switch_result_list = list()
+  # switch_dist_list = list()
+  # for switch_info in result_switch_map:
+  #   pass_count = result_switch_map[switch_info].pass_count
+  #   if pass_count == 0:
+  #     continue
+  #   switch_list.append(switch_info.switch_number)
+  #   switch_dist_list.append(switch_info.out_dist)
+  #   switch_result_list.append(int(result_switch_map[switch_info].pass_count))
+  # index = np.arange(len(switch_list))
+  # plt.clf()
+  # width = 0.1
+  # plt.bar(index + width, switch_result_list, width, color="b")
+  # plt.bar(index - width, switch_dist_list, width, color="r")
+  # plt.title(title)
+  # plt.xlabel(f"switch(total{len(result_switch_map)})")
+  # plt.ylabel("pass(blue)/dist(red)")
+  # plt.xticks(index, switch_list)
+  # out_file = os.path.join(os.path.dirname(msv_result_file), "switch-plot.png")
+  # print(f"save to {out_file}")
+  # plt.savefig(out_file)
 
 
 def get_average(in_dir: str, out_file: str) -> None:
@@ -366,6 +516,107 @@ def total_plausible_patch(guided_result: Dict[str,list],other_result: Dict[str,l
   
   return final_total
 
+def msv_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_patch: str) -> None:
+  switch_info, switch_case_map = read_info(work_dir)
+  token = correct_patch.split(":")
+  sw_cs = token[0]
+  cond = ""
+  if len(token) == 2:
+    cond = token[1]
+  correct_case = switch_case_map[sw_cs]
+  correct_type = correct_case.parent
+  correct_switch = correct_type.parent
+  correct_line = correct_switch.parent
+  correct_func = correct_line.parent
+  correct_file = correct_func.parent
+  x = list()
+  y = list()
+  with open(msv_result_file, "r") as f:
+    info = json.load(f)
+    total = 0
+    for data in info:
+      iter: int = data["iteration"]
+      tm: float = data["time"]
+      result: bool = data["result"]
+      if result:
+        total += 1
+      config = data["config"][0]
+      #print(config)
+      sw = config["switch"]
+      cs = config["case"]
+      case_info = switch_case_map[f"{sw}-{cs}"]
+      type_info = case_info.parent
+      switch_info = type_info.parent
+      line_info = switch_info.parent
+      func_info = line_info.parent
+      file_info = func_info.parent
+      dist = 6
+      if file_info == correct_file:
+        dist -= 1
+        if func_info == correct_func:
+          dist -= 1
+          if line_info == correct_line:
+            dist -= 1
+            if switch_info == correct_switch:
+              dist -= 1
+              if type_info == correct_type:
+                dist -= 1
+                if correct_case == case_info:
+                  dist -= 1
+      x.append(iter)
+      y.append(dist)
+  y_tick = np.arange(0, 7)
+  y_label = ["case", "type", "switch", "line", "func", "file", "diff"]
+  plt.scatter(x, y, s=1)
+  plt.yticks(y_tick, labels=y_label)
+  plt.title(title)
+  plt.xlabel("iteration")
+  plt.ylabel("distance from correct patch")
+  out_file = os.path.join(os.path.dirname(msv_result_file), "out.png")
+  plt.savefig(out_file)
+
+def batch_convert(correct_patch_csv: str, in_dir: str) -> None:
+  all = dict()
+  with open(correct_patch_csv, "r") as f:
+    for line in f.readlines():
+      token = line.strip().split(",")
+      if len(token) < 2:
+        continue
+      t = token[0]
+      if t not in all:
+        all[t] = dict()
+      v = token[1]
+      all[t][v] = token[2]
+  for dir in os.listdir(in_dir):
+    if not os.path.isdir(os.path.join(in_dir, dir)):
+      continue
+    print(dir)
+    result_file = os.path.join(in_dir, dir, "msv-result.json")
+    print(result_file)
+    if os.path.exists(result_file):
+      ty = ""
+      ver = ""
+      cp = ""
+      for t in all:
+        if t in dir:
+          ty = t
+          break
+      for v in all[ty]:
+        if v in dir:
+          ver = v
+          break
+      cp = all[ty][ver]
+      print(f"{dir} : {ty} / {ver} / {cp}")
+      result_file = os.path.join(in_dir, dir, "msv-result.json")
+      workdir = os.path.join("/root/project/MSV-experiment/benchmarks", ty, f"{ty}-case-{ver}", f"{ty}-{ver}-workdir")
+      if not os.path.exists(workdir):
+        workdir = os.path.join("/root/project/MSV-experiment/benchmarks", ty, f"{ty}-case-tests-{ver}", f"{ty}-tests-{ver}-workdir")
+      if not os.path.exists(workdir):
+        workdir = os.path.join("/root/project/MSV-experiment/benchmarks", ty, f"{ty}-case-tests2-{ver}", f"{ty}-tests2-{ver}-workdir")
+      print(f"{result_file}, {workdir}")
+      msv_plot_correct(result_file, dir, workdir, cp)
+      afl_barchart(result_file, dir, workdir, cp)
+
 def main(argv):
   opts, args = getopt.getopt(argv[1:], "hi:o:t:nm:c:w:")
   result_file = ""
@@ -389,21 +640,25 @@ def main(argv):
     elif o == "-m":
       mode = a
     elif o == "-c":
-      correct_patch = map(int, a.split(","))
+      correct_patch = a
     else:
       print("afl_plot.py -i input_dir -t title -o output.png -m auto -c correctpatch")
-      print("ex) afl_plot.py -i . -o out.png -t php-2adf58 -m auto -c 54,36")
+      print("ex) afl_plot.py -i . -o out.png -t php-2adf58 -m auto -c 54-36:0-2-12")
+      print("./plot.py -o out/php/1d984a7 -i out/php/1d984a7/msv-result.json -m correct -t 1d984a7 -w /root/project/MSV-experiment/benchmarks/php/php-case-1d984a7/php-1d984a7-workdir -c 137-145:0-8-355")
       exit(0)
   if output_file == "":
     output_file = os.path.join(os.path.dirname(result_file), "plot.png")
   if mode == "bar":
-    afl_barchart(result_file, title, work_dir)
+    afl_barchart(result_file, title, work_dir, correct_patch)
   elif mode == "auto":
     msv_plot(result_file, title, output_file, ignore,
               correct_patch=tuple(correct_patch))
+  elif mode == "correct":
+    msv_plot_correct(result_file, title, work_dir, correct_patch)
+  elif mode == "batch":
+    batch_convert(correct_patch, result_file)
   else:
-    msv_plot(result_file, title, output_file, ignore,
-              correct_patch=tuple(correct_patch))
+    msv_plot_correct(result_file, title, work_dir, correct_patch)
   return 0
 
 
