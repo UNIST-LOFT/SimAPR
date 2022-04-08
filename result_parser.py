@@ -22,18 +22,18 @@ def parse(output_file):
         current_pass_result=res['pass_result']
 
         if current_result:
-            if Key.PASS_ITER not in result.keys():
+            if Key.PASS_ITER not in result:
                 result[Key.PASS_ITER]=current_iter
                 result[Key.PASS_TIME]=current_time
             if current_pass_result:
-                if Key.PLAUSIBLE_ITER not in result.keys():
+                if Key.PLAUSIBLE_ITER not in result:
                     result[Key.PLAUSIBLE_ITER]=current_iter
                     result[Key.PLAUSIBLE_TIME]=current_time
 
-    if Key.PASS_ITER not in result.keys():
+    if Key.PASS_ITER not in result:
         result[Key.PASS_ITER]=0
         result[Key.PASS_TIME]=0
-    if Key.PLAUSIBLE_ITER not in result.keys():
+    if Key.PLAUSIBLE_ITER not in result:
         result[Key.PLAUSIBLE_ITER]=0
         result[Key.PLAUSIBLE_TIME]=0
     return result

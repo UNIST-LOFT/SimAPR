@@ -57,7 +57,7 @@ class EnvVarMode(Enum):
   collect_pos = 4
   cond_syn = 5
 
-# Probability Type
+# Parameter Type
 class PT(Enum):
   selected = 0
   basic = 1 # basic
@@ -68,6 +68,10 @@ class PT(Enum):
   rand = 6  # random
   odist = 7    # output distance
   sigma = 8 # standard deviation of normal distribution
+  halflife = 9 # half life of parameters
+  k = 10    # increase or decrease beta distribution with k
+  alpha = 11 # alpha of beta distribution
+  beta = 12 # beta of beta distribution
 
 class PassFail:
   def __init__(self, p: float = 0, f: float = 0) -> None:
@@ -1084,6 +1088,7 @@ class MSVState:
   epsilon_greedy_exploration: float
   c_map: Dict[PT, float]
   params: Dict[PT, float]
+  params_decay: Dict[PT, float]
   original_output_distance_map: Dict[int, float]
   def __init__(self) -> None:
     self.mode = MSVMode.guided
@@ -1138,11 +1143,12 @@ class MSVState:
     self.total_passed_patch=0
     self.total_plausible_patch=0
     self.iteration=0
-    self.use_partial_validation = False
+    self.use_partial_validation = True
     self.max_initial_trial = 100
     self.epsilon_greedy_exploration = 0.1
-    self.c_map = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.3}
-    self.params = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.3, PT.cov: 2.0, PT.sigma: 0.1/1.96}
+    self.c_map = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.2}
+    self.params = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.2, PT.cov: 2.0, PT.sigma: 0.1, PT.halflife: 1000}
+    self.params_decay = dict()
     self.original_output_distance_map = dict()
 
 def remove_file_or_pass(file:str):

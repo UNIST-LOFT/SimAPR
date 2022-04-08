@@ -2,9 +2,6 @@
 
 ## 1. Setup
 ```
-pip install virtualenv
-virtualenv venv
-source venv/bin/activate
 pip install -r requirements.txt
 ```
 
@@ -43,14 +40,17 @@ plot.py -i input-dir -o out-file.png -t title -c correct-patch
 * `-c` correct-patch (`--correct-patch`)
 * `--use-condition-synthesis` : 
     Apply probabilistic approach for constants
-* `--use-fl` : Use fault localization result
-* `--use-hierarchical-selection` n : Use p2, p3
+* `--use-fl` : (deprecated) Use fault localization result
+* `--use-hierarchical-selection` n : (deprecated) Use p2, p3
 * `--use-pass-test` : Use pass test for p3
 * `--use-multi-line` n : Use multi-line patch
 * `--max-parallel-cpu` procs : 
     Set how many test to run in parallel, for p3
 * `--skip-valid` : Skip initial validation
 * `--use-simulation-mode` previous/msv-result.json : Use result of previous experiment instead of actually run the test.
+* `--use-pattern`: Only in `seapr` mode, use `SeAPR++`.
+* `--use-full-validation` : Use full validation.
+* `--params` params : Use alternative parameters for guided algorithm.
 
 ## 5. Project Structure
 ```
