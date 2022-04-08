@@ -575,6 +575,42 @@ def msv_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_pa
   out_file = os.path.join(os.path.dirname(msv_result_file), "out.png")
   plt.savefig(out_file)
 
+def batch_convert(correct_patch_csv: str, in_dir: str) -> None:
+  all = dict()
+  with open(correct_patch_csv, "r") as f:
+    for line in f.readlines():
+      token = line.strip().split(",")
+      if len(token) < 2:
+        continue
+      t = token[0]
+      if t not in all:
+        all[t] = dict()
+      v = token[1]
+      all[t][v] = token[2]
+  for dir in os.listdir(in_dir):
+    if not os.path.isdir(dir):
+      continue
+    print(dir)
+    if os.path.exists(os.path.join(in_dir, dir, "msv-result.json")):
+      ty = ""
+      ver = ""
+      cp = ""
+      for t in all:
+        if t in dir:
+          ty = t
+          break
+      for v in all[ty]:
+        if v in dir:
+          ver = v
+          break
+      cp = all[ty][ver]
+      print(f"{dir} : {ty} / {ver} / {cp}")
+      result_file = os.path.join(in_dir, dir, "msv-result.json")
+      workdir = os.path.join("/root/project/MSV-experiment/benchmarks", ty, f"{ty}-case-{ver}", f"{ty}-{ver}-workdir")
+      print(f"{result_file}, {workdir}")
+      msv_plot_correct(result_file, dir, workdir, cp)
+      afl_barchart(result_file, dir, workdir, cp)
+
 def main(argv):
   opts, args = getopt.getopt(argv[1:], "hi:o:t:nm:c:w:")
   result_file = ""
@@ -613,6 +649,8 @@ def main(argv):
               correct_patch=tuple(correct_patch))
   elif mode == "correct":
     msv_plot_correct(result_file, title, work_dir, correct_patch)
+  elif mode == "batch":
+    batch_convert(correct_patch, result_file)
   else:
     msv_plot_correct(result_file, title, work_dir, correct_patch)
   return 0
