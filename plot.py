@@ -609,6 +609,10 @@ def batch_convert(correct_patch_csv: str, in_dir: str) -> None:
       print(f"{dir} : {ty} / {ver} / {cp}")
       result_file = os.path.join(in_dir, dir, "msv-result.json")
       workdir = os.path.join("/root/project/MSV-experiment/benchmarks", ty, f"{ty}-case-{ver}", f"{ty}-{ver}-workdir")
+      if not os.path.exists(workdir):
+        workdir = os.path.join("/root/project/MSV-experiment/benchmarks", ty, f"{ty}-case-tests-{ver}", f"{ty}-tests-{ver}-workdir")
+      if not os.path.exists(workdir):
+        workdir = os.path.join("/root/project/MSV-experiment/benchmarks", ty, f"{ty}-case-tests2-{ver}", f"{ty}-tests2-{ver}-workdir")
       print(f"{result_file}, {workdir}")
       msv_plot_correct(result_file, dir, workdir, cp)
       afl_barchart(result_file, dir, workdir, cp)
