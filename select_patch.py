@@ -231,6 +231,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
           PT.plau: p_p, PT.fl: p_fl, PT.out: p_o, PT.cov: p_cov, PT.odist: p_odist}
   c_map = state.c_map.copy()
   iter = max(0, state.iteration - state.max_initial_trial)
+  # TODO: decay * alpha + beta * 0.5 ** (iter / halflife)
   decay = 1 - (0.5 ** (iter / state.params[PT.halflife]))
   for key in state.params_decay:
     diff = state.params_decay[key] - state.params[key]
@@ -644,6 +645,11 @@ def select_patch_seapr(state: MSVState, test: int) -> PatchInfo:
       for const_info in var_info.constant_info_list:
         return PatchInfo(case_info, op_info, var_info, const_info)
 
+def select_patch_tbar(state: MSVState) -> TbarPatchInfo:
+  """
+  Select a patch for Tbar.
+  """
+  
 
 def select_patch(state: MSVState, mode: MSVMode, test: int) -> List[PatchInfo]:
   selected_patch = list()

@@ -213,10 +213,48 @@ class LineInfo:
     self.type_priority=dict()
     self.has_init_patch=False
     self.case_update_count: int = 0
+    self.tbar_type_info_map: Dict[str, TbarTypeInfo] = dict()
   def __hash__(self) -> int:
     return hash(self.uuid)
   def __eq__(self, other) -> bool:
     return self.uuid == other.uuid
+
+class TbarTypeInfo:
+  def __init__(self, parent: LineInfo, mutation: str) -> None:
+    self.parent = parent
+    self.mutation = mutation
+    self.pf = PassFail()
+    self.positive_pf = PassFail()
+    self.output_pf = PassFail()
+    self.update_count: int = 0
+    self.total_case_info: int = 0
+    self.case_update_count: int = 0
+    self.out_dist: float = -1.0
+    self.out_dist_map: Dict[int, float] = dict()
+    self.tbar_switch_info_map: Dict[str, TbarSwitchInfo] = dict()
+  def __hash__(self) -> int:
+    return hash(self.mutation)
+  def __eq__(self, other) -> bool:
+    return self.mutation == other.mutation
+
+class TbarSwitchInfo:
+  def __init__(self, parent: TbarTypeInfo, location: str, start: int, end: int) -> None:
+    self.parent = parent
+    self.location = location
+    self.start = start
+    self.end = end
+    self.pf = PassFail()
+    self.positive_pf = PassFail()
+    self.output_pf = PassFail()
+    self.update_count: int = 0
+    self.total_case_info: int = 0
+    self.case_update_count: int = 0
+    self.out_dist: float = -1.0
+    self.out_dist_map: Dict[int, float] = dict()
+  def __hash__(self) -> int:
+    return hash(self.location)
+  def __eq__(self, other) -> bool:
+    return self.location == other.location
 
 class SwitchInfo:
   def __init__(self, parent: LineInfo, switch_number: int) -> None:
@@ -665,6 +703,13 @@ class MSVEnvVar:
             new_env[f"__{sw}_{cs}__VARIABLE"] = str(patch_info.variable_info.variable)
             new_env[f"__{sw}_{cs}__CONSTANT"] = str(patch_info.constant_info.constant_value)
     return new_env
+  @staticmethod
+  def get_new_env_tbar(state: 'MSVState', patch: 'TbarPatchInfo', test: int) -> Dict[str, str]:
+    new_env = os.environ.copy()
+    new_env["MSV_UUID"] = str(state.uuid)
+    new_env["MSV_LOCATION"] = str(patch.tbar_switch_info.location)
+    new_env["MSV_OUTPUT_DISTANCE_FILE"] = f"/tmp/{uuid.uuid4()}.out"
+    return new_env
 
 class PatchInfo:
   def __init__(self, case_info: CaseInfo, op_info: OperatorInfo, var_info: VariableInfo, con_info: ConstantInfo) -> None:
@@ -1001,6 +1046,84 @@ class PatchInfo:
       result.append(patch.to_str())
     return ",".join(result)
 
+class TbarPatchInfo:
+  def __init__(self, tbar_switch_info: TbarSwitchInfo) -> None:
+    self.tbar_switch_info = tbar_switch_info
+    self.tbar_type_info = tbar_switch_info.parent
+    self.line_info = self.tbar_type_info.parent
+    self.func_info = self.line_info.parent
+    self.file_info = self.func_info.parent
+    self.out_dist = -1.0
+  def update_result(self, result: bool, n: float) -> None:
+    self.tbar_switch_info.pf.update(result, n)
+    self.tbar_type_info.pf.update(result, n)
+    self.line_info.pf.update(result, n)
+    self.func_info.pf.update(result, n)
+    self.file_info.pf.update(result, n)
+  def update_result_out_dist(self, state: 'MSVState', result: bool, dist: float, test: int) -> None:
+    self.out_dist = dist
+    is_diff = True
+    if test in state.original_output_distance_map:
+      is_diff = dist != state.original_output_distance_map[test]
+    tmp = self.tbar_switch_info.update_count * self.tbar_switch_info.out_dist
+    self.tbar_switch_info.out_dist = (tmp + dist) / (self.tbar_switch_info.update_count + 1)
+    self.tbar_switch_info.update_count += 1
+    self.tbar_switch_info.output_pf.update(is_diff, 1.0)
+    tmp = self.tbar_type_info.update_count * self.tbar_type_info.out_dist
+    self.tbar_type_info.out_dist = (tmp + dist) / (self.tbar_type_info.update_count + 1)
+    self.tbar_type_info.update_count += 1
+    self.tbar_type_info.output_pf.update(is_diff, 1.0)
+    tmp = self.line_info.update_count * self.line_info.out_dist
+    self.line_info.out_dist = (tmp + dist) / (self.line_info.update_count + 1)
+    self.line_info.update_count += 1
+    self.line_info.output_pf.update(is_diff, 1.0)
+    tmp = self.func_info.update_count * self.func_info.out_dist
+    self.func_info.out_dist = (tmp + dist) / (self.func_info.update_count + 1)
+    self.func_info.update_count += 1
+    self.func_info.output_pf.update(is_diff, 1.0)
+    tmp = self.file_info.update_count * self.file_info.out_dist
+    self.file_info.out_dist = (tmp + dist) / (self.file_info.update_count + 1)
+    self.file_info.update_count += 1
+    self.file_info.output_pf.update(is_diff, 1.0)    
+  def update_result_positive(self, result: bool, n: float) -> None:
+    self.tbar_switch_info.positive_pf.update(result, n)
+    self.tbar_type_info.positive_pf.update(result, n)
+    self.line_info.positive_pf.update(result, n)
+    self.func_info.positive_pf.update(result, n)
+    self.file_info.positive_pf.update(result, n)
+  def remove_patch(self, state: 'MSVState') -> None:
+    del self.tbar_type_info.tbar_switch_info_map[self.tbar_switch_info.location]
+    if len(self.tbar_type_info.tbar_switch_info_map) == 0:
+      del self.line_info.tbar_type_info_map[self.tbar_type_info.mutation]
+    if len(self.line_info.tbar_type_info_map) == 0:
+      del self.func_info.line_info_map[self.line_info.uuid]
+    if len(self.func_info.line_info_map) == 0:
+      del self.file_info.func_info_map[self.func_info.id]
+    if len(self.file_info.func_info_map) == 0:
+      del state.file_info_map[self.file_info.file_name]
+    self.tbar_switch_info.case_update_count += 1
+    self.tbar_type_info.case_update_count += 1
+    self.line_info.case_update_count += 1
+    self.func_info.case_update_count += 1
+    self.file_info.case_update_count += 1
+  def to_json_object(self) -> dict:
+    conf = dict()
+    conf["location"] = self.tbar_switch_info.location
+  def to_str(self) -> str:
+    return f"{self.tbar_switch_info.location}"
+  def __str__(self) -> str:
+    return self.to_str()
+  def to_str_sw_cs(self) -> str:
+    return self.to_str()
+  @staticmethod
+  def list_to_str(selected_patch: list) -> str:
+    result = list()
+    for patch in selected_patch:
+      result.append(patch.to_str())
+    return ",".join(result)
+  
+
+
 @dataclass
 class MSVResult:
   iteration: int
@@ -1090,6 +1213,7 @@ class MSVState:
   params: Dict[PT, float]
   params_decay: Dict[PT, float]
   original_output_distance_map: Dict[int, float]
+  tbar_mode: bool
   def __init__(self) -> None:
     self.mode = MSVMode.guided
     self.msv_path = ""
@@ -1150,6 +1274,7 @@ class MSVState:
     self.params = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.2, PT.cov: 2.0, PT.sigma: 0.1, PT.halflife: 1000}
     self.params_decay = dict()
     self.original_output_distance_map = dict()
+    self.tbar_mode = False
 
 def remove_file_or_pass(file:str):
   try:

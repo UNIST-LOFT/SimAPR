@@ -196,3 +196,18 @@ class MSV:
       # self.append_result(patch, run_result)
       # self.remove_patch(patch)
 
+class MSVTbar(MSV):
+  def save_result(self) -> None:
+    # TODO change
+    result_handler.save_result(self.state)
+  def initialize(self) -> None:
+    pass
+  def run(self) -> None:
+    self.state.start_time = time.time()
+    self.state.cycle = 0
+    while self.is_alive():
+      self.state.iteration += 1
+      neg = self.state.negative_test[0]
+      self.state.msv_logger.info(f'[{self.state.cycle}]: executing')
+      patch = select_patch.select_patch_tbar(self.state)
+      
