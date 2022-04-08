@@ -517,7 +517,7 @@ def total_plausible_patch(guided_result: Dict[str,list],other_result: Dict[str,l
   
   return final_total
 
-def msv_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_patch: str, switch_info_info: Dict[str, FileInfo] = None, switch_case_map: Dict[str, CaseInfo] = None) -> None:
+def msv_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_patch: str, switch_info_info: Dict[str, FileInfo] = None, switch_case_map: Dict[str, CaseInfo] = None) -> Tuple[int, float]:
   if switch_info_info is None:
     switch_info_info, switch_case_map = read_info(work_dir)
   token = correct_patch.split(":")
@@ -533,6 +533,8 @@ def msv_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_pa
   correct_file = correct_func.parent
   x = list()
   y = list()
+  correct_iter = 0
+  correct_time = 0
   with open(msv_result_file, "r") as f:
     info = json.load(f)
     total = 0
@@ -546,12 +548,27 @@ def msv_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_pa
       #print(config)
       sw = config["switch"]
       cs = config["case"]
+      patch_str = f"{sw}-{cs}"
+      if "operator" in config:
+        oper = config["operator"]
+        if "variable" in config:
+          var = config["variable"]
+          if "constant" in config:
+            const = config["constant"]
+            patch_str = f"{sw}-{cs}:{oper}-{var}-{const}"
+        else:
+          patch_str = f"{sw}-{cs}:{oper}"
+
+      if patch_str == correct_patch:
+        correct_iter = iter
+        correct_time = tm
       case_info = switch_case_map[f"{sw}-{cs}"]
       type_info = case_info.parent
       switch_info = type_info.parent
       line_info = switch_info.parent
       func_info = line_info.parent
       file_info = func_info.parent
+
       dist = 6
       if file_info == correct_file:
         dist -= 1
@@ -577,8 +594,10 @@ def msv_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_pa
   plt.ylabel("distance from correct patch")
   out_file = os.path.join(os.path.dirname(msv_result_file), "out.png")
   plt.savefig(out_file)
+  return correct_iter, correct_time
 
 def batch_convert(correct_patch_csv: str, in_dir: str) -> None:
+  csv = ""
   all = dict()
   with open(correct_patch_csv, "r") as f:
     for line in f.readlines():
@@ -621,8 +640,12 @@ def batch_convert(correct_patch_csv: str, in_dir: str) -> None:
       if workdir not in info:
         info[workdir] = read_info(workdir)
       switch_info, switch_case_map = info[workdir]
-      msv_plot_correct(result_file, dir, workdir, cp, switch_info, switch_case_map)
+      iter, tm = msv_plot_correct(result_file, dir, workdir, cp, switch_info, switch_case_map)
+      csv += f"{ty},{ver},{cp},{iter},{tm}\n"
       afl_barchart(result_file, dir, workdir, cp, switch_info, switch_case_map)
+  print(csv)
+  with open("result.csv", "w") as f:
+    f.write(csv)  
 
 def main(argv):
   opts, args = getopt.getopt(argv[1:], "hi:o:t:nm:c:w:")
