@@ -284,13 +284,18 @@ def read_info(state: MSVState) -> None:
                   line_info.type_priority[t]=[]
                 line_info.type_priority[t].append(case_info)
                 current_score=-1000
+                previous_score=-1000
                 for prophet_score in switches['prophet_scores']:
                   if prophet_score==[]:
                     current_score=-1000
                     break
                   if prophet_score['case']==int(c):
-                    current_score=max(prophet_score['scores'])
+                    if len(prophet_score['scores']==0):
+                      current_score=previous_score
+                    else:
+                      current_score=max(prophet_score['scores'])
                     break
+                  previous_score=current_score
               
                 if state.use_cpr_space:
                   if type_info.patch_type==PatchType.ConditionKind: # CPR only includes ConditionKind
