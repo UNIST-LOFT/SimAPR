@@ -207,6 +207,10 @@ class MSV:
             # Create condition tree
             for oper in OperatorType:
               oper_info=OperatorInfo(patch[0].case_info,oper)
+              if oper==OperatorType.ALL_1:
+                patch[0].case_info.operator_info_list.append(oper_info)
+                continue
+              
               for expr in opers:
                 if expr[0]==oper:
                   current_var=None

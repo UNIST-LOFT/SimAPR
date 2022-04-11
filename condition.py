@@ -417,6 +417,7 @@ class ProphetCondition:
         final_result.append((result.operator,result.var1,result.var2))
       else:
         final_result.append((result.operator,result.var1,result.const_or_var2_value))
+    final_result.append((OperatorType.ALL_1,-1,-1))
 
     return final_result
               
@@ -909,6 +910,7 @@ class GuidedPathCondition:
         final_result.append((result.operator,result.var1,result.var2))
       else:
         final_result.append((result.operator,result.var1,result.const_or_var2_value))
+    final_result.append((OperatorType.ALL_1,-1,-1))
     return final_result
 
   def get_condition(self):
