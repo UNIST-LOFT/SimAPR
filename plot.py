@@ -596,6 +596,84 @@ def msv_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_pa
   plt.savefig(out_file)
   return correct_iter, correct_time
 
+def msv_find_correct(msv_result_file: str, correct_patch: str) -> Tuple[int, float]:
+  token = correct_patch.split(":")
+  sw_cs = token[0]
+  cond = ""
+  if len(token) == 2:
+    cond = token[1]
+  correct_iter = 0
+  correct_time = 0
+  with open(msv_result_file, "r") as f:
+    info = json.load(f)
+    total = 0
+    for data in info:
+      iter: int = data["iteration"]
+      tm: float = data["time"]
+      result: bool = data["result"]
+      if result:
+        total += 1
+      config = data["config"][0]
+      #print(config)
+      sw = config["switch"]
+      cs = config["case"]
+      patch_str = f"{sw}-{cs}"
+      if "operator" in config:
+        oper = config["operator"]
+        if "variable" in config:
+          var = config["variable"]
+          if "constant" in config:
+            const = config["constant"]
+            patch_str = f"{sw}-{cs}:{oper}-{var}-{const}"
+        else:
+          patch_str = f"{sw}-{cs}:{oper}"
+
+      if patch_str == correct_patch:
+        correct_iter = iter
+        correct_time = tm
+  return correct_iter, correct_time
+
+def batch_find(correct_patch_csv: str, in_dir: str) -> None:
+  csv = ""
+  all = dict()
+  with open(correct_patch_csv, "r") as f:
+    for line in f.readlines():
+      token = line.strip().split(",")
+      if len(token) < 2:
+        continue
+      t = token[0]
+      if t not in all:
+        all[t] = dict()
+      v = token[1]
+      all[t][v] = token[2]
+  info = dict()
+  for dir in sorted(os.listdir(in_dir)):
+    if not os.path.isdir(os.path.join(in_dir, dir)):
+      continue
+    print(dir)
+    result_file = os.path.join(in_dir, dir, "msv-result.json")
+    print(result_file)
+    if os.path.exists(result_file):
+      ty = ""
+      ver = ""
+      cp = ""
+      for t in all:
+        if t in dir:
+          ty = t
+          break
+      for v in all[ty]:
+        if v in dir:
+          ver = v
+          break
+      cp = all[ty][ver]
+      print(f"{dir} : {ty} / {ver} / {cp}")
+      result_file = os.path.join(in_dir, dir, "msv-result.json")
+      iter, tm = msv_find_correct(result_file, cp)
+      csv += f"{ty},{ver},{cp},{iter},{tm}\n"
+  print(csv)
+  with open("result.csv", "w") as f:
+    f.write(csv)  
+
 def batch_convert(correct_patch_csv: str, in_dir: str) -> None:
   csv = ""
   all = dict()
@@ -687,6 +765,8 @@ def main(argv):
     msv_plot_correct(result_file, title, work_dir, correct_patch)
   elif mode == "batch":
     batch_convert(correct_patch, result_file)
+  elif mode == "find":
+    batch_find(correct_patch, result_file)
   else:
     msv_plot_correct(result_file, title, work_dir, correct_patch)
   return 0

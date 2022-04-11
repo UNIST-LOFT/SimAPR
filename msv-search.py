@@ -18,7 +18,7 @@ from msv import MSV
 
 def parse_args(argv: list) -> MSVState:
   longopts = ["help", "outdir=", "workdir=", "timeout=", "msv-path=", "time-limit=", "cycle-limit=", "epsilon-greedy-exploration=",
-              "mode=", "max-parallel-cpu=",'skip-valid','use-fixed-beta','use-cpr-space','use-fixed-const', 'params=',
+              "mode=", "max-parallel-cpu=",'skip-valid','use-fixed-beta','use-cpr-space','use-fixed-const', 'params=', "use-exp-alpha",
               "use-condition-synthesis", "use-fl", "use-hierarchical-selection=", "use-pass-test", "use-partial-validation", "use-full-validation",
               "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern", "use-simulation-mode="]
   opts, args = getopt.getopt(argv[1:], "ho:w:p:t:m:c:j:T:E:M:S:", longopts)
@@ -64,6 +64,8 @@ def parse_args(argv: list) -> MSVState:
       state.use_multi_line = int(a)
     elif o in ['--use-fixed-beta']:
       state.use_fixed_beta=True
+    elif o in ['--use-exp-alpha']:
+      state.use_exp_alpha=True
     elif o in ['--skip-valid']:
       state.skip_valid=True
     elif o in ['--new-revlog']:
