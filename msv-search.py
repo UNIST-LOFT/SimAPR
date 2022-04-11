@@ -269,7 +269,7 @@ def read_info(state: MSVState) -> None:
                 continue
             if t==PatchType.ReplaceStringKind:
               continue
-            if not state.use_msv_ext and (t==PatchType.MSVExtAddConditionKind or PatchType.MSVExtFunctionReplaceKind or PatchType.MSVExtReplaceFunctionInConditionKind or PatchType.MSVExtRemoveStmtKind):
+            if not state.use_msv_ext and (t==PatchType.MSVExtAddConditionKind or t==PatchType.MSVExtFunctionReplaceKind or t==PatchType.MSVExtReplaceFunctionInConditionKind or t==PatchType.MSVExtRemoveStmtKind):
               continue
             if len(types[t.value]) > 0:
               type_info = TypeInfo(switch_info, t)
