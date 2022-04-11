@@ -219,8 +219,18 @@ class MSVTbar(MSV):
   def save_result(self) -> None:
     # TODO change
     result_handler.save_result(self.state)
+  def run_test(self, patch: TbarPatchInfo, test: int) -> bool:
+    run_result, is_timeout = run_test.run_test_tbar(self.state, MSVEnvVar.get_new_env_tbar(self.state, patch, test))
+    return run_result
   def initialize(self) -> None:
-    pass
+    self.state.msv_logger.info("Initializing...")
+    original = self.state.switch_case_map["original"]
+    op = TbarPatchInfo(original)
+    for neg in self.state.negative_test.copy():
+      run_result = self.run_test(op, neg)
+      if run_result:
+        self.state.msv_logger.warning(f"Removing {neg} from negative test")
+        self.state.negative_test.remove(neg)
   def run(self) -> None:
     self.state.start_time = time.time()
     self.state.cycle = 0
@@ -229,4 +239,10 @@ class MSVTbar(MSV):
       neg = self.state.negative_test[0]
       self.state.msv_logger.info(f'[{self.state.cycle}]: executing')
       patch = select_patch.select_patch_tbar(self.state)
-      
+      result = True
+      for neg in self.state.negative_test:
+        run_result = self.run_test(patch, neg)
+        if not run_result:
+          result = False
+          if self.state.use_partial_validation:
+            break

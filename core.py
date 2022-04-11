@@ -727,6 +727,7 @@ class MSVEnvVar:
   def get_new_env_tbar(state: 'MSVState', patch: 'TbarPatchInfo', test: int) -> Dict[str, str]:
     new_env = os.environ.copy()
     new_env["MSV_UUID"] = str(state.uuid)
+    new_env["MSV_TEST"] = str(test)
     new_env["MSV_LOCATION"] = str(patch.tbar_switch_info.location)
     new_env["MSV_OUTPUT_DISTANCE_FILE"] = f"/tmp/{uuid.uuid4()}.out"
     return new_env

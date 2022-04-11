@@ -167,3 +167,48 @@ def parse_location(state: MSVState, new_env: Dict[str, str], tests: Set[int]) ->
           state.test_to_location[test][file] = set()
         for i in range(start, end + 1):
           state.test_to_location[test][file].add(i)
+
+
+def run_test_tbar(state: MSVState, new_env: Dict[str, str]) -> Tuple[bool, bool]:
+  state.msv_logger.info(f"@{state.cycle} Run tbar test {new_env['MSV_TEST']} with {new_env['MSV_LOCATION']}")
+  args = state.args
+  state.msv_logger.debug(' '.join(args))
+  test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
+  so: bytes
+  se: bytes
+  is_timeout = False
+  try:
+    so, se = test_proc.communicate()
+  except:  # timeout
+    state.msv_logger.info("Timeout!")
+    pid=test_proc.pid
+    children=[]
+    for child in psutil.Process(pid).children(False):
+      if psutil.pid_exists(child.pid):
+        children.append(child)
+
+    for child in children:
+      child.kill()
+    test_proc.kill()
+    return False,True
+  result_str = so.decode('utf-8').strip()
+  if result_str == "":
+    state.msv_logger.info("Result: FAIL")
+    return False, is_timeout
+  state.msv_logger.debug(result_str)
+
+  if '\n' in result_str:
+    result_str=result_str.splitlines()[0]
+  result_str.strip()
+  return False, False
+  # try:
+  #   if int(result_str) == selected_test:
+  #     state.msv_logger.warning("Result: PASS")
+  #     return True, is_timeout
+  #   else:
+  #     state.msv_logger.warning("Result: FAIL")
+  #     return False, is_timeout
+  # except:
+  #   state.msv_logger.warning("Cannot parse result")
+  #   state.msv_logger.warning("Result: FAIL")
+  #   return False, is_timeout
