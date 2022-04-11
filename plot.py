@@ -36,8 +36,8 @@ def read_info(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, CaseInfo]]:
       ff_map[file_name] = dict()
       for func in file["functions"]:
         func_name = func["function"]
-        begin = func["begin"]
-        end = func["end"]
+        begin = func["begin"]-1
+        end = func["end"]-1
         func_id = f"{func_name}:{begin}-{end}"
         ff_map[file_name][func_id] = (begin, end)
         function_to_location_map[func_name] = (file_name, begin, end)

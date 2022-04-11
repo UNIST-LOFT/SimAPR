@@ -80,18 +80,33 @@ def select_patch_SPR(state: MSVState) -> PatchInfo:
   type_priority=(PatchType.TightenConditionKind,PatchType.LoosenConditionKind,PatchType.IfExitKind,PatchType.GuardKind,PatchType.SpecialGuardKind,
         PatchType.AddInitKind,PatchType.ReplaceFunctionKind,PatchType.AddStmtKind,PatchType.AddStmtAndReplaceAtomKind,PatchType.AddIfStmtKind,PatchType.ReplaceKind,PatchType.ReplaceStringKind)
   
-  case_info=None
+  case_info:CaseInfo=None
   for type_ in type_priority:
     if type_ in line_info.type_priority:
       case_info=line_info.type_priority[type_][0]
   assert case_info is not None
 
   if case_info.is_condition and case_info.processed:
-    cond=__select_prophet_condition(case_info,state)
-    if type(cond)==OperatorInfo:
-      return PatchInfo(case_info,cond,None,None)
+    current_condition=case_info.condition_list[0]
+    for oper in case_info.operator_info_list:
+      if oper.operator_type==current_condition[0]:
+        current_oper=oper
+        break
+    
+    if current_oper.operator_type==OperatorType.ALL_1:
+      return PatchInfo(case_info,current_oper,None,None)
     else:
-      return PatchInfo(case_info,cond.variable.parent,cond.variable,cond)
+      for var in current_oper.variable_info_list:
+        if var.variable==current_condition[1]:
+          current_var=var
+          break
+      
+      for const in current_var.constant_info_list:
+        if const.constant_value==current_condition[2]:
+          current_const=const
+          break
+      
+      return PatchInfo(case_info,current_oper,current_var,current_const)
       
   patch = PatchInfo(case_info, None, None, None)
   return patch
@@ -156,25 +171,26 @@ def select_patch_prophet(state: MSVState) -> PatchInfo:
   # handle condition patch
   if selected_case.is_condition:
     if selected_case.processed:
-      # if processed, select operator
-      selected_operator=selected_case.operator_info_list[0]
+      current_condition=selected_case.condition_list[0]
       for oper in selected_case.operator_info_list:
-        if sorted(oper.prophet_score)[-1] > sorted(selected_operator.prophet_score)[-1]:
-          selected_operator=oper
+        if oper.operator_type==current_condition[0]:
+          current_oper=oper
+          break
       
-      # select variable
-      if selected_operator.operator_type!=OperatorType.ALL_1:
-        selected_variable=selected_operator.variable_info_list[0]
-        for var in selected_operator.variable_info_list:
-          if var.prophet_score > selected_variable.prophet_score:
-            selected_variable=var
-
-        # select first constant
-        selected_constant=selected_variable.constant_info_list[0]
-        return PatchInfo(selected_case,selected_operator,selected_variable,selected_constant)
+      if current_oper.operator_type==OperatorType.ALL_1:
+        return PatchInfo(selected_case,current_oper,None,None)
       else:
-        # if oper is ALL_1, return it
-        return PatchInfo(selected_case,selected_operator,None,None)
+        for var in current_oper.variable_info_list:
+          if var.variable==current_condition[1]:
+            current_var=var
+            break
+        
+        for const in current_var.constant_info_list:
+          if const.constant_value==current_condition[2]:
+            current_const=const
+            break
+        
+        return PatchInfo(selected_case,current_oper,current_var,current_const)
     else:
       # if not processed, return it
       return PatchInfo(selected_case,None,None,None)
