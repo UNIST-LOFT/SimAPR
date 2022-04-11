@@ -1136,7 +1136,7 @@ class MSVState:
     self.total_plausible_patch=0
     self.iteration=0
     self.use_partial_validation = True
-    self.max_initial_trial = 1
+    self.max_initial_trial = 100
     self.epsilon_greedy_exploration = 0.1
     self.c_map = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.2}
     self.params = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.2, PT.cov: 2.0, PT.sigma: 0.1, PT.halflife: 1000}
