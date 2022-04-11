@@ -45,7 +45,7 @@ def parse_args(argv: list) -> MSVState:
     elif o in ['-S', '--sub-node']:
       sub_dir = a
     elif o in ["--epsilon-greedy-exploration"]:
-      state.epsilon_greedy_exploration = int(a) / 100
+      state.params[PT.epsilon] = int(a) / 100
     elif o in ['-j', '--max-parallel-cpu']:
       state.max_parallel_cpu = int(a)
     elif o in ['-T', '--time-limit']:

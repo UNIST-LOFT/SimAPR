@@ -1094,7 +1094,6 @@ class MSVState:
   use_pattern: bool      # For SeAPR mode
   simulation_data: Dict[str, MSVResult]
   max_initial_trial: int
-  epsilon_greedy_exploration: float
   c_map: Dict[PT, float]
   params: Dict[PT, float]
   params_decay: Dict[PT, float]
@@ -1155,9 +1154,8 @@ class MSVState:
     self.iteration=0
     self.use_partial_validation = True
     self.max_initial_trial = 100
-    self.epsilon_greedy_exploration = 0.1
     self.c_map = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.2}
-    self.params = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.2, PT.cov: 2.0, PT.sigma: 0.1, PT.halflife: 1000}
+    self.params = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.2, PT.cov: 2.0, PT.sigma: 0.1, PT.halflife: 1000, PT.epsilon: 0.1}
     self.params_decay = dict()
     self.original_output_distance_map = dict()
     self.use_exp_alpha = False
