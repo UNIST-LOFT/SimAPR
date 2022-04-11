@@ -292,7 +292,7 @@ def read_info(state: MSVState) -> None:
                     current_score=-1000
                     break
                   if prophet_score['case']==int(c):
-                    if len(prophet_score['scores']==0):
+                    if len(prophet_score['scores'])==0:
                       current_score=previous_score
                     else:
                       current_score=max(prophet_score['scores'])
