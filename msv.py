@@ -180,9 +180,28 @@ class MSV:
           prophet_cond=condition.ProphetCondition(patch[0],self.state,self.state.negative_test,self.state.positive_test)
           opers=prophet_cond.get_condition()
           if opers is not None and len(opers)>0:
-            patch[0].case_info.operator_info_list=opers
+            patch[0].case_info.condition_list=opers
+
+            # Create condition tree
+            for oper in OperatorType:
+              oper_info=OperatorInfo(patch[0].case_info,oper)
+              for expr in opers:
+                if expr[0]==oper:
+                  current_var=None
+                  for var in oper_info.variable_info_list:
+                    if var.variable==expr[1]:
+                      current_var=var
+                      break
+                  
+                  if current_var is None:
+                    current_var=VariableInfo(oper_info,expr[1])
+                    oper_info.variable_info_list.append(current_var)
+                  current_var.constant_info_list.append(ConstantInfo(current_var,expr[2]))
+
+              if len(oper_info.variable_info_list)>0:
+                patch[0].case_info.operator_info_list.append(oper_info)
           else:
-            patch[0].case_info.operator_info_list=[]
+            patch[0].case_info.condition_list=[]
 
       # our condition synthesis
       elif self.state.use_condition_synthesis and patch[0].case_info.is_condition and patch[0].operator_info.operator_type!=OperatorType.ALL_1 and len(patch)==1:

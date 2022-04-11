@@ -48,6 +48,16 @@ class OperatorType(Enum):
   GT = 2
   LT = 3
   ALL_1 = 4
+  EQ_VAR = 5
+  NE_VAR = 6
+  GT_VAR = 7
+  LT_VAR = 8
+
+  def __lt__(self, other):
+    return self.value < other.value
+  
+  def __le__(self,other):
+    return self.value <= other.value
 
 class EnvVarMode(Enum):
   basic = 0
@@ -280,6 +290,7 @@ class CaseInfo:
     self.is_condition = is_condition
     self.var_count: int = 0
     self.operator_info_list: List[OperatorInfo]=list()
+    self.condition_list: List[(OperatorType, int, int)]=[]
     self.pf = PassFail()
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
@@ -842,24 +853,12 @@ class PatchInfo:
     if self.is_condition and self.operator_info is not None and self.case_info.operator_info_list is not None:
       if self.operator_info.operator_type == OperatorType.ALL_1:
         self.case_info.operator_info_list.remove(self.operator_info)
-        self.case_info.prophet_score.remove(self.operator_info.prophet_score[0])
-        self.type_info.prophet_score.remove(self.operator_info.prophet_score[0])
-        self.switch_info.prophet_score.remove(self.operator_info.prophet_score[0])
-        self.line_info.prophet_score.remove(self.operator_info.prophet_score[0])
-        self.func_info.prophet_score.remove(self.operator_info.prophet_score[0])
-        self.file_info.prophet_score.remove(self.operator_info.prophet_score[0])
       else:
         if not state.use_condition_synthesis:
+          self.case_info.condition_list.remove((self.operator_info.operator_type,self.variable_info.variable,self.constant_info.constant_value))
           self.variable_info.constant_info_list.remove(self.constant_info)
           if len(self.variable_info.constant_info_list) == 0:
             self.operator_info.variable_info_list.remove(self.variable_info)
-            self.operator_info.prophet_score.remove(self.variable_info.prophet_score)
-            self.case_info.prophet_score.remove(self.variable_info.prophet_score)
-            self.type_info.prophet_score.remove(self.variable_info.prophet_score)
-            self.switch_info.prophet_score.remove(self.variable_info.prophet_score)
-            self.line_info.prophet_score.remove(self.variable_info.prophet_score)
-            self.func_info.prophet_score.remove(self.variable_info.prophet_score)
-            self.file_info.prophet_score.remove(self.variable_info.prophet_score)
           if len(self.operator_info.variable_info_list) == 0:
             self.case_info.operator_info_list.remove(self.operator_info)
 
@@ -913,13 +912,6 @@ class PatchInfo:
               is_remove=False
           if is_remove:
             self.case_info.operator_info_list.remove(self.operator_info)
-            for score in self.operator_info.prophet_score:
-              self.case_info.prophet_score.remove(score)
-              self.type_info.prophet_score.remove(score)
-              self.switch_info.prophet_score.remove(score)
-              self.line_info.prophet_score.remove(score)
-              self.func_info.prophet_score.remove(score)
-              self.file_info.prophet_score.remove(score)
 
       if len(self.case_info.operator_info_list) == 0:
         del self.type_info.case_info_map[self.case_info.case_number]

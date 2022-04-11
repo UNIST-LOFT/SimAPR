@@ -203,8 +203,8 @@ def read_info(state: MSVState) -> None:
       ff_map[file_name] = dict()
       for func in file["functions"]:
         func_name = func["function"]
-        begin = func["begin"]
-        end = func["end"]
+        begin = func["begin"]-1
+        end = func["end"]-1
         func_id = f"{func_name}:{begin}-{end}"
         ff_map[file_name][func_id] = (begin, end)
         state.function_to_location_map[func_name] = (file_name, begin, end)
@@ -223,14 +223,14 @@ def read_info(state: MSVState) -> None:
           continue
         for func_id in ff_map[file_name]:
           fn_range = ff_map[file_name][func_id]
-          line_num = int(line['line']+1)
+          line_num = int(line['line'])
           if fn_range[0] <= line_num <= fn_range[1]:
             if func_id not in file_info.func_info_map:
               func_info = FuncInfo(file_info, func_id.split(":")[0], fn_range[0], fn_range[1])
               file_info.func_info_map[func_info.id] = func_info
             else:
               func_info = file_info.func_info_map[func_id]
-            line_info = LineInfo(func_info, int(line['line'])+1)
+            line_info = LineInfo(func_info, int(line['line']))
             func_info.line_info_map[line_info.uuid] = line_info
             break
         #line_info = LineInfo(file_info, int(line['line']))
@@ -281,13 +281,13 @@ def read_info(state: MSVState) -> None:
                 if t not in line_info.type_priority:
                   line_info.type_priority[t]=[]
                 line_info.type_priority[t].append(case_info)
-                current_score=None
+                current_score=-1000
                 for prophet_score in switches['prophet_scores']:
                   if prophet_score==[]:
-                    current_score=[]
+                    current_score=-1000
                     break
                   if prophet_score['case']==int(c):
-                    current_score=prophet_score['scores']
+                    current_score=max(prophet_score['scores'])
                     break
               
                 if state.use_cpr_space:
@@ -300,13 +300,12 @@ def read_info(state: MSVState) -> None:
                       state.switch_case_map[sw_cs_key] = case_info
                       file_line.case_map[sw_cs_key] = case_info
 
-                      for score in current_score:
-                        case_info.prophet_score.append(score)
-                        type_info.prophet_score.append(score)
-                        switch_info.prophet_score.append(score)
-                        line_info.prophet_score.append(score)
-                        func_info.prophet_score.append(score)
-                        file_info.prophet_score.append(score)
+                      case_info.prophet_score.append(current_score)
+                      type_info.prophet_score.append(current_score)
+                      switch_info.prophet_score.append(current_score)
+                      line_info.prophet_score.append(current_score)
+                      func_info.prophet_score.append(current_score)
+                      file_info.prophet_score.append(current_score)
                 else:
                   if type_info.patch_type!=PatchType.ConditionKind: # Original Prophet doesn't have ConditionKind
                     if f'{switch_info.switch_number}-{case_info.case_number}' not in state.var_counts or state.var_counts[f'{switch_info.switch_number}-{case_info.case_number}']>0:
@@ -316,13 +315,13 @@ def read_info(state: MSVState) -> None:
                       sw_cs_key = f'{switch_info.switch_number}-{case_info.case_number}'
                       state.switch_case_map[sw_cs_key] = case_info
                       file_line.case_map[sw_cs_key] = case_info
-                      for score in current_score:
-                        case_info.prophet_score.append(score)
-                        type_info.prophet_score.append(score)
-                        switch_info.prophet_score.append(score)
-                        line_info.prophet_score.append(score)
-                        func_info.prophet_score.append(score)
-                        file_info.prophet_score.append(score)
+                      
+                      case_info.prophet_score.append(current_score)
+                      type_info.prophet_score.append(current_score)
+                      switch_info.prophet_score.append(current_score)
+                      line_info.prophet_score.append(current_score)
+                      func_info.prophet_score.append(current_score)
+                      file_info.prophet_score.append(current_score)
                 
               if len(type_info.case_info_map)==0:
                 del switch_info.type_info_map[t]
