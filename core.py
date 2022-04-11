@@ -82,6 +82,7 @@ class PT(Enum):
   k = 10    # increase or decrease beta distribution with k
   alpha = 11 # alpha of beta distribution
   beta = 12 # beta of beta distribution
+  epsilon = 13 # epsilon-greedy
 
 class PassFail:
   def __init__(self, p: float = 0, f: float = 0) -> None:
@@ -93,11 +94,19 @@ class PassFail:
     else:
       mode=self.beta_mode(alpha,beta)
       return 0.5*(pow(3.7,mode))+0.2
+  def __exp_alpha(self, exp_alpha: bool) -> float:
+    if exp_alpha:
+      if self.pass_count == 0:
+        return 1
+      else:
+        return self.pass_count
+    else:
+      return 1
   def beta_mode(self, alpha: float, beta: float) -> float:
     return (alpha - 1.0) / (alpha + beta - 2.0)
-  def update(self, result: bool, n: float,use_fixed_beta:bool=False) -> None:
+  def update(self, result: bool, n: float, exp_alpha: bool = False, use_fixed_beta:bool=False) -> None:
     if result:
-      self.pass_count += n
+      self.pass_count += n * self.__exp_alpha(exp_alpha)
     else:
       self.fail_count += n*self.__fixed_beta__(use_fixed_beta,self.pass_count,self.fail_count)
   def update_with_pf(self, other,use_fixed_beta:bool=False) -> None:
@@ -106,7 +115,7 @@ class PassFail:
   def expect_probability(self,additional_score:float=0) -> float:
     return self.beta_mode(self.pass_count + 1.5+additional_score, self.fail_count + 2.0)
   def select_value(self) -> float: # select a value randomly from the beta distribution
-    return np.random.beta(self.pass_count + 1.5, self.fail_count + 2.0)
+    return np.random.beta(self.pass_count + 1.0, self.fail_count + 1.0)
   def copy(self) -> 'PassFail':
     return PassFail(self.pass_count, self.fail_count)
   @staticmethod
@@ -692,13 +701,13 @@ class PatchInfo:
     self.record=case_info.current_record
     self.profile_diff: ProfileDiff = None
     self.out_dist = -1.0
-  def update_result(self, result: bool, n: float,use_fixed_beta:bool) -> None:
-    self.case_info.pf.update(result, n)
-    self.type_info.pf.update(result, n)
-    self.switch_info.pf.update(result, n)
-    self.line_info.pf.update(result, n)
-    self.func_info.pf.update(result, n)
-    self.file_info.pf.update(result, n)
+  def update_result(self, result: bool, n: float, use_exp_alpha: bool, use_fixed_beta:bool) -> None:
+    self.case_info.pf.update(result, n, use_exp_alpha, use_fixed_beta)
+    self.type_info.pf.update(result, n, use_exp_alpha, use_fixed_beta)
+    self.switch_info.pf.update(result, n, use_exp_alpha, use_fixed_beta)
+    self.line_info.pf.update(result, n, use_exp_alpha, use_fixed_beta)
+    self.func_info.pf.update(result, n, use_exp_alpha, use_fixed_beta)
+    self.file_info.pf.update(result, n, use_exp_alpha, use_fixed_beta)
 
     if result:
       self.case_info.has_init_patch=True
@@ -709,12 +718,12 @@ class PatchInfo:
       self.file_info.has_init_patch=True
 
     if self.is_condition and self.operator_info is not None:
-      self.operator_info.pf.update(result, n)
+      self.operator_info.pf.update(result, n, use_exp_alpha, use_fixed_beta)
       if result:
         self.operator_info.has_init_patch=True
       if self.operator_info.operator_type!=OperatorType.ALL_1:
-        self.variable_info.pf.update(result, n)
-        self.constant_info.pf.update(result, n)
+        self.variable_info.pf.update(result, n, use_exp_alpha, use_fixed_beta)
+        self.constant_info.pf.update(result, n, use_exp_alpha, use_fixed_beta)
         if result:
           self.variable_info.has_init_patch=True
           self.constant_info.has_init_patch=True
@@ -1077,11 +1086,11 @@ class MSVState:
   use_pattern: bool      # For SeAPR mode
   simulation_data: Dict[str, MSVResult]
   max_initial_trial: int
-  epsilon_greedy_exploration: float
   c_map: Dict[PT, float]
   params: Dict[PT, float]
   params_decay: Dict[PT, float]
   original_output_distance_map: Dict[int, float]
+  use_exp_alpha: bool
   def __init__(self) -> None:
     self.mode = MSVMode.guided
     self.msv_path = ""
@@ -1137,12 +1146,12 @@ class MSVState:
     self.iteration=0
     self.use_partial_validation = True
     self.max_initial_trial = 100
-    self.epsilon_greedy_exploration = 0.1
     self.c_map = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.2}
-    self.params = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.2, PT.cov: 2.0, PT.sigma: 0.1, PT.halflife: 1000}
+    self.params = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.2, PT.cov: 2.0, PT.sigma: 0.1, PT.halflife: 1000, PT.epsilon: 0.1}
     self.params_decay = dict()
     self.original_output_distance_map = dict()
     self.use_msv_ext=False
+    self.use_exp_alpha = False
 
 def remove_file_or_pass(file:str):
   try:

@@ -16,7 +16,7 @@ def update_result(state: MSVState, selected_patch: List[PatchInfo], run_result: 
   if state.mode == MSVMode.seapr:
     update_result_seapr(state, selected_patch, run_result, test)
   for patch in selected_patch:
-    patch.update_result(run_result, n,state.use_fixed_beta)
+    patch.update_result(run_result, n, state.use_exp_alpha, state.use_fixed_beta)
   if 'MSV_OUTPUT_DISTANCE_FILE' in new_env:
     remove_file_or_pass(new_env["MSV_OUTPUT_DISTANCE_FILE"])
 

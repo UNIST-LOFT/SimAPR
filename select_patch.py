@@ -264,7 +264,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
   if state.iteration < state.max_initial_trial:
     return select_patch_prophet(state)
   else:
-    explore = state.epsilon_greedy_exploration > random.random()
+    explore = state.params[PT.epsilon] > random.random()
     if explore and not is_rand:
       state.msv_logger.info("Explore!")
       c_map[PT.cov] = state.params[PT.cov] # default = 2.0
