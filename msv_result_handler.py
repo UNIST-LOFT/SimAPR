@@ -112,7 +112,7 @@ def update_result_positive(state: MSVState, selected_patch: List[PatchInfo], run
   run_result = (len(failed_tests) == 0)
   state.failed_positive_test.update(failed_tests)
   for patch in selected_patch:
-    patch.update_result_positive(run_result, len(failed_tests), state.use_fixed_beta)
+    patch.update_result_positive(run_result, len(failed_tests), state.use_exp_alpha, state.use_fixed_beta)
 
 def save_result(state: MSVState) -> None:
   state.last_save_time = time.time()
@@ -210,3 +210,10 @@ def remove_patch(state: MSVState, patches: List[PatchInfo]) -> None:
         del case_map[case_info.to_str()]
       if len(case_map) == 0 and loc_str in state.priority_map:
         del state.priority_map[loc_str]
+
+def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: bool) -> None:
+  selected_patch.update_result(result, 1, state.use_exp_alpha, state.use_fixed_beta)
+
+def update_positive_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: bool) -> None:
+  selected_patch.update_result_positive(result, 1, state.use_exp_alpha, state.use_fixed_beta)
+

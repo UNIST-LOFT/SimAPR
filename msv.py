@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 import os
-from selectors import EpollSelector
 import sys
 import subprocess
 import json
@@ -239,6 +238,7 @@ class MSVTbar(MSV):
       neg = self.state.negative_test[0]
       self.state.msv_logger.info(f'[{self.state.cycle}]: executing')
       patch = select_patch.select_patch_tbar(self.state)
+      pass_exists = False
       result = True
       for neg in self.state.negative_test:
         run_result = self.run_test(patch, neg)
@@ -246,3 +246,8 @@ class MSVTbar(MSV):
           result = False
           if self.state.use_partial_validation:
             break
+        else:
+          pass_exists = True
+      result_handler.update_result_tbar(self.state, patch, pass_exists)
+      if result:
+        pass

@@ -882,18 +882,18 @@ class PatchInfo:
         self.variable_info.critical_pf.update_with_pf(critical_pf)
         self.constant_info.critical_pf.update_with_pf(critical_pf)
   
-  def update_result_positive(self, result: bool, n: bool,use_fixed_beta:bool) -> None:
-    self.case_info.positive_pf.update(result, n)
-    self.type_info.positive_pf.update(result, n)
-    self.switch_info.positive_pf.update(result, n)
-    self.line_info.positive_pf.update(result, n)
-    self.func_info.positive_pf.update(result, n)
-    self.file_info.positive_pf.update(result, n)
+  def update_result_positive(self, result: bool, n: float, use_exp_alpha: bool, use_fixed_beta:bool) -> None:
+    self.case_info.positive_pf.update(result, n, use_exp_alpha, use_fixed_beta)
+    self.type_info.positive_pf.update(result, n, use_exp_alpha, use_fixed_beta)
+    self.switch_info.positive_pf.update(result, n, use_exp_alpha, use_fixed_beta)
+    self.line_info.positive_pf.update(result, n, use_exp_alpha, use_fixed_beta)
+    self.func_info.positive_pf.update(result, n, use_exp_alpha, use_fixed_beta)
+    self.file_info.positive_pf.update(result, n, use_exp_alpha, use_fixed_beta)
     if self.is_condition and self.operator_info is not None:
-      self.operator_info.positive_pf.update(result, n)
+      self.operator_info.positive_pf.update(result, n, use_exp_alpha, use_fixed_beta)
       if self.operator_info.operator_type!=OperatorType.ALL_1:
-        self.variable_info.positive_pf.update(result, n)
-        self.constant_info.positive_pf.update(result, n)
+        self.variable_info.positive_pf.update(result, n, use_exp_alpha, use_fixed_beta)
+        self.constant_info.positive_pf.update(result, n, use_exp_alpha, use_fixed_beta)
   
   def remove_patch(self, state: 'MSVState') -> None:
     if self.is_condition and self.operator_info is not None and self.case_info.operator_info_list is not None:
@@ -1056,12 +1056,12 @@ class TbarPatchInfo:
     self.func_info = self.line_info.parent
     self.file_info = self.func_info.parent
     self.out_dist = -1.0
-  def update_result(self, result: bool, n: float) -> None:
-    self.tbar_switch_info.pf.update(result, n)
-    self.tbar_type_info.pf.update(result, n)
-    self.line_info.pf.update(result, n)
-    self.func_info.pf.update(result, n)
-    self.file_info.pf.update(result, n)
+  def update_result(self, result: bool, n: float, exp_alpha: bool, fixed_beta: bool) -> None:
+    self.tbar_switch_info.pf.update(result, n, exp_alpha, fixed_beta)
+    self.tbar_type_info.pf.update(result, n, exp_alpha, fixed_beta)
+    self.line_info.pf.update(result, n, exp_alpha, fixed_beta)
+    self.func_info.pf.update(result, n, exp_alpha, fixed_beta)
+    self.file_info.pf.update(result, n, exp_alpha, fixed_beta)
   def update_result_out_dist(self, state: 'MSVState', result: bool, dist: float, test: int) -> None:
     self.out_dist = dist
     is_diff = True
@@ -1087,12 +1087,12 @@ class TbarPatchInfo:
     self.file_info.out_dist = (tmp + dist) / (self.file_info.update_count + 1)
     self.file_info.update_count += 1
     self.file_info.output_pf.update(is_diff, 1.0)    
-  def update_result_positive(self, result: bool, n: float) -> None:
-    self.tbar_switch_info.positive_pf.update(result, n)
-    self.tbar_type_info.positive_pf.update(result, n)
-    self.line_info.positive_pf.update(result, n)
-    self.func_info.positive_pf.update(result, n)
-    self.file_info.positive_pf.update(result, n)
+  def update_result_positive(self, result: bool, n: float, exp_alpha: bool, fixed_beta: bool) -> None:
+    self.tbar_switch_info.positive_pf.update(result, n, exp_alpha, fixed_beta)
+    self.tbar_type_info.positive_pf.update(result, n, exp_alpha, fixed_beta)
+    self.line_info.positive_pf.update(result, n, exp_alpha, fixed_beta)
+    self.func_info.positive_pf.update(result, n, exp_alpha, fixed_beta)
+    self.file_info.positive_pf.update(result, n, exp_alpha, fixed_beta)
   def remove_patch(self, state: 'MSVState') -> None:
     del self.tbar_type_info.tbar_switch_info_map[self.tbar_switch_info.location]
     if len(self.tbar_type_info.tbar_switch_info_map) == 0:
