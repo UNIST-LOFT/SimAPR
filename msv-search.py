@@ -18,9 +18,10 @@ from msv import MSV
 
 def parse_args(argv: list) -> MSVState:
   longopts = ["help", "outdir=", "workdir=", "timeout=", "msv-path=", "time-limit=", "cycle-limit=", "epsilon-greedy-exploration=",
-              "mode=", "max-parallel-cpu=",'skip-valid','use-fixed-beta','use-cpr-space','use-fixed-const', 'params=', "use-exp-alpha",
-              "use-condition-synthesis", "use-fl", "use-hierarchical-selection=", "use-pass-test", "use-partial-validation", "use-full-validation",
-              "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern", "use-simulation-mode=",'use-msv-ext']
+              "mode=", "max-parallel-cpu=",'skip-valid','use-fixed-beta','use-cpr-space','use-fixed-const', 'params=', 'tbar-mode', "use-exp-alpha",
+              "use-condition-synthesis", "use-hierarchical-selection=", "use-pass-test", "use-partial-validation", "use-full-validation",
+              "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern", "use-simulation-mode=",
+              "use-prophet-score", "use-fl", "use-fl-prophet-score",'use-msv-ext']
   opts, args = getopt.getopt(argv[1:], "ho:w:p:t:m:c:j:T:E:M:S:", longopts)
   state = MSVState()
   state.original_args = argv
@@ -55,6 +56,11 @@ def parse_args(argv: list) -> MSVState:
     elif o in ['--use-condition-synthesis']:
       state.use_condition_synthesis = True
     elif o in ['--use-fl']:
+      state.use_fl = True
+    elif o in ['--use-prophet-score']:
+      state.use_prophet_score = True
+    elif o in ['--use-fl-prophet-score']:
+      state.use_prophet_score = True
       state.use_fl = True
     elif o in ['--use-hierarchical-selection']:
       state.use_hierarchical_selection = int(a)
@@ -101,6 +107,8 @@ def parse_args(argv: list) -> MSVState:
           state.params_decay[k] = v
     elif o in ['--use-msv-ext']:
       state.use_msv_ext = True
+    elif o in ['--tbar-mode']:
+      state.tbar_mode = True
 
   if sub_dir != "":
     state.out_dir = os.path.join(state.out_dir, sub_dir)
@@ -157,6 +165,106 @@ def read_fl_score(state: MSVState):
       line_score=LocationScore(splitted[0],int(splitted[1]),int(splitted[6]),int(splitted[7]))
       if line_score not in state.fl_score and has_patch(line_score.file_name,line_score.line):
         state.fl_score.append(line_score)
+
+def read_info_tbar(state: MSVState) -> None:
+  with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
+    info = json.load(f)
+    n = len(info['priority'])
+    index = 0
+    score_map = dict()
+    for priority in info['priority']:
+      temp_file: str = priority["file"]
+      temp_line: int = priority["line"]
+      score_map[f"{temp_file}:{temp_line}"] = n - index
+      store = (temp_file, temp_line, n - index)
+      index += 1
+      state.priority_list.append(store)
+    file_map = state.file_info_map
+    ff_map: Dict[str, Dict[str, Tuple[int, int]]] = dict()
+    for file in info["func_locations"]:
+      file_name = file["file"]
+      ff_map[file_name] = dict()
+      for func in file["functions"]:
+        func_name = func["function"]
+        begin = func["begin"]
+        end = func["end"]
+        func_id = f"{func_name}:{begin}-{end}"
+        ff_map[file_name][func_id] = (begin, end)
+        state.function_to_location_map[func_name] = (file_name, begin, end)
+    for file in info['rules']:
+      if len(file['lines']) == 0:
+        continue
+      file_info = FileInfo(file['file_name'])
+      file_name = file['file_name']
+      file_map[file['file_name']] = file_info
+      for line in file['lines']:
+        func_info = None
+        line_info = None
+        if len(line['switches']) == 0:
+          continue
+        for func_id in ff_map[file_name]:
+          fn_range = ff_map[file_name][func_id]
+          line_num = int(line['line'])
+          if fn_range[0] <= line_num <= fn_range[1]:
+            if func_id not in file_info.func_info_map:
+              func_info = FuncInfo(file_info, func_id.split(":")[0], fn_range[0], fn_range[1])
+              file_info.func_info_map[func_info.id] = func_info
+            else:
+              func_info = file_info.func_info_map[func_id]
+            line_info = LineInfo(func_info, int(line['line'])+1)
+            func_info.line_info_map[line_info.uuid] = line_info
+            break
+        #line_info = LineInfo(file_info, int(line['line']))
+        if line_info is None:
+          print("line_info is None!!!!!!!!!!!!!!!!")
+        state.line_list.append(line_info)
+        file_line = FileLine(file_info, line_info, 0)
+        state.priority_map[f"{file_info.file_name}:{line_info.line_number}"] = file_line
+        for sw in line["switches"]:
+          mut = sw["mutation"]
+          start = sw["start_position"]
+          end = sw["end_position"]
+          location = sw["location"]
+          if mut not in line_info.tbar_type_info_map:
+            line_info.tbar_type_info_map[mut] = TbarTypeInfo(line_info, mut)
+          tbar_type_info = line_info.tbar_type_info_map[mut]
+          tbar_switch_info = TbarSwitchInfo(tbar_type_info, location, start, end)
+          tbar_type_info.tbar_switch_info_map[location] = tbar_switch_info
+          state.switch_case_map[location] = tbar_switch_info
+        #line_list.append(line_info)
+        #switch_list = line_info.switch_info_list
+        if len(line_info.switch_info_map)==0:
+          del func_info.line_info_map[line_info.uuid]
+      for func in file_info.func_info_map.copy().values():
+        if len(func.line_info_map)==0:
+          del file_info.func_info_map[func.id]
+      if len(file_info.func_info_map)==0:
+        del state.file_info_map[file_info.file_name]
+
+  #Add original to switch_case_map
+  temp_file: FileInfo = FileInfo('original')
+  temp_func = FuncInfo(temp_file, "original_fn", 0, 0)
+  temp_file.func_info_map["original_fn:0-0"] = temp_func
+  temp_line: LineInfo = LineInfo(temp_func, 0)
+  # temp_file.line_info_list.append(temp_line)
+  temp_tbar_type = TbarTypeInfo(temp_line, "original_mut")
+  temp_tbar_switch = TbarSwitchInfo(temp_tbar_type, "original", 0, 0)
+  state.switch_case_map["original"] = temp_tbar_switch
+  if state.use_simulation_mode:
+    with open(state.prev_data, "r") as f:
+      prev_info = json.load(f)
+      for data in prev_info:
+        exec=data['execution']
+        iter = data["iteration"]
+        tm = data["time"]
+        result = data["result"]
+        pass_result = data["pass_result"]
+        output_distance = data["output_distance"]
+        config = data["config"]
+        patch_list = list()
+        for conf in config:
+          sw = conf["switch"]
+
 
 def read_info(state: MSVState) -> None:
   with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
@@ -450,8 +558,11 @@ def main(argv: list):
   state = parse_args(argv)
   copy_previous_results(state)
   state.msv_logger = set_logger(state)
-  read_info(state)
-  read_fl_score(state)
+  if state.tbar_mode:
+    read_info_tbar(state)
+  else:
+    read_info(state)
+    read_fl_score(state)
   read_repair_conf(state)
   state.msv_logger.info('Initialized!')
   msv = MSV(state)
