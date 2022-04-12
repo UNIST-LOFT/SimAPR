@@ -247,7 +247,6 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
           PT.plau: p_p, PT.fl: p_fl, PT.out: p_o, PT.cov: p_cov, PT.odist: p_odist}
   c_map = state.c_map.copy()
   iter = max(0, state.iteration - state.max_initial_trial)
-  # TODO: decay * alpha + beta * 0.5 ** (iter / halflife)
   decay = 1 - (0.5 ** (iter / state.params[PT.halflife]))
   for key in state.params_decay:
     diff = state.params_decay[key] - state.params[key]
@@ -284,7 +283,10 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
         continue
       selected.append(file_info)
       p_rand.append(pf_rand.select_value())
-      p_fl.append(file_info.fl_score)
+      if state.use_prophet_score and not state.use_fl:
+        p_fl.append(max(file_info.prophet_score))
+      else:
+        p_fl.append(file_info.fl_score)
       p_b.append(file_info.pf.select_value())
       p_p.append(file_info.positive_pf.select_value())
       p_o.append(file_info.output_pf.select_value())
@@ -306,7 +308,10 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
         continue
       selected.append(func_info)
       p_rand.append(pf_rand.select_value())
-      p_fl.append(func_info.fl_score)
+      if state.use_prophet_score and not state.use_fl:
+        p_fl.append(max(func_info.prophet_score))
+      else:
+        p_fl.append(func_info.fl_score)
       p_b.append(func_info.pf.select_value())
       p_p.append(func_info.positive_pf.select_value())
       p_o.append(func_info.output_pf.select_value())
@@ -328,7 +333,10 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
         continue
       selected.append(line_info)
       p_rand.append(pf_rand.select_value())
-      p_fl.append(line_info.fl_score)
+      if state.use_prophet_score and not state.use_fl:
+        p_fl.append(max(line_info.prophet_score))
+      else:
+        p_fl.append(line_info.fl_score)
       p_b.append(line_info.pf.select_value())
       p_p.append(line_info.positive_pf.select_value())
       p_o.append(line_info.output_pf.select_value())
@@ -341,7 +349,8 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     selected_line = select_by_probability(state, p_map, c_map)
     selected_line_info: LineInfo = selected[selected_line]
     clear_list(state, p_map)
-    del c_map[PT.fl] # No fl below line
+    if not state.use_prophet_score:
+      del c_map[PT.fl] # No fl below line
 
     # Select switch
     for switch_num in selected_line_info.switch_info_map:
@@ -351,6 +360,8 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
         continue
       selected.append(switch_info)
       p_rand.append(pf_rand.select_value())
+      if state.use_prophet_score:
+        p_fl.append(max(switch_info.prophet_score))
       p_b.append(switch_info.pf.select_value())
       p_p.append(switch_info.positive_pf.select_value())
       p_o.append(switch_info.output_pf.select_value())
@@ -373,6 +384,8 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
         continue
       selected.append(type_info)
       p_rand.append(pf_rand.select_value())
+      if state.use_prophet_score:
+        p_fl.append(max(type_info.prophet_score))
       p_b.append(type_info.pf.select_value())
       p_p.append(type_info.positive_pf.select_value())
       p_o.append(type_info.output_pf.select_value())
@@ -392,6 +405,8 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
         continue
       selected.append(case_info)
       p_rand.append(pf_rand.select_value())
+      if state.use_prophet_score:
+        p_fl.append(max(case_info.prophet_score))
       p_b.append(case_info.pf.select_value())
       p_p.append(case_info.positive_pf.select_value())
       p_o.append(case_info.output_pf.select_value())
@@ -403,7 +418,8 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     #         f"{selected_switch_info.switch_number}({len(selected_switch_info.type_info_list)}):" +
     #         f"{selected_type_info.patch_type.name}({len(selected_type_info.case_info_list)}):" +
     #                       f"{selected_case_info.case_number}")  # ({len(selected_case_info.operator_info_list)})
-
+  if PT.fl in c_map:
+    del c_map[PT.fl]
   selected_type_info = selected_case_info.parent
   selected_switch_info = selected_type_info.parent
   selected_line_info = selected_switch_info.parent

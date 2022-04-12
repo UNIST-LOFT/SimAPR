@@ -1180,6 +1180,7 @@ class MSVState:
   is_alive: bool
   use_condition_synthesis: bool
   use_fl: bool
+  use_prophet_score: bool
   use_hierarchical_selection: int
   use_pass_test: bool
   use_multi_line: int
@@ -1226,6 +1227,7 @@ class MSVState:
     self.is_alive = True
     self.use_condition_synthesis = False
     self.use_fl = False
+    self.use_prophet_score = False
     self.use_hierarchical_selection = 1
     self.use_pass_test = False
     self.use_multi_line = 1

@@ -19,8 +19,9 @@ from msv import MSV
 def parse_args(argv: list) -> MSVState:
   longopts = ["help", "outdir=", "workdir=", "timeout=", "msv-path=", "time-limit=", "cycle-limit=", "epsilon-greedy-exploration=",
               "mode=", "max-parallel-cpu=",'skip-valid','use-fixed-beta','use-cpr-space','use-fixed-const', 'params=', 'tbar-mode', "use-exp-alpha",
-              "use-condition-synthesis", "use-fl", "use-hierarchical-selection=", "use-pass-test", "use-partial-validation", "use-full-validation",
-              "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern", "use-simulation-mode="]
+              "use-condition-synthesis", "use-hierarchical-selection=", "use-pass-test", "use-partial-validation", "use-full-validation",
+              "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern", "use-simulation-mode=",
+              "use-prophet-score", "use-fl", "use-fl-prophet-score"]
   opts, args = getopt.getopt(argv[1:], "ho:w:p:t:m:c:j:T:E:M:S:", longopts)
   state = MSVState()
   state.original_args = argv
@@ -55,6 +56,11 @@ def parse_args(argv: list) -> MSVState:
     elif o in ['--use-condition-synthesis']:
       state.use_condition_synthesis = True
     elif o in ['--use-fl']:
+      state.use_fl = True
+    elif o in ['--use-prophet-score']:
+      state.use_prophet_score = True
+    elif o in ['--use-fl-prophet-score']:
+      state.use_prophet_score = True
       state.use_fl = True
     elif o in ['--use-hierarchical-selection']:
       state.use_hierarchical_selection = int(a)
