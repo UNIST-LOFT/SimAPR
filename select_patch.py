@@ -485,7 +485,26 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     else: # if use prophet condition syn, return basic patch for cond syn
       if not selected_case_info.processed:
         return PatchInfo(selected_case_info,None,None,None)
-
+    selected_op_info = None
+    selected_var_info = None
+    selected_const_info = None
+    op_type, var_index, con_index = selected_case_info.condition_list.pop(0)
+    for op_info in selected_case_info.operator_info_list:
+      if op_info.operator_type==op_type:
+        selected_op_info = op_info
+        break
+    if op_type == OperatorType.ALL_1:
+      return PatchInfo(selected_case_info, selected_op_info, None, None)
+    else:
+      for var_info in selected_op_info.variable_info_list:
+        if var_info.variable == var_index:
+          selected_var_info = var_info
+          for const_info in var_info.constant_info_list:
+            if const_info.constant_value == con_index:
+              selected_const_info = const_info
+              break
+      if (selected_var_info is not None) and (selected_const_info is not None):
+        return PatchInfo(selected_case_info, selected_op_info, selected_var_info, selected_const_info)
     # return select_conditional_patch_by_record(state, selected_case_info)
     if explore:
       c_map = rand_cmap
