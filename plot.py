@@ -612,7 +612,7 @@ def msv_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_pa
   y_tick = np.arange(0, 7)
   y_label = ["case", "type", "switch", "line", "func", "file", "diff"]
   plt.clf()
-  plt.figure(figsize=(24, 14))
+  plt.figure(figsize=(max(24, max(x) // 80), 14))
   plt.scatter(x, y, s=1, color='k', marker=",")
   plt.scatter(x_b, y_b, color='r', marker=".")
   plt.scatter(x_p, y_p, color='c', marker="*")
@@ -622,6 +622,9 @@ def msv_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_pa
   plt.ylabel("distance from correct patch", fontsize=20)
   out_file = os.path.join(os.path.dirname(msv_result_file), "out.png")
   plt.savefig(out_file)
+  out_diff_file = os.path.join(os.path.dirname(msv_result_file), "out-diff.png")
+  plt.scatter(x_o, y_o, color='y', marker=",")
+  plt.savefig(out_diff_file)
   return correct_iter, correct_time
 
 def msv_find_correct(msv_result_file: str, correct_patch: str) -> Tuple[int, float]:
