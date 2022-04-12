@@ -21,7 +21,7 @@ def parse_args(argv: list) -> MSVState:
               "mode=", "max-parallel-cpu=",'skip-valid','use-fixed-beta','use-cpr-space','use-fixed-const', 'params=', 'tbar-mode', "use-exp-alpha",
               "use-condition-synthesis", "use-hierarchical-selection=", "use-pass-test", "use-partial-validation", "use-full-validation",
               "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern", "use-simulation-mode=",
-              "use-prophet-score", "use-fl", "use-fl-prophet-score",'use-msv-ext']
+              "use-prophet-score", "use-fl", "use-fl-prophet-score", "watch-level=",'use-msv-ext']
   opts, args = getopt.getopt(argv[1:], "ho:w:p:t:m:c:j:T:E:M:S:", longopts)
   state = MSVState()
   state.original_args = argv
@@ -40,7 +40,9 @@ def parse_args(argv: list) -> MSVState:
     elif o in ['-p', '--msv-path']:
       state.msv_path = a
     elif o in ['-c', '--correct-patch']:
-      state.cycle_limit = int(a)
+      state.correct_patch_str = a
+    elif o in ['--watch-level']:
+      state.watch_level = a
     elif o in ['-m', '--mode']:
       state.mode = MSVMode[a.lower()]
     elif o in ['-S', '--sub-node']:
@@ -266,6 +268,43 @@ def read_info_tbar(state: MSVState) -> None:
           sw = conf["switch"]
 
 
+def trim_with_watch_level(state: MSVState, watch_level: str, correct_str: str) -> None:
+  correct_case = state.correct_case_info
+  correct_type = correct_case.parent
+  correct_switch = correct_type.parent
+  correct_line = correct_switch.parent
+  correct_func = correct_line.parent
+  correct_file = correct_func.parent
+  for file in state.file_info_map.copy():
+    if file != correct_file.file_name:
+      del state.file_info_map[file]
+  if watch_level == "file":
+    return
+  for func in correct_file.func_info_map.copy():
+    if func != correct_func.id:
+      del correct_file.func_info_map[func]
+  if watch_level == "func":
+    return
+  for line in correct_func.line_info_map.copy():
+    if line != correct_line.uuid:
+      del correct_func.line_info_map[line]
+  if watch_level == "line":
+    return
+  for sw in correct_line.switch_info_map.copy():
+    if sw != correct_switch.switch_number:
+      del correct_line.switch_info_map[sw]
+  if watch_level == "switch":
+    return
+  for ty in correct_switch.type_info_map.copy():
+    if ty != correct_type.patch_type:
+      del correct_switch.type_info_map[ty]
+  if watch_level == "type":
+    return
+  for cs in correct_type.case_info_map.copy():
+    if cs != correct_case.case_number:
+      del correct_type.case_info_map[cs]
+  return
+
 def read_info(state: MSVState) -> None:
   with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
     info = json.load(f)
@@ -452,6 +491,12 @@ def read_info(state: MSVState) -> None:
           del file_info.func_info_map[func.id]
       if len(file_info.func_info_map)==0:
         del state.file_info_map[file_info.file_name]
+
+  if len(state.correct_patch_str) > 1:
+    parsed = state.correct_patch_str.strip().split(":")
+    state.correct_case_info = state.switch_case_map[parsed[0]]
+    if len(state.watch_level) > 1:
+      trim_with_watch_level(state, state.watch_level, state.correct_patch_str)
 
   #Add original to switch_case_map
   temp_file: FileInfo = FileInfo('original')
