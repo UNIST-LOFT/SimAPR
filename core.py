@@ -747,6 +747,7 @@ class PatchInfo:
     self.record=case_info.current_record
     self.profile_diff: ProfileDiff = None
     self.out_dist = -1.0
+    self.out_diff: bool = False
   def update_result(self, result: bool, n: float, use_exp_alpha: bool, use_fixed_beta:bool) -> None:
     self.case_info.pf.update(result, n, use_exp_alpha, use_fixed_beta)
     self.type_info.pf.update(result, n, use_exp_alpha, use_fixed_beta)
@@ -779,6 +780,7 @@ class PatchInfo:
     is_diff = True
     if test in state.original_output_distance_map:
       is_diff = dist != state.original_output_distance_map[test]
+    self.out_diff = is_diff or self.out_diff
     tmp = self.case_info.update_count * self.case_info.out_dist
     self.case_info.out_dist = (tmp + dist) / (self.case_info.update_count + 1)
     self.case_info.out_dist_map[test] = (tmp + dist) / (self.case_info.update_count + 1)
@@ -1141,6 +1143,7 @@ class MSVResult:
     self.result = result
     self.pass_result=pass_test_result
     self.output_distance = output_distance
+    self.out_diff = config[0].out_diff
   def to_json_object(self,total_searched_patch:int=0,total_passed_patch:int=0,total_plausible_patch:int=0) -> dict:
     object = dict()
     object["execution"] = self.execution
@@ -1149,6 +1152,7 @@ class MSVResult:
     object["result"] = self.result
     object['pass_result']=self.pass_result
     object["output_distance"] = self.output_distance
+    object["out_diff"] = self.out_diff
 
     # This total counts include this result
     object['total_searched']=total_searched_patch
@@ -1187,6 +1191,9 @@ class MSVState:
   use_partial_validation: bool
   time_limit: int
   cycle_limit: int
+  correct_case_info: CaseInfo
+  correct_patch_str: str
+  watch_level: str
   max_parallel_cpu: int
   new_revlog: str
   patch_info_map: Dict[str, FileInfo]  # fine_name: str -> FileInfo
@@ -1266,7 +1273,9 @@ class MSVState:
     self.use_simulation_mode = False
     self.prev_data = ""
     self.simulation_data = dict()
-    self.correct_patch:PatchInfo=None
+    self.correct_patch_str: str = ""
+    self.correct_case_info: CaseInfo = None
+    self.watch_level: str = ""
     self.total_searched_patch=0
     self.total_passed_patch=0
     self.total_plausible_patch=0
