@@ -217,7 +217,7 @@ Options:
         else:
             config.append(Config(int(config_strs[0]),int(config_strs[1]),int(config_strs[2]),int(config_strs[3]),int(config_strs[4])))
     else:
-        result_file=open(input_file,'r')
+        result_file=open(input_file+'/msv-result.json','r')
         result_root=json.load(result_file)
         result_file.close()
 
