@@ -209,7 +209,7 @@ Options:
     work_dir=args[0]
     config=[]
     if config_str is not None:
-        config_strs=args[1].split('-')
+        config_strs=config_str.split('-')
         if len(config_strs)==2:
             config.append(Config(int(config_strs[0]),int(config_strs[1])))
         elif len(config_str)==3:
