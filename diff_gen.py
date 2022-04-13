@@ -4,6 +4,7 @@ import json
 from os import chdir, getcwd, mkdir, path
 import subprocess
 from sys import argv
+from typing import List
 
 
 class Config:
@@ -24,6 +25,20 @@ class Config:
         if self.variable != -1:
             result += f'-{self.variable}-{self.constant}'
         return result
+
+class SwitchInfo:
+    """
+        Data class for switch information.
+        Includes switch number, patch appearance, file, begin/end line/column.
+    """
+    def __init__(self, switch_num:int,patches:List[str],file_name:str,begin_line:int,end_line:int,begin_column:int,end_column:int) -> None:
+        self.switch_num = switch_num
+        self.patches = patches
+        self.file_name = file_name
+        self.begin_line = begin_line
+        self.end_line = end_line
+        self.begin_column = begin_column
+        self.end_column = end_column
 
 def insert_patch(original_file:str,backup_file:str,begin_line:int,begin_column:int,end_line:int,end_column:int,patch:str):
     """
@@ -133,41 +148,93 @@ def replace_actual_condition(config:Config,patch:str):
     else:
         return patch
 
-def generate_diff(original_file:str,backup_file:str,config:Config):
-    if not path.isdir('patch'):
-        mkdir('patch')
+def generate_diff(original_file:str,backup_file:str,src_path:str,config:Config,output_dir:str='patch'):
+    if not path.isdir(output_dir):
+        mkdir(output_dir)
     
-    output_file=open(f'patch/{config}.patch','w')
+    output_file=open(f'{output_dir}/{config}.patch','w')
     subprocess.run(['diff','-uNr',backup_file,'patched_'+original_file],stdout=output_file)
     output_file.close()
 
+    patch_file=open(f'{output_dir}/{config}.patch','r')
+    patch_lines=patch_file.readlines()
+    patch_file.close()
+
+    for i,line in enumerate(patch_lines):
+        if line[:3]=='+++':
+            begin_loc=4
+            end_loc=line.find('.c')+2
+            old_str=line[begin_loc:end_loc]
+            new_str=line.replace(old_str,src_path)
+            patch_lines[i]=new_str
+    
+    with open(f'{output_dir}/{config}.patch','w') as file:
+        for line in patch_lines:
+            file.write(line)
+
 if __name__=='__main__':
-    opts, args = getopt.getopt(argv[1:], "gh")
+    opts, args = getopt.getopt(argv[1:], "ghc:i:o:")
     gen_diff=False
+    config_str=None
+    input_file=None
+    output_file='patch'
     for o, a in opts:
         if o == "-g":
             gen_diff=True
+        elif o == "-c":
+            config_str=a
+        elif o=='-i':
+            input_file=a
+        elif o=='-o':
+            output_file=a
         elif o == '-h':
-            print(f"""Usage: python diff_gen.py [options] <work_dir> <config_str>
+            print(f"""Usage: python diff_gen.py [options] <work_dir>
 
 Generate patched source file with patch configuration. Generated source file will be 'patched_<file>'.
 <work_dir>: work directory of program.
-<config_str>: <switch>-<case>[-<operator>[-<variable>-<constant>]].
+If -c option is specified, generate diff file with specified patch configuration. Otherwise, generate diff files of all plausible patches.
 
 Options:
     -g: generate diff file.
-    -h: show help. """)
+    -h: show help.
+    -c <config_str>: specify patch configuration. <config_str>: <switch>-<case>[-<operator>[-<variable>-<constant>]].
+    -i <search_result_file>: result file of MSV-search.
+    -o <output_file>: output directory of diff files. """)
             exit(0)
 
-    work_dir=args[0]
-    config_str=args[1].split('-')
+    if config_str is None and input_file is None:
+        print('Patch configuration or result file of MSV-search is required.')
+        exit(1)
 
-    if len(config_str)==2:
-        config=Config(int(config_str[0]),int(config_str[1]))
-    elif len(config_str)==3:
-        config=Config(int(config_str[0]),int(config_str[1]),int(config_str[2]))
+    work_dir=args[0]
+    config=[]
+    if config_str is not None:
+        config_strs=args[1].split('-')
+        if len(config_strs)==2:
+            config.append(Config(int(config_strs[0]),int(config_strs[1])))
+        elif len(config_str)==3:
+            config.append(Config(int(config_strs[0]),int(config_strs[1]),int(config_strs[2])))
+        else:
+            config.append(Config(int(config_strs[0]),int(config_strs[1]),int(config_strs[2]),int(config_strs[3]),int(config_strs[4])))
     else:
-        config=Config(int(config_str[0]),int(config_str[1]),int(config_str[2]),int(config_str[3]),int(config_str[4]))
+        result_file=open(input_file,'r')
+        result_root=json.load(result_file)
+        result_file.close()
+
+        for result in result_root:
+            if result['pass_result']:
+                cur_config=result['config'][0]
+                switch=cur_config['switch']
+                case=cur_config['case']
+                if cur_config['is_cond']:
+                    if cur_config['operator']==4:
+                        config_obj=Config(switch,case,4)
+                    else:
+                        config_obj=Config(switch,case,cur_config['operator'],cur_config['variable'],cur_config['constant'])
+                else:
+                    config_obj=Config(switch,case)
+
+                config.append(config_obj)
     
     orig_dir=getcwd()
     chdir(work_dir)
@@ -176,47 +243,39 @@ Options:
     info=json.load(info_file)
     info_file.close()
 
+    switch_list:List[SwitchInfo]=[]
     files=info['rules']
-    is_end=False
     for file in files:
-        if is_end:
-            break
         for line in file['lines']:
-            if is_end:
-                break
             for switch in line['switches']:
-                if is_end:
-                    break
-                elif switch['switch']!=config.switch:
-                    continue
-                else:
-                    begin_line=switch['begin_line']
-                    begin_column=switch['begin_column']
-                    end_line=switch['end_line']
-                    end_column=switch['end_column']
-                    src_file=file['file_name']
-                    patch_codes=switch['patch_codes']
-                    is_end=True
+                new_switch=SwitchInfo(switch['switch'],switch['patch_codes'],file['file_name'],switch['begin_line'],switch['end_line'],switch['begin_column'],switch['end_column'])
+                switch_list.append(new_switch)
+    
 
-    file_name=src_file.split('/')[-1]
-    backup_log_file='__backup.log'
-    with open(backup_log_file,'r') as file:
-        backuped_file=file.readlines()
-    for i,file in enumerate(backuped_file):
-        if file.strip()==src_file:
-            backup_index=i
-            break
-    fixed_file='fixed_'+file_name
-    original_file=f'__backup{backup_index}'
+    for conf in config:
+        for switch in switch_list:
+            if switch.switch_num==conf.switch:
+                current_switch=switch
 
-    patch=patch_codes[config.case-1]
-    if patch[-1]!=';' and patch[-1]!='}' and patch[-1]!='\n':
-        patch+=';'
-    patch=replace_actual_condition(config,patch)
-    print(f'patch:\n{patch}')
-    patched_file=insert_patch(file_name,original_file,begin_line,begin_column,end_line,end_column,patch)
+        file_name=current_switch.file_name.split('/')[-1]
+        backup_log_file='__backup.log'
+        with open(backup_log_file,'r') as file:
+            backuped_file=file.readlines()
+        for i,file in enumerate(backuped_file):
+            if file.strip()==current_switch.file_name:
+                backup_index=i
+                break
+        fixed_file='fixed_'+file_name
+        original_file=f'__backup{backup_index}'
 
-    if gen_diff:
-        generate_diff(file_name,original_file,config)
+        patch=current_switch.patches[conf.case-1]
+        if patch[-1]!=';' and patch[-1]!='}' and patch[-1]!='\n':
+            patch+=';'
+        patch=replace_actual_condition(conf,patch)
+        print(f'patch:\n{patch}')
+        patched_file=insert_patch(file_name,original_file,current_switch.begin_line,current_switch.begin_column,current_switch.end_line,current_switch.end_column,patch)
+
+        if gen_diff:
+            generate_diff(file_name,original_file,current_switch.file_name,conf,output_file)
 
     chdir(orig_dir)
