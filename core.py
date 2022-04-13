@@ -901,6 +901,7 @@ class PatchInfo:
     if self.is_condition and self.operator_info is not None and self.case_info.operator_info_list is not None:
       if self.operator_info.operator_type == OperatorType.ALL_1:
         self.case_info.operator_info_list.remove(self.operator_info)
+        self.case_info.condition_list.remove((self.operator_info.operator_type,-1,-1))
       else:
         if not state.use_condition_synthesis:
           self.case_info.condition_list.remove((self.operator_info.operator_type,self.variable_info.variable,self.constant_info.constant_value))
