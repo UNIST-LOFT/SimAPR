@@ -4,6 +4,7 @@ import json
 from os import chdir, getcwd, mkdir, path
 import subprocess
 from sys import argv
+from typing import List
 
 
 class Config:
@@ -24,6 +25,20 @@ class Config:
         if self.variable != -1:
             result += f'-{self.variable}-{self.constant}'
         return result
+
+class SwitchInfo:
+    """
+        Data class for switch information.
+        Includes switch number, patch appearance, file, begin/end line/column.
+    """
+    def __init__(self, switch_num:int,patches:List[str],file_name:str,begin_line:int,end_line:int,begin_column:int,end_column:int) -> None:
+        self.switch_num = switch_num
+        self.patches = patches
+        self.file_name = file_name
+        self.begin_line = begin_line
+        self.end_line = end_line
+        self.begin_column = begin_column
+        self.end_column = end_column
 
 def insert_patch(original_file:str,backup_file:str,begin_line:int,begin_column:int,end_line:int,end_column:int,patch:str):
     """
@@ -133,13 +148,29 @@ def replace_actual_condition(config:Config,patch:str):
     else:
         return patch
 
-def generate_diff(original_file:str,backup_file:str,config:Config):
+def generate_diff(original_file:str,backup_file:str,src_path:str,config:Config):
     if not path.isdir('patch'):
         mkdir('patch')
     
     output_file=open(f'patch/{config}.patch','w')
     subprocess.run(['diff','-uNr',backup_file,'patched_'+original_file],stdout=output_file)
     output_file.close()
+
+    patch_file=open(f'patch/{config}.patch','r')
+    patch_lines=patch_file.readlines()
+    patch_file.close()
+
+    for i,line in enumerate(patch_lines):
+        if line[:3]=='+++':
+            begin_loc=4
+            end_loc=line.find('.c')+2
+            old_str=line[begin_loc:end_loc]
+            new_str=line.replace(old_str,src_path)
+            patch_lines[i]=new_str
+    
+    with open(f'patch/{config}.patch','w') as file:
+        for line in patch_lines:
+            file.write(line)
 
 if __name__=='__main__':
     opts, args = getopt.getopt(argv[1:], "gh")
@@ -176,47 +207,37 @@ Options:
     info=json.load(info_file)
     info_file.close()
 
+    switch_list:List[SwitchInfo]=[]
     files=info['rules']
-    is_end=False
     for file in files:
-        if is_end:
-            break
         for line in file['lines']:
-            if is_end:
-                break
             for switch in line['switches']:
-                if is_end:
-                    break
-                elif switch['switch']!=config.switch:
-                    continue
-                else:
-                    begin_line=switch['begin_line']
-                    begin_column=switch['begin_column']
-                    end_line=switch['end_line']
-                    end_column=switch['end_column']
-                    src_file=file['file_name']
-                    patch_codes=switch['patch_codes']
-                    is_end=True
+                new_switch=SwitchInfo(switch['switch'],switch['patch_codes'],file['file_name'],switch['begin_line'],switch['end_line'],switch['begin_column'],switch['end_column'])
+                switch_list.append(new_switch)
+    
+    for switch in switch_list:
+        if switch.switch_num==config.switch:
+            current_switch=switch
 
-    file_name=src_file.split('/')[-1]
+    file_name=current_switch.file_name.split('/')[-1]
     backup_log_file='__backup.log'
     with open(backup_log_file,'r') as file:
         backuped_file=file.readlines()
     for i,file in enumerate(backuped_file):
-        if file.strip()==src_file:
+        if file.strip()==current_switch.file_name:
             backup_index=i
             break
     fixed_file='fixed_'+file_name
     original_file=f'__backup{backup_index}'
 
-    patch=patch_codes[config.case-1]
+    patch=current_switch.patches[config.case-1]
     if patch[-1]!=';' and patch[-1]!='}' and patch[-1]!='\n':
         patch+=';'
     patch=replace_actual_condition(config,patch)
     print(f'patch:\n{patch}')
-    patched_file=insert_patch(file_name,original_file,begin_line,begin_column,end_line,end_column,patch)
+    patched_file=insert_patch(file_name,original_file,current_switch.begin_line,current_switch.begin_column,current_switch.end_line,current_switch.end_column,patch)
 
     if gen_diff:
-        generate_diff(file_name,original_file,config)
+        generate_diff(file_name,original_file,current_switch.file_name,config)
 
     chdir(orig_dir)
