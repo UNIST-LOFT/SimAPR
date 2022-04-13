@@ -169,6 +169,30 @@ class MSV:
           elif opers is not None and len(opers)>0:
             self.state.msv_logger.info(f'Found angelic path: {new_patch.to_str()} {new_patch.case_info.current_record}')
             new_patch.case_info.operator_info_list=opers
+
+            # for cond in patch[0].case_info.condition_list.copy():
+            while len(patch[0].case_info.condition_list)>0:
+              cond=patch[0].case_info.condition_list[0]
+              self.state.iteration+=1
+              for oper in patch[0].case_info.operator_info_list:
+                if cond[0]==oper.operator_type:
+                  cur_oper=oper
+                  break
+              
+              if cur_oper.operator_type==OperatorType.ALL_1:
+                cur_patch=PatchInfo(patch[0].case_info,cur_oper,None,None)
+              else:
+                for var in cur_oper.variable_info_list:
+                  if var.variable==cond[1]:
+                    cur_var=var
+                    break
+                for const in cur_var.constant_info_list:
+                  if const.constant_value==cond[2]:
+                    cur_const=const
+                    break
+                cur_patch=PatchInfo(patch[0].case_info,cur_oper,cur_var,cur_const)
+              
+              self.run_test([cur_patch])
           else:
             self.state.msv_logger.info(f'Fail to generate condition: {new_patch.to_str()}')
             new_patch.case_info.operator_info_list=[]
@@ -184,6 +208,10 @@ class MSV:
             # Create condition tree
             for oper in OperatorType:
               oper_info=OperatorInfo(patch[0].case_info,oper)
+              if oper==OperatorType.ALL_1:
+                patch[0].case_info.operator_info_list.append(oper_info)
+                continue
+              
               for expr in opers:
                 if expr[0]==oper:
                   current_var=None
@@ -199,6 +227,31 @@ class MSV:
 
               if len(oper_info.variable_info_list)>0:
                 patch[0].case_info.operator_info_list.append(oper_info)
+
+            # for cond in patch[0].case_info.condition_list.copy():
+            while len(patch[0].case_info.condition_list)>0:
+              cond=patch[0].case_info.condition_list[0]
+              self.state.iteration+=1
+              for oper in patch[0].case_info.operator_info_list:
+                if cond[0]==oper.operator_type:
+                  cur_oper=oper
+                  break
+              
+              if cur_oper.operator_type==OperatorType.ALL_1:
+                cur_patch=PatchInfo(patch[0].case_info,cur_oper,None,None)
+              else:
+                for var in cur_oper.variable_info_list:
+                  if var.variable==cond[1]:
+                    cur_var=var
+                    break
+                for const in cur_var.constant_info_list:
+                  if const.constant_value==cond[2]:
+                    cur_const=const
+                    break
+                cur_patch=PatchInfo(patch[0].case_info,cur_oper,cur_var,cur_const)
+              
+              self.run_test([cur_patch])
+              
           else:
             patch[0].case_info.condition_list=[]
 

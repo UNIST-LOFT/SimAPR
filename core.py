@@ -1286,6 +1286,7 @@ class MSVState:
     self.params = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.2, PT.cov: 2.0, PT.sigma: 0.1, PT.halflife: 1000, PT.epsilon: 0.1}
     self.params_decay = dict()
     self.original_output_distance_map = dict()
+    self.use_msv_ext=False
     self.tbar_mode = False
     self.use_exp_alpha = False
 
