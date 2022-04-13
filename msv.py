@@ -228,7 +228,9 @@ class MSV:
               if len(oper_info.variable_info_list)>0:
                 patch[0].case_info.operator_info_list.append(oper_info)
 
-            for cond in patch[0].case_info.condition_list.copy():
+            # for cond in patch[0].case_info.condition_list.copy():
+            while len(patch[0].case_info.condition_list)>0:
+              cond=patch[0].case_info.condition_list[0]
               self.state.iteration+=1
               for oper in patch[0].case_info.operator_info_list:
                 if cond[0]==oper.operator_type:
