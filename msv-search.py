@@ -275,13 +275,34 @@ def trim_with_watch_level(state: MSVState, watch_level: str, correct_str: str) -
   correct_line = correct_switch.parent
   correct_func = correct_line.parent
   correct_file = correct_func.parent
+
+  def find_top_function(func_list:List[FuncInfo]):
+    result_list=[]
+    for func in func_list:
+      loc=0
+      for i,target_func in result_list:
+        if target_func.fl_score<func.fl_score:
+          loc=i
+          break
+      result_list.insert(loc,func)
+    
+    return result_list[:3]
+
+  total_func_list=[]
+  for file in state.file_info_map.values():
+    for func in file.func_info_map.values():
+      total_func_list.append(func)
+  top3_func=find_top_function(total_func_list)
+  if correct_func not in top3_func:
+    top3_func.insert(0,correct_func)
+
   for file in state.file_info_map.copy():
     if file != correct_file.file_name:
       del state.file_info_map[file]
   if watch_level == "file":
     return
   for func in correct_file.func_info_map.copy():
-    if func != correct_func.id:
+    if func != correct_func.id and func not in top3_func:
       del correct_file.func_info_map[func]
   if watch_level == "func":
     return
