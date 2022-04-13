@@ -193,6 +193,7 @@ if __name__=='__main__':
 Generate patched source file with patch configuration. Generated source file will be 'patched_<file>'.
 <work_dir>: work directory of program.
 If -c option is specified, generate diff file with specified patch configuration. Otherwise, generate diff files of all plausible patches.
+One of -c or -i option should be specified.
 
 Options:
     -g: generate diff file.
