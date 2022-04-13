@@ -112,7 +112,7 @@ def update_result_positive(state: MSVState, selected_patch: List[PatchInfo], run
   run_result = (len(failed_tests) == 0)
   state.failed_positive_test.update(failed_tests)
   for patch in selected_patch:
-    patch.update_result_positive(run_result, len(failed_tests), state.use_fixed_beta)
+    patch.update_result_positive(run_result, len(failed_tests), state.use_exp_alpha, state.use_fixed_beta)
 
 def save_result(state: MSVState) -> None:
   state.last_save_time = time.time()
@@ -122,27 +122,27 @@ def save_result(state: MSVState) -> None:
   dist_info = os.path.join(state.out_dir, "dist-info.json")
   with open(result_file, 'w') as f:
     json.dump(state.msv_result, f, indent=2)
-  with open(critical_info, 'w') as f:
-    f.write(f"test,var,is_critical,from_pass_patch,from_fail_patch,crit_values,all_values\n")
-    for test in state.critical_map:
-      for elem in state.critical_map[test]:
-        patch_nums = state.critical_map[test][elem]
-        is_critical = False
-        if elem in state.profile_map[test].profile_critical_dict:
-          is_critical = True
-        cpf = PassFail()
-        for patch_num in patch_nums:
-          patch = state.used_patch[patch_num]
-          cpf.update(patch.result, 1)
-        f.write(f"{test},{elem},{is_critical},{cpf.pass_count},{cpf.fail_count},")
-        if elem in state.profile_map[test].profile_critical_dict:
-          f.write(f"{state.profile_map[test].profile_critical_dict_values[elem].values},")
-        else:
-          f.write("{},")
-        if elem in state.profile_diff.profile_dict[test]:
-          f.write(f"{state.profile_diff.profile_dict[test][elem].values}\n")
-        else:
-          f.write("{}\n")
+  # with open(critical_info, 'w') as f:
+  #   f.write(f"test,var,is_critical,from_pass_patch,from_fail_patch,crit_values,all_values\n")
+  #   for test in state.critical_map:
+  #     for elem in state.critical_map[test]:
+  #       patch_nums = state.critical_map[test][elem]
+  #       is_critical = False
+  #       if elem in state.profile_map[test].profile_critical_dict:
+  #         is_critical = True
+  #       cpf = PassFail()
+  #       for patch_num in patch_nums:
+  #         patch = state.used_patch[patch_num]
+  #         cpf.update(patch.result, 1)
+  #       f.write(f"{test},{elem},{is_critical},{cpf.pass_count},{cpf.fail_count},")
+  #       if elem in state.profile_map[test].profile_critical_dict:
+  #         f.write(f"{state.profile_map[test].profile_critical_dict_values[elem].values},")
+  #       else:
+  #         f.write("{},")
+  #       if elem in state.profile_diff.profile_dict[test]:
+  #         f.write(f"{state.profile_diff.profile_dict[test][elem].values}\n")
+  #       else:
+  #         f.write("{}\n")
   with open(dist_info, 'w') as f:
     obj = dict()
     for cs in state.switch_case_map:
@@ -210,3 +210,10 @@ def remove_patch(state: MSVState, patches: List[PatchInfo]) -> None:
         del case_map[case_info.to_str()]
       if len(case_map) == 0 and loc_str in state.priority_map:
         del state.priority_map[loc_str]
+
+def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: bool) -> None:
+  selected_patch.update_result(result, 1, state.use_exp_alpha, state.use_fixed_beta)
+
+def update_positive_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: bool) -> None:
+  selected_patch.update_result_positive(result, 1, state.use_exp_alpha, state.use_fixed_beta)
+
