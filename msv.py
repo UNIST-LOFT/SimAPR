@@ -171,7 +171,9 @@ class MSV:
             self.state.msv_logger.info(f'Found angelic path: {new_patch.to_str()} {new_patch.case_info.current_record}')
             new_patch.case_info.operator_info_list=opers
 
-            for cond in patch[0].case_info.condition_list.copy():
+            # for cond in patch[0].case_info.condition_list.copy():
+            while len(patch[0].case_info.condition_list)>0:
+              cond=patch[0].case_info.condition_list[0]
               self.state.iteration+=1
               for oper in patch[0].case_info.operator_info_list:
                 if cond[0]==oper.operator_type:
