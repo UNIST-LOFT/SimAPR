@@ -280,13 +280,19 @@ def trim_with_watch_level(state: MSVState, watch_level: str, correct_str: str) -
     result_list=[]
     for func in func_list:
       loc=0
-      for i,target_func in result_list:
-        if target_func.fl_score<func.fl_score:
-          loc=i
+      for target_func in result_list:
+        if target_func.fl_score>=func.fl_score:
+          loc+=1
           break
+      
       result_list.insert(loc,func)
     
     return result_list[:3]
+  def has_func(func_list:List[FuncInfo],func:str):
+    for f in func_list:
+      if f.id==func:
+        return True
+    return False
 
   total_func_list=[]
   for file in state.file_info_map.values():
@@ -296,13 +302,23 @@ def trim_with_watch_level(state: MSVState, watch_level: str, correct_str: str) -
   if correct_func not in top3_func:
     top3_func.insert(0,correct_func)
 
+  if watch_level=='file':
+    for file in state.file_info_map.copy():
+      if file != correct_file.file_name:
+        del state.file_info_map[file]
+    if watch_level == "file":
+      return
+
+  for file in state.file_info_map.values():
+    for func in file.func_info_map.copy():
+      if not has_func(top3_func,func):
+        del file.func_info_map[func]
   for file in state.file_info_map.copy():
-    if file != correct_file.file_name:
+    if len(state.file_info_map[file].func_info_map)==0:
       del state.file_info_map[file]
-  if watch_level == "file":
-    return
+      
   for func in correct_file.func_info_map.copy():
-    if func != correct_func.id and func not in top3_func:
+    if func != correct_func.id and not has_func(top3_func,func):
       del correct_file.func_info_map[func]
   if watch_level == "func":
     return
