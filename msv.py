@@ -225,6 +225,29 @@ class MSV:
 
               if len(oper_info.variable_info_list)>0:
                 patch[0].case_info.operator_info_list.append(oper_info)
+
+            for cond in patch[0].case_info.condition_list.copy():
+              self.state.iteration+=1
+              for oper in patch[0].case_info.operator_info_list:
+                if cond[0]==oper.operator_type:
+                  cur_oper=oper
+                  break
+              
+              if cur_oper.operator_type==OperatorType.ALL_1:
+                cur_patch=PatchInfo(patch[0].case_info,cur_oper,None,None)
+              else:
+                for var in cur_oper.variable_info_list:
+                  if var.variable==cond[1]:
+                    cur_var=var
+                    break
+                for const in cur_var.constant_info_list:
+                  if const.constant_value==cond[2]:
+                    cur_const=const
+                    break
+                cur_patch=PatchInfo(patch[0].case_info,cur_oper,cur_var,cur_const)
+              
+              self.run_test([cur_patch])
+              
           else:
             patch[0].case_info.condition_list=[]
 
