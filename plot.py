@@ -238,9 +238,9 @@ def afl_barchart(msv_result_file: str, title: str, work_dir: str, correct_patch:
   i = 0
   for t in sorted_t:
     i += 1
-    if i >= 10:
-      if correct_file.file_name != t[0]:
-        continue
+    # if i >= 10:
+    #   if correct_file.file_name != t[0]:
+    #     continue
     if t[0] == correct_file.file_name:
       file_list.append(f"*file{i}*")
     else:
@@ -248,11 +248,12 @@ def afl_barchart(msv_result_file: str, title: str, work_dir: str, correct_patch:
     file_result_list.append(t[1])
   index = np.arange(len(file_list))
   plt.clf()
+  plt.figure(figsize=(max(10, len(file_list) / 2), 8))
   plt.bar(index, file_result_list, color="b")
   plt.title(title)
   plt.xlabel(f"file(total{len(result_file_map)})")
   plt.ylabel("count")
-  plt.xticks(index, file_list)
+  plt.xticks(index, file_list, rotation=60)
   out_file = os.path.join(os.path.dirname(msv_result_file), "file-plot.png")
   print(f"save to {out_file}")
   plt.savefig(out_file)
@@ -260,8 +261,8 @@ def afl_barchart(msv_result_file: str, title: str, work_dir: str, correct_patch:
   func_list = list()
   func_result_list = list()
   for func_info in result_func_map:
-    if func_info.parent != correct_file:
-      continue
+    # if func_info.parent != correct_file:
+    #   continue
     count = result_func_map[func_info].pass_count + result_func_map[func_info].fail_count
     t = (func_info.id, count)
     temp.append(t)
@@ -270,9 +271,9 @@ def afl_barchart(msv_result_file: str, title: str, work_dir: str, correct_patch:
   i = 0
   for t in sorted_t:
     i += 1
-    if i >= 10:
-      if correct_func.id != t[0]:
-        continue
+    # if i >= 10:
+    #   if correct_func.id != t[0]:
+    #     continue
     if correct_func.id == t[0]:
       func_list.append(f"*func{i}*")
     else:
@@ -280,11 +281,12 @@ def afl_barchart(msv_result_file: str, title: str, work_dir: str, correct_patch:
     func_result_list.append(t[1])
   index = np.arange(len(func_list))
   plt.clf()
+  plt.figure(figsize=(max(10, len(func_list) / 2), 8))
   plt.bar(index, func_result_list, color="b")
   plt.title(title)
   plt.xlabel(f"func(total{len(result_func_map)})")
   plt.ylabel("count")
-  plt.xticks(index, func_list)
+  plt.xticks(index, func_list, rotation=60)
   out_file = os.path.join(os.path.dirname(msv_result_file), "func-plot.png")
   print(f"save to {out_file}")
   plt.savefig(out_file)
@@ -293,8 +295,8 @@ def afl_barchart(msv_result_file: str, title: str, work_dir: str, correct_patch:
   line_result_list = list()
   line_dist_list = list()
   for line_info in result_line_map:
-    if line_info.parent != correct_func:
-      continue
+    # if line_info.parent != correct_func:
+    #   continue
     #count = result_line_map[line_info.uuid].pass_count + result_line_map[line_info.uuid].fail_count
     count = result_line_map[line_info].pass_count + result_line_map[line_info].fail_count
     pass_count = result_line_map[line_info].pass_count
@@ -310,9 +312,9 @@ def afl_barchart(msv_result_file: str, title: str, work_dir: str, correct_patch:
   i = 0
   for t in sorted_t:
     i += 1
-    if i >= 10:
-      if correct_line.uuid != t[0].uuid:
-        continue
+    # if i >= 10:
+    #   if correct_line.uuid != t[0].uuid:
+    #     continue
     if correct_line.uuid == t[0].uuid:
       line_list.append(f"*{t[0].line_number}*")
     else:
@@ -320,13 +322,13 @@ def afl_barchart(msv_result_file: str, title: str, work_dir: str, correct_patch:
     line_result_list.append(t[1])
   index = np.arange(len(line_list))
   plt.clf()
-  width = 0.15
-  plt.bar(index - width, line_result_list, width, color="b")
+  plt.figure(figsize=(max(10, len(line_list) / 2), 8))
+  plt.bar(index, line_result_list, color="b")
   #plt.bar(index + width, line_dist_list, width, color="r")
   plt.title(title)
   plt.xlabel(f"line(total{len(result_line_map)})")
   plt.ylabel("pass(blue)/dist(red)")
-  plt.xticks(index, line_list)
+  plt.xticks(index, line_list, rotation=60)
   out_file = os.path.join(os.path.dirname(msv_result_file), "line-plot.png")
   print(f"save to {out_file}")
   plt.savefig(out_file)
@@ -533,6 +535,12 @@ def msv_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_pa
   correct_file = correct_func.parent
   x = list()
   y = list()
+  x_b = list()
+  y_b = list()
+  x_p = list()
+  y_p = list()
+  x_o = list()
+  y_o = list()
   correct_iter = 0
   correct_time = 0
   with open(msv_result_file, "r") as f:
@@ -542,6 +550,10 @@ def msv_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_pa
       iter: int = data["iteration"]
       tm: float = data["time"]
       result: bool = data["result"]
+      pass_result: bool = data["pass_result"]
+      out_diff: bool = False
+      if "out_diff" in data:
+        out_diff: bool = data["out_diff"]
       if result:
         total += 1
       config = data["config"][0]
@@ -558,8 +570,9 @@ def msv_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_pa
             patch_str = f"{sw}-{cs}:{oper}-{var}-{const}"
         else:
           patch_str = f"{sw}-{cs}:{oper}"
-
+      found = False
       if patch_str == correct_patch:
+        found = True
         correct_iter = iter
         correct_time = tm
       case_info = switch_case_map[f"{sw}-{cs}"]
@@ -584,16 +597,33 @@ def msv_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_pa
                   dist -= 1
       x.append(iter)
       y.append(dist)
+      if result:
+        x_b.append(iter)
+        y_b.append(dist)
+      if pass_result:
+        x_p.append(iter)
+        y_p.append(dist)
+      if out_diff:
+        x_o.append(iter)
+        y_o.append(dist)
+      if found:
+        break
   y_tick = np.arange(0, 7)
   y_label = ["case", "type", "switch", "line", "func", "file", "diff"]
   plt.clf()
-  plt.scatter(x, y, s=1)
-  plt.yticks(y_tick, labels=y_label)
-  plt.title(title)
-  plt.xlabel("iteration")
-  plt.ylabel("distance from correct patch")
+  plt.figure(figsize=(max(24, max(x) // 80), 14))
+  plt.scatter(x, y, s=1, color='k', marker=",")
+  plt.scatter(x_b, y_b, color='r', marker=".")
+  plt.scatter(x_p, y_p, color='c', marker="*")
+  plt.yticks(y_tick, labels=y_label, fontsize=20)
+  plt.title(title + " - basic(r),plausible(c)", fontsize=20)
+  plt.xlabel("iteration", fontsize=16)
+  plt.ylabel("distance from correct patch", fontsize=20)
   out_file = os.path.join(os.path.dirname(msv_result_file), "out.png")
   plt.savefig(out_file)
+  out_diff_file = os.path.join(os.path.dirname(msv_result_file), "out-diff.png")
+  plt.scatter(x_o, y_o, color='y', marker=",")
+  plt.savefig(out_diff_file)
   return correct_iter, correct_time
 
 def msv_find_correct(msv_result_file: str, correct_patch: str) -> Tuple[int, float]:
@@ -753,6 +783,7 @@ def main(argv):
       print("afl_plot.py -i input_dir -t title -o output.png -m auto -c correctpatch")
       print("ex) afl_plot.py -i . -o out.png -t php-2adf58 -m auto -c 54-36:0-2-12")
       print("./plot.py -o out/php/1d984a7 -i out/php/1d984a7/msv-result.json -m correct -t 1d984a7 -w /root/project/MSV-experiment/benchmarks/php/php-case-1d984a7/php-1d984a7-workdir -c 137-145:0-8-355")
+      print("./plot.py -i result-tuning -c ./correct_patch.csv -m batch")
       exit(0)
   if output_file == "":
     output_file = os.path.join(os.path.dirname(result_file), "plot.png")
