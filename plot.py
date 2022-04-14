@@ -615,7 +615,8 @@ def msv_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_pa
   y_label = ["case", "type", "switch", "line", "func", "file", "diff"]
   plt.clf()
   plt.figure(figsize=(max(24, max(x) // 80), 14))
-  fig, ax1 = plt.subplots()
+  fig, ax1 = plt.subplots(1, 1, figsize=(max(24, max(x) // 80), 14))
+  x_len = max(24, max(x) // 80)
   ax1.scatter(x, y, s=1, color='k', marker=",")
   ax1.scatter(x_b, y_b, color='r', marker=".")
   ax1.scatter(x_p, y_p, color='c', marker="*")
