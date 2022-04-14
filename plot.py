@@ -609,8 +609,8 @@ def msv_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_pa
       if out_diff:
         x_o.append(iter)
         y_o.append(dist)
-      if found:
-        break
+      # if found:
+      #   break
   y_tick = np.arange(0, 7)
   y_label = ["case", "type", "switch", "line", "func", "file", "diff"]
   plt.clf()
