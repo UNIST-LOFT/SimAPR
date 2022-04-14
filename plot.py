@@ -541,6 +541,7 @@ def msv_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_pa
   y_p = list()
   x_o = list()
   y_o = list()
+  y_od = list()
   correct_iter = 0
   correct_time = 0
   with open(msv_result_file, "r") as f:
@@ -552,6 +553,7 @@ def msv_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_pa
       result: bool = data["result"]
       pass_result: bool = data["pass_result"]
       out_diff: bool = False
+      out_dist: float = np.log(data["output_distance"] + 1)
       if "out_diff" in data:
         out_diff: bool = data["out_diff"]
       if result:
@@ -597,6 +599,7 @@ def msv_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_pa
                   dist -= 1
       x.append(iter)
       y.append(dist)
+      y_od.append(out_dist)
       if result:
         x_b.append(iter)
         y_b.append(dist)
@@ -612,17 +615,22 @@ def msv_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_pa
   y_label = ["case", "type", "switch", "line", "func", "file", "diff"]
   plt.clf()
   plt.figure(figsize=(max(24, max(x) // 80), 14))
-  plt.scatter(x, y, s=1, color='k', marker=",")
-  plt.scatter(x_b, y_b, color='r', marker=".")
-  plt.scatter(x_p, y_p, color='c', marker="*")
-  plt.yticks(y_tick, labels=y_label, fontsize=20)
-  plt.title(title + " - basic(r),plausible(c)", fontsize=20)
-  plt.xlabel("iteration", fontsize=16)
-  plt.ylabel("distance from correct patch", fontsize=20)
+  fig, ax1 = plt.subplots()
+  ax1.scatter(x, y, s=1, color='k', marker=",")
+  ax1.scatter(x_b, y_b, color='r', marker=".")
+  ax1.scatter(x_p, y_p, color='c', marker="*")
+  ax1.set_yticks(y_tick)
+  ax1.set_yticklabels(labels=y_label)
+  ax1.set_title(title + " - basic(r),plausible(c)", fontsize=20)
+  ax1.set_xlabel("iteration", fontsize=16)
+  ax1.set_ylabel("distance from correct patch", fontsize=20)
   out_file = os.path.join(os.path.dirname(msv_result_file), "out.png")
   plt.savefig(out_file)
   out_diff_file = os.path.join(os.path.dirname(msv_result_file), "out-diff.png")
-  plt.scatter(x_o, y_o, color='y', marker=",")
+  ax1.scatter(x_o, y_o, color='y', marker=",")
+  ax2 = ax1.twinx()
+  ax2.scatter(x, y_od, s=1, color='m', marker='.')
+  ax2.set_ylabel("output distance (log scale)", fontsize=20)
   plt.savefig(out_diff_file)
   return correct_iter, correct_time
 
@@ -704,7 +712,7 @@ def batch_find(correct_patch_csv: str, in_dir: str) -> None:
   with open("result.csv", "w") as f:
     f.write(csv)  
 
-def batch_convert(correct_patch_csv: str, in_dir: str) -> None:
+def batch_plot(correct_patch_csv: str, in_dir: str) -> None:
   csv = ""
   all = dict()
   with open(correct_patch_csv, "r") as f:
@@ -795,7 +803,7 @@ def main(argv):
   elif mode == "correct":
     msv_plot_correct(result_file, title, work_dir, correct_patch)
   elif mode == "batch":
-    batch_convert(correct_patch, result_file)
+    batch_plot(correct_patch, result_file)
   elif mode == "find":
     batch_find(correct_patch, result_file)
   else:
