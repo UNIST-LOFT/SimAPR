@@ -99,7 +99,7 @@ class PassFail:
       if self.pass_count == 0:
         return 1
       else:
-        return self.pass_count
+        return min(1024, self.pass_count)
     else:
       return 1
   def beta_mode(self, alpha: float, beta: float) -> float:
