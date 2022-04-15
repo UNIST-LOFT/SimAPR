@@ -21,7 +21,7 @@ def parse_args(argv: list) -> MSVState:
               "mode=", "max-parallel-cpu=",'skip-valid','use-fixed-beta','use-cpr-space','use-fixed-const', 'params=', 'tbar-mode', "use-exp-alpha",
               "use-condition-synthesis", "use-hierarchical-selection=", "use-pass-test", "use-partial-validation", "use-full-validation",
               "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern", "use-simulation-mode=",
-              "use-prophet-score", "use-fl", "use-fl-prophet-score", "watch-level=",'use-msv-ext']
+              "use-prophet-score", "use-fl", "use-fl-prophet-score", "watch-level=",'use-msv-ext','seapr-mode=']
   opts, args = getopt.getopt(argv[1:], "ho:w:p:t:m:c:j:T:E:M:S:", longopts)
   state = MSVState()
   state.original_args = argv
@@ -85,6 +85,20 @@ def parse_args(argv: list) -> MSVState:
       state.use_fixed_const=True
     elif o in ['--use-pattern']:
       state.use_pattern = True
+    elif o in ['--seapr-mode']:
+      if a.lower()=='file':
+        state.seapr_layer = SeAPRMode.FILE
+      elif a.lower()=='function':
+        state.seapr_layer = SeAPRMode.FUNCTION
+      elif a.lower()=='line':
+        state.seapr_layer = SeAPRMode.LINE
+      elif a.lower()=='switch':
+        state.seapr_layer = SeAPRMode.SWITCH
+      elif a.lower()=='type':
+        state.seapr_layer = SeAPRMode.TYPE
+      else:
+        print(f'Invalid seapr mode: {a}',file=sys.stderr)
+        exit(1)
     elif o in ['--use-simulation-mode']:
       state.use_simulation_mode = True
       state.prev_data = a
@@ -489,6 +503,7 @@ def read_info(state: MSVState) -> None:
                     if state.var_counts[f'{switch_info.switch_number}-{case_info.case_number}']>0:
                       #case_list.append(case_info)
                       case_map[int(c)] = case_info
+                      state.seapr_remain_cases.append(case_info)
                       state.switch_case_map[f"{switch_info.switch_number}-{case_info.case_number}"] = case_info
                       sw_cs_key = f'{switch_info.switch_number}-{case_info.case_number}'
                       state.switch_case_map[sw_cs_key] = case_info
@@ -505,6 +520,7 @@ def read_info(state: MSVState) -> None:
                     if f'{switch_info.switch_number}-{case_info.case_number}' not in state.var_counts or state.var_counts[f'{switch_info.switch_number}-{case_info.case_number}']>0:
                       #case_list.append(case_info)
                       case_map[int(c)] = case_info
+                      state.seapr_remain_cases.append(case_info)
                       state.switch_case_map[f"{switch_info.switch_number}-{case_info.case_number}"] = case_info
                       sw_cs_key = f'{switch_info.switch_number}-{case_info.case_number}'
                       state.switch_case_map[sw_cs_key] = case_info

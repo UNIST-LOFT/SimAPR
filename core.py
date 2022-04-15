@@ -84,6 +84,13 @@ class PT(Enum):
   beta = 12 # beta of beta distribution
   epsilon = 13 # epsilon-greedy
 
+class SeAPRMode(Enum):
+  FILE=0,
+  FUNCTION=1,
+  LINE=2,
+  SWITCH=3,
+  TYPE=4
+
 class PassFail:
   def __init__(self, p: float = 0, f: float = 0) -> None:
     self.pass_count = p
@@ -341,8 +348,10 @@ class CaseInfo:
     self.update_count: int = 0
     self.prophet_score:list=[]
     self.location: FileLine = None
-    self.seapr_e_pf: PassFail = PassFail()
-    self.seapr_n_pf: PassFail = PassFail()
+    self.seapr_same_high:float=0.
+    self.seapr_same_low:float=0.
+    self.seapr_diff_high:float=0.
+    self.seapr_diff_low:float=0.
     self.current_record:List[bool]=[] # current record, for out condition synthesis
     self.synthesis_tried:int=0 # tried counter for search record, removed after 11
     self.has_init_patch=False
@@ -354,7 +363,7 @@ class CaseInfo:
   def __hash__(self) -> int:
     return hash(self.case_number)
   def __eq__(self, other) -> bool:
-    return self.case_number == other.case_number
+    return self.case_number == other.case_number and self.parent.parent==other.parent.parent
   def to_str(self) -> str:
     return f"{self.parent.parent.switch_number}-{self.case_number}"
   def __str__(self) -> str:
@@ -964,6 +973,7 @@ class PatchInfo:
 
       if len(self.case_info.operator_info_list) == 0:
         del self.type_info.case_info_map[self.case_info.case_number]
+        state.seapr_remain_cases.remove(self.case_info)
         self.line_info.type_priority[self.type_info.patch_type].remove(self.case_info)
         self.type_info.case_update_count += 1
         self.switch_info.case_update_count += 1
@@ -977,6 +987,7 @@ class PatchInfo:
     else:
       #self.type_info.case_info_list.remove(self.case_info)
       del self.type_info.case_info_map[self.case_info.case_number]
+      state.seapr_remain_cases.remove(self.case_info)
       self.line_info.type_priority[self.type_info.patch_type].remove(self.case_info)
       for score in self.case_info.prophet_score:
         self.type_info.prophet_score.remove(score)
@@ -1290,6 +1301,9 @@ class MSVState:
     self.use_msv_ext=False
     self.tbar_mode = False
     self.use_exp_alpha = False
+
+    self.seapr_remain_cases:List[CaseInfo]=[]
+    self.seapr_layer:SeAPRMode=SeAPRMode.FUNCTION
 
 def remove_file_or_pass(file:str):
   try:

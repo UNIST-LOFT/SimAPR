@@ -570,49 +570,62 @@ def select_patch_seapr(state: MSVState, test: int) -> PatchInfo:
   if test < 0:
     test = state.negative_test[0]
   
-  target: FileLine = None
-  case_info: CaseInfo = None
-  max_ochiai: float = -1.0
-  flag = False
-  for fl in state.priority_map:
-    loc = state.priority_map[fl]
-    e_f = loc.seapr_e_pf.pass_count
-    e_p = loc.seapr_e_pf.fail_count
-    n_f = loc.seapr_n_pf.pass_count
-    n_p = loc.seapr_n_pf.fail_count
-    if state.use_pattern:
-      for cs in loc.case_map:
-        current_case_info = loc.case_map[cs]
-        e_f += current_case_info.seapr_e_pf.pass_count
-        e_p += current_case_info.seapr_e_pf.fail_count
-        n_f += current_case_info.seapr_n_pf.pass_count
-        n_p += current_case_info.seapr_n_pf.fail_count
-        ochiai = get_ochiai(e_f, e_p, n_f, n_p)
-        if e_f > 0:
-          flag = True
-        if ochiai > max_ochiai:
-          max_ochiai = ochiai
-          target = loc
-          case_info = current_case_info
-    else:
-      if e_f > 0:
-        flag = True
-      ochiai = get_ochiai(e_f, e_p, n_f, n_p)
-      if ochiai > max_ochiai:
-        max_ochiai = ochiai
-        target = loc
-  if not flag:
-    case_info= select_patch_SPR(state).case_info
+  # target: FileLine = None
+  # case_info: CaseInfo = None
+  # max_ochiai: float = -1.0
+  # flag = False
+  # for fl in state.priority_map:
+  #   loc = state.priority_map[fl]
+  #   e_f = loc.seapr_e_pf.pass_count
+  #   e_p = loc.seapr_e_pf.fail_count
+  #   n_f = loc.seapr_n_pf.pass_count
+  #   n_p = loc.seapr_n_pf.fail_count
+  #   if state.use_pattern:
+  #     for cs in loc.case_map:
+  #       current_case_info = loc.case_map[cs]
+  #       e_f += current_case_info.seapr_e_pf.pass_count
+  #       e_p += current_case_info.seapr_e_pf.fail_count
+  #       n_f += current_case_info.seapr_n_pf.pass_count
+  #       n_p += current_case_info.seapr_n_pf.fail_count
+  #       ochiai = get_ochiai(e_f, e_p, n_f, n_p)
+  #       if e_f > 0:
+  #         flag = True
+  #       if ochiai > max_ochiai:
+  #         max_ochiai = ochiai
+  #         target = loc
+  #         case_info = current_case_info
+  #   else:
+  #     if e_f > 0:
+  #       flag = True
+  #     ochiai = get_ochiai(e_f, e_p, n_f, n_p)
+  #     if ochiai > max_ochiai:
+  #       max_ochiai = ochiai
+  #       target = loc
+  # if not flag:
+  #   case_info= select_patch_SPR(state).case_info
 
-  if target is None:
-    state.msv_logger.fatal("No target found")
-    state.is_alive = False
-    return PatchInfo(state.switch_case_map["0-0"], None, None, None)
+  # if target is None:
+  #   state.msv_logger.fatal("No target found")
+  #   state.is_alive = False
+  #   return PatchInfo(state.switch_case_map["0-0"], None, None, None)
 
-  for cs in target.case_map:
-    if case_info is not None:
-      break
-    case_info = target.case_map[cs]
+  # for cs in target.case_map:
+  #   if case_info is not None:
+  #     break
+  #   case_info = target.case_map[cs]
+  case_info=state.seapr_remain_cases[0]
+  max_score=0.
+  has_high_qual_patch=False
+  for case in state.seapr_remain_cases:
+    cur_score=get_ochiai(case.seapr_same_high,case.seapr_same_low,case.seapr_diff_high,case.seapr_diff_low)
+    if case.seapr_same_high>0:
+      has_high_qual_patch=True
+    if cur_score>max_score:
+      max_score=cur_score
+      case_info=case
+  
+  if not has_high_qual_patch:
+    case_info=select_patch_prophet(state).case_info
 
   if not case_info.is_condition:
     return PatchInfo(case_info, None, None, None)
@@ -624,25 +637,9 @@ def select_patch_seapr(state: MSVState, test: int) -> PatchInfo:
       for op in OperatorType:
         if op==OperatorType.ALL_1:
           operator=OperatorInfo(case_info,op,1)
-          current_score=sorted(case_info.prophet_score)[-1]
-          operator.prophet_score.append(current_score)
-          case_info.prophet_score.append(current_score)
-          case_info.parent.prophet_score.append(current_score)
-          case_info.parent.parent.prophet_score.append(current_score)
-          case_info.parent.parent.parent.prophet_score.append(current_score)
-          case_info.parent.parent.parent.parent.prophet_score.append(current_score)
           case_info.operator_info_list.append(operator)
         else:
           operator=OperatorInfo(case_info,op,state.var_counts[f'{case_info.parent.parent.switch_number}-{case_info.case_number}'])
-          if op!=OperatorType.EQ:
-            for score in init_prophet_score:
-              operator.prophet_score.append(score)
-              case_info.prophet_score.append(score)
-              case_info.parent.prophet_score.append(score)
-              case_info.parent.parent.prophet_score.append(score)
-              case_info.parent.parent.parent.prophet_score.append(score)
-              case_info.parent.parent.parent.parent.prophet_score.append(score)
-
           for i in range(operator.var_count):
             new_var=VariableInfo(operator,i)
             new_var.prophet_score=init_prophet_score[i]

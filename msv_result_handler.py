@@ -53,34 +53,66 @@ def find_func_loc(state: MSVState, base_loc: FileLine) -> Tuple[str, int, int]:
 
 def update_result_seapr(state: MSVState, selected_patch: List[PatchInfo], is_high_quality: bool, test: int) -> None:
   for patch in selected_patch:
-    base_type = patch.type_info.patch_type
-    case_info = patch.case_info
-    base_fl = case_info.location
-    base_loc = find_func_loc(state, base_fl)
-    loc_diff = PassFail(0, 1)
-    if base_loc is None:
-      state.msv_logger.warning(f"No function location for {base_fl}")
-    for fl_str in state.priority_map:
-      fl = state.priority_map[fl_str]
-      if fl.file_info.file_name == base_fl.file_info.file_name:
-        if base_loc is not None:
-          if base_loc[1] <= fl.line_info.line_number and fl.line_info.line_number <= base_loc[2]:
-            loc_diff = PassFail(1, 0)
-      fl.seapr_e_pf.update(is_high_quality, loc_diff.pass_count)
-      fl.seapr_n_pf.update(is_high_quality, loc_diff.fail_count)
-      if state.use_pattern:
-        type_diff = PassFail(0, 0)
-        for cs in fl.case_map:
-          current_case = fl.case_map[cs]
-          current_type = current_case.parent.patch_type
-          type_diff.update(current_type == base_type, 1)
-          # if current_type in fl.type_map:
-          #   fl.type_map[current_type][0].update(is_high_quality, type_diff.pass_count)
-          #   fl.type_map[current_type][1].update(is_high_quality, type_diff.fail_count)
-          # else:
-          #   fl.type_map[current_type] = [type_diff.copy(), type_diff.copy()]
-          current_case.seapr_e_pf.update(is_high_quality, type_diff.pass_count)
-          current_case.seapr_e_pf.update(is_high_quality, type_diff.fail_count)
+    for case in state.seapr_remain_cases:
+      is_share=False
+      if state.seapr_layer==SeAPRMode.FILE:
+        if patch.file_info.file_name==case.parent.parent.parent.parent.parent.file_name:
+          is_share=True
+      elif state.seapr_layer==SeAPRMode.FUNCTION:
+        if patch.func_info==case.parent.parent.parent.parent and patch.file_info==case.parent.parent.parent.parent.parent:
+          is_share=True
+      elif state.seapr_layer==SeAPRMode.LINE:
+        if patch.line_info==case.parent.parent.parent and patch.file_info==case.parent.parent.parent.parent.parent:
+          is_share=True
+      elif state.seapr_layer==SeAPRMode.SWITCH:
+        if patch.switch_info.switch_number==case.parent.parent.switch_number:
+          is_share=True
+      else:
+        if patch.type_info.patch_type==case.parent.patch_type:
+          is_share=True
+
+      if is_share:
+        if is_high_quality:
+          case.seapr_same_high+=1
+        else:
+          case.seapr_same_low+=1
+      else:
+        if is_high_quality:
+          case.seapr_diff_high+=1
+        else:
+          case.seapr_diff_low+=1
+      
+      if state.use_pattern and case.parent==patch.type_info:
+        case.seapr_same_high+=1
+      
+    # base_type = patch.type_info.patch_type
+    # case_info = patch.case_info
+    # base_fl = case_info.location
+    # base_loc = find_func_loc(state, base_fl)
+    # loc_diff = PassFail(0, 1)
+    # if base_loc is None:
+    #   state.msv_logger.warning(f"No function location for {base_fl}")
+    # for fl_str in state.priority_map:
+    #   fl = state.priority_map[fl_str]
+    #   if fl.file_info.file_name == base_fl.file_info.file_name:
+    #     if base_loc is not None:
+    #       if base_loc[1] <= fl.line_info.line_number and fl.line_info.line_number <= base_loc[2]:
+    #         loc_diff = PassFail(1, 0)
+    #   fl.seapr_e_pf.update(is_high_quality, loc_diff.pass_count)
+    #   fl.seapr_n_pf.update(is_high_quality, loc_diff.fail_count)
+    #   if state.use_pattern:
+    #     type_diff = PassFail(0, 0)
+    #     for cs in fl.case_map:
+    #       current_case = fl.case_map[cs]
+    #       current_type = current_case.parent.patch_type
+    #       type_diff.update(current_type == base_type, 1)
+    #       # if current_type in fl.type_map:
+    #       #   fl.type_map[current_type][0].update(is_high_quality, type_diff.pass_count)
+    #       #   fl.type_map[current_type][1].update(is_high_quality, type_diff.fail_count)
+    #       # else:
+    #       #   fl.type_map[current_type] = [type_diff.copy(), type_diff.copy()]
+    #       current_case.seapr_e_pf.update(is_high_quality, type_diff.pass_count)
+    #       current_case.seapr_e_pf.update(is_high_quality, type_diff.fail_count)
 
 
 def update_result_critical(state: MSVState, selected_patch: List[PatchInfo], run_result: bool, test: int) -> None:
