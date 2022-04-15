@@ -290,18 +290,6 @@ def trim_with_watch_level(state: MSVState, watch_level: str, correct_str: str) -
   correct_func = correct_line.parent
   correct_file = correct_func.parent
 
-  def find_top_function(func_list:List[FuncInfo]):
-    result_list=[]
-    for func in func_list:
-      loc=0
-      for target_func in result_list:
-        if target_func.fl_score>=func.fl_score:
-          loc+=1
-          break
-      
-      result_list.insert(loc,func)
-    
-    return result_list[:3]
   def has_func(func_list:List[FuncInfo],func:str):
     for f in func_list:
       if f.id==func:
@@ -317,29 +305,14 @@ def trim_with_watch_level(state: MSVState, watch_level: str, correct_str: str) -
   #   top3_func.insert(0,correct_func)
   top3_func=[correct_func]
 
-  if watch_level=='file':
-    for file in state.file_info_map.copy():
-      if file != correct_file.file_name:
-        del state.file_info_map[file]
-    for case in state.seapr_remain_cases.copy():
-      if case.parent.parent.parent.parent.parent.file_name!=correct_file.file_name:
-        state.seapr_remain_cases.remove(case)
-    if watch_level == "file":
-      return
-
-  for file in state.file_info_map.values():
-    for func in file.func_info_map.copy():
-      if not has_func(top3_func,func):
-        del file.func_info_map[func]
-        for case in state.seapr_remain_cases.copy():
-          if case.parent.parent.parent.parent.func_name==func:
-            state.seapr_remain_cases.remove(case)
   for file in state.file_info_map.copy():
-    if len(state.file_info_map[file].func_info_map)==0:
+    if file != correct_file.file_name:
       del state.file_info_map[file]
       for case in state.seapr_remain_cases.copy():
-          if case.parent.parent.parent.parent.parent.file_name==file:
-            state.seapr_remain_cases.remove(case)
+        if case.parent.parent.parent.parent.parent.file_name==file:
+          state.seapr_remain_cases.remove(case)
+  if watch_level == "file":
+    return
       
   for func in correct_file.func_info_map.copy():
     if func != correct_func.id and not has_func(top3_func,func):
