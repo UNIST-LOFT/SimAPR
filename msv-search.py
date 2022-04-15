@@ -298,9 +298,10 @@ def trim_with_watch_level(state: MSVState, watch_level: str, correct_str: str) -
   for file in state.file_info_map.values():
     for func in file.func_info_map.values():
       total_func_list.append(func)
-  top3_func=find_top_function(total_func_list)
-  if correct_func not in top3_func:
-    top3_func.insert(0,correct_func)
+  # top3_func=find_top_function(total_func_list)
+  # if correct_func not in top3_func:
+  #   top3_func.insert(0,correct_func)
+  top3_func=[correct_func]
 
   if watch_level=='file':
     for file in state.file_info_map.copy():
