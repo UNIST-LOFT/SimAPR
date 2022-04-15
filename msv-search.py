@@ -315,10 +315,10 @@ def trim_with_watch_level(state: MSVState, watch_level: str, correct_str: str) -
     return
       
   for func in correct_file.func_info_map.copy():
-    if func != correct_func.id and not has_func(top3_func,func):
+    if func != correct_func.id:
       del correct_file.func_info_map[func]
       for case in state.seapr_remain_cases.copy():
-          if case.parent.parent.parent.parent.func_name==func:
+          if case.parent.parent.parent.parent.id==func:
             state.seapr_remain_cases.remove(case)
   if watch_level == "func":
     return
