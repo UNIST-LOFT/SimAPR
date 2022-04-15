@@ -321,6 +321,9 @@ def trim_with_watch_level(state: MSVState, watch_level: str, correct_str: str) -
     for file in state.file_info_map.copy():
       if file != correct_file.file_name:
         del state.file_info_map[file]
+    for case in state.seapr_remain_cases.copy():
+      if case.parent.parent.parent.parent.parent.file_name!=correct_file.file_name:
+        state.seapr_remain_cases.remove(case)
     if watch_level == "file":
       return
 
@@ -328,33 +331,54 @@ def trim_with_watch_level(state: MSVState, watch_level: str, correct_str: str) -
     for func in file.func_info_map.copy():
       if not has_func(top3_func,func):
         del file.func_info_map[func]
+        for case in state.seapr_remain_cases.copy():
+          if case.parent.parent.parent.parent.func_name==func:
+            state.seapr_remain_cases.remove(case)
   for file in state.file_info_map.copy():
     if len(state.file_info_map[file].func_info_map)==0:
       del state.file_info_map[file]
+      for case in state.seapr_remain_cases.copy():
+          if case.parent.parent.parent.parent.parent.file_name==file:
+            state.seapr_remain_cases.remove(case)
       
   for func in correct_file.func_info_map.copy():
     if func != correct_func.id and not has_func(top3_func,func):
       del correct_file.func_info_map[func]
+      for case in state.seapr_remain_cases.copy():
+          if case.parent.parent.parent.parent.func_name==func:
+            state.seapr_remain_cases.remove(case)
   if watch_level == "func":
     return
   for line in correct_func.line_info_map.copy():
     if line != correct_line.uuid:
       del correct_func.line_info_map[line]
+      for case in state.seapr_remain_cases.copy():
+          if case.parent.parent.parent.line_number==line or not has_func(top3_func,case.parent.parent.parent.parent.func_name):
+            state.seapr_remain_cases.remove(case)
   if watch_level == "line":
     return
   for sw in correct_line.switch_info_map.copy():
     if sw != correct_switch.switch_number:
       del correct_line.switch_info_map[sw]
+      for case in state.seapr_remain_cases.copy():
+          if case.parent.parent.switch_number==sw or not has_func(top3_func,case.parent.parent.parent.parent.func_name):
+            state.seapr_remain_cases.remove(case)
   if watch_level == "switch":
     return
   for ty in correct_switch.type_info_map.copy():
     if ty != correct_type.patch_type:
       del correct_switch.type_info_map[ty]
+      for case in state.seapr_remain_cases.copy():
+          if case.parent.patch_type==ty or not has_func(top3_func,case.parent.parent.parent.parent.func_name):
+            state.seapr_remain_cases.remove(case)
   if watch_level == "type":
     return
   for cs in correct_type.case_info_map.copy():
     if cs != correct_case.case_number:
       del correct_type.case_info_map[cs]
+      for case in state.seapr_remain_cases.copy():
+          if case.case_number==cs or not has_func(top3_func,case.parent.parent.parent.parent.func_name):
+            state.seapr_remain_cases.remove(case)
   return
 
 def read_info(state: MSVState) -> None:
