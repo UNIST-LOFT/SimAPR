@@ -115,7 +115,7 @@ def select_patch_prophet(state: MSVState) -> PatchInfo:
   # select file
   selected_file = None
   init = True
-  max_score = 0.0
+  max_score = -1000.0
   for file_name in state.file_info_map:
     file = state.file_info_map[file_name]
     if max(file.prophet_score) > max_score or init:

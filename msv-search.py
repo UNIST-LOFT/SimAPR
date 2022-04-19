@@ -465,6 +465,8 @@ def read_info(state: MSVState) -> None:
               func_info.line_info_map[line_info.uuid] = line_info
             break
         #line_info = LineInfo(file_info, int(line['line']))
+        if state.top_fl>0 and (file_info.file_name,line_info.line_number) not in top_fl:
+          continue
         state.line_list.append(line_info)
         score = get_score(file_info.file_name,line_info.line_number,max_sec_score)
         line_info.fl_score = score

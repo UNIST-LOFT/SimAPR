@@ -975,6 +975,12 @@ class PatchInfo:
         del self.type_info.case_info_map[self.case_info.case_number]
         state.seapr_remain_cases.remove(self.case_info)
         self.line_info.type_priority[self.type_info.patch_type].remove(self.case_info)
+        for score in self.case_info.prophet_score:
+          self.type_info.prophet_score.remove(score)
+          self.switch_info.prophet_score.remove(score)
+          self.line_info.prophet_score.remove(score)
+          self.func_info.prophet_score.remove(score)
+          self.file_info.prophet_score.remove(score)
         self.type_info.case_update_count += 1
         self.switch_info.case_update_count += 1
         self.line_info.case_update_count += 1

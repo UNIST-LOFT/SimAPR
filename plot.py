@@ -626,6 +626,7 @@ def msv_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_pa
   ax1.set_xlabel("iteration", fontsize=16)
   ax1.set_ylabel("distance from correct patch", fontsize=20)
   out_file = os.path.join(os.path.dirname(msv_result_file), "out.png")
+  plt.grid()
   plt.savefig(out_file)
   out_diff_file = os.path.join(os.path.dirname(msv_result_file), "out-diff.png")
   ax1.scatter(x_o, y_o, color='y', marker=",")
