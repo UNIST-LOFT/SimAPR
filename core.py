@@ -1301,6 +1301,7 @@ class MSVState:
     self.use_msv_ext=False
     self.tbar_mode = False
     self.use_exp_alpha = False
+    self.top_fl=0
 
     self.seapr_remain_cases:List[CaseInfo]=[]
     self.seapr_layer:SeAPRMode=SeAPRMode.FUNCTION

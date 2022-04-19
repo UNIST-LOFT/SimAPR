@@ -21,7 +21,7 @@ def parse_args(argv: list) -> MSVState:
               "mode=", "max-parallel-cpu=",'skip-valid','use-fixed-beta','use-cpr-space','use-fixed-const', 'params=', 'tbar-mode', "use-exp-alpha",
               "use-condition-synthesis", "use-hierarchical-selection=", "use-pass-test", "use-partial-validation", "use-full-validation",
               "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern", "use-simulation-mode=",
-              "use-prophet-score", "use-fl", "use-fl-prophet-score", "watch-level=",'use-msv-ext','seapr-mode=']
+              "use-prophet-score", "use-fl", "use-fl-prophet-score", "watch-level=",'use-msv-ext','seapr-mode=','top-fl=']
   opts, args = getopt.getopt(argv[1:], "ho:w:p:t:m:c:j:T:E:M:S:", longopts)
   state = MSVState()
   state.original_args = argv
@@ -85,6 +85,8 @@ def parse_args(argv: list) -> MSVState:
       state.use_fixed_const=True
     elif o in ['--use-pattern']:
       state.use_pattern = True
+    elif o in ['--top-fl']:
+      state.top_fl=int(a)
     elif o in ['--seapr-mode']:
       if a.lower()=='file':
         state.seapr_layer = SeAPRMode.FILE
@@ -181,6 +183,34 @@ def read_fl_score(state: MSVState):
       line_score=LocationScore(splitted[0],int(splitted[1]),int(splitted[6]),int(splitted[7]))
       if line_score not in state.fl_score and has_patch(line_score.file_name,line_score.line):
         state.fl_score.append(line_score)
+
+def read_fl_info(state: MSVState, priority:dict) -> list:
+  class Location:
+    def __init__(self,file:str,line:int,primary_score:int,secondary_score:int) -> None:
+      self.file=file
+      self.line=line
+      self.primary_score=primary_score
+      self.secondary_score=secondary_score
+    def __lt__(self,other:"Location"):
+      if self.primary_score>other.primary_score:
+        return True
+      elif self.primary_score==other.primary_score and self.secondary_score<other.secondary_score:
+        return True
+      else:
+        return False
+
+  locs=[]
+  for info in priority:
+    locs.append(Location(info['file'],info['line'],info['primary_score'],info['second_score']))
+  
+  result=sorted(locs)
+  if state.top_fl>0:
+    result=result[:state.top_fl]
+  
+  final_locs=[]
+  for loc in result:
+    final_locs.append((loc.file,loc.line))
+  return final_locs
 
 def read_info_tbar(state: MSVState) -> None:
   with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
@@ -370,6 +400,8 @@ def read_info(state: MSVState) -> None:
           return pri - (sec / max_sec)
       return 0.
 
+    top_fl=read_fl_info(state,info['priority'])
+
     max_sec_score = dict()
     for priority in info['priority']:
       temp_file: str = priority["file"]
@@ -429,7 +461,8 @@ def read_info(state: MSVState) -> None:
             else:
               func_info = file_info.func_info_map[func_id]
             line_info = LineInfo(func_info, int(line['line']))
-            func_info.line_info_map[line_info.uuid] = line_info
+            if state.top_fl>0 and (file_info.file_name,line_info.line_number) in top_fl:
+              func_info.line_info_map[line_info.uuid] = line_info
             break
         #line_info = LineInfo(file_info, int(line['line']))
         state.line_list.append(line_info)
