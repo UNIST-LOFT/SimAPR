@@ -82,7 +82,7 @@ def update_result_seapr(state: MSVState, selected_patch: List[PatchInfo], is_hig
         else:
           case.seapr_diff_low+=1
       
-      if state.use_pattern and case.parent==patch.type_info:
+      if is_high_quality and state.use_pattern and case.parent==patch.type_info:
         case.seapr_same_high+=1
       
     # base_type = patch.type_info.patch_type

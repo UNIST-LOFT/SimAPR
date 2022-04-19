@@ -424,7 +424,7 @@ class ProphetCondition:
   def get_condition(self):
     self.patch.case_info.processed=True
     paths,tmp_file=self.record()
-    if paths==None:
+    if paths is None:
       self.state.msv_logger.info('Fail at recording')
       result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0], self.new_env)
       result_handler.append_result(self.state, [self.patch], False)
@@ -433,7 +433,7 @@ class ProphetCondition:
 
     self.state.msv_logger.info('Collecting values...')
     values=self.collect_value(tmp_file,paths)
-    if values==None:
+    if values is None:
       self.state.msv_logger.info('Fail at collecting')
       result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0])
       result_handler.append_result(self.state, [self.patch], False)
