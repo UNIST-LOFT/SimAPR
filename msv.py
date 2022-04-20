@@ -193,6 +193,13 @@ class MSV:
                 cur_patch=PatchInfo(patch[0].case_info,cur_oper,cur_var,cur_const)
               
               self.run_test([cur_patch])
+              if self.state.cycle_limit > 0 and self.state.cycle >= self.state.cycle_limit:
+                self.state.is_alive = False
+              elif self.state.time_limit > 0 and (time.time() - self.state.start_time) > self.state.time_limit:
+                self.state.is_alive = False
+              if not self.state.is_alive:
+                break
+
           else:
             self.state.msv_logger.info(f'Fail to generate condition: {new_patch.to_str()}')
             new_patch.case_info.operator_info_list=[]
@@ -251,6 +258,12 @@ class MSV:
                 cur_patch=PatchInfo(patch[0].case_info,cur_oper,cur_var,cur_const)
               
               self.run_test([cur_patch])
+              if self.state.cycle_limit > 0 and self.state.cycle >= self.state.cycle_limit:
+                self.state.is_alive = False
+              elif self.state.time_limit > 0 and (time.time() - self.state.start_time) > self.state.time_limit:
+                self.state.is_alive = False
+              if not self.state.is_alive:
+                break
               
           else:
             patch[0].case_info.condition_list=[]
