@@ -16,7 +16,7 @@ def update_result(state: MSVState, selected_patch: List[PatchInfo], run_result: 
   if state.mode == MSVMode.seapr:
     update_result_seapr(state, selected_patch, run_result, test)
   for patch in selected_patch:
-    patch.update_result(run_result, n, state.use_exp_alpha, state.use_fixed_beta)
+    patch.update_result(run_result, n,state.params[PT.b_dec] ,state.use_exp_alpha, state.use_fixed_beta)
   if 'MSV_OUTPUT_DISTANCE_FILE' in new_env:
     remove_file_or_pass(new_env["MSV_OUTPUT_DISTANCE_FILE"])
 
@@ -144,7 +144,7 @@ def update_result_positive(state: MSVState, selected_patch: List[PatchInfo], run
   run_result = (len(failed_tests) == 0)
   state.failed_positive_test.update(failed_tests)
   for patch in selected_patch:
-    patch.update_result_positive(run_result, len(failed_tests), state.use_exp_alpha, state.use_fixed_beta)
+    patch.update_result_positive(run_result, len(failed_tests), state.params[PT.b_dec],state.use_exp_alpha, state.use_fixed_beta)
 
 def save_result(state: MSVState) -> None:
   state.last_save_time = time.time()
@@ -244,8 +244,8 @@ def remove_patch(state: MSVState, patches: List[PatchInfo]) -> None:
         del state.priority_map[loc_str]
 
 def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: bool) -> None:
-  selected_patch.update_result(result, 1, state.use_exp_alpha, state.use_fixed_beta)
+  selected_patch.update_result(result, 1, state.params[PT.b_dec],state.use_exp_alpha, state.use_fixed_beta)
 
 def update_positive_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: bool) -> None:
-  selected_patch.update_result_positive(result, 1, state.use_exp_alpha, state.use_fixed_beta)
+  selected_patch.update_result_positive(result, 1, state.params[PT.b_dec],state.use_exp_alpha, state.use_fixed_beta)
 

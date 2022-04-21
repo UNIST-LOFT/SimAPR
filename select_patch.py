@@ -282,14 +282,14 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
         state.msv_logger.warning(f"No line info in file: {file_info.file_name}")
         continue
       selected.append(file_info)
-      p_rand.append(pf_rand.select_value())
+      p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       if state.use_prophet_score and not state.use_fl:
         p_fl.append(max(file_info.prophet_score))
       else:
         p_fl.append(file_info.fl_score)
-      p_b.append(file_info.pf.select_value())
-      p_p.append(file_info.positive_pf.select_value())
-      p_o.append(file_info.output_pf.select_value())
+      p_b.append(file_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      p_p.append(file_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      p_o.append(file_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       if not is_rand and explore:
         min_coverage=1.0
         for func in file_info.func_info_map.values():
@@ -307,14 +307,14 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
         state.msv_logger.warning(f"No line info in function: {func_info.func_name}")
         continue
       selected.append(func_info)
-      p_rand.append(pf_rand.select_value())
+      p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       if state.use_prophet_score and not state.use_fl:
         p_fl.append(max(func_info.prophet_score))
       else:
         p_fl.append(func_info.fl_score)
-      p_b.append(func_info.pf.select_value())
-      p_p.append(func_info.positive_pf.select_value())
-      p_o.append(func_info.output_pf.select_value())
+      p_b.append(func_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      p_p.append(func_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      p_o.append(func_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       if explore and not is_rand:
         min_coverage=1.0
         for line in func_info.line_info_map.values():
@@ -332,14 +332,14 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
         state.msv_logger.warning(f"No switch info in line: {selected_file_info.file_name}: {line_info.line_number}")
         continue
       selected.append(line_info)
-      p_rand.append(pf_rand.select_value())
+      p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       if state.use_prophet_score and not state.use_fl:
         p_fl.append(max(line_info.prophet_score))
       else:
         p_fl.append(line_info.fl_score)
-      p_b.append(line_info.pf.select_value())
-      p_p.append(line_info.positive_pf.select_value())
-      p_o.append(line_info.output_pf.select_value())
+      p_b.append(line_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      p_p.append(line_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      p_o.append(line_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       if explore:
         min_coverage=1.0
         for switch in line_info.switch_info_map.values():
@@ -359,12 +359,12 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
         state.msv_logger.warning(f"No type info in switch: {selected_file_info.file_name}: {selected_line_info.line_number}: {switch_info.switch_number}")
         continue
       selected.append(switch_info)
-      p_rand.append(pf_rand.select_value())
+      p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       if state.use_prophet_score:
         p_fl.append(max(switch_info.prophet_score))
-      p_b.append(switch_info.pf.select_value())
-      p_p.append(switch_info.positive_pf.select_value())
-      p_o.append(switch_info.output_pf.select_value())
+      p_b.append(switch_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      p_p.append(switch_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      p_o.append(switch_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       if explore:
         temp_p1 = switch_info.pf.expect_probability()
         min_coverage=1.0
@@ -383,12 +383,12 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
         state.msv_logger.warning(f"No case info in type: {selected_file_info.file_name}: {selected_line_info.line_number}: {selected_switch_info.switch_number}: {type_info.patch_type}")
         continue
       selected.append(type_info)
-      p_rand.append(pf_rand.select_value())
+      p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       if state.use_prophet_score:
         p_fl.append(max(type_info.prophet_score))
-      p_b.append(type_info.pf.select_value())
-      p_p.append(type_info.positive_pf.select_value())
-      p_o.append(type_info.output_pf.select_value())
+      p_b.append(type_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      p_p.append(type_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      p_o.append(type_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       if explore and not is_rand:
         coverage = type_info.case_update_count / type_info.total_case_info
         p_cov.append(1 - coverage)
@@ -404,12 +404,12 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       if not state.use_condition_synthesis and len(selected_patch)>0 and not case_info.processed: # do not select multi-line patch if patch is not processed at prophet cond syn
         continue
       selected.append(case_info)
-      p_rand.append(pf_rand.select_value())
+      p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       if state.use_prophet_score:
         p_fl.append(max(case_info.prophet_score))
-      p_b.append(case_info.pf.select_value())
-      p_p.append(case_info.positive_pf.select_value())
-      p_o.append(case_info.output_pf.select_value())
+      p_b.append(case_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      p_p.append(case_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      p_o.append(case_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     selected_case = select_by_probability(state, p_map, c_map)
     selected_case_info: CaseInfo = selected[selected_case]
     clear_list(state, p_map)
@@ -527,10 +527,10 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     # Select operator
     for op_info in selected_case_info.operator_info_list:
       selected.append(op_info)
-      p_rand.append(pf_rand.select_value())
-      p_b.append(op_info.pf.select_value())
-      p_p.append(op_info.positive_pf.select_value())
-      p_o.append(op_info.output_pf.select_value())
+      p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      p_b.append(op_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      p_p.append(op_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      p_o.append(op_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     selected_operator = select_by_probability(state, p_map, c_map)
     selected_operator_info = selected_case_info.operator_info_list[selected_operator]
     clear_list(state, p_map)
@@ -543,10 +543,10 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       if len(var_info.constant_info_list) == 0:
         continue
       selected.append(var_info)
-      p_rand.append(pf_rand.select_value())
-      p_b.append(var_info.pf.select_value())
-      p_p.append(var_info.positive_pf.select_value())
-      p_o.append(var_info.output_pf.select_value())
+      p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      p_b.append(var_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      p_p.append(var_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      p_o.append(var_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     selected_variable = select_by_probability(state, p_map, c_map)
     selected_variable_info: VariableInfo = selected[selected_variable]
     clear_list(state, p_map)
@@ -555,7 +555,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     # Select constant
     for const_info in selected_variable_info.constant_info_list:
       selected.append(const_info)
-      p_rand.append(pf_rand.select_value())
+      p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     selected_constant = select_by_probability(state, p_map, c_map)
     selected_constant_info = selected_variable_info.constant_info_list[selected_constant]
     clear_list(state, p_map)
@@ -743,11 +743,11 @@ def select_patch_tbar(state: MSVState) -> TbarPatchInfo:
       state.msv_logger.warning(f"No line info in file: {file_info.file_name}")
       continue
     selected.append(file_info)
-    p_rand.append(pf_rand.select_value())
+    p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_fl.append(file_info.fl_score)
-    p_b.append(file_info.pf.select_value())
-    p_p.append(file_info.positive_pf.select_value())
-    p_o.append(file_info.output_pf.select_value())
+    p_b.append(file_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_p.append(file_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_o.append(file_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     if explore:
       min_coverage=1.0
       for func in file_info.func_info_map.values():
@@ -765,11 +765,11 @@ def select_patch_tbar(state: MSVState) -> TbarPatchInfo:
       state.msv_logger.warning(f"No line info in function: {func_info.func_name}")
       continue
     selected.append(func_info)
-    p_rand.append(pf_rand.select_value())
+    p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_fl.append(func_info.fl_score)
-    p_b.append(func_info.pf.select_value())
-    p_p.append(func_info.positive_pf.select_value())
-    p_o.append(func_info.output_pf.select_value())
+    p_b.append(func_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_p.append(func_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_o.append(func_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     if explore:
       min_coverage=1.0
       for line in func_info.line_info_map.values():
@@ -787,11 +787,11 @@ def select_patch_tbar(state: MSVState) -> TbarPatchInfo:
       state.msv_logger.warning(f"No switch info in line: {selected_file_info.file_name}: {line_info.line_number}")
       continue
     selected.append(line_info)
-    p_rand.append(pf_rand.select_value())
+    p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_fl.append(line_info.fl_score)
-    p_b.append(line_info.pf.select_value())
-    p_p.append(line_info.positive_pf.select_value())
-    p_o.append(line_info.output_pf.select_value())
+    p_b.append(line_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_p.append(line_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_o.append(line_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     if explore:
       min_coverage=1.0
       for switch in line_info.switch_info_map.values():
@@ -810,10 +810,10 @@ def select_patch_tbar(state: MSVState) -> TbarPatchInfo:
       state.msv_logger.warning(f"No switch info in type: {tbar_type}")
       continue
     selected.append(tbar_type_info)
-    p_rand.append(pf_rand.select_value())
-    p_b.append(tbar_type_info.pf.select_value())
-    p_p.append(tbar_type_info.positive_pf.select_value())
-    p_o.append(tbar_type_info.output_pf.select_value())
+    p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_b.append(tbar_type_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_p.append(tbar_type_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_o.append(tbar_type_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     if explore:
       p_cov.append(1 - (tbar_type_info.case_update_count/tbar_type_info.total_case_info))
   selected_type = select_by_probability(state, p_map, c_map)
@@ -822,7 +822,7 @@ def select_patch_tbar(state: MSVState) -> TbarPatchInfo:
   for location in selected_type_info.tbar_switch_info_map:
     location_info = selected_type_info.tbar_switch_info_map[location]
     selected.append(location_info)
-    p_rand.append(pf_rand.select_value())
+    p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
   c_map = rand_cmap
   selected_switch = select_by_probability(state, p_map, c_map)
   selected_switch_info: SwitchInfo = selected[selected_switch]
