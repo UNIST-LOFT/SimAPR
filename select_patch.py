@@ -694,6 +694,11 @@ def select_patch_seapr(state: MSVState, test: int) -> PatchInfo:
         return PatchInfo(case_info, op_info, var_info, const_info)
 
 def select_patch_tbar(state: MSVState) -> TbarPatchInfo:
+  loc = state.tbar_patch_ranking.pop(0)
+  caseinfo = state.switch_case_map[loc]
+  return TbarPatchInfo(caseinfo)
+
+def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   """
   Select a patch for Tbar.
   """

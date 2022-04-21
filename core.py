@@ -1083,6 +1083,7 @@ class TbarPatchInfo:
     self.func_info = self.line_info.parent
     self.file_info = self.func_info.parent
     self.out_dist = -1.0
+    self.out_diff = False
   def update_result(self, result: bool, n: float, exp_alpha: bool, fixed_beta: bool) -> None:
     self.tbar_switch_info.pf.update(result, n, exp_alpha, fixed_beta)
     self.tbar_type_info.pf.update(result, n, exp_alpha, fixed_beta)
@@ -1251,6 +1252,7 @@ class MSVState:
   original_output_distance_map: Dict[int, float]
   tbar_mode: bool
   use_exp_alpha: bool
+  tbar_patch_ranking: List[str]
   def __init__(self) -> None:
     self.mode = MSVMode.guided
     self.msv_path = ""
@@ -1319,7 +1321,7 @@ class MSVState:
     self.tbar_mode = False
     self.use_exp_alpha = False
     self.top_fl=0
-
+    self.tbar_patch_ranking = list()
     self.seapr_remain_cases:List[CaseInfo]=[]
     self.seapr_layer:SeAPRMode=SeAPRMode.FUNCTION
 

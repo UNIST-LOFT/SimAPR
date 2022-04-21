@@ -311,6 +311,7 @@ class MSVTbar(MSV):
       patch = select_patch.select_patch_tbar(self.state)
       pass_exists = False
       result = True
+      pass_result = False
       for neg in self.state.tbar_negative_test:
         run_result = self.run_test(patch, neg)
         if not run_result:
@@ -321,6 +322,6 @@ class MSVTbar(MSV):
           pass_exists = True
       result_handler.update_result_tbar(self.state, patch, pass_exists)
       if result:
-        run_result = self.run_test_positive(patch)
+        pass_result = self.run_test_positive(patch)
         result_handler.update_positive_result_tbar(self.state, patch, run_result)
-      result_handler.append_result(self.state, )
+      result_handler.append_result(self.state, [patch], pass_exists, pass_result)
