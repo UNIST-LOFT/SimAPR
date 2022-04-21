@@ -10,7 +10,7 @@ import logging
 import random
 import numpy as np
 from enum import Enum
-from typing import List, Dict, Tuple, Set
+from typing import List, Dict, Tuple, Set, Union
 import uuid
 class MSVMode(Enum):
   prophet = 1
@@ -123,6 +123,8 @@ class PassFail:
     return self.beta_mode(self.pass_count + 1.5+additional_score, self.fail_count + 2.0)
   def select_value(self) -> float: # select a value randomly from the beta distribution
     return np.random.beta(self.pass_count + 1.0, self.fail_count + 1.0)
+  def select_patch_option(self, state: 'MSVState') -> float:
+    return self.select_value()
   def copy(self) -> 'PassFail':
     return PassFail(self.pass_count, self.fail_count)
   @staticmethod
@@ -180,6 +182,7 @@ class FileInfo:
     self.positive_pf = PassFail()
     self.output_pf = PassFail()
     self.fl_score=-1
+    self.fl_score_list: List[float] = list()
     self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = -1.0
     self.out_dist_map: Dict[int, float] = dict()
@@ -206,6 +209,7 @@ class FuncInfo:
     self.positive_pf = PassFail()
     self.output_pf = PassFail()
     self.fl_score: float = -1.0
+    self.fl_score_list: List[float] = list()
     self.out_dist: float = -1.0
     self.out_dist_map: Dict[int, float] = dict()
     self.update_count: int = 0
@@ -230,6 +234,7 @@ class LineInfo:
     self.positive_pf = PassFail()
     self.output_pf = PassFail()
     self.fl_score=0
+    self.fl_score_list: List[float] = list()
     self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = -1.0
     self.out_dist_map: Dict[int, float] = dict()
@@ -256,6 +261,7 @@ class TbarTypeInfo:
     self.total_case_info: int = 0
     self.case_update_count: int = 0
     self.out_dist: float = -1.0
+    self.fl_score_list: List[float] = list()
     self.out_dist_map: Dict[int, float] = dict()
     self.tbar_switch_info_map: Dict[str, TbarSwitchInfo] = dict()
   def __hash__(self) -> int:
@@ -276,6 +282,7 @@ class TbarSwitchInfo:
     self.total_case_info: int = 0
     self.case_update_count: int = 0
     self.out_dist: float = -1.0
+    self.fl_score: float = 0
     self.out_dist_map: Dict[int, float] = dict()
   def __hash__(self) -> int:
     return hash(self.location)
@@ -733,7 +740,7 @@ class MSVEnvVar:
             new_env[f"__{sw}_{cs}__CONSTANT"] = str(patch_info.constant_info.constant_value)
     return new_env
   @staticmethod
-  def get_new_env_tbar(state: 'MSVState', patch: 'TbarPatchInfo', test: int) -> Dict[str, str]:
+  def get_new_env_tbar(state: 'MSVState', patch: 'TbarPatchInfo', test: str) -> Dict[str, str]:
     new_env = os.environ.copy()
     new_env["MSV_UUID"] = str(state.uuid)
     new_env["MSV_TEST"] = str(test)
@@ -1216,13 +1223,15 @@ class MSVState:
   new_revlog: str
   patch_info_map: Dict[str, FileInfo]  # fine_name: str -> FileInfo
   file_info_map: Dict[str, FileInfo]   # file_name: str -> FileInfo
-  switch_case_map: Dict[str, CaseInfo] # f"{switch_number}-{case_number}" -> SwitchCase
+  switch_case_map: Dict[str, Union[CaseInfo, TbarSwitchInfo]] # f"{switch_number}-{case_number}" -> SwitchCase
   selected_patch: List[PatchInfo] # Unused
   selected_test: List[int]        # Unused
   used_patch: List[MSVResult]
   critical_map: Dict[int, Dict[ProfileElement, List[int]]]
   negative_test: List[int]        # Negative test case
   positive_test: List[int]        # Positive test case
+  tbar_negative_test: List[str]
+  tbar_positive_test: List[str]
   profile_map: Dict[int, Profile] # test case number -> Profile (of original program)
   priority_list: List[Tuple[str, int, float]]  # (file_name, line_number, score)
   priority_map: Dict[str, FileLine] # f"{file_name}:{line_number}" -> FileLine
@@ -1268,6 +1277,8 @@ class MSVState:
     self.file_info_map = dict()
     self.negative_test = list()
     self.positive_test = list()
+    self.tbar_negative_test = list()
+    self.tbar_positive_test = list()
     self.profile_map = dict()
     self.priority_list = list()
     self.fl_score:List[LocationScore]=list()

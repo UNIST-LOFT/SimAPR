@@ -13,7 +13,7 @@ import shutil
 
 from core import *
 
-from msv import MSV
+from msv import MSV, MSVTbar
 
 
 def parse_args(argv: list) -> MSVState:
@@ -215,16 +215,20 @@ def read_fl_info(state: MSVState, priority:dict) -> list:
 def read_info_tbar(state: MSVState) -> None:
   with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
     info = json.load(f)
+    # Read test informations (which tests to run, which of them are failing test or passing test)
+    state.tbar_negative_test = info["failing_test_cases"]
+    state.tbar_positive_test = info["passing_test_cases"]
+    # Read priority (for FL score)
     n = len(info['priority'])
-    index = 0
-    score_map = dict()
+    # score_map = dict()
     for priority in info['priority']:
       temp_file: str = priority["file"]
       temp_line: int = priority["line"]
-      score_map[f"{temp_file}:{temp_line}"] = n - index
-      store = (temp_file, temp_line, n - index)
-      index += 1
+      score: float = priority["score"]
+      # score_map[f"{temp_file}:{temp_line}"] = score
+      store = (temp_file, temp_line, score)
       state.priority_list.append(store)
+    # Read rules to build patch tree structure
     file_map = state.file_info_map
     ff_map: Dict[str, Dict[str, Tuple[int, int]]] = dict()
     for file in info["func_locations"]:
@@ -257,7 +261,7 @@ def read_info_tbar(state: MSVState) -> None:
               file_info.func_info_map[func_info.id] = func_info
             else:
               func_info = file_info.func_info_map[func_id]
-            line_info = LineInfo(func_info, int(line['line'])+1)
+            line_info = LineInfo(func_info, int(line['line']))
             func_info.line_info_map[line_info.uuid] = line_info
             break
         #line_info = LineInfo(file_info, int(line['line']))
@@ -271,15 +275,19 @@ def read_info_tbar(state: MSVState) -> None:
           start = sw["start_position"]
           end = sw["end_position"]
           location = sw["location"]
+          fl_score = sw["score"]
           if mut not in line_info.tbar_type_info_map:
             line_info.tbar_type_info_map[mut] = TbarTypeInfo(line_info, mut)
           tbar_type_info = line_info.tbar_type_info_map[mut]
           tbar_switch_info = TbarSwitchInfo(tbar_type_info, location, start, end)
           tbar_type_info.tbar_switch_info_map[location] = tbar_switch_info
           state.switch_case_map[location] = tbar_switch_info
-        #line_list.append(line_info)
-        #switch_list = line_info.switch_info_list
-        if len(line_info.switch_info_map)==0:
+          tbar_switch_info.fl_score = fl_score
+          tbar_type_info.fl_score_list.append(fl_score)
+          line_info.fl_score_list.append(fl_score)
+          func_info.fl_score_list.append(fl_score)
+          file_info.fl_score_list.append(fl_score)
+        if len(line_info.tbar_type_info_map)==0:
           del func_info.line_info_map[line_info.uuid]
       for func in file_info.func_info_map.copy().values():
         if len(func.line_info_map)==0:
@@ -691,12 +699,14 @@ def main(argv: list):
   state.msv_logger = set_logger(state)
   if state.tbar_mode:
     read_info_tbar(state)
+    state.msv_logger.info('TBar mode: Initialized!')
+    msv = MSVTbar(state)
   else:
     read_info(state)
     read_fl_score(state)
-  read_repair_conf(state)
-  state.msv_logger.info('Initialized!')
-  msv = MSV(state)
+    read_repair_conf(state)
+    state.msv_logger.info('Initialized!')
+    msv = MSV(state)
   state.msv_logger.info('MSV is started')
   msv.run()
   state.msv_logger.info('MSV is finished')

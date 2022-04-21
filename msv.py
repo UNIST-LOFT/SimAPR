@@ -285,28 +285,33 @@ class MSVTbar(MSV):
     # TODO change
     result_handler.save_result(self.state)
   def run_test(self, patch: TbarPatchInfo, test: int) -> bool:
-    run_result, is_timeout = run_test.run_test_tbar(self.state, MSVEnvVar.get_new_env_tbar(self.state, patch, test))
+    run_result, is_timeout = run_test.run_fail_test_tbar(self.state, MSVEnvVar.get_new_env_tbar(self.state, patch, test))
+    return run_result
+  def run_test_positive(self, patch: TbarPatchInfo) -> bool:
+    run_result, is_timeout = run_test.run_pass_test_tbar(self.state, MSVEnvVar.get_new_env_tbar(self.state, patch, ""))
     return run_result
   def initialize(self) -> None:
     self.state.msv_logger.info("Initializing...")
     original = self.state.switch_case_map["original"]
     op = TbarPatchInfo(original)
-    for neg in self.state.negative_test.copy():
+    for neg in self.state.tbar_negative_test.copy():
       run_result = self.run_test(op, neg)
       if run_result:
         self.state.msv_logger.warning(f"Removing {neg} from negative test")
-        self.state.negative_test.remove(neg)
+        self.state.tbar_negative_test.remove(neg)
+    if not self.state.skip_valid:
+      self.state.msv_logger.info(f"Validating {len(self.state.tbar_positive_test)} pass tests")
+      # TODO: add positive test
   def run(self) -> None:
     self.state.start_time = time.time()
     self.state.cycle = 0
     while self.is_alive():
       self.state.iteration += 1
-      neg = self.state.negative_test[0]
       self.state.msv_logger.info(f'[{self.state.cycle}]: executing')
       patch = select_patch.select_patch_tbar(self.state)
       pass_exists = False
       result = True
-      for neg in self.state.negative_test:
+      for neg in self.state.tbar_negative_test:
         run_result = self.run_test(patch, neg)
         if not run_result:
           result = False
@@ -316,4 +321,6 @@ class MSVTbar(MSV):
           pass_exists = True
       result_handler.update_result_tbar(self.state, patch, pass_exists)
       if result:
-        pass
+        run_result = self.run_test_positive(patch)
+        result_handler.update_positive_result_tbar(self.state, patch, run_result)
+      result_handler.append_result(self.state, )
