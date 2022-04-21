@@ -266,7 +266,13 @@ def read_info_tbar(state: MSVState) -> None:
             break
         #line_info = LineInfo(file_info, int(line['line']))
         if line_info is None:
-          print("line_info is None!!!!!!!!!!!!!!!!")
+          # No function found for this line!!!
+          # Use default...
+          func_info = FuncInfo(file_info, "no_function_found", int(line['line']), int(line['line']))
+          file_info.func_info_map[func_info.id] = func_info
+          ff_map[file_name][func_info.id] = (int(line['line']), int(line['line']))
+          line_info = LineInfo(func_info, int(line['line']))
+          func_info.line_info_map[line_info.uuid] = line_info
         state.line_list.append(line_info)
         file_line = FileLine(file_info, line_info, 0)
         state.priority_map[f"{file_info.file_name}:{line_info.line_number}"] = file_line
