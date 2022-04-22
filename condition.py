@@ -292,9 +292,19 @@ class ProphetCondition:
       remove_file_or_pass(log_file)
 
     if self.state.use_pass_test:
+      regression_tests=set()
+      # Do regression
+      if not self.state.run_all_test:
+        test_list=self.state.regression_test_info[self.patch.file_info.file_name][self.patch.func_info.id]
+        for test in test_list:
+          regression_tests.add(test)
+        regression_tests=list(regression_tests)
+      else:
+        regression_tests=self.state.positive_test
+
       # collect values from pass test
       self.state.msv_logger.info('Collecting values from pass test')
-      for test in self.state.positive_test:
+      for test in regression_tests:
         patch=[self.patch]
         new_env = MSVEnvVar.get_new_env(self.state, patch, test,EnvVarMode.collect_pos)
         self.new_env = new_env
@@ -789,7 +799,18 @@ class GuidedPathCondition:
     if self.state.use_pass_test:
       # collect values from pass test
       self.state.msv_logger.info('Collecting values from pass test')
-      for test in self.state.positive_test:
+
+      regression_tests=set()
+      # Do regression
+      if not self.state.run_all_test:
+        test_list=self.state.regression_test_info[self.patch.file_info.file_name][self.patch.func_info.id]
+        for test in test_list:
+          regression_tests.add(test)
+        regression_tests=list(regression_tests)
+      else:
+        regression_tests=self.state.positive_test
+
+      for test in regression_tests:
         patch=[self.patch]
         new_env = MSVEnvVar.get_new_env(self.state, patch, test,EnvVarMode.collect_pos)
         self.new_env = new_env

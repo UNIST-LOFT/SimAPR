@@ -677,6 +677,30 @@ def read_repair_conf(state: MSVState) -> None:
     for test in line.strip().split():
       state.positive_test.append(int(test))
 
+def read_regression_test_info(state: MSVState):
+  test_info_file=open(state.work_dir+'/test-info.json','r')
+  test_info=json.load(test_info_file)
+  test_info_file.close()
+
+  for test in test_info:
+    test_number=test['test']
+    for loc in test['locations']:
+      file_name=loc['file']
+      line_number=loc['line']
+      if file_name not in state.regression_test_info:
+        state.regression_test_info[file_name]=dict()
+      cur_file_test=state.regression_test_info[file_name]
+
+      if file_name not in state.file_info_map:
+        continue
+      cur_file=state.file_info_map[file_name].func_info_map
+      for func in cur_file:
+        if cur_file[func].begin<=line_number<=cur_file[func].end:
+          if func not in cur_file_test:
+            cur_file_test[func]=set()
+          cur_file_test[func].add(test_number)
+          break
+
 def copy_previous_results(state: MSVState) -> None:
   result_log = os.path.join(state.out_dir, "msv-search.log")
   result_json = os.path.join(state.out_dir, "msv-result.json")
@@ -703,6 +727,7 @@ def main(argv: list):
     read_info(state)
     read_fl_score(state)
   read_repair_conf(state)
+  read_regression_test_info(state)
   state.msv_logger.info('Initialized!')
   msv = MSV(state)
   state.msv_logger.info('MSV is started')
