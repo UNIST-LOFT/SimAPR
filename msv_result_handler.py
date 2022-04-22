@@ -245,6 +245,34 @@ def remove_patch(state: MSVState, patches: List[PatchInfo]) -> None:
 
 def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: bool) -> None:
   selected_patch.update_result(result, 1, state.use_exp_alpha, state.use_fixed_beta)
+  if state.mode == MSVMode.seapr:
+    if selected_patch.tbar_switch_info.location in state.tbar_patch_ranking:
+      state.tbar_patch_ranking.remove(selected_patch.tbar_switch_info.location)
+    for loc in state.tbar_patch_ranking:
+      ts: TbarSwitchInfo = state.switch_case_map[loc]
+      tbar_type_info = ts.parent
+      line_info = tbar_type_info.parent
+      func_info = line_info.parent
+      file_info = func_info.parent
+      is_share = False
+      same_pattern = False
+      if state.seapr_layer == SeAPRMode.FILE:
+        if selected_patch.file_info == file_info:
+          is_share = True
+      elif state.seapr_layer == SeAPRMode.FUNCTION:
+        if selected_patch.func_info == func_info:
+          is_share = True
+      elif state.seapr_layer == SeAPRMode.LINE:
+        if selected_patch.line_info == line_info:
+          is_share = True
+      if selected_patch.tbar_type_info.mutation == tbar_type_info.mutation:
+        same_pattern = True
+      if is_share:
+        ts.same_seapr_pf.update(result, 1)
+      else:
+        ts.diff_seapr_pf.update(result, 1)
+      if state.use_pattern and result and same_pattern:
+        ts.same_seapr_pf.update(True, 1)
 
 def update_positive_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: bool) -> None:
   selected_patch.update_result_positive(result, 1, state.use_exp_alpha, state.use_fixed_beta)

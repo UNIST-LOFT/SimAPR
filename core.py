@@ -285,6 +285,8 @@ class TbarSwitchInfo:
     self.out_dist: float = -1.0
     self.fl_score: float = 0
     self.out_dist_map: Dict[int, float] = dict()
+    self.same_seapr_pf = PassFail()
+    self.diff_seapr_pf = PassFail()
   def __hash__(self) -> int:
     return hash(self.location)
   def __eq__(self, other) -> bool:

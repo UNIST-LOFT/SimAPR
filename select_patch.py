@@ -693,9 +693,35 @@ def select_patch_seapr(state: MSVState, test: int) -> PatchInfo:
       for const_info in var_info.constant_info_list:
         return PatchInfo(case_info, op_info, var_info, const_info)
 
+def select_patch(state: MSVState, mode: MSVMode, test: int) -> List[PatchInfo]:
+  selected_patch = list()
+  if mode == MSVMode.prophet:
+    return [select_patch_prophet(state)]
+  elif mode==MSVMode.spr:
+    return [select_patch_SPR(state)]
+  if mode == MSVMode.seapr:
+    return [select_patch_seapr(state, test)]
+
+  for _ in range(state.use_multi_line):
+    result = select_patch_guided(state, mode,selected_patch, test)
+    selected_patch.append(result)
+
+    # if use prophet condition and cond syn not done, do not select multi patch
+    if not state.use_condition_synthesis and result.case_info.is_condition and not result.case_info.processed:
+      break
+
+    PROB_NEXT_PATCH=10
+    prob=random.randint(0,99)
+    if prob>=PROB_NEXT_PATCH:
+      break
+  return selected_patch
+
+
 def select_patch_tbar(state: MSVState) -> TbarPatchInfo:
   if state.mode == MSVMode.guided:
     return select_patch_tbar_guided(state)
+  elif state.mode == MSVMode.seapr:
+    return select_patch_tbar_seapr(state)
   loc = state.tbar_patch_ranking.pop(0)
   caseinfo = state.switch_case_map[loc]
   return TbarPatchInfo(caseinfo)
@@ -835,25 +861,21 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   result = TbarPatchInfo(selected_switch_info)
   return result  
 
-def select_patch(state: MSVState, mode: MSVMode, test: int) -> List[PatchInfo]:
-  selected_patch = list()
-  if mode == MSVMode.prophet:
-    return [select_patch_prophet(state)]
-  elif mode==MSVMode.spr:
-    return [select_patch_SPR(state)]
-  if mode == MSVMode.seapr:
-    return [select_patch_seapr(state, test)]
-
-  for _ in range(state.use_multi_line):
-    result = select_patch_guided(state, mode,selected_patch, test)
-    selected_patch.append(result)
-
-    # if use prophet condition and cond syn not done, do not select multi patch
-    if not state.use_condition_synthesis and result.case_info.is_condition and not result.case_info.processed:
-      break
-
-    PROB_NEXT_PATCH=10
-    prob=random.randint(0,99)
-    if prob>=PROB_NEXT_PATCH:
-      break
-  return selected_patch
+def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
+  selected_patch: TbarSwitchInfo = None
+  max_score = 0.0
+  has_high_qual_patch = False
+  for loc in state.tbar_patch_ranking:
+    tbar_switch_info: TbarSwitchInfo = state.switch_case_map[loc]
+    cur_score = get_ochiai(tbar_switch_info.same_seapr_pf.pass_count, tbar_switch_info.same_seapr_pf.fail_count,
+      tbar_switch_info.diff_seapr_pf.pass_count, tbar_switch_info.diff_seapr_pf.fail_count)
+    if tbar_switch_info.same_seapr_pf.pass_count > 0:
+      has_high_qual_patch = True
+    if cur_score > max_score:
+      max_score = cur_score
+      selected_patch = tbar_switch_info
+  if not has_high_qual_patch:
+    loc = state.tbar_patch_ranking.pop(0)
+    caseinfo = state.switch_case_map[loc]
+    return TbarPatchInfo(caseinfo)
+  return TbarPatchInfo(selected_patch)
