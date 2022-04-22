@@ -200,6 +200,8 @@ def run_fail_test_tbar(state: MSVState, new_env: Dict[str, str]) -> Tuple[bool, 
   if '\n' in result_str:
     result_str=result_str.splitlines()[0]
   result_str.strip()
+  if result_str == new_env["MSV_LOCATION"]:
+    return True, False
   return False, False
   # try:
   #   if int(result_str) == selected_test:
@@ -213,8 +215,7 @@ def run_fail_test_tbar(state: MSVState, new_env: Dict[str, str]) -> Tuple[bool, 
   #   state.msv_logger.warning("Result: FAIL")
   #   return False, is_timeout
 
-def run_pass_test_tbar(state: MSVState, new_env: Dict[str, str]) -> Tuple[bool, bool]:
-  state.msv_logger.info(f"@{state.cycle} Run tbar test {new_env['MSV_TEST']} with {new_env['MSV_LOCATION']}")
+def run_pass_test_tbar_exec(state: MSVState, new_env: Dict[str, str], tests: List[str]) -> Tuple[bool, Set[str]]:
   args = state.args
   state.msv_logger.debug(' '.join(args))
   test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
@@ -234,14 +235,47 @@ def run_pass_test_tbar(state: MSVState, new_env: Dict[str, str]) -> Tuple[bool, 
     for child in children:
       child.kill()
     test_proc.kill()
-    return False,True
+    return False
+  passed_tests = set()
+  failed_tests = set()
   result_str = so.decode('utf-8').strip()
   if result_str == "":
     state.msv_logger.info("Result: FAIL")
-    return False, is_timeout
+    return False, failed_tests
   state.msv_logger.debug(result_str)
 
-  if '\n' in result_str:
-    result_str=result_str.splitlines()[0]
-  result_str.strip()
-  return False, False
+  for line in result_str.splitlines():
+    if line.startswith("#"):
+      continue
+    if line.strip() == "":
+      continue
+    passed_tests.add(line.strip())
+  for sw in tests:
+    if sw not in passed_tests:
+      state.msv_logger.info(f"Result: FAIL at test {sw}")
+      failed_tests.add(sw)
+      return False, failed_tests
+  return True, failed_tests
+
+def run_pass_test_tbar(state: MSVState, new_env: Dict[str, str]) -> bool:
+  state.msv_logger.info(f"@{state.cycle} Run tbar test {new_env['MSV_TEST']} with {new_env['MSV_LOCATION']}")
+  tests = list()
+  if len(state.failed_positive_test) > 0:
+    for test in state.failed_positive_test:
+      tests.append(test)
+    tmp_env = MSVEnvVar.get_new_env_tbar_positive_tests(state, tests, new_env.copy())
+    run_result, failed_tests = run_pass_test_tbar_exec(state, tmp_env)
+    if not run_result:
+      return False
+  tests.clear()
+  for test in state.tbar_negative_test:
+    if test not in state.failed_positive_test:
+      tests.append(test)
+  tmp_env = MSVEnvVar.get_new_env_tbar_positive_tests(state, tests, new_env.copy())
+  run_result, failed_tests = run_pass_test_tbar_exec(state, tmp_env, tests)
+  if not run_result:
+    for test in failed_tests:
+      state.failed_positive_test.add(test)
+  state.msv_logger.info("Result: PASS positive tests!")
+  return run_result
+

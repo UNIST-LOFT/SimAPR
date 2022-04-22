@@ -750,7 +750,14 @@ class MSVEnvVar:
     new_env["MSV_BUGGY_PROJECT"] = state.tbar_buggy_project
     new_env["MSV_OUTPUT_DISTANCE_FILE"] = f"/tmp/{uuid.uuid4()}.out"
     return new_env
-
+  @staticmethod
+  def get_new_env_tbar_positive_tests(state: 'MSVState', tests: List[str], new_env: Dict[str, str]) -> Dict[str, str]:
+    test_list = f"/tmp/{uuid.uuid4}.list"
+    new_env["MSV_TEST_LIST"] = test_list
+    with open(test_list, "w") as f:
+      for test in tests:
+        f.write(test + "\n")
+    return new_env
 class PatchInfo:
   def __init__(self, case_info: CaseInfo, op_info: OperatorInfo, var_info: VariableInfo, con_info: ConstantInfo) -> None:
     self.case_info = case_info
@@ -1142,6 +1149,7 @@ class TbarPatchInfo:
   def to_json_object(self) -> dict:
     conf = dict()
     conf["location"] = self.tbar_switch_info.location
+    return conf
   def to_str(self) -> str:
     return f"{self.tbar_switch_info.location}"
   def __str__(self) -> str:

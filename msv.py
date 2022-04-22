@@ -281,6 +281,16 @@ class MSV:
       # self.remove_patch(patch)
 
 class MSVTbar(MSV):
+  def is_alive(self) -> bool:
+    if len(self.state.file_info_map) == 0:
+      self.state.is_alive = False
+    if self.state.cycle_limit > 0 and self.state.cycle >= self.state.cycle_limit:
+      self.state.is_alive = False
+    elif self.state.time_limit > 0 and (time.time() - self.state.start_time) > self.state.time_limit:
+      self.state.is_alive = False
+    elif len(self.state.tbar_patch_ranking) == 0:
+      self.state.is_alive = False
+    return self.state.is_alive
   def save_result(self) -> None:
     # TODO change
     result_handler.save_result(self.state)
@@ -288,7 +298,7 @@ class MSVTbar(MSV):
     run_result, is_timeout = run_test.run_fail_test_tbar(self.state, MSVEnvVar.get_new_env_tbar(self.state, patch, test))
     return run_result
   def run_test_positive(self, patch: TbarPatchInfo) -> bool:
-    run_result, is_timeout = run_test.run_pass_test_tbar(self.state, MSVEnvVar.get_new_env_tbar(self.state, patch, ""))
+    run_result = run_test.run_pass_test_tbar(self.state, MSVEnvVar.get_new_env_tbar(self.state, patch, ""))
     return run_result
   def initialize(self) -> None:
     self.state.msv_logger.info("Initializing...")
@@ -302,7 +312,14 @@ class MSVTbar(MSV):
     if not self.state.skip_valid:
       self.state.msv_logger.info(f"Validating {len(self.state.tbar_positive_test)} pass tests")
       # TODO: add positive test
+      new_env = MSVEnvVar.get_new_env_tbar(self.state, op, "")
+      new_env = MSVEnvVar.get_new_env_tbar_positive_tests(self.state, self.state.tbar_positive_test, new_env)
+      run_result, failed_tests = run_test.run_pass_test_tbar_exec(self.state, new_env, self.state.tbar_positive_test)
+      if not run_result:
+        for ft in failed_tests:
+          self.state.tbar_positive_test.remove(ft)
   def run(self) -> None:
+    self.initialize()
     self.state.start_time = time.time()
     self.state.cycle = 0
     while self.is_alive():
