@@ -290,9 +290,13 @@ def read_info_tbar(state: MSVState) -> None:
           state.switch_case_map[location] = tbar_switch_info
           tbar_switch_info.fl_score = fl_score
           tbar_type_info.fl_score_list.append(fl_score)
+          tbar_type_info.total_case_info += 1
           line_info.fl_score_list.append(fl_score)
+          line_info.total_case_info += 1
           func_info.fl_score_list.append(fl_score)
+          func_info.total_case_info += 1
           file_info.fl_score_list.append(fl_score)
+          file_info.total_case_info += 1
         if len(line_info.tbar_type_info_map)==0:
           del func_info.line_info_map[line_info.uuid]
       for func in file_info.func_info_map.copy().values():
