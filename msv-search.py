@@ -21,7 +21,7 @@ def parse_args(argv: list) -> MSVState:
               "mode=", "max-parallel-cpu=",'skip-valid','use-fixed-beta','use-cpr-space','use-fixed-const', 'params=', 'tbar-mode', "use-exp-alpha",
               "use-condition-synthesis", "use-hierarchical-selection=", "use-pass-test", "use-partial-validation", "use-full-validation",
               "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern", "use-simulation-mode=",
-              "use-prophet-score", "use-fl", "use-fl-prophet-score", "watch-level=",'use-msv-ext','seapr-mode=','top-fl=','run-all-test']
+              "use-prophet-score", "use-fl", "use-fl-prophet-score", "watch-level=",'use-msv-ext','seapr-mode=','top-fl=','run-all-test','use-fixed-halflife']
   opts, args = getopt.getopt(argv[1:], "ho:w:p:t:m:c:j:T:E:M:S:", longopts)
   state = MSVState()
   state.original_args = argv
@@ -89,6 +89,8 @@ def parse_args(argv: list) -> MSVState:
       state.top_fl=int(a)
     elif o in ['--run-all-test']:
       state.run_all_test=True
+    elif o in ['--use-fixed-halflife']:
+      state.use_fixed_halflife=True
     elif o in ['--seapr-mode']:
       if a.lower()=='file':
         state.seapr_layer = SeAPRMode.FILE
@@ -586,6 +588,10 @@ def read_info(state: MSVState) -> None:
     if len(state.watch_level) > 1:
       trim_with_watch_level(state, state.watch_level, state.correct_patch_str)
 
+  # Set halflife
+  if not state.use_fixed_halflife:
+    total_patch_len=len(state.seapr_remain_cases)
+    state.params[PT.halflife]=int(total_patch_len*state.params[PT.halflife])
   #Add original to switch_case_map
   temp_file: FileInfo = FileInfo('original')
   temp_func = FuncInfo(temp_file, "original_fn", 0, 0)
