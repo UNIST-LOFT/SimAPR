@@ -300,6 +300,7 @@ def read_info_tbar(state: MSVState) -> None:
           del file_info.func_info_map[func.id]
       if len(file_info.func_info_map)==0:
         del state.file_info_map[file_info.file_name]
+  state.tbar_buggy_project = info["project_name"]
   # Read ranking
   ranking = info['ranking']
   for rank in ranking:

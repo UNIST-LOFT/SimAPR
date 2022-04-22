@@ -745,6 +745,9 @@ class MSVEnvVar:
     new_env["MSV_UUID"] = str(state.uuid)
     new_env["MSV_TEST"] = str(test)
     new_env["MSV_LOCATION"] = str(patch.tbar_switch_info.location)
+    new_env["MSV_WORKDIR"] = state.work_dir
+    new_env["MSV_BUGGY_LOCATION"] = patch.file_info.file_name
+    new_env["MSV_BUGGY_PROJECT"] = state.tbar_buggy_project
     new_env["MSV_OUTPUT_DISTANCE_FILE"] = f"/tmp/{uuid.uuid4()}.out"
     return new_env
 
@@ -1281,6 +1284,7 @@ class MSVState:
     self.positive_test = list()
     self.tbar_negative_test = list()
     self.tbar_positive_test = list()
+    self.tbar_buggy_project: str = ""
     self.profile_map = dict()
     self.priority_list = list()
     self.fl_score:List[LocationScore]=list()
