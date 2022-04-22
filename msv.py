@@ -319,7 +319,7 @@ class MSVTbar(MSV):
         for ft in failed_tests:
           self.state.tbar_positive_test.remove(ft)
   def run(self) -> None:
-    self.initialize()
+    #self.initialize()
     self.state.start_time = time.time()
     self.state.cycle = 0
     while self.is_alive():

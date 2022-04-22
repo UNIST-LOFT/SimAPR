@@ -694,6 +694,8 @@ def select_patch_seapr(state: MSVState, test: int) -> PatchInfo:
         return PatchInfo(case_info, op_info, var_info, const_info)
 
 def select_patch_tbar(state: MSVState) -> TbarPatchInfo:
+  if state.mode == MSVMode.guided:
+    return select_patch_tbar_guided(state)
   loc = state.tbar_patch_ranking.pop(0)
   caseinfo = state.switch_case_map[loc]
   return TbarPatchInfo(caseinfo)
@@ -702,8 +704,6 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   """
   Select a patch for Tbar.
   """
-  if test < 0:
-    test = state.negative_test[0]
   pf_rand = PassFail()
   rand_cmap = {PT.rand: 1.0}
   # lists which are used to store the scores of each patch
@@ -788,7 +788,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   # Select line
   for line_uuid in selected_func_info.line_info_map:
     line_info = selected_func_info.line_info_map[line_uuid]
-    if len(line_info.switch_info_map) == 0:
+    if len(line_info.tbar_type_info_map) == 0:
       state.msv_logger.warning(f"No switch info in line: {selected_file_info.file_name}: {line_info.line_number}")
       continue
     selected.append(line_info)
@@ -811,7 +811,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   # Select type
   for tbar_type in selected_line_info.tbar_type_info_map:
     tbar_type_info = selected_line_info.tbar_type_info_map[tbar_type]
-    if len(tbar_type_info.switch_info_map) == 0:
+    if len(tbar_type_info.tbar_switch_info_map) == 0:
       state.msv_logger.warning(f"No switch info in type: {tbar_type}")
       continue
     selected.append(tbar_type_info)
@@ -830,7 +830,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
     p_rand.append(pf_rand.select_value())
   c_map = rand_cmap
   selected_switch = select_by_probability(state, p_map, c_map)
-  selected_switch_info: SwitchInfo = selected[selected_switch]
+  selected_switch_info: TbarSwitchInfo = selected[selected_switch]
   clear_list(state, p_map)
   result = TbarPatchInfo(selected_switch_info)
   return result  

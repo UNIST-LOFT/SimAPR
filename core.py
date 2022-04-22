@@ -21,6 +21,7 @@ class MSVMode(Enum):
   validation = 6
   spr = 7
   seapr = 8
+  tbar = 9
 
 class PatchType(Enum):
   TightenConditionKind = 0
