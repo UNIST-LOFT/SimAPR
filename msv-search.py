@@ -22,7 +22,7 @@ def parse_args(argv: list) -> MSVState:
               "use-condition-synthesis", "use-hierarchical-selection=", "use-pass-test", "use-partial-validation", "use-full-validation",
               "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern", "use-simulation-mode=",
               "use-prophet-score", "use-fl", "use-fl-prophet-score", "watch-level=",'use-msv-ext','seapr-mode=','top-fl=','run-all-test','use-fixed-halflife',
-              "func-dist-mean=",'lang-model-path']
+              "func-dist-mean=",'lang-model-path','use-init-trial=']
   opts, args = getopt.getopt(argv[1:], "ho:w:p:t:m:c:j:T:E:M:S:", longopts)
   state = MSVState()
   state.original_args = argv
@@ -90,6 +90,8 @@ def parse_args(argv: list) -> MSVState:
       state.top_fl=int(a)
     elif o in ['--run-all-test']:
       state.run_all_test=True
+    elif o in ['--use-init-trial']:
+      state.max_initial_trial=int(a)
     elif o in ['--use-fixed-halflife']:
       state.use_fixed_halflife=True
     elif o in ['--func-dist-mean']:
