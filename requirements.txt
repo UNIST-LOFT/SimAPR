@@ -11,3 +11,4 @@ python-Levenshtein==0.12.2
 six==1.16.0
 nltk
 gensim
+pyemd

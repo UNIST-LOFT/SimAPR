@@ -22,7 +22,7 @@ def parse_args(argv: list) -> MSVState:
               "use-condition-synthesis", "use-hierarchical-selection=", "use-pass-test", "use-partial-validation", "use-full-validation",
               "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern", "use-simulation-mode=",
               "use-prophet-score", "use-fl", "use-fl-prophet-score", "watch-level=",'use-msv-ext','seapr-mode=','top-fl=','use-fixed-halflife',
-              "func-dist-mean=",'lang-model-path','use-init-trial=','regression-mode=']
+              "func-dist-mean=",'lang-model-path=','use-init-trial=','regression-mode=']
   opts, args = getopt.getopt(argv[1:], "ho:w:p:t:m:c:j:T:E:M:S:", longopts)
   state = MSVState()
   state.original_args = argv
@@ -99,7 +99,7 @@ def parse_args(argv: list) -> MSVState:
       state.regression_php_mode=a
     elif o in ['--func-dist-mean']:
       if a!='arithmetic' and a!='harmonic':
-        print(f'mean formula "{a}" not supported, should be "arithmetic" or "harmonic"',file=sys.stderr)
+        print(f'mean formula "{a}" not supported, should be "arithmetic", "harmonic" or ""',file=sys.stderr)
         exit(1)
       state.language_model_mean=a
     elif o in ['--lang-model-path']:
@@ -762,11 +762,13 @@ def get_function_distance(state:MSVState):
   func_info=json.load(func_info_file)
   func_info_file.close()
 
-  names:Dict[int,Tuple[str,List[str]]]=dict()
+  names:Dict[int,Tuple[str,Dict[int,str]]]=dict()
   for func in func_info:
     orig_name=func['original_name']
     switch=func['switch_number']
-    new_names=func['new_names']
+    new_names=dict()
+    for name in func['new_names']:
+      new_names[name['case_number']]=name['new_name']
     names[switch]=(orig_name,new_names)
   
   min_max=add_sim_score.main(state,state.seapr_remain_cases,names)
@@ -805,6 +807,8 @@ def main(argv: list):
   read_repair_conf(state)
   # read_regression_test_info(state)
   gen_php_regression_test(state)
+  if state.language_model_mean!='':
+    get_function_distance(state)
   state.msv_logger.info('Initialized!')
   msv = MSV(state)
   state.msv_logger.info('MSV is started')

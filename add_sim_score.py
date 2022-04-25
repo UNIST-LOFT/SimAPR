@@ -85,7 +85,7 @@ def compute_overall_distance (mean,org_fname, alt_fname):
 	else:
 		return compute_edit_distance(org_fname, alt_fname) + compute_jaccard_distance(org_fname, alt_fname) + compute_wm_distance(org_fname, alt_fname) # Arithmetic mean
 
-def main (state:MSVState,cases:List[CaseInfo],function_names:Dict[int,Tuple[str,List[str]]])->Dict[int,List[int]]:
+def main (state:MSVState,cases:List[CaseInfo],function_names:Dict[int,Tuple[str,Dict[int,str]]])->Dict[int,List[int]]:
 	"""
 		Compute function distance of all cases that replace function call.
 		cases: list of case info
@@ -101,7 +101,7 @@ def main (state:MSVState,cases:List[CaseInfo],function_names:Dict[int,Tuple[str,
 	for case in cases:
 		if case.parent.patch_type==PatchType.ReplaceFunctionKind or case.parent.patch_type==PatchType.MSVExtFunctionReplaceKind or case.parent.patch_type==PatchType.MSVExtReplaceFunctionInConditionKind:
 			switch=case.parent.parent.switch_number
-			case.func_distance=compute_overall_distance(function_names[switch][0], function_names[switch][1][case.case_number])
+			case.func_distance=compute_overall_distance(state.language_model_mean,function_names[switch][0], function_names[switch][1][case.case_number])
 
 			if switch not in min_max_dist:
 				min_max_dist[switch]=[5,0]

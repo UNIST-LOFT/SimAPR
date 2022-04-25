@@ -1317,7 +1317,7 @@ class MSVState:
     self.use_fixed_halflife=False
     self.regression_test_info:Dict[str,Dict[str,Set[int]]]=dict() # Information of regression test: filename -> funcname -> set of tests
     self.language_model_path='./Google-word2vec.txt'
-    self.language_model_mean='arithmetic'
+    self.language_model_mean=''
 
     self.seapr_remain_cases:List[CaseInfo]=[]
     self.seapr_layer:SeAPRMode=SeAPRMode.FUNCTION
