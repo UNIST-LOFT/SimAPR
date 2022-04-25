@@ -14,14 +14,15 @@ import shutil
 from core import *
 
 from msv import MSV, MSVTbar
-
+import add_sim_score
 
 def parse_args(argv: list) -> MSVState:
   longopts = ["help", "outdir=", "workdir=", "timeout=", "msv-path=", "time-limit=", "cycle-limit=", "epsilon-greedy-exploration=",
               "mode=", "max-parallel-cpu=",'skip-valid','use-fixed-beta','use-cpr-space','use-fixed-const', 'params=', 'tbar-mode', "use-exp-alpha",
               "use-condition-synthesis", "use-hierarchical-selection=", "use-pass-test", "use-partial-validation", "use-full-validation",
               "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern", "use-simulation-mode=",
-              "use-prophet-score", "use-fl", "use-fl-prophet-score", "watch-level=",'use-msv-ext','seapr-mode=','top-fl=']
+              "use-prophet-score", "use-fl", "use-fl-prophet-score", "watch-level=",'use-msv-ext','seapr-mode=','top-fl=','run-all-test','use-fixed-halflife',
+              "func-dist-mean=",'lang-model-path']
   opts, args = getopt.getopt(argv[1:], "ho:w:p:t:m:c:j:T:E:M:S:", longopts)
   state = MSVState()
   state.original_args = argv
@@ -87,6 +88,17 @@ def parse_args(argv: list) -> MSVState:
       state.use_pattern = True
     elif o in ['--top-fl']:
       state.top_fl=int(a)
+    elif o in ['--run-all-test']:
+      state.run_all_test=True
+    elif o in ['--use-fixed-halflife']:
+      state.use_fixed_halflife=True
+    elif o in ['--func-dist-mean']:
+      if a!='arithmetic' and a!='harmonic':
+        print(f'mean formula "{a}" not supported, should be "arithmetic" or "harmonic"',file=sys.stderr)
+        exit(1)
+      state.language_model_mean=a
+    elif o in ['--lang-model-path']:
+      state.language_model_path=a
     elif o in ['--seapr-mode']:
       if a.lower()=='file':
         state.seapr_layer = SeAPRMode.FILE
@@ -483,11 +495,11 @@ def read_info(state: MSVState) -> None:
             else:
               func_info = file_info.func_info_map[func_id]
             line_info = LineInfo(func_info, int(line['line']))
-            if state.top_fl>0 and (file_info.file_name,line_info.line_number) in top_fl:
+            if state.top_fl==0 or (file_info.file_name,line_info.line_number) in top_fl:
               func_info.line_info_map[line_info.uuid] = line_info
             break
         #line_info = LineInfo(file_info, int(line['line']))
-        if state.top_fl>0 and (file_info.file_name,line_info.line_number) not in top_fl:
+        if state.top_fl==0 or (file_info.file_name,line_info.line_number) not in top_fl:
           continue
         state.line_list.append(line_info)
         score = get_score(file_info.file_name,line_info.line_number,max_sec_score)
@@ -606,6 +618,10 @@ def read_info(state: MSVState) -> None:
     if len(state.watch_level) > 1:
       trim_with_watch_level(state, state.watch_level, state.correct_patch_str)
 
+  # Set halflife
+  if not state.use_fixed_halflife:
+    total_patch_len=len(state.seapr_remain_cases)
+    state.params[PT.halflife]=int(total_patch_len*state.params[PT.halflife])
   #Add original to switch_case_map
   temp_file: FileInfo = FileInfo('original')
   temp_func = FuncInfo(temp_file, "original_fn", 0, 0)
@@ -691,6 +707,50 @@ def read_repair_conf(state: MSVState) -> None:
     for test in line.strip().split():
       state.positive_test.append(int(test))
 
+def read_regression_test_info(state: MSVState):
+  test_info_file=open(state.work_dir+'/test-info.json','r')
+  test_info=json.load(test_info_file)
+  test_info_file.close()
+
+  for test in test_info:
+    test_number=test['test']
+    for loc in test['locations']:
+      file_name=loc['file']
+      line_number=loc['line']
+      if file_name not in state.regression_test_info:
+        state.regression_test_info[file_name]=dict()
+      cur_file_test=state.regression_test_info[file_name]
+
+      if file_name not in state.file_info_map:
+        continue
+      cur_file=state.file_info_map[file_name].func_info_map
+      for func in cur_file:
+        if cur_file[func].begin<=line_number<=cur_file[func].end:
+          if func not in cur_file_test:
+            cur_file_test[func]=set()
+          cur_file_test[func].add(test_number)
+          break
+
+def get_function_distance(state:MSVState):
+  func_info_file=open(state.work_dir+'/func-info.json','r')
+  func_info=json.load(func_info_file)
+  func_info_file.close()
+
+  names:Dict[int,Tuple[str,List[str]]]=dict()
+  for func in func_info:
+    orig_name=func['original_name']
+    switch=func['switch_number']
+    new_names=func['new_names']
+    names[switch]=(orig_name,new_names)
+  
+  min_max=add_sim_score.main(state,state.seapr_remain_cases,names)
+  # Normalize function distances
+  for case in state.seapr_remain_cases:
+    if case.func_distance!=0.9999:
+      min_dist=min_max[case.parent.parent.switch_number][0]
+      max_dist=min_max[case.parent.parent.switch_number][1]
+      case.func_distance=(case.func_distance-min_dist)/(max_dist-min_dist)
+
 def copy_previous_results(state: MSVState) -> None:
   result_log = os.path.join(state.out_dir, "msv-search.log")
   result_json = os.path.join(state.out_dir, "msv-result.json")
@@ -719,6 +779,7 @@ def main(argv: list):
     read_info(state)
     read_fl_score(state)
     read_repair_conf(state)
+    read_regression_test_info(state)
     state.msv_logger.info('Initialized!')
     msv = MSV(state)
   state.msv_logger.info('MSV is started')

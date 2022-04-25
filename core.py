@@ -84,6 +84,9 @@ class PT(Enum):
   alpha = 11 # alpha of beta distribution
   beta = 12 # beta of beta distribution
   epsilon = 13 # epsilon-greedy
+  b_dec=14 # decrease of beta distribution
+  a_init=15 # init value of a in beta dist
+  b_init=16 # init value of b in beta dist
 
 class SeAPRMode(Enum):
   FILE=0,
@@ -112,20 +115,18 @@ class PassFail:
       return 1
   def beta_mode(self, alpha: float, beta: float) -> float:
     return (alpha - 1.0) / (alpha + beta - 2.0)
-  def update(self, result: bool, n: float, exp_alpha: bool = False, use_fixed_beta:bool=False) -> None:
+  def update(self, result: bool, n: float,b_n:float=1.0, exp_alpha: bool = False, use_fixed_beta:bool=False) -> None:
     if result:
       self.pass_count += n * self.__exp_alpha(exp_alpha)
     else:
-      self.fail_count += n*self.__fixed_beta__(use_fixed_beta,self.pass_count,self.fail_count)
-  def update_with_pf(self, other,use_fixed_beta:bool=False) -> None:
+      self.fail_count += b_n*self.__fixed_beta__(use_fixed_beta,self.pass_count,self.fail_count)
+  def update_with_pf(self, other,b_n:float=1.0,use_fixed_beta:bool=False) -> None:
     self.pass_count += other.pass_count
     self.fail_count += other.fail_count*self.__fixed_beta__(use_fixed_beta,self.pass_count,self.fail_count)
   def expect_probability(self,additional_score:float=0) -> float:
     return self.beta_mode(self.pass_count + 1.5+additional_score, self.fail_count + 2.0)
-  def select_value(self) -> float: # select a value randomly from the beta distribution
-    return np.random.beta(self.pass_count + 1.0, self.fail_count + 1.0)
-  def select_patch_option(self, state: 'MSVState') -> float:
-    return self.select_value()
+  def select_value(self,a_init:float=1.0,b_init:float=1.0) -> float: # select a value randomly from the beta distribution
+    return np.random.beta(self.pass_count + a_init, self.fail_count + b_init)
   def copy(self) -> 'PassFail':
     return PassFail(self.pass_count, self.fail_count)
   @staticmethod
@@ -365,6 +366,7 @@ class CaseInfo:
     self.current_record:List[bool]=[] # current record, for out condition synthesis
     self.synthesis_tried:int=0 # tried counter for search record, removed after 11
     self.has_init_patch=False
+    self.func_distance=0.9999 # If it is function replace, save distance of function name
     self.parent.total_case_info += 1
     self.parent.parent.total_case_info += 1
     self.parent.parent.parent.total_case_info += 1
@@ -777,13 +779,13 @@ class PatchInfo:
     self.profile_diff: ProfileDiff = None
     self.out_dist = -1.0
     self.out_diff: bool = False
-  def update_result(self, result: bool, n: float, use_exp_alpha: bool, use_fixed_beta:bool) -> None:
-    self.case_info.pf.update(result, n, use_exp_alpha, use_fixed_beta)
-    self.type_info.pf.update(result, n, use_exp_alpha, use_fixed_beta)
-    self.switch_info.pf.update(result, n, use_exp_alpha, use_fixed_beta)
-    self.line_info.pf.update(result, n, use_exp_alpha, use_fixed_beta)
-    self.func_info.pf.update(result, n, use_exp_alpha, use_fixed_beta)
-    self.file_info.pf.update(result, n, use_exp_alpha, use_fixed_beta)
+  def update_result(self, result: bool, n: float,b_n:float, use_exp_alpha: bool, use_fixed_beta:bool) -> None:
+    self.case_info.pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
+    self.type_info.pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
+    self.switch_info.pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
+    self.line_info.pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
+    self.func_info.pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
+    self.file_info.pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
 
     if result:
       self.case_info.has_init_patch=True
@@ -794,12 +796,12 @@ class PatchInfo:
       self.file_info.has_init_patch=True
 
     if self.is_condition and self.operator_info is not None:
-      self.operator_info.pf.update(result, n, use_exp_alpha, use_fixed_beta)
+      self.operator_info.pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
       if result:
         self.operator_info.has_init_patch=True
       if self.operator_info.operator_type!=OperatorType.ALL_1:
-        self.variable_info.pf.update(result, n, use_exp_alpha, use_fixed_beta)
-        self.constant_info.pf.update(result, n, use_exp_alpha, use_fixed_beta)
+        self.variable_info.pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
+        self.constant_info.pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
         if result:
           self.variable_info.has_init_patch=True
           self.constant_info.has_init_patch=True
@@ -913,18 +915,18 @@ class PatchInfo:
         self.variable_info.critical_pf.update_with_pf(critical_pf)
         self.constant_info.critical_pf.update_with_pf(critical_pf)
   
-  def update_result_positive(self, result: bool, n: float, use_exp_alpha: bool, use_fixed_beta:bool) -> None:
-    self.case_info.positive_pf.update(result, n, use_exp_alpha, use_fixed_beta)
-    self.type_info.positive_pf.update(result, n, use_exp_alpha, use_fixed_beta)
-    self.switch_info.positive_pf.update(result, n, use_exp_alpha, use_fixed_beta)
-    self.line_info.positive_pf.update(result, n, use_exp_alpha, use_fixed_beta)
-    self.func_info.positive_pf.update(result, n, use_exp_alpha, use_fixed_beta)
-    self.file_info.positive_pf.update(result, n, use_exp_alpha, use_fixed_beta)
+  def update_result_positive(self, result: bool, n: float, b_n:float,use_exp_alpha: bool, use_fixed_beta:bool) -> None:
+    self.case_info.positive_pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
+    self.type_info.positive_pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
+    self.switch_info.positive_pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
+    self.line_info.positive_pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
+    self.func_info.positive_pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
+    self.file_info.positive_pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
     if self.is_condition and self.operator_info is not None:
-      self.operator_info.positive_pf.update(result, n, use_exp_alpha, use_fixed_beta)
+      self.operator_info.positive_pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
       if self.operator_info.operator_type!=OperatorType.ALL_1:
-        self.variable_info.positive_pf.update(result, n, use_exp_alpha, use_fixed_beta)
-        self.constant_info.positive_pf.update(result, n, use_exp_alpha, use_fixed_beta)
+        self.variable_info.positive_pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
+        self.constant_info.positive_pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
   
   def remove_patch(self, state: 'MSVState') -> None:
     if self.is_condition and self.operator_info is not None and self.case_info.operator_info_list is not None:
@@ -1097,12 +1099,12 @@ class TbarPatchInfo:
     self.file_info = self.func_info.parent
     self.out_dist = -1.0
     self.out_diff = False
-  def update_result(self, result: bool, n: float, exp_alpha: bool, fixed_beta: bool) -> None:
-    self.tbar_switch_info.pf.update(result, n, exp_alpha, fixed_beta)
-    self.tbar_type_info.pf.update(result, n, exp_alpha, fixed_beta)
-    self.line_info.pf.update(result, n, exp_alpha, fixed_beta)
-    self.func_info.pf.update(result, n, exp_alpha, fixed_beta)
-    self.file_info.pf.update(result, n, exp_alpha, fixed_beta)
+  def update_result(self, result: bool, n: float, b_n:float,exp_alpha: bool, fixed_beta: bool) -> None:
+    self.tbar_switch_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
+    self.tbar_type_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
+    self.line_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
+    self.func_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
+    self.file_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
   def update_result_out_dist(self, state: 'MSVState', result: bool, dist: float, test: int) -> None:
     self.out_dist = dist
     is_diff = True
@@ -1128,12 +1130,12 @@ class TbarPatchInfo:
     self.file_info.out_dist = (tmp + dist) / (self.file_info.update_count + 1)
     self.file_info.update_count += 1
     self.file_info.output_pf.update(is_diff, 1.0)    
-  def update_result_positive(self, result: bool, n: float, exp_alpha: bool, fixed_beta: bool) -> None:
-    self.tbar_switch_info.positive_pf.update(result, n, exp_alpha, fixed_beta)
-    self.tbar_type_info.positive_pf.update(result, n, exp_alpha, fixed_beta)
-    self.line_info.positive_pf.update(result, n, exp_alpha, fixed_beta)
-    self.func_info.positive_pf.update(result, n, exp_alpha, fixed_beta)
-    self.file_info.positive_pf.update(result, n, exp_alpha, fixed_beta)
+  def update_result_positive(self, result: bool, n: float, b_n:float,exp_alpha: bool, fixed_beta: bool) -> None:
+    self.tbar_switch_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
+    self.tbar_type_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
+    self.line_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
+    self.func_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
+    self.file_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
   def remove_patch(self, state: 'MSVState') -> None:
     del self.tbar_type_info.tbar_switch_info_map[self.tbar_switch_info.location]
     if len(self.tbar_type_info.tbar_switch_info_map) == 0:
@@ -1328,15 +1330,21 @@ class MSVState:
     self.iteration=0
     self.use_partial_validation = True
     self.max_initial_trial = 100
-    self.c_map = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.2}
-    self.params = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.2, PT.cov: 2.0, PT.sigma: 0.1, PT.halflife: 1000, PT.epsilon: 0.1}
+    self.c_map = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.0}
+    self.params = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.0, PT.cov: 2.0, PT.sigma: 0.1, PT.halflife: 0.05, PT.epsilon: 0.0,PT.b_dec:0.0,PT.a_init:1.0,PT.b_init:1.0}
     self.params_decay = dict()
     self.original_output_distance_map = dict()
     self.use_msv_ext=False
     self.tbar_mode = False
     self.use_exp_alpha = False
+    self.run_all_test=False
     self.top_fl=0
     self.tbar_patch_ranking = list()
+    self.use_fixed_halflife=False
+    self.regression_test_info:Dict[str,Dict[str,Set[int]]]=dict() # Information of regression test: filename -> funcname -> set of tests
+    self.language_model_path='./Google-word2vec.txt'
+    self.language_model_mean='arithmetic'
+
     self.seapr_remain_cases:List[CaseInfo]=[]
     self.seapr_layer:SeAPRMode=SeAPRMode.FUNCTION
 

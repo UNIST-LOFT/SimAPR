@@ -9,3 +9,5 @@ pyparsing==3.0.6
 python-dateutil==2.8.2
 python-Levenshtein==0.12.2
 six==1.16.0
+nltk
+gensim
