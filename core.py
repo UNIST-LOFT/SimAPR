@@ -1329,7 +1329,7 @@ class MSVState:
     self.total_plausible_patch=0
     self.iteration=0
     self.use_partial_validation = True
-    self.max_initial_trial = 100
+    self.max_initial_trial = 0
     self.c_map = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.0}
     self.params = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.0, PT.cov: 2.0, PT.sigma: 0.1, PT.halflife: 0.05, PT.epsilon: 0.0,PT.b_dec:0.0,PT.a_init:1.0,PT.b_init:1.0}
     self.params_decay = dict()
@@ -1338,6 +1338,7 @@ class MSVState:
     self.tbar_mode = False
     self.use_exp_alpha = False
     self.run_all_test=False
+    self.regression_php_mode=''
     self.top_fl=0
     self.tbar_patch_ranking = list()
     self.use_fixed_halflife=False

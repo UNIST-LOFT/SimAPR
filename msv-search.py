@@ -21,8 +21,8 @@ def parse_args(argv: list) -> MSVState:
               "mode=", "max-parallel-cpu=",'skip-valid','use-fixed-beta','use-cpr-space','use-fixed-const', 'params=', 'tbar-mode', "use-exp-alpha",
               "use-condition-synthesis", "use-hierarchical-selection=", "use-pass-test", "use-partial-validation", "use-full-validation",
               "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern", "use-simulation-mode=",
-              "use-prophet-score", "use-fl", "use-fl-prophet-score", "watch-level=",'use-msv-ext','seapr-mode=','top-fl=','run-all-test','use-fixed-halflife',
-              "func-dist-mean=",'lang-model-path']
+              "use-prophet-score", "use-fl", "use-fl-prophet-score", "watch-level=",'use-msv-ext','seapr-mode=','top-fl=','use-fixed-halflife',
+              "func-dist-mean=",'lang-model-path','use-init-trial=','regression-mode=']
   opts, args = getopt.getopt(argv[1:], "ho:w:p:t:m:c:j:T:E:M:S:", longopts)
   state = MSVState()
   state.original_args = argv
@@ -88,10 +88,15 @@ def parse_args(argv: list) -> MSVState:
       state.use_pattern = True
     elif o in ['--top-fl']:
       state.top_fl=int(a)
-    elif o in ['--run-all-test']:
-      state.run_all_test=True
+    elif o in ['--use-init-trial']:
+      state.max_initial_trial=int(a)
     elif o in ['--use-fixed-halflife']:
       state.use_fixed_halflife=True
+    elif o in ['--regression-mode']:
+      if a!='php' and a!='new-php' and a!='':
+        print('regression test mode should be "php", "new-php" or ""')
+        exit(1)
+      state.regression_php_mode=a
     elif o in ['--func-dist-mean']:
       if a!='arithmetic' and a!='harmonic':
         print(f'mean formula "{a}" not supported, should be "arithmetic" or "harmonic"',file=sys.stderr)
@@ -499,7 +504,7 @@ def read_info(state: MSVState) -> None:
               func_info.line_info_map[line_info.uuid] = line_info
             break
         #line_info = LineInfo(file_info, int(line['line']))
-        if state.top_fl==0 or (file_info.file_name,line_info.line_number) not in top_fl:
+        if state.top_fl!=0 and (file_info.file_name,line_info.line_number) not in top_fl:
           continue
         state.line_list.append(line_info)
         score = get_score(file_info.file_name,line_info.line_number,max_sec_score)
@@ -707,6 +712,49 @@ def read_repair_conf(state: MSVState) -> None:
     for test in line.strip().split():
       state.positive_test.append(int(test))
 
+def gen_php_regression_test(state: MSVState):
+  if state.regression_php_mode=='php':
+    regression_path=state.msv_path+'/tools/php-regression-test'
+    regression_tests=set()
+    with open(regression_path,'r') as f:
+      for line in f.readlines():
+        regression_tests.add(int(line.strip()))
+
+    for test in state.positive_test.copy():
+      if test not in regression_tests:
+        state.positive_test.remove(test)
+
+  elif state.regression_php_mode=='new-php':
+    actual_test_names=list()
+    with open(state.work_dir+'/php-run-tests.c') as f:
+      is_start=False
+      i=1
+      for line in f.readlines():
+        if '{' in line:
+          is_start=True
+        elif '}' in test:
+          break
+        elif is_start:
+          words=line.strip()
+          begin=words.find('"')
+          end=words.rfind('"')
+          test=words[begin+1:end]
+          actual_test_names.append((i,test))
+          i+=1
+
+    regression_tests=set()
+    with open(state.msv_path+'/php-new-regression-test','r') as f:
+      for line in f.readlines():
+        words=line.strip()
+        begin=words.find('"')
+        end=words.rfind('"')
+        test=words[begin+1:end]
+        regression_tests.add(test)
+    
+    for test in actual_test_names:
+      if test[1] not in regression_tests:
+        state.positive_test.remove(test[0])
+
 def read_regression_test_info(state: MSVState):
   test_info_file=open(state.work_dir+'/test-info.json','r')
   test_info=json.load(test_info_file)
@@ -779,7 +827,8 @@ def main(argv: list):
     read_info(state)
     read_fl_score(state)
     read_repair_conf(state)
-    read_regression_test_info(state)
+    #read_regression_test_info(state)
+    gen_php_regression_test(state)
     state.msv_logger.info('Initialized!')
     msv = MSV(state)
   state.msv_logger.info('MSV is started')
