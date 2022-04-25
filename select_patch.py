@@ -399,6 +399,10 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     if explore:
       c_map = rand_cmap
     # Select case
+    use_language_model = False
+    if selected_type_info.patch_type==PatchType.ReplaceFunctionKind or selected_type_info.patch_type==PatchType.MSVExtFunctionReplaceKind or selected_type_info.patch_type==PatchType.MSVExtReplaceFunctionInConditionKind:
+      use_language_model = True
+      c_map[PT.fl] = state.params[PT.fl]
     for case_num in selected_type_info.case_info_map:
       case_info = selected_type_info.case_info_map[case_num]
       if not state.use_condition_synthesis and len(selected_patch)>0 and not case_info.processed: # do not select multi-line patch if patch is not processed at prophet cond syn
@@ -410,6 +414,8 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       p_b.append(case_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       p_p.append(case_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       p_o.append(case_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      if use_language_model:
+        p_fl.append(case_info.func_distance)
     selected_case = select_by_probability(state, p_map, c_map)
     selected_case_info: CaseInfo = selected[selected_case]
     clear_list(state, p_map)
