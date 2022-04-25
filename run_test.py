@@ -66,38 +66,9 @@ def run_pass_test(state: MSVState, patch: List[PatchInfo], is_initialize: bool =
   state.msv_logger.info(
       f"@{state.cycle} Run pass test with {PatchInfo.list_to_str(patch)}")
 
-  regression_tests=set()
-  # Create regression test
-  if not state.run_all_test and not is_initialize:
-    for patch_info in patch:
-      test_list=state.regression_test_info[patch_info.file_info.file_name][patch_info.func_info.id]
-      for test in test_list:
-        regression_tests.add(test)
-    regression_tests=list(regression_tests)
-  elif len(pass_tests)>0:
-    regression_tests=pass_tests
-  else:
-    regression_tests=state.positive_test
-
-  regression_failed_tests=set()
-  # Create regression test for failed pass test
-  if not state.run_all_test and not is_initialize:
-    for patch_info in patch:
-      test_list=state.regression_test_info[patch_info.file_info.file_name][patch_info.func_info.id]
-      for test in test_list:
-        if test in state.failed_positive_test:
-          regression_failed_tests.add(test)
-    regression_failed_tests=list(regression_failed_tests)
-  else:
-    regression_failed_tests=state.failed_positive_test
-
-  if len(regression_failed_tests)==0 and len(regression_tests)==0:
-    state.msv_logger.info('No regression test, skip')
-    return True, set()
-
-  total_test = len(regression_tests)
+  total_test = len(state.positive_test)
   group_num = (total_test + MAX_TEST_ONCE - 1) // MAX_TEST_ONCE
-  if len(regression_failed_tests) > 0 or len(state.negative_test) > 1:
+  if len(state.failed_positive_test) > 0 or len(state.negative_test) > 1:
     group_num += 1
   if len(pass_tests) > 0:
     group_num = 1
@@ -112,12 +83,12 @@ def run_pass_test(state: MSVState, patch: List[PatchInfo], is_initialize: bool =
   for i in range(group_num):
     tests: List[str] = list()
     if len(pass_tests) > 0:
-      for test in regression_tests:
+      for test in pass_tests:
         tests.append(str(test))
     else:
-      if i == 0 and (len(regression_failed_tests) > 0 or len(state.negative_test) > 1):
+      if i == 0 and (len(state.failed_positive_test) > 0 or len(state.negative_test) > 1):
         # For the first group, use failed positive tests
-        for j in regression_failed_tests:
+        for j in state.failed_positive_test:
           tests.append(str(j))
         for j in state.negative_test[1:]:
           tests.append(str(j))
@@ -125,8 +96,8 @@ def run_pass_test(state: MSVState, patch: List[PatchInfo], is_initialize: bool =
         start = i * MAX_TEST_ONCE
         end = min(start + MAX_TEST_ONCE, total_test)
         for j in range(start, end):
-          t = regression_tests[j]
-          if t not in regression_failed_tests:
+          t = state.positive_test[j]
+          if t not in state.failed_positive_test:
             tests.append(str(t))
     if len(tests)==0:
       state.msv_logger.info('No pass test remaining, skip')
