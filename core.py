@@ -358,6 +358,7 @@ class CaseInfo:
     self.current_record:List[bool]=[] # current record, for out condition synthesis
     self.synthesis_tried:int=0 # tried counter for search record, removed after 11
     self.has_init_patch=False
+    self.func_distance=0.9999 # If it is function replace, save distance of function name
     self.parent.total_case_info += 1
     self.parent.parent.total_case_info += 1
     self.parent.parent.parent.total_case_info += 1
@@ -1302,7 +1303,7 @@ class MSVState:
     self.total_plausible_patch=0
     self.iteration=0
     self.use_partial_validation = True
-    self.max_initial_trial = 10
+    self.max_initial_trial = 100
     self.c_map = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.0}
     self.params = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.0, PT.cov: 2.0, PT.sigma: 0.1, PT.halflife: 0.05, PT.epsilon: 0.0,PT.b_dec:0.0,PT.a_init:1.0,PT.b_init:1.0}
     self.params_decay = dict()
@@ -1314,6 +1315,8 @@ class MSVState:
     self.top_fl=0
     self.use_fixed_halflife=False
     self.regression_test_info:Dict[str,Dict[str,Set[int]]]=dict() # Information of regression test: filename -> funcname -> set of tests
+    self.language_model_path='./Google-word2vec.txt'
+    self.language_model_mean='arithmetic'
 
     self.seapr_remain_cases:List[CaseInfo]=[]
     self.seapr_layer:SeAPRMode=SeAPRMode.FUNCTION

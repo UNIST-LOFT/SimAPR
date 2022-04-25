@@ -14,14 +14,15 @@ import shutil
 from core import *
 
 from msv import MSV
-
+import add_sim_score
 
 def parse_args(argv: list) -> MSVState:
   longopts = ["help", "outdir=", "workdir=", "timeout=", "msv-path=", "time-limit=", "cycle-limit=", "epsilon-greedy-exploration=",
               "mode=", "max-parallel-cpu=",'skip-valid','use-fixed-beta','use-cpr-space','use-fixed-const', 'params=', 'tbar-mode', "use-exp-alpha",
               "use-condition-synthesis", "use-hierarchical-selection=", "use-pass-test", "use-partial-validation", "use-full-validation",
               "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern", "use-simulation-mode=",
-              "use-prophet-score", "use-fl", "use-fl-prophet-score", "watch-level=",'use-msv-ext','seapr-mode=','top-fl=','run-all-test','use-fixed-halflife']
+              "use-prophet-score", "use-fl", "use-fl-prophet-score", "watch-level=",'use-msv-ext','seapr-mode=','top-fl=','run-all-test','use-fixed-halflife',
+              "func-dist-mean=",'lang-model-path']
   opts, args = getopt.getopt(argv[1:], "ho:w:p:t:m:c:j:T:E:M:S:", longopts)
   state = MSVState()
   state.original_args = argv
@@ -91,6 +92,13 @@ def parse_args(argv: list) -> MSVState:
       state.run_all_test=True
     elif o in ['--use-fixed-halflife']:
       state.use_fixed_halflife=True
+    elif o in ['--func-dist-mean']:
+      if a!='arithmetic' and a!='harmonic':
+        print(f'mean formula "{a}" not supported, should be "arithmetic" or "harmonic"',file=sys.stderr)
+        exit(1)
+      state.language_model_mean=a
+    elif o in ['--lang-model-path']:
+      state.language_model_path=a
     elif o in ['--seapr-mode']:
       if a.lower()=='file':
         state.seapr_layer = SeAPRMode.FILE
@@ -700,6 +708,26 @@ def read_regression_test_info(state: MSVState):
             cur_file_test[func]=set()
           cur_file_test[func].add(test_number)
           break
+
+def get_function_distance(state:MSVState):
+  func_info_file=open(state.work_dir+'/func-info.json','r')
+  func_info=json.load(func_info_file)
+  func_info_file.close()
+
+  names:Dict[int,Tuple[str,List[str]]]=dict()
+  for func in func_info:
+    orig_name=func['original_name']
+    switch=func['switch_number']
+    new_names=func['new_names']
+    names[switch]=(orig_name,new_names)
+  
+  min_max=add_sim_score.main(state,state.seapr_remain_cases,names)
+  # Normalize function distances
+  for case in state.seapr_remain_cases:
+    if case.func_distance!=0.9999:
+      min_dist=min_max[case.parent.parent.switch_number][0]
+      max_dist=min_max[case.parent.parent.switch_number][1]
+      case.func_distance=(case.func_distance-min_dist)/(max_dist-min_dist)
 
 def copy_previous_results(state: MSVState) -> None:
   result_log = os.path.join(state.out_dir, "msv-search.log")

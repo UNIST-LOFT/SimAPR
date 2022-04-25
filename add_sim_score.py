@@ -1,8 +1,11 @@
 import json
 import sys
+from typing import Dict, List, Tuple
 import nltk
 import gensim 
-from gensim.models import KeyedVectors 
+from gensim.models import KeyedVectors
+
+from core import CaseInfo, MSVState, PatchType 
 
 
 embed = None
@@ -76,19 +79,35 @@ def compute_wm_distance (org_fname, alt_fname):
 	return s 
 
 
-def compute_overall_distance (org_fname, alt_fname):
-	return compute_edit_distance(org_fname, alt_fname) + compute_jaccard_distance(org_fname, alt_fname) + compute_wm_distance(org_fname, alt_fname) # Arithmetic mean
-	return 3*((compute_edit_distance(org_fname, alt_fname) + compute_jaccard_distance(org_fname, alt_fname) + compute_wm_distance(org_fname, alt_fname))**-1) # Harmonic mean
+def compute_overall_distance (mean,org_fname, alt_fname):
+	if mean=='harmonic':
+		return 3*((compute_edit_distance(org_fname, alt_fname) + compute_jaccard_distance(org_fname, alt_fname) + compute_wm_distance(org_fname, alt_fname))**-1) # Harmonic mean
+	else:
+		return compute_edit_distance(org_fname, alt_fname) + compute_jaccard_distance(org_fname, alt_fname) + compute_wm_distance(org_fname, alt_fname) # Arithmetic mean
 
-def main (function_info):
+def main (state:MSVState,cases:List[CaseInfo],function_names:Dict[int,Tuple[str,List[str]]])->Dict[int,List[int]]:
+	"""
+		Compute function distance of all cases that replace function call.
+		cases: list of case info
+		function_names: original and new function names by switch number
+
+		return: min and max distance of each switches, for normalize
+	"""
 	global embed
 
-	embed = KeyedVectors.load_word2vec_format('Google-word2vec.txt')
+	embed = KeyedVectors.load_word2vec_format(state.language_model_path)
 
-	for switch in function_info:
-		orig_func=switch['original']
-		for l in switch['new']:
-			func_name=l['function']
-			l['distance']=compute_overall_distance(orig_func, func_name)
-	
-	return function_info
+	min_max_dist=dict()
+	for case in cases:
+		if case.parent.patch_type==PatchType.ReplaceFunctionKind or case.parent.patch_type==PatchType.MSVExtFunctionReplaceKind or case.parent.patch_type==PatchType.MSVExtReplaceFunctionInConditionKind:
+			switch=case.parent.parent.switch_number
+			case.func_distance=compute_overall_distance(function_names[switch][0], function_names[switch][1][case.case_number])
+
+			if switch not in min_max_dist:
+				min_max_dist[switch]=[5,0]
+			if case.func_distance < min_max_dist[switch][0]:
+				min_max_dist[switch][0]=case.func_distance
+			if case.func_distance > min_max_dist[switch][1]:
+				min_max_dist[switch][1]=case.func_distance
+
+	return min_max_dist
