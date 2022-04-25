@@ -755,7 +755,7 @@ def batch_plot(correct_patch_csv: str, in_dir: str) -> None:
       if not os.path.exists(workdir):
         workdir = os.path.join("/root/project/MSV-experiment/benchmarks", ty, f"{ty}-case-tests2-{ver}", f"{ty}-tests2-{ver}-workdir")
       if not os.path.exists(workdir):
-        workdir = os.path.join("/root/project/MSV-experiment/benchmarks", ty, f"{ty}-{ver}")
+        workdir = os.path.join("/root/project/MSV-experiment/benchmarks", f"new-{ty}", f"{ty}-{ver}")
       print(f"{result_file}, {workdir}")
       if workdir not in info:
         info[workdir] = read_info(workdir)
