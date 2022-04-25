@@ -415,7 +415,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       p_p.append(case_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       p_o.append(case_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       if use_language_model:
-        p_fl.append(case_info.func_distance)
+        p_fl.append(1.0 - case_info.func_distance)
     selected_case = select_by_probability(state, p_map, c_map)
     selected_case_info: CaseInfo = selected[selected_case]
     clear_list(state, p_map)
