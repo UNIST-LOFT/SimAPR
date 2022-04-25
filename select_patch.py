@@ -723,11 +723,15 @@ def select_patch(state: MSVState, mode: MSVMode, test: int) -> List[PatchInfo]:
   return selected_patch
 
 
-def select_patch_tbar(state: MSVState) -> TbarPatchInfo:
-  if state.mode == MSVMode.guided:
-    return select_patch_tbar_guided(state)
+def select_patch_tbar_mode(state: MSVState) -> TbarPatchInfo:
+  if state.mode == MSVMode.tbar:
+    return select_patch_tbar(state)
   elif state.mode == MSVMode.seapr:
     return select_patch_tbar_seapr(state)
+  else:
+    return select_patch_tbar_guided(state)
+
+def select_patch_tbar(state: MSVState) -> TbarPatchInfo:
   loc = state.tbar_patch_ranking.pop(0)
   caseinfo = state.switch_case_map[loc]
   return TbarPatchInfo(caseinfo)
@@ -736,6 +740,8 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   """
   Select a patch for Tbar.
   """
+  if state.iteration < state.max_initial_trial:
+    return select_patch_tbar(state)
   pf_rand = PassFail()
   rand_cmap = {PT.rand: 1.0}
   # lists which are used to store the scores of each patch
@@ -773,7 +779,6 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   else:
     state.msv_logger.info("Exploit!")
 
-  DELTA_INIT_PATCH=0.2
   for file_name in state.file_info_map:
     file_info = state.file_info_map[file_name]
     if len(file_info.func_info_map) == 0:
@@ -881,7 +886,5 @@ def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
       max_score = cur_score
       selected_patch = tbar_switch_info
   if not has_high_qual_patch:
-    loc = state.tbar_patch_ranking.pop(0)
-    caseinfo = state.switch_case_map[loc]
-    return TbarPatchInfo(caseinfo)
+    return select_patch_tbar(state)
   return TbarPatchInfo(selected_patch)

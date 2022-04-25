@@ -319,13 +319,13 @@ class MSVTbar(MSV):
         for ft in failed_tests:
           self.state.tbar_positive_test.remove(ft)
   def run(self) -> None:
-    #self.initialize()
+    self.initialize()
     self.state.start_time = time.time()
     self.state.cycle = 0
     while self.is_alive():
       self.state.iteration += 1
       self.state.msv_logger.info(f'[{self.state.cycle}]: executing')
-      patch = select_patch.select_patch_tbar(self.state)
+      patch = select_patch.select_patch_tbar_mode(self.state)
       pass_exists = False
       result = True
       pass_result = False

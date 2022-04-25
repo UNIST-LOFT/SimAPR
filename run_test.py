@@ -247,6 +247,7 @@ def run_fail_test_tbar(state: MSVState, new_env: Dict[str, str]) -> Tuple[bool, 
   #   return False, is_timeout
 
 def run_pass_test_tbar_exec(state: MSVState, new_env: Dict[str, str], tests: List[str]) -> Tuple[bool, Set[str]]:
+  state.cycle += 1
   args = state.args
   state.msv_logger.debug(' '.join(args))
   test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
@@ -289,6 +290,7 @@ def run_pass_test_tbar_exec(state: MSVState, new_env: Dict[str, str], tests: Lis
   return True, failed_tests
 
 def run_pass_test_tbar(state: MSVState, new_env: Dict[str, str]) -> bool:
+  state.cycle += 1
   state.msv_logger.info(f"@{state.cycle} Run tbar test {new_env['MSV_TEST']} with {new_env['MSV_LOCATION']}")
   tests = list()
   if len(state.failed_positive_test) > 0:
