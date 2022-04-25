@@ -1312,6 +1312,7 @@ class MSVState:
     self.tbar_mode = False
     self.use_exp_alpha = False
     self.run_all_test=False
+    self.regression_php_mode=''
     self.top_fl=0
     self.use_fixed_halflife=False
     self.regression_test_info:Dict[str,Dict[str,Set[int]]]=dict() # Information of regression test: filename -> funcname -> set of tests
