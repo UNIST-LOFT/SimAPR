@@ -739,7 +739,7 @@ def batch_plot(correct_patch_csv: str, in_dir: str) -> None:
       ver = ""
       cp = ""
       for t in all:
-        if t in dir:
+        if dir.startswith(t,4):
           ty = t
           break
       for v in all[ty]:
