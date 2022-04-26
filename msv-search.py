@@ -699,8 +699,8 @@ def gen_php_regression_test(state: MSVState):
         regression_tests.add(int(line.strip()))
 
     for test in state.positive_test.copy():
-      if test in regression_tests:
-        state.regression_test_info.add(test)
+      if test in regression_tests and test not in state.regression_test_info:
+        state.regression_test_info.append(test)
 
   elif state.regression_php_mode=='new-php':
     actual_test_names=list()
@@ -730,11 +730,11 @@ def gen_php_regression_test(state: MSVState):
         regression_tests.add(test)
     
     for test in actual_test_names:
-      if test[1] in regression_tests:
-        state.regression_test_info.add(test[0])
+      if test[1] in regression_tests and test[0] not in state.regression_test_info:
+        state.regression_test_info.append(test[0])
   else:
     for test in state.positive_test:
-      state.regression_test_info.add(test)
+      state.regression_test_info.append(test)
 
 def get_function_distance(state:MSVState):
   func_info_file=open(state.work_dir+'/func-info.json','r')

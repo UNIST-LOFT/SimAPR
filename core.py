@@ -1315,7 +1315,7 @@ class MSVState:
     self.regression_php_mode=''
     self.top_fl=0
     self.use_fixed_halflife=False
-    self.regression_test_info:Set[int]=set()
+    self.regression_test_info:List[int]=list()
     self.language_model_path='./Google-word2vec.txt'
     self.language_model_mean=''
 
