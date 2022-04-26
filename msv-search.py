@@ -777,7 +777,10 @@ def get_function_distance(state:MSVState):
     if case.func_distance!=0.9999:
       min_dist=min_max[case.parent.parent.switch_number][0]
       max_dist=min_max[case.parent.parent.switch_number][1]
-      case.func_distance=(case.func_distance-min_dist)/(max_dist-min_dist)
+      if max_dist==min_dist:
+        case.func_distance=0.9999
+      else:
+        case.func_distance=(case.func_distance-min_dist)/(max_dist-min_dist)
 
 def copy_previous_results(state: MSVState) -> None:
   result_log = os.path.join(state.out_dir, "msv-search.log")
