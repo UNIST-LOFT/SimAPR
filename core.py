@@ -1151,6 +1151,11 @@ class TbarPatchInfo:
     self.line_info.case_update_count += 1
     self.func_info.case_update_count += 1
     self.file_info.case_update_count += 1
+    score = self.tbar_switch_info.fl_score
+    self.tbar_type_info.fl_score_list.remove(score)
+    self.line_info.fl_score_list.remove(score)
+    self.func_info.fl_score_list.remove(score)
+    self.file_info.fl_score_list.remove(score)
   def to_json_object(self) -> dict:
     conf = dict()
     conf["location"] = self.tbar_switch_info.location

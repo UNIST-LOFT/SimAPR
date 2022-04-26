@@ -342,3 +342,4 @@ class MSVTbar(MSV):
         pass_result = self.run_test_positive(patch)
         result_handler.update_positive_result_tbar(self.state, patch, run_result)
       result_handler.append_result(self.state, [patch], pass_exists, pass_result)
+      result_handler.remove_patch_tbar(self.state, patch)

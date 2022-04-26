@@ -277,3 +277,5 @@ def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: b
 def update_positive_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: bool) -> None:
   selected_patch.update_result_positive(result, 1, state.params[PT.b_dec],state.use_exp_alpha, state.use_fixed_beta)
 
+def remove_patch_tbar(state: MSVState, selected_patch: TbarPatchInfo) -> None:
+  selected_patch.remove_patch(state)

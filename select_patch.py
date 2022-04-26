@@ -786,7 +786,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
       continue
     selected.append(file_info)
     p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_fl.append(file_info.fl_score)
+    p_fl.append(max(file_info.fl_score_list))
     p_b.append(file_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_p.append(file_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_o.append(file_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
@@ -808,7 +808,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
       continue
     selected.append(func_info)
     p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_fl.append(func_info.fl_score)
+    p_fl.append(max(func_info.fl_score_list))
     p_b.append(func_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_p.append(func_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_o.append(func_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
@@ -830,7 +830,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
       continue
     selected.append(line_info)
     p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_fl.append(line_info.fl_score)
+    p_fl.append(max(line_info.fl_score_list))
     p_b.append(line_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_p.append(line_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_o.append(line_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
@@ -861,6 +861,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   selected_type = select_by_probability(state, p_map, c_map)
   selected_type_info: TbarTypeInfo = selected[selected_type]
   clear_list(state, p_map)
+  # select tbar switch
   for location in selected_type_info.tbar_switch_info_map:
     location_info = selected_type_info.tbar_switch_info_map[location]
     selected.append(location_info)
