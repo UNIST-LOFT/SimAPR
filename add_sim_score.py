@@ -101,6 +101,8 @@ def main (state:MSVState,cases:List[CaseInfo],function_names:Dict[int,Tuple[str,
 	for case in cases:
 		if case.parent.patch_type==PatchType.ReplaceFunctionKind or case.parent.patch_type==PatchType.MSVExtFunctionReplaceKind or case.parent.patch_type==PatchType.MSVExtReplaceFunctionInConditionKind:
 			switch=case.parent.parent.switch_number
+			if case.case_number not in function_names[switch][1]:
+				continue
 			case.func_distance=compute_overall_distance(state.language_model_mean,function_names[switch][0], function_names[switch][1][case.case_number])
 
 			if switch not in min_max_dist:
