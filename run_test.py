@@ -274,7 +274,7 @@ def run_pass_test_tbar_exec(state: MSVState, new_env: Dict[str, str], tests: Lis
   if result_str == "":
     state.msv_logger.info("Result: FAIL")
     return False, failed_tests
-  state.msv_logger.debug(result_str)
+  state.msv_logger.debug(" ".join(result_str.splitlines()))
 
   for line in result_str.splitlines():
     if line.startswith("#"):
