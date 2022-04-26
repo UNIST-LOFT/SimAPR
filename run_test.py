@@ -201,6 +201,7 @@ def parse_location(state: MSVState, new_env: Dict[str, str], tests: Set[int]) ->
 
 
 def run_fail_test_tbar(state: MSVState, new_env: Dict[str, str]) -> Tuple[bool, bool]:
+  state.cycle += 1
   state.msv_logger.info(f"@{state.cycle} Run tbar test {new_env['MSV_TEST']} with {new_env['MSV_LOCATION']}")
   args = state.args
   state.msv_logger.debug(' '.join(args))
@@ -209,7 +210,7 @@ def run_fail_test_tbar(state: MSVState, new_env: Dict[str, str]) -> Tuple[bool, 
   se: bytes
   is_timeout = False
   try:
-    so, se = test_proc.communicate()
+    so, se = test_proc.communicate(timeout=state.timeout/1000)
   except:  # timeout
     state.msv_logger.info("Timeout!")
     pid=test_proc.pid
