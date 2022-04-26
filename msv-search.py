@@ -699,8 +699,8 @@ def gen_php_regression_test(state: MSVState):
         regression_tests.add(int(line.strip()))
 
     for test in state.positive_test.copy():
-      if test not in regression_tests:
-        state.positive_test.remove(test)
+      if test in regression_tests:
+        state.regression_test_info.add(test)
 
   elif state.regression_php_mode=='new-php':
     actual_test_names=list()
@@ -730,32 +730,11 @@ def gen_php_regression_test(state: MSVState):
         regression_tests.add(test)
     
     for test in actual_test_names:
-      if test[1] not in regression_tests:
-        state.positive_test.remove(test[0])
-
-def read_regression_test_info(state: MSVState):
-  test_info_file=open(state.work_dir+'/test-info.json','r')
-  test_info=json.load(test_info_file)
-  test_info_file.close()
-
-  for test in test_info:
-    test_number=test['test']
-    for loc in test['locations']:
-      file_name=loc['file']
-      line_number=loc['line']
-      if file_name not in state.regression_test_info:
-        state.regression_test_info[file_name]=dict()
-      cur_file_test=state.regression_test_info[file_name]
-
-      if file_name not in state.file_info_map:
-        continue
-      cur_file=state.file_info_map[file_name].func_info_map
-      for func in cur_file:
-        if cur_file[func].begin<=line_number<=cur_file[func].end:
-          if func not in cur_file_test:
-            cur_file_test[func]=set()
-          cur_file_test[func].add(test_number)
-          break
+      if test[1] in regression_tests:
+        state.regression_test_info.add(test[0])
+  else:
+    for test in state.positive_test:
+      state.regression_test_info.add(test)
 
 def get_function_distance(state:MSVState):
   func_info_file=open(state.work_dir+'/func-info.json','r')
@@ -808,7 +787,6 @@ def main(argv: list):
     read_info(state)
     read_fl_score(state)
   read_repair_conf(state)
-  # read_regression_test_info(state)
   gen_php_regression_test(state)
   if state.language_model_mean!='':
     get_function_distance(state)

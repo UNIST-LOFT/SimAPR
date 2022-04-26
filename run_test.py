@@ -66,7 +66,7 @@ def run_pass_test(state: MSVState, patch: List[PatchInfo], is_initialize: bool =
   state.msv_logger.info(
       f"@{state.cycle} Run pass test with {PatchInfo.list_to_str(patch)}")
 
-  total_test = len(state.positive_test)
+  total_test = len(state.regression_test_info)
   group_num = (total_test + MAX_TEST_ONCE - 1) // MAX_TEST_ONCE
   if len(state.failed_positive_test) > 0 or len(state.negative_test) > 1:
     group_num += 1
@@ -96,7 +96,7 @@ def run_pass_test(state: MSVState, patch: List[PatchInfo], is_initialize: bool =
         start = i * MAX_TEST_ONCE
         end = min(start + MAX_TEST_ONCE, total_test)
         for j in range(start, end):
-          t = state.positive_test[j]
+          t = state.regression_test_info[j]
           if t not in state.failed_positive_test:
             tests.append(str(t))
     if len(tests)==0:

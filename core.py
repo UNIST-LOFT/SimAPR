@@ -1315,7 +1315,7 @@ class MSVState:
     self.regression_php_mode=''
     self.top_fl=0
     self.use_fixed_halflife=False
-    self.regression_test_info:Dict[str,Dict[str,Set[int]]]=dict() # Information of regression test: filename -> funcname -> set of tests
+    self.regression_test_info:Set[int]=set()
     self.language_model_path='./Google-word2vec.txt'
     self.language_model_mean=''
 
