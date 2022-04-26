@@ -757,7 +757,7 @@ class MSVEnvVar:
     return new_env
   @staticmethod
   def get_new_env_tbar_positive_tests(state: 'MSVState', tests: List[str], new_env: Dict[str, str]) -> Dict[str, str]:
-    test_list = f"/tmp/{uuid.uuid4}.list"
+    test_list = f"/tmp/{uuid.uuid4()}.list"
     new_env["MSV_TEST_LIST"] = test_list
     with open(test_list, "w") as f:
       for test in tests:
