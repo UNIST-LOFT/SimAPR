@@ -303,7 +303,9 @@ class ProphetCondition:
         run_result, is_timeout = run_test.run_fail_test(self.state, patch, test, new_env)
         
         if run_result:
-          values.append(parse_value(log_file))
+          found_values=parse_value(log_file)
+          self.state.msv_logger.debug(f"Found values: {found_values}")
+          values.append(found_values)
         else:
           self.state.msv_logger.info("Terrible fail at collecting value!")
           values.append([])
@@ -799,7 +801,9 @@ class GuidedPathCondition:
         run_result, is_timeout = run_test.run_fail_test(self.state, patch, test, new_env)
         
         if run_result:
-          values.append(parse_value(log_file))
+          found_values=parse_value(log_file)
+          self.state.msv_logger.debug(f"Found values: {found_values}")
+          values.append(found_values)
         else:
           self.state.msv_logger.info("Terrible fail at collecting value!")
           values.append([])
