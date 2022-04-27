@@ -527,7 +527,7 @@ def read_info(state: MSVState) -> None:
               #case_list = type_info.case_info_list
               for c in types[t.value]:
                 is_condition = t.value == PatchType.TightenConditionKind.value or t.value==PatchType.LoosenConditionKind.value or t.value==PatchType.IfExitKind.value or \
-                            t.value==PatchType.GuardKind.value or t.value==PatchType.SpecialGuardKind.value or t.value==PatchType.ConditionKind.value
+                            t.value==PatchType.GuardKind.value or t.value==PatchType.SpecialGuardKind.value or t.value==PatchType.ConditionKind.value or t.value==PatchType.MSVExtAddConditionKind.value
                 case_info = CaseInfo(type_info, int(c), is_condition)
                 case_info.location = file_line
                 if t not in line_info.type_priority:
