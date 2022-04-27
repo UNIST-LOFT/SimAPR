@@ -294,7 +294,7 @@ class ProphetCondition:
     if self.state.use_pass_test:
       # collect values from pass test
       self.state.msv_logger.info('Collecting values from pass test')
-      for test in self.state.positive_test:
+      for test in self.state.regression_test_info:
         patch=[self.patch]
         new_env = MSVEnvVar.get_new_env(self.state, patch, test,EnvVarMode.collect_pos)
         self.new_env = new_env
@@ -790,7 +790,7 @@ class GuidedPathCondition:
       # collect values from pass test
       self.state.msv_logger.info('Collecting values from pass test')
 
-      for test in self.state.positive_test:
+      for test in self.state.regression_test_info:
         patch=[self.patch]
         new_env = MSVEnvVar.get_new_env(self.state, patch, test,EnvVarMode.collect_pos)
         self.new_env = new_env
