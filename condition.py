@@ -437,7 +437,7 @@ class ProphetCondition:
     values=self.collect_value(tmp_file,paths)
     if values is None or len(values)==0:
       self.state.msv_logger.info('Fail at collecting')
-      result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0])
+      result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0],self.new_env)
       result_handler.append_result(self.state, [self.patch], False)
       result_handler.remove_patch(self.state, [self.patch])
       return None
@@ -446,7 +446,7 @@ class ProphetCondition:
     conditions=self.synthesize_prophet(paths,values)
     if len(conditions)==0:
       self.state.msv_logger.info('Fail to generate actual condition')
-      result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0])
+      result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0],self.new_env)
       result_handler.append_result(self.state, [self.patch], False)
       result_handler.remove_patch(self.state, [self.patch])
       return None
