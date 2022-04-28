@@ -283,10 +283,10 @@ class ProphetCondition:
       run_result, is_timeout = run_test.run_fail_test(self.state, patch, test, new_env)
       remove_file_or_pass(new_env['MSV_OUTPUT_DISTANCE_FILE'])
       if is_timeout:
-        values.append([])
+        return []
       elif not run_result:
         self.state.msv_logger.warn("Terrible fail at collecting value!")
-        values.append([])
+        return []
       
       values.append(parse_value(log_file))
       remove_file_or_pass(log_file)
@@ -308,7 +308,7 @@ class ProphetCondition:
           values.append(found_values)
         else:
           self.state.msv_logger.info("Terrible fail at collecting value!")
-          values.append([])
+          return []
         remove_file_or_pass(log_file)
 
     remove_file_or_pass(temp_file)
@@ -435,7 +435,7 @@ class ProphetCondition:
 
     self.state.msv_logger.info('Collecting values...')
     values=self.collect_value(tmp_file,paths)
-    if values is None:
+    if values is None or len(values)==0:
       self.state.msv_logger.info('Fail at collecting')
       result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0])
       result_handler.append_result(self.state, [self.patch], False)
@@ -806,7 +806,7 @@ class GuidedPathCondition:
           values.append(found_values)
         else:
           self.state.msv_logger.info("Terrible fail at collecting value!")
-          values.append([])
+          return None
         remove_file_or_pass(log_file)
 
     return values
