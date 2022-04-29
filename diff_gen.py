@@ -114,13 +114,14 @@ def replace_actual_condition(config:Config,patch:str):
                 end_abst_cond=i
                 break
         
+        end_abst_cond+=1
         params_str=patch[start_param:end_abst_cond]
         params=params_str.split(',')[3:]
 
         if config.operator==4:
             actual_condition='1'
         elif 0<=config.operator<=3:
-            var=params[config.variable*2][2:-1]
+            var=params[config.variable*2][3:-1]
             if config.operator==0:
                 oper='=='
             elif config.operator==1:
@@ -144,7 +145,7 @@ def replace_actual_condition(config:Config,patch:str):
             actual_condition=var+' '+oper+' '+var2
         
         abst_condition=patch[start_abst_cond:end_abst_cond]
-        return patch.replace(abst_condition,actual_condition)
+        return patch.replace(abst_condition,'('+actual_condition+')')
     else:
         return patch
 
@@ -213,7 +214,7 @@ Options:
         config_strs=config_str.split('-')
         if len(config_strs)==2:
             config.append(Config(int(config_strs[0]),int(config_strs[1])))
-        elif len(config_str)==3:
+        elif len(config_strs)==3:
             config.append(Config(int(config_strs[0]),int(config_strs[1]),int(config_strs[2])))
         else:
             config.append(Config(int(config_strs[0]),int(config_strs[1]),int(config_strs[2]),int(config_strs[3]),int(config_strs[4])))
