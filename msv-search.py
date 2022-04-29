@@ -710,7 +710,7 @@ def gen_php_regression_test(state: MSVState):
       for line in f.readlines():
         if '{' in line:
           is_start=True
-        elif '}' in test:
+        elif '}' in line:
           break
         elif is_start:
           words=line.strip()
