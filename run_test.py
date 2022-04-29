@@ -232,9 +232,9 @@ def run_fail_test_tbar(state: MSVState, new_env: Dict[str, str]) -> Tuple[bool, 
   if '\n' in result_str:
     result_str=result_str.splitlines()[0]
   result_str.strip()
-  if result_str == new_env["MSV_LOCATION"]:
-    return True, False
-  return False, False
+  if result_str != new_env["MSV_TEST"]:
+    return False, False
+  return True, False
   # try:
   #   if int(result_str) == selected_test:
   #     state.msv_logger.warning("Result: PASS")
