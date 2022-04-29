@@ -1079,7 +1079,6 @@ def tbar_barchart(msv_result_file: str, title: str, work_dir: str, correct_patch
 
 
 def tbar_batch_plot(correct_patch_csv: str, in_dir: str) -> None:
-  # TODO: Fix workdir
   csv = ""
   all: Dict[str, str] = dict()
   with open(correct_patch_csv, "r") as f:
@@ -1094,25 +1093,25 @@ def tbar_batch_plot(correct_patch_csv: str, in_dir: str) -> None:
       continue
     print(dir)
     proj = dir.split("-")[0]
-    result_file = os.path.join(in_dir, dir, "msv-result.json")
-    print(result_file)
     if proj not in all:
       continue
-    if os.path.exists(result_file):
-      cp = all[proj]
-      print(f"{dir} : {cp}")
-      result_file = os.path.join(in_dir, dir, "msv-result.json")
-      workdir = "/root/project/TBarCopy/D4J/projects/" + proj
-      if not os.path.exists(workdir):
-        print(f"{workdir} not exists!!!!!!!")
-        continue
-      print(f"{result_file}, {workdir}")
-      if workdir not in info:
-        info[workdir] = read_info_tbar(workdir)
-      switch_info, switch_case_map = info[workdir]
-      iter, tm = tbar_plot_correct(result_file, dir, workdir, cp, switch_info, switch_case_map)
-      csv += f"{proj},{cp},{iter},{tm}\n"
-      tbar_barchart(result_file, dir, workdir, cp, switch_info, switch_case_map)
+    for sub in sorted(os.listdir(os.path.join(in_dir, dir))):
+      result_file = os.path.join(in_dir, dir, sub, "msv-result.json")
+      print(result_file)
+      if os.path.exists(result_file):
+        cp = all[proj]
+        print(f"{dir} : {cp}")
+        workdir = "/root/project/TBarCopy/D4J/projects/" + proj
+        if not os.path.exists(workdir):
+          print(f"{workdir} not exists!!!!!!!")
+          continue
+        print(f"{result_file}, {workdir}")
+        if workdir not in info:
+          info[workdir] = read_info_tbar(workdir)
+        switch_info, switch_case_map = info[workdir]
+        iter, tm = tbar_plot_correct(result_file, dir, workdir, cp, switch_info, switch_case_map)
+        csv += f"{proj},{cp},{iter},{tm}\n"
+        tbar_barchart(result_file, dir, workdir, cp, switch_info, switch_case_map)
   print(csv)
   with open("result.csv", "w") as f:
     f.write(csv)  
