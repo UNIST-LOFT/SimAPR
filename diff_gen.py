@@ -64,6 +64,8 @@ def insert_patch(original_file:str,backup_file:str,begin_line:int,begin_column:i
         first_line:str=previous_lines[-1]
         last_line=post_lines[0]
         previous_first_line=first_line[:begin_column-1]
+        if previous_first_line[-1].isalpha():
+            previous_first_line=first_line[:begin_column+1]
         last_first_line=last_line[end_column+1:]
         patch_lines=patch.splitlines()
         # Remove comment
