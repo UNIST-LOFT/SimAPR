@@ -1335,9 +1335,9 @@ class MSVState:
     self.iteration=0
     self.use_partial_validation = True
     self.max_initial_trial = 0
-    self.c_map = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.0}
-    self.params = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.0, PT.cov: 2.0, PT.sigma: 0.1, PT.halflife: 0.05, PT.epsilon: 0.0,PT.b_dec:0.0,PT.a_init:1.0,PT.b_init:1.0}
-    self.params_decay = dict()
+    self.c_map = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.5, PT.out: 0.0}
+    self.params = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.5, PT.out: 0.0, PT.cov: 2.0, PT.sigma: 0.1, PT.halflife: 0.05, PT.epsilon: 0.1,PT.b_dec:0.0,PT.a_init:1.0,PT.b_init:1.0}
+    self.params_decay = {PT.fl:0.5,PT.basic:1.5,PT.plau:1.5}
     self.original_output_distance_map = dict()
     self.use_msv_ext=False
     self.tbar_mode = False
@@ -1347,9 +1347,9 @@ class MSVState:
     self.top_fl=0
     self.tbar_patch_ranking = list()
     self.use_fixed_halflife=False
-    self.regression_test_info:Dict[str,Dict[str,Set[int]]]=dict() # Information of regression test: filename -> funcname -> set of tests
+    self.regression_test_info:List[int]=list()
     self.language_model_path='./Google-word2vec.txt'
-    self.language_model_mean='arithmetic'
+    self.language_model_mean=''
 
     self.seapr_remain_cases:List[CaseInfo]=[]
     self.seapr_layer:SeAPRMode=SeAPRMode.FUNCTION

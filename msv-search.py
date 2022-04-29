@@ -22,7 +22,7 @@ def parse_args(argv: list) -> MSVState:
               "use-condition-synthesis", "use-hierarchical-selection=", "use-pass-test", "use-partial-validation", "use-full-validation",
               "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern", "use-simulation-mode=",
               "use-prophet-score", "use-fl", "use-fl-prophet-score", "watch-level=",'use-msv-ext','seapr-mode=','top-fl=','use-fixed-halflife',
-              "func-dist-mean=",'lang-model-path','use-init-trial=','regression-mode=']
+              "func-dist-mean=",'lang-model-path=','use-init-trial=','regression-mode=']
   opts, args = getopt.getopt(argv[1:], "ho:w:p:t:m:c:j:T:E:M:S:", longopts)
   state = MSVState()
   state.original_args = argv
@@ -99,7 +99,7 @@ def parse_args(argv: list) -> MSVState:
       state.regression_php_mode=a
     elif o in ['--func-dist-mean']:
       if a!='arithmetic' and a!='harmonic':
-        print(f'mean formula "{a}" not supported, should be "arithmetic" or "harmonic"',file=sys.stderr)
+        print(f'mean formula "{a}" not supported, should be "arithmetic", "harmonic" or ""',file=sys.stderr)
         exit(1)
       state.language_model_mean=a
     elif o in ['--lang-model-path']:
@@ -721,8 +721,8 @@ def gen_php_regression_test(state: MSVState):
         regression_tests.add(int(line.strip()))
 
     for test in state.positive_test.copy():
-      if test not in regression_tests:
-        state.positive_test.remove(test)
+      if test in regression_tests and test not in state.regression_test_info:
+        state.regression_test_info.append(test)
 
   elif state.regression_php_mode=='new-php':
     actual_test_names=list()
@@ -752,43 +752,24 @@ def gen_php_regression_test(state: MSVState):
         regression_tests.add(test)
     
     for test in actual_test_names:
-      if test[1] not in regression_tests:
-        state.positive_test.remove(test[0])
-
-def read_regression_test_info(state: MSVState):
-  test_info_file=open(state.work_dir+'/test-info.json','r')
-  test_info=json.load(test_info_file)
-  test_info_file.close()
-
-  for test in test_info:
-    test_number=test['test']
-    for loc in test['locations']:
-      file_name=loc['file']
-      line_number=loc['line']
-      if file_name not in state.regression_test_info:
-        state.regression_test_info[file_name]=dict()
-      cur_file_test=state.regression_test_info[file_name]
-
-      if file_name not in state.file_info_map:
-        continue
-      cur_file=state.file_info_map[file_name].func_info_map
-      for func in cur_file:
-        if cur_file[func].begin<=line_number<=cur_file[func].end:
-          if func not in cur_file_test:
-            cur_file_test[func]=set()
-          cur_file_test[func].add(test_number)
-          break
+      if test[1] in regression_tests and test[0] not in state.regression_test_info:
+        state.regression_test_info.append(test[0])
+  else:
+    for test in state.positive_test:
+      state.regression_test_info.append(test)
 
 def get_function_distance(state:MSVState):
   func_info_file=open(state.work_dir+'/func-info.json','r')
   func_info=json.load(func_info_file)
   func_info_file.close()
 
-  names:Dict[int,Tuple[str,List[str]]]=dict()
+  names:Dict[int,Tuple[str,Dict[int,str]]]=dict()
   for func in func_info:
     orig_name=func['original_name']
     switch=func['switch_number']
-    new_names=func['new_names']
+    new_names=dict()
+    for name in func['new_names']:
+      new_names[name['case_number']]=name['new_name']
     names[switch]=(orig_name,new_names)
   
   min_max=add_sim_score.main(state,state.seapr_remain_cases,names)
@@ -797,7 +778,10 @@ def get_function_distance(state:MSVState):
     if case.func_distance!=0.9999:
       min_dist=min_max[case.parent.parent.switch_number][0]
       max_dist=min_max[case.parent.parent.switch_number][1]
-      case.func_distance=(case.func_distance-min_dist)/(max_dist-min_dist)
+      if max_dist==min_dist:
+        case.func_distance=0.9999
+      else:
+        case.func_distance=(case.func_distance-min_dist)/(max_dist-min_dist)
 
 def copy_previous_results(state: MSVState) -> None:
   result_log = os.path.join(state.out_dir, "msv-search.log")
@@ -828,7 +812,8 @@ def main(argv: list):
     read_fl_score(state)
     read_repair_conf(state)
     #read_regression_test_info(state)
-    gen_php_regression_test(state)
+    if state.language_model_mean!='':
+      get_function_distance(state)
     state.msv_logger.info('Initialized!')
     msv = MSV(state)
   state.msv_logger.info('MSV is started')
