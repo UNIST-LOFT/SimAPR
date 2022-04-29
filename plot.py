@@ -921,56 +921,198 @@ def tbar_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_p
   plt.savefig(out_file)
   return correct_iter, correct_time
 
+def tbar_barchart(msv_result_file: str, title: str, work_dir: str, correct_patch: str, switch_info_info: Dict[str, FileInfo] = None, switch_case_map: Dict[str, TbarSwitchInfo] = None, msv_dist_file: str = None, ) -> None:
+  if switch_info_info is None:
+    switch_info_info, switch_case_map = read_info(work_dir)
+  result_file_map: Dict[FileInfo, PassFail] = dict()
+  result_func_map: Dict[FuncInfo, PassFail] = dict()
+  result_line_map: Dict[LineInfo, PassFail] = dict()
+  result_switch_map: Dict[SwitchInfo, PassFail] = dict()
+  if msv_dist_file is None:
+    msv_dist_file = os.path.join(os.path.dirname(msv_result_file), "dist-info.json")
+    if not os.path.exists(msv_dist_file):
+      msv_dist_file = None
+  token = correct_patch.split(":")
+  sw_cs = token[0]
+  cond = ""
+  if len(token) == 2:
+    cond = token[1]
+  correct_tbar_switch = switch_case_map[sw_cs]
+  correct_tbar_type = correct_tbar_switch.parent
+  correct_line = correct_tbar_type.parent
+  correct_func = correct_line.parent
+  correct_file = correct_func.parent
+  with open(msv_result_file, "r") as f:
+    info = json.load(f)
+    total = 0
+    for data in info:
+      iter: int = data["iteration"]
+      tm: float = data["time"]
+      result: bool = data["result"]
+      if result:
+        total += 1
+      config = data["config"][0]
+      #print(config)
+      tbar_switch = switch_case_map[config["location"]]
+      tbar_type = tbar_switch.parent
+      line_info = tbar_type.parent
+      func_info = line_info.parent
+      file_info = func_info.parent
+      if file_info not in result_file_map:
+        result_file_map[file_info] = PassFail()
+      result_file_map[file_info].update(result, 1)
+      if func_info not in result_func_map:
+        result_func_map[func_info] = PassFail()
+      result_func_map[func_info].update(result, 1)
+      if line_info not in result_line_map:
+        result_line_map[line_info] = PassFail()
+      result_line_map[line_info].update(result, 1)
+  print(f"total {total}")
+  file_list = list()
+  file_result_list = list()
+  temp = list()
+  for file_info in result_file_map:
+    count = result_file_map[file_info].pass_count + result_file_map[file_info].fail_count
+    pass_count = result_file_map[file_info].pass_count
+    t = (file_info.file_name, count)
+    temp.append(t)
+  sorted_t = sorted(temp, key=lambda x: x[1], reverse=True)
+  print(sorted_t)
+  i = 0
+  for t in sorted_t:
+    i += 1
+    # if i >= 10:
+    #   if correct_file.file_name != t[0]:
+    #     continue
+    if t[0] == correct_file.file_name:
+      file_list.append(f"*file{i}*")
+    else:
+      file_list.append(f"file{i}")
+    file_result_list.append(t[1])
+  index = np.arange(len(file_list))
+  plt.clf()
+  plt.figure(figsize=(max(10, len(file_list) / 2), 8))
+  plt.bar(index, file_result_list, color="b")
+  plt.title(title)
+  plt.xlabel(f"file(total{len(result_file_map)})")
+  plt.ylabel("count")
+  plt.xticks(index, file_list, rotation=60)
+  out_file = os.path.join(os.path.dirname(msv_result_file), "file-plot.png")
+  print(f"save to {out_file}")
+  plt.savefig(out_file)
+  temp.clear()
+  func_list = list()
+  func_result_list = list()
+  for func_info in result_func_map:
+    # if func_info.parent != correct_file:
+    #   continue
+    count = result_func_map[func_info].pass_count + result_func_map[func_info].fail_count
+    t = (func_info.id, count)
+    temp.append(t)
+  sorted_t = sorted(temp, key=lambda x: x[1], reverse=True)
+  print(sorted_t)
+  i = 0
+  for t in sorted_t:
+    i += 1
+    # if i >= 10:
+    #   if correct_func.id != t[0]:
+    #     continue
+    if correct_func.id == t[0]:
+      func_list.append(f"*func{i}*")
+    else:
+      func_list.append(f"func{i}")
+    func_result_list.append(t[1])
+  index = np.arange(len(func_list))
+  plt.clf()
+  plt.figure(figsize=(max(10, len(func_list) / 2), 8))
+  plt.bar(index, func_result_list, color="b")
+  plt.title(title)
+  plt.xlabel(f"func(total{len(result_func_map)})")
+  plt.ylabel("count")
+  plt.xticks(index, func_list, rotation=60)
+  out_file = os.path.join(os.path.dirname(msv_result_file), "func-plot.png")
+  print(f"save to {out_file}")
+  plt.savefig(out_file)
+  temp.clear()
+  line_list = list()
+  line_result_list = list()
+  line_dist_list = list()
+  for line_info in result_line_map:
+    # if line_info.parent != correct_func:
+    #   continue
+    #count = result_line_map[line_info.uuid].pass_count + result_line_map[line_info.uuid].fail_count
+    count = result_line_map[line_info].pass_count + result_line_map[line_info].fail_count
+    pass_count = result_line_map[line_info].pass_count
+    t = (line_info, count)
+    temp.append(t)
+    # if pass_count == 0:
+    #   continue
+    # line_list.append(line_info.line_number)
+    # line_dist_list.append(line_info.out_dist)
+    # line_result_list.append(int(result_line_map[line_info].pass_count))
+  sorted_t = sorted(temp, key=lambda x: x[1], reverse=True)
+  print(sorted_t)
+  i = 0
+  for t in sorted_t:
+    i += 1
+    # if i >= 10:
+    #   if correct_line.uuid != t[0].uuid:
+    #     continue
+    if correct_line.uuid == t[0].uuid:
+      line_list.append(f"*{t[0].line_number}*")
+    else:
+      line_list.append(t[0].line_number)
+    line_result_list.append(t[1])
+  index = np.arange(len(line_list))
+  plt.clf()
+  plt.figure(figsize=(max(10, len(line_list) / 2), 8))
+  plt.bar(index, line_result_list, color="b")
+  #plt.bar(index + width, line_dist_list, width, color="r")
+  plt.title(title)
+  plt.xlabel(f"line(total{len(result_line_map)})")
+  plt.ylabel("pass(blue)/dist(red)")
+  plt.xticks(index, line_list, rotation=60)
+  out_file = os.path.join(os.path.dirname(msv_result_file), "line-plot.png")
+  print(f"save to {out_file}")
+  plt.savefig(out_file)
+
+
+
 def tbar_batch_plot(correct_patch_csv: str, in_dir: str) -> None:
   # TODO: Fix workdir
   csv = ""
-  all = dict()
+  all: Dict[str, str] = dict()
   with open(correct_patch_csv, "r") as f:
     for line in f.readlines():
       token = line.strip().split(",")
       if len(token) < 2:
         continue
-      t = token[0]
-      if t not in all:
-        all[t] = dict()
-      v = token[1]
-      all[t][v] = token[2]
+      all[token[0]] = token[1]
   info = dict()
   for dir in sorted(os.listdir(in_dir)):
     if not os.path.isdir(os.path.join(in_dir, dir)):
       continue
     print(dir)
+    proj = dir.split("-")[0]
     result_file = os.path.join(in_dir, dir, "msv-result.json")
     print(result_file)
+    if proj not in all:
+      continue
     if os.path.exists(result_file):
-      ty = ""
-      ver = ""
-      cp = ""
-      for t in all:
-        if dir.startswith(t,4):
-          ty = t
-          break
-      for v in all[ty]:
-        if v in dir:
-          ver = v
-          break
-      cp = all[ty][ver]
-      print(f"{dir} : {ty} / {ver} / {cp}")
+      cp = all[proj]
+      print(f"{dir} : {cp}")
       result_file = os.path.join(in_dir, dir, "msv-result.json")
-      workdir = os.path.join("/root/project/MSV-experiment/benchmarks", ty, f"{ty}-case-{ver}", f"{ty}-{ver}-workdir")
+      workdir = "/root/project/TBarCopy/D4J/projects/" + proj
       if not os.path.exists(workdir):
-        workdir = os.path.join("/root/project/MSV-experiment/benchmarks", ty, f"{ty}-case-tests-{ver}", f"{ty}-tests-{ver}-workdir")
-      if not os.path.exists(workdir):
-        workdir = os.path.join("/root/project/MSV-experiment/benchmarks", ty, f"{ty}-case-tests2-{ver}", f"{ty}-tests2-{ver}-workdir")
-      if not os.path.exists(workdir):
-        workdir = os.path.join("/root/project/MSV-experiment/benchmarks", f"new-{ty}", f"{ty}-{ver}")
+        print(f"{workdir} not exists!!!!!!!")
+        continue
       print(f"{result_file}, {workdir}")
       if workdir not in info:
-        info[workdir] = read_info(workdir)
+        info[workdir] = read_info_tbar(workdir)
       switch_info, switch_case_map = info[workdir]
-      iter, tm = msv_plot_correct(result_file, dir, workdir, cp, switch_info, switch_case_map)
-      csv += f"{ty},{ver},{cp},{iter},{tm}\n"
-      afl_barchart(result_file, dir, workdir, cp, switch_info, switch_case_map)
+      iter, tm = tbar_plot_correct(result_file, dir, workdir, cp, switch_info, switch_case_map)
+      csv += f"{proj},{cp},{iter},{tm}\n"
+      tbar_barchart(result_file, dir, workdir, cp, switch_info, switch_case_map)
   print(csv)
   with open("result.csv", "w") as f:
     f.write(csv)  
@@ -1017,6 +1159,8 @@ def main(argv):
     msv_plot_correct(result_file, title, work_dir, correct_patch)
   elif mode == "batch":
     batch_plot(correct_patch, result_file)
+  elif mode == "tbar_batch":
+    tbar_batch_plot(correct_patch, result_file)
   elif mode == "find":
     batch_find(correct_patch, result_file)
   else:
