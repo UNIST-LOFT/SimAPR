@@ -6,3 +6,4 @@ venv
 env
 out
 Google-word2vec.txt
+result.csv

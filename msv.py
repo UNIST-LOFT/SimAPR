@@ -309,6 +309,10 @@ class MSVTbar(MSV):
       if run_result:
         self.state.msv_logger.warning(f"Removing {neg} from negative test")
         self.state.tbar_negative_test.remove(neg)
+        if len(self.state.tbar_negative_test) == 0:
+          self.state.msv_logger.critical("No negative test left!!!!")
+          self.state.is_alive = False
+          return
     if not self.state.skip_valid:
       self.state.msv_logger.info(f"Validating {len(self.state.tbar_positive_test)} pass tests")
       # TODO: add positive test
