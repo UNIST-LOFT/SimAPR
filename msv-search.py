@@ -721,7 +721,7 @@ def gen_php_regression_test(state: MSVState):
           i+=1
 
     regression_tests=set()
-    with open(state.msv_path+'/php-new-regression-test','r') as f:
+    with open(state.msv_path+'tools/php-new-regression-test','r') as f:
       for line in f.readlines():
         words=line.strip()
         begin=words.find('"')
