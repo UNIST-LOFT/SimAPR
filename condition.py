@@ -155,6 +155,7 @@ def remove_same_pass_record(state: MSVState,patch: PatchInfo,test: int) -> None:
   for op in operators:
     if op.operator_type==OperatorType.ALL_1:
       if False not in record or patch.operator_info.operator_type==OperatorType.ALL_1:
+        state.msv_logger.info('Remove OperatorType.ALL_1')
         new_patch=PatchInfo(patch.case_info,op,None,None)
         result_handler.update_result_positive(state,[new_patch],False,{test})
         result_handler.append_result(state,[new_patch],True,False)
