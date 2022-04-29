@@ -54,7 +54,7 @@ def insert_patch(original_file:str,backup_file:str,begin_line:int,begin_column:i
         lines=file.readlines()
 
         previous_lines=[]
-        post_lines=[]
+        post_lines:List[str]=[]
         for i,line in enumerate(lines):
             if i<=begin_line:
                 previous_lines.append(line)
@@ -66,7 +66,83 @@ def insert_patch(original_file:str,backup_file:str,begin_line:int,begin_column:i
         previous_first_line=first_line[:begin_column-1]
         if previous_first_line[-1].isalpha():
             previous_first_line=first_line[:begin_column+1]
-        last_first_line=last_line[end_column+1:]
+        last_first_line:str=last_line[end_column+1:]
+        if (previous_first_line[-5:]=='else ' or previous_first_line[-4:]=='else') and last_first_line[:2]=='if':
+            previous_first_line += '{ '
+            # TODO: Find finish of next if and add }
+            breacket_counter=0
+            is_finish_then=False
+            is_finish_else=False
+            is_finish=False
+            has_else=False
+            else_counter=0
+            for i,c in enumerate(last_first_line):
+                if c=='{':
+                    # Next IfStmt has CompoundStmt and it's start of it
+                    breacket_counter+=1
+                elif not c.isspace() and is_finish_then and not has_else and breacket_counter==0:
+                    # then finish, no else
+                    is_finish=True
+                    last_first_line=last_first_line[:i+1]+'}\n'+last_first_line[i+1:]
+                    break
+                elif c==';' and breacket_counter==0:
+                    # Next IfStmt has other statement for then branch
+                    is_finish_then=True
+                elif c=='}':
+                    breacket_counter-=1
+                    if has_else and breacket_counter==0:
+                        # else finish
+                        is_finish_else=True
+                        is_finish=True
+                        last_first_line=last_first_line[:i+1]+'}'+last_first_line[i+1:]
+                        break
+                    elif breacket_counter==0:
+                        is_finish_then=True
+
+                elif c=='e' and not has_else and is_finish_then:
+                    else_counter+=1
+                elif c=='l' and else_counter==1:
+                    else_counter+=1
+                elif c=='s' and else_counter==2:
+                    else_counter+=1
+                elif c=='e' and else_counter==3:
+                    has_else=True
+            
+            if not is_finish:
+                for i,line in enumerate(post_lines[1:]):
+                    for j,c in enumerate(line):
+                        if c=='{':
+                            # Next IfStmt has CompoundStmt and it's start of it
+                            breacket_counter+=1
+                        elif not c.isspace() and is_finish_then and not has_else and breacket_counter==0:
+                            # then finish, no else
+                            is_finish=True
+                            post_lines[i+1]=line[:j]+'}'+line[j:]
+                            break
+                        elif c==';' and breacket_counter==0:
+                            # Next IfStmt has other statement for then branch
+                            is_finish_then=True
+                        elif c=='}':
+                            breacket_counter-=1
+                            if has_else and breacket_counter==0:
+                                # else finish
+                                is_finish_else=True
+                                is_finish=True
+                                post_lines[i+1]=line[:j]+'}'+line[j:]
+                                break
+                            elif breacket_counter==0:
+                                is_finish_then=True
+                        elif c=='e' and not has_else and is_finish_then:
+                            else_counter+=1
+                        elif c=='l' and else_counter==1:
+                            else_counter+=1
+                        elif c=='s' and else_counter==2:
+                            else_counter+=1
+                        elif c=='e' and else_counter==3:
+                            has_else=True
+                    if is_finish:
+                        break
+
         patch_lines=patch.splitlines()
         # Remove comment
         while patch_lines.count('')>0:
