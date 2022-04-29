@@ -196,7 +196,7 @@ def run_fail_test_tbar(state: MSVState, new_env: Dict[str, str]) -> Tuple[bool, 
     return False,True
   result_str = so.decode('utf-8').strip()
   if result_str == "":
-    state.msv_logger.info("Result: FAIL")
+    state.msv_logger.info("Result: FAIL - output is empty")
     return False, is_timeout
   state.msv_logger.debug(result_str)
 
@@ -204,7 +204,9 @@ def run_fail_test_tbar(state: MSVState, new_env: Dict[str, str]) -> Tuple[bool, 
     result_str=result_str.splitlines()[0]
   result_str.strip()
   if result_str != new_env["MSV_TEST"]:
+    state.msv_logger.info(f"Result: Fail... exp: {new_env['MSV_TEST']} out: {result_str}")
     return False, False
+  state.msv_logger.info("Result: PASS")
   return True, False
   # try:
   #   if int(result_str) == selected_test:
