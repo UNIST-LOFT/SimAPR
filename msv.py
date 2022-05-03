@@ -115,8 +115,8 @@ class MSV:
         self.state.critical_map[neg] = dict()
     
     if not self.state.skip_valid:
-      self.state.msv_logger.info(f"Validating {len(self.state.positive_test)} pass tests")
-      total_test = len(self.state.positive_test)
+      self.state.msv_logger.info(f"Validating {len(self.state.regression_test_info)} pass tests")
+      total_test = len(self.state.regression_test_info)
       MAX_TEST_ONCE = 1000
       group_num = (total_test + MAX_TEST_ONCE - 1) // MAX_TEST_ONCE
       fail_tests = set()
@@ -126,11 +126,12 @@ class MSV:
         if end > total_test:
           end = total_test
         self.state.msv_logger.info(f"Validating {start}-{end}")
-        result, fail = run_test.run_pass_test(self.state, [patch], is_initialize=True, pass_tests=self.state.positive_test[start:end])
+        result, fail = run_test.run_pass_test(self.state, [patch], is_initialize=True, pass_tests=self.state.regression_test_info[start:end])
         fail_tests.update(fail)
       for fail in fail_tests:
         self.state.msv_logger.warning(f"Removing failed pass test: {fail}")
         self.state.positive_test.remove(fail)
+        self.state.regression_test_info.remove(fail)
       # Save the validation result for the later use
       self.state.msv_logger.info(f"Saving validation result to {os.path.join(self.state.out_dir, 'new.revlog')}")
       with open(os.path.join(self.state.out_dir, "new.revlog"), 'w') as f:
@@ -139,8 +140,8 @@ class MSV:
         for nt in self.state.negative_test:
           f.write(f"{nt} ")
         f.write("\n")
-        f.write(f"Positive Cases: Tot {len(self.state.positive_test)}\n")
-        for pt in self.state.positive_test:
+        f.write(f"Positive Cases: Tot {len(self.state.regression_test_info)}\n")
+        for pt in self.state.regression_test_info:
           f.write(f"{pt} ")
         f.write("\n")
         f.write("Regression Cases: Tot 0\n")
@@ -207,7 +208,7 @@ class MSV:
         # prophet condition synthesis
         else:
           self.state.msv_logger.info('Run prophet condition synthesis')
-          prophet_cond=condition.ProphetCondition(patch[0],self.state,self.state.negative_test,self.state.positive_test)
+          prophet_cond=condition.ProphetCondition(patch[0],self.state,self.state.negative_test,self.state.regression_test_info)
           opers=prophet_cond.get_condition()
           if opers is not None and len(opers)>0:
             patch[0].case_info.condition_list=opers
@@ -271,7 +272,7 @@ class MSV:
       # our condition synthesis
       elif self.state.use_condition_synthesis and patch[0].case_info.is_condition and patch[0].operator_info.operator_type!=OperatorType.ALL_1 and len(patch)==1:
         self.state.msv_logger.info('Run our condition synthesis')
-        cond_syn=condition.MyCondition(patch[0],self.state,self.state.negative_test,self.state.positive_test)
+        cond_syn=condition.MyCondition(patch[0],self.state,self.state.negative_test,self.state.regression_test_info)
         cond_syn.run()
 
       else:

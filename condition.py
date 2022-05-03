@@ -155,6 +155,7 @@ def remove_same_pass_record(state: MSVState,patch: PatchInfo,test: int) -> None:
   for op in operators:
     if op.operator_type==OperatorType.ALL_1:
       if False not in record or patch.operator_info.operator_type==OperatorType.ALL_1:
+        state.msv_logger.info('Remove OperatorType.ALL_1')
         new_patch=PatchInfo(patch.case_info,op,None,None)
         result_handler.update_result_positive(state,[new_patch],False,{test})
         result_handler.append_result(state,[new_patch],True,False)
@@ -283,10 +284,10 @@ class ProphetCondition:
       run_result, is_timeout = run_test.run_fail_test(self.state, patch, test, new_env)
       remove_file_or_pass(new_env['MSV_OUTPUT_DISTANCE_FILE'])
       if is_timeout:
-        values.append([])
+        return []
       elif not run_result:
         self.state.msv_logger.warn("Terrible fail at collecting value!")
-        values.append([])
+        return []
       
       values.append(parse_value(log_file))
       remove_file_or_pass(log_file)
@@ -294,7 +295,7 @@ class ProphetCondition:
     if self.state.use_pass_test:
       # collect values from pass test
       self.state.msv_logger.info('Collecting values from pass test')
-      for test in self.state.positive_test:
+      for test in self.state.regression_test_info:
         patch=[self.patch]
         new_env = MSVEnvVar.get_new_env(self.state, patch, test,EnvVarMode.collect_pos)
         self.new_env = new_env
@@ -303,10 +304,12 @@ class ProphetCondition:
         run_result, is_timeout = run_test.run_fail_test(self.state, patch, test, new_env)
         
         if run_result:
-          values.append(parse_value(log_file))
+          found_values=parse_value(log_file)
+          self.state.msv_logger.debug(f"Found values: {found_values}")
+          values.append(found_values)
         else:
           self.state.msv_logger.info("Terrible fail at collecting value!")
-          values.append([])
+          return []
         remove_file_or_pass(log_file)
 
     remove_file_or_pass(temp_file)
@@ -433,9 +436,9 @@ class ProphetCondition:
 
     self.state.msv_logger.info('Collecting values...')
     values=self.collect_value(tmp_file,paths)
-    if values is None:
+    if values is None or len(values)==0:
       self.state.msv_logger.info('Fail at collecting')
-      result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0])
+      result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0],self.new_env)
       result_handler.append_result(self.state, [self.patch], False)
       result_handler.remove_patch(self.state, [self.patch])
       return None
@@ -444,7 +447,7 @@ class ProphetCondition:
     conditions=self.synthesize_prophet(paths,values)
     if len(conditions)==0:
       self.state.msv_logger.info('Fail to generate actual condition')
-      result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0])
+      result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0],self.new_env)
       result_handler.append_result(self.state, [self.patch], False)
       result_handler.remove_patch(self.state, [self.patch])
       return None
@@ -790,7 +793,7 @@ class GuidedPathCondition:
       # collect values from pass test
       self.state.msv_logger.info('Collecting values from pass test')
 
-      for test in self.state.positive_test:
+      for test in self.state.regression_test_info:
         patch=[self.patch]
         new_env = MSVEnvVar.get_new_env(self.state, patch, test,EnvVarMode.collect_pos)
         self.new_env = new_env
@@ -799,10 +802,12 @@ class GuidedPathCondition:
         run_result, is_timeout = run_test.run_fail_test(self.state, patch, test, new_env)
         
         if run_result:
-          values.append(parse_value(log_file))
+          found_values=parse_value(log_file)
+          self.state.msv_logger.debug(f"Found values: {found_values}")
+          values.append(found_values)
         else:
           self.state.msv_logger.info("Terrible fail at collecting value!")
-          values.append([])
+          return None
         remove_file_or_pass(log_file)
 
     return values

@@ -80,6 +80,7 @@ def run_pass_test(state: MSVState, patch: List[PatchInfo], is_initialize: bool =
   if is_initialize:
     new_env['__PID'] = new_env['MSV_UUID']
     new_env['MSV_RUN_ORIGINAL'] = "1"
+  has_init_tests=False
   for i in range(group_num):
     tests: List[str] = list()
     if len(pass_tests) > 0:
@@ -92,8 +93,12 @@ def run_pass_test(state: MSVState, patch: List[PatchInfo], is_initialize: bool =
           tests.append(str(j))
         for j in state.negative_test[1:]:
           tests.append(str(j))
+        has_init_tests=True
       else:
-        start = i * MAX_TEST_ONCE
+        if has_init_tests:
+          start = (i-1) * MAX_TEST_ONCE
+        else:
+          start=i*MAX_TEST_ONCE
         end = min(start + MAX_TEST_ONCE, total_test)
         for j in range(start, end):
           t = state.regression_test_info[j]
