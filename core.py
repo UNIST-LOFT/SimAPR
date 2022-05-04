@@ -1137,6 +1137,8 @@ class TbarPatchInfo:
     self.func_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.file_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
   def remove_patch(self, state: 'MSVState') -> None:
+    if self.tbar_switch_info.location not in self.tbar_type_info.tbar_switch_info_map:
+      state.msv_logger.critical(f"{self.tbar_switch_info.location} not in {self.tbar_type_info.tbar_switch_info_map}")
     del self.tbar_type_info.tbar_switch_info_map[self.tbar_switch_info.location]
     if len(self.tbar_type_info.tbar_switch_info_map) == 0:
       del self.line_info.tbar_type_info_map[self.tbar_type_info.mutation]
