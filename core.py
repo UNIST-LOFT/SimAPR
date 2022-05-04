@@ -22,6 +22,7 @@ class MSVMode(Enum):
   spr = 7
   seapr = 8
   tbar = 9
+  recoder = 10
 
 class PatchType(Enum):
   TightenConditionKind = 0
@@ -247,6 +248,8 @@ class LineInfo:
     self.has_init_patch=False
     self.case_update_count: int = 0
     self.tbar_type_info_map: Dict[str, TbarTypeInfo] = dict()
+    self.line_id = -1
+    self.recoder_case_info_map: Dict[int, RecoderCaseInfo] = dict()
   def __hash__(self) -> int:
     return hash(self.uuid)
   def __eq__(self, other) -> bool:
@@ -292,6 +295,29 @@ class TbarSwitchInfo:
     return hash(self.location)
   def __eq__(self, other) -> bool:
     return self.location == other.location
+
+class RecoderCaseInfo:
+  def __init__(self, parent: LineInfo, location: str, case_id: int) -> None:
+    self.parent = parent
+    self.location = location
+    self.case_id = case_id
+    self.pf = PassFail()
+    self.positive_pf = PassFail()
+    self.output_pf = PassFail()
+    self.update_count: int = 0
+    self.total_case_info: int = 0
+    self.case_update_count: int = 0
+    self.out_dist: float = -1.0
+    self.fl_score: float = 0
+    self.out_dist_map: Dict[int, float] = dict()
+    self.same_seapr_pf = PassFail()
+    self.diff_seapr_pf = PassFail()
+  def __hash__(self) -> int:
+    return hash(self.location)
+  def __eq__(self, other) -> bool:
+    return self.location == other.location
+  def to_str(self) -> str:
+    return f"{self.parent.line_id}-{self.case_id}"
 
 class SwitchInfo:
   def __init__(self, parent: LineInfo, switch_number: int) -> None:
@@ -756,13 +782,17 @@ class MSVEnvVar:
     new_env["MSV_OUTPUT_DISTANCE_FILE"] = f"/tmp/{uuid.uuid4()}.out"
     return new_env
   @staticmethod
-  def get_new_env_tbar_positive_tests(state: 'MSVState', tests: List[str], new_env: Dict[str, str]) -> Dict[str, str]:
+  def get_new_env_recoder(state: 'MSVState', patch: 'RecoderPatchInfo', test: str) -> Dict[str, str]:
+    new_env = os.environ.copy()
+  @staticmethod
+  def get_new_env_d4j_positive_tests(state: 'MSVState', tests: List[str], new_env: Dict[str, str]) -> Dict[str, str]:
     test_list = f"/tmp/{uuid.uuid4()}.list"
     new_env["MSV_TEST_LIST"] = test_list
     with open(test_list, "w") as f:
       for test in tests:
         f.write(test + "\n")
     return new_env
+
 class PatchInfo:
   def __init__(self, case_info: CaseInfo, op_info: OperatorInfo, var_info: VariableInfo, con_info: ConstantInfo) -> None:
     self.case_info = case_info
@@ -1173,6 +1203,19 @@ class TbarPatchInfo:
       result.append(patch.to_str())
     return ",".join(result)
   
+class RecoderPatchInfo:
+  def __init__(self, recoder_case_info: RecoderCaseInfo) -> None:
+    self.recoder_case_info = recoder_case_info
+    self.line_info = self.recoder_case_info.parent
+    self.func_info = self.line_info.parent
+    self.file_info = self.func_info.parent
+    self.out_dist = -1.0
+    self.out_diff = False
+  def update_result(self, result: bool, n: float, b_n: float, exp_alpha: bool, fixed_beta: bool) -> None:
+    self.recoder_case_info.pf.update(result, n, b_n, exp_alpha, fixed_beta)
+    self.line_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
+    self.func_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
+    self.file_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
 
 
 @dataclass
@@ -1252,8 +1295,8 @@ class MSVState:
   critical_map: Dict[int, Dict[ProfileElement, List[int]]]
   negative_test: List[int]        # Negative test case
   positive_test: List[int]        # Positive test case
-  tbar_negative_test: List[str]
-  tbar_positive_test: List[str]
+  d4j_negative_test: List[str]
+  d4j_positive_test: List[str]
   profile_map: Dict[int, Profile] # test case number -> Profile (of original program)
   priority_list: List[Tuple[str, int, float]]  # (file_name, line_number, score)
   priority_map: Dict[str, FileLine] # f"{file_name}:{line_number}" -> FileLine
@@ -1272,6 +1315,7 @@ class MSVState:
   params_decay: Dict[PT, float]
   original_output_distance_map: Dict[int, float]
   tbar_mode: bool
+  recoder_mode: bool
   use_exp_alpha: bool
   tbar_patch_ranking: List[str]
   def __init__(self) -> None:
@@ -1300,8 +1344,8 @@ class MSVState:
     self.file_info_map = dict()
     self.negative_test = list()
     self.positive_test = list()
-    self.tbar_negative_test = list()
-    self.tbar_positive_test = list()
+    self.d4j_negative_test = list()
+    self.d4j_positive_test = list()
     self.tbar_buggy_project: str = ""
     self.profile_map = dict()
     self.priority_list = list()
@@ -1341,6 +1385,7 @@ class MSVState:
     self.original_output_distance_map = dict()
     self.use_msv_ext=False
     self.tbar_mode = False
+    self.recoder_mode = False
     self.use_exp_alpha = False
     self.run_all_test=False
     self.regression_php_mode=''

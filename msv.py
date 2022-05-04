@@ -304,24 +304,24 @@ class MSVTbar(MSV):
     self.state.msv_logger.info("Initializing...")
     original = self.state.switch_case_map["original"]
     op = TbarPatchInfo(original)
-    for neg in self.state.tbar_negative_test.copy():
+    for neg in self.state.d4j_negative_test.copy():
       run_result = self.run_test(op, neg)
       if run_result:
         self.state.msv_logger.warning(f"Removing {neg} from negative test")
-        self.state.tbar_negative_test.remove(neg)
-        if len(self.state.tbar_negative_test) == 0:
+        self.state.d4j_negative_test.remove(neg)
+        if len(self.state.d4j_negative_test) == 0:
           self.state.msv_logger.critical("No negative test left!!!!")
           self.state.is_alive = False
           return
     if not self.state.skip_valid:
-      self.state.msv_logger.info(f"Validating {len(self.state.tbar_positive_test)} pass tests")
+      self.state.msv_logger.info(f"Validating {len(self.state.d4j_positive_test)} pass tests")
       # TODO: add positive test
       new_env = MSVEnvVar.get_new_env_tbar(self.state, op, "")
-      new_env = MSVEnvVar.get_new_env_tbar_positive_tests(self.state, self.state.tbar_positive_test, new_env)
-      run_result, failed_tests = run_test.run_pass_test_tbar_exec(self.state, new_env, self.state.tbar_positive_test)
+      new_env = MSVEnvVar.get_new_env_d4j_positive_tests(self.state, self.state.d4j_positive_test, new_env)
+      run_result, failed_tests = run_test.run_pass_test_tbar_exec(self.state, new_env, self.state.d4j_positive_test)
       if not run_result:
         for ft in failed_tests:
-          self.state.tbar_positive_test.remove(ft)
+          self.state.d4j_positive_test.remove(ft)
   def run(self) -> None:
     self.initialize()
     self.state.start_time = time.time()
@@ -333,7 +333,7 @@ class MSVTbar(MSV):
       pass_exists = False
       result = True
       pass_result = False
-      for neg in self.state.tbar_negative_test:
+      for neg in self.state.d4j_negative_test:
         run_result = self.run_test(patch, neg)
         if not run_result:
           result = False
@@ -347,3 +347,6 @@ class MSVTbar(MSV):
         result_handler.update_positive_result_tbar(self.state, patch, pass_result)
       result_handler.append_result(self.state, [patch], pass_exists, pass_result)
       result_handler.remove_patch_tbar(self.state, patch)
+
+class MSVRecoder(MSVTbar):
+  

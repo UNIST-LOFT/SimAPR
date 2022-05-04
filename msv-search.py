@@ -18,7 +18,7 @@ import add_sim_score
 
 def parse_args(argv: list) -> MSVState:
   longopts = ["help", "outdir=", "workdir=", "timeout=", "msv-path=", "time-limit=", "cycle-limit=", "epsilon-greedy-exploration=",
-              "mode=", "max-parallel-cpu=",'skip-valid','use-fixed-beta','use-cpr-space','use-fixed-const', 'params=', 'tbar-mode', "use-exp-alpha",
+              "mode=", "max-parallel-cpu=",'skip-valid','use-fixed-beta','use-cpr-space','use-fixed-const', 'params=', 'tbar-mode', 'recoder-mode', "use-exp-alpha",
               "use-condition-synthesis", "use-hierarchical-selection=", "use-pass-test", "use-partial-validation", "use-full-validation",
               "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern", "use-simulation-mode=",
               "use-prophet-score", "use-fl", "use-fl-prophet-score", "watch-level=",'use-msv-ext','seapr-mode=','top-fl=','use-fixed-halflife',
@@ -144,6 +144,8 @@ def parse_args(argv: list) -> MSVState:
       state.use_msv_ext = True
     elif o in ['--tbar-mode']:
       state.tbar_mode = True
+    elif o in ['--recoder-mode']:
+      state.recoder_mode = True
 
   if sub_dir != "":
     state.out_dir = os.path.join(state.out_dir, sub_dir)
@@ -233,8 +235,8 @@ def read_info_tbar(state: MSVState) -> None:
   with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
     info = json.load(f)
     # Read test informations (which tests to run, which of them are failing test or passing test)
-    state.tbar_negative_test = info["failing_test_cases"]
-    state.tbar_positive_test = info["passing_test_cases"]
+    state.d4j_negative_test = info["failing_test_cases"]
+    state.d4j_positive_test = info["passing_test_cases"]
     # Read priority (for FL score)
     n = len(info['priority'])
     # score_map = dict()

@@ -270,15 +270,15 @@ def run_pass_test_tbar(state: MSVState, new_env: Dict[str, str]) -> bool:
   if len(state.failed_positive_test) > 0:
     for test in state.failed_positive_test:
       tests.append(test)
-    tmp_env = MSVEnvVar.get_new_env_tbar_positive_tests(state, tests, new_env.copy())
+    tmp_env = MSVEnvVar.get_new_env_d4j_positive_tests(state, tests, new_env.copy())
     run_result, failed_tests = run_pass_test_tbar_exec(state, tmp_env)
     if not run_result:
       return False
   tests.clear()
-  for test in state.tbar_negative_test:
+  for test in state.d4j_negative_test:
     if test not in state.failed_positive_test:
       tests.append(test)
-  tmp_env = MSVEnvVar.get_new_env_tbar_positive_tests(state, tests, new_env.copy())
+  tmp_env = MSVEnvVar.get_new_env_d4j_positive_tests(state, tests, new_env.copy())
   run_result, failed_tests = run_pass_test_tbar_exec(state, tmp_env, tests)
   if not run_result:
     for test in failed_tests:
