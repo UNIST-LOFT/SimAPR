@@ -296,10 +296,10 @@ class MSVTbar(MSV):
     # TODO change
     result_handler.save_result(self.state)
   def run_test(self, patch: TbarPatchInfo, test: int) -> Tuple[int, bool]:
-    fail_num, run_result, is_timeout = run_test.run_fail_test_tbar(self.state, MSVEnvVar.get_new_env_tbar(self.state, patch, test))
+    fail_num, run_result, is_timeout = run_test.run_fail_test_d4j(self.state, MSVEnvVar.get_new_env_tbar(self.state, patch, test))
     return fail_num, run_result
   def run_test_positive(self, patch: TbarPatchInfo) -> bool:
-    run_result = run_test.run_pass_test_tbar(self.state, MSVEnvVar.get_new_env_tbar(self.state, patch, ""))
+    run_result = run_test.run_pass_test_d4j(self.state, MSVEnvVar.get_new_env_tbar(self.state, patch, ""))
     return run_result
   def initialize(self) -> None:
     self.state.msv_logger.info("Initializing...")
@@ -320,7 +320,7 @@ class MSVTbar(MSV):
       # TODO: add positive test
       new_env = MSVEnvVar.get_new_env_tbar(self.state, op, "")
       new_env = MSVEnvVar.get_new_env_d4j_positive_tests(self.state, self.state.d4j_positive_test, new_env)
-      run_result, failed_tests = run_test.run_pass_test_tbar_exec(self.state, new_env, self.state.d4j_positive_test)
+      run_result, failed_tests = run_test.run_pass_test_d4j_exec(self.state, new_env, self.state.d4j_positive_test)
       if not run_result:
         for ft in failed_tests:
           self.state.d4j_positive_test.remove(ft)
@@ -353,10 +353,10 @@ class MSVTbar(MSV):
 
 class MSVRecoder(MSVTbar):
   def run_test(self, patch: RecoderPatchInfo, test: int) -> Tuple[int, bool]:
-    fail_num, run_result, is_timeout = run_test.run_fail_test_tbar(self.state, MSVEnvVar.get_new_env_recoder(self.state, patch, test))
+    fail_num, run_result, is_timeout = run_test.run_fail_test_d4j(self.state, MSVEnvVar.get_new_env_recoder(self.state, patch, test))
     return fail_num, run_result
   def run_test_positive(self, patch: RecoderPatchInfo) -> bool:
-    run_result = run_test.run_pass_test_tbar(self.state, MSVEnvVar.get_new_env_recoder(self.state, patch, ""))
+    run_result = run_test.run_pass_test_d4j(self.state, MSVEnvVar.get_new_env_recoder(self.state, patch, ""))
     return run_result
   def initialize(self) -> None:
     self.state.msv_logger.info("Initializing...")
@@ -376,7 +376,7 @@ class MSVRecoder(MSVTbar):
       self.state.msv_logger.info(f"Validating {len(self.state.d4j_positive_test)} pass tests")
       new_env = MSVEnvVar.get_new_env_recoder(self.state, op, "")
       new_env = MSVEnvVar.get_new_env_d4j_positive_tests(self.state, self.state.d4j_positive_test, new_env)
-      run_result, failed_tests = run_test.run_pass_test_tbar_exec(self.state, new_env, self.state.d4j_positive_test)
+      run_result, failed_tests = run_test.run_pass_test_d4j_exec(self.state, new_env, self.state.d4j_positive_test)
       if not run_result:
         for ft in failed_tests:
           self.state.d4j_positive_test.remove(ft)

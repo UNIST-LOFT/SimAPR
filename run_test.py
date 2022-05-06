@@ -176,7 +176,7 @@ def parse_location(state: MSVState, new_env: Dict[str, str], tests: Set[int]) ->
           state.test_to_location[test][file].add(i)
 
 # return (pass_exists, passed, timeout)
-def run_fail_test_tbar(state: MSVState, new_env: Dict[str, str]) -> Tuple[int, bool, bool]:
+def run_fail_test_d4j(state: MSVState, new_env: Dict[str, str]) -> Tuple[int, bool, bool]:
   state.cycle += 1
   state.msv_logger.info(f"@{state.cycle} Run tbar test {new_env['MSV_TEST']} with {new_env['MSV_LOCATION']}")
   args = state.args
@@ -232,7 +232,7 @@ def run_fail_test_tbar(state: MSVState, new_env: Dict[str, str]) -> Tuple[int, b
   #   state.msv_logger.warning("Result: FAIL")
   #   return False, is_timeout
 
-def run_pass_test_tbar_exec(state: MSVState, new_env: Dict[str, str], tests: List[str]) -> Tuple[bool, Set[str]]:
+def run_pass_test_d4j_exec(state: MSVState, new_env: Dict[str, str], tests: List[str]) -> Tuple[bool, Set[str]]:
   state.cycle += 1
   args = state.args
   state.msv_logger.debug(' '.join(args))
@@ -275,7 +275,7 @@ def run_pass_test_tbar_exec(state: MSVState, new_env: Dict[str, str], tests: Lis
       return False, failed_tests
   return True, failed_tests
 
-def run_pass_test_tbar(state: MSVState, new_env: Dict[str, str]) -> bool:
+def run_pass_test_d4j(state: MSVState, new_env: Dict[str, str]) -> bool:
   state.cycle += 1
   state.msv_logger.info(f"@{state.cycle} Run tbar test {new_env['MSV_TEST']} with {new_env['MSV_LOCATION']}")
   tests = list()
@@ -283,7 +283,7 @@ def run_pass_test_tbar(state: MSVState, new_env: Dict[str, str]) -> bool:
     for test in state.failed_positive_test:
       tests.append(test)
     tmp_env = MSVEnvVar.get_new_env_d4j_positive_tests(state, tests, new_env.copy())
-    run_result, failed_tests = run_pass_test_tbar_exec(state, tmp_env)
+    run_result, failed_tests = run_pass_test_d4j_exec(state, tmp_env)
     if not run_result:
       return False
   tests.clear()
@@ -291,7 +291,7 @@ def run_pass_test_tbar(state: MSVState, new_env: Dict[str, str]) -> bool:
     if test not in state.failed_positive_test:
       tests.append(test)
   tmp_env = MSVEnvVar.get_new_env_d4j_positive_tests(state, tests, new_env.copy())
-  run_result, failed_tests = run_pass_test_tbar_exec(state, tmp_env, tests)
+  run_result, failed_tests = run_pass_test_d4j_exec(state, tmp_env, tests)
   if not run_result:
     for test in failed_tests:
       state.failed_positive_test.add(test)
