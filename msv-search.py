@@ -920,6 +920,7 @@ def main(argv: list):
   except:
     state.msv_logger.error('MSV is crashed!!!!!!!!!!!!!!!!')
     state.msv_logger.exception("Got exception in msv.run()")
+    exit(1)
   state.msv_logger.info('MSV is finished')
   msv.save_result()
 
