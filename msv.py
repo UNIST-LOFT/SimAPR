@@ -288,15 +288,15 @@ class MSVTbar(MSV):
       self.state.is_alive = False
     elif self.state.time_limit > 0 and (time.time() - self.state.start_time) > self.state.time_limit:
       self.state.is_alive = False
-    elif len(self.state.tbar_patch_ranking) == 0:
+    elif len(self.state.patch_ranking) == 0:
       self.state.is_alive = False
     return self.state.is_alive
   def save_result(self) -> None:
     # TODO change
     result_handler.save_result(self.state)
-  def run_test(self, patch: TbarPatchInfo, test: int) -> bool:
-    run_result, is_timeout = run_test.run_fail_test_tbar(self.state, MSVEnvVar.get_new_env_tbar(self.state, patch, test))
-    return run_result
+  def run_test(self, patch: TbarPatchInfo, test: int) -> Tuple[int, bool]:
+    fail_num, run_result, is_timeout = run_test.run_fail_test_tbar(self.state, MSVEnvVar.get_new_env_tbar(self.state, patch, test))
+    return fail_num, run_result
   def run_test_positive(self, patch: TbarPatchInfo) -> bool:
     run_result = run_test.run_pass_test_tbar(self.state, MSVEnvVar.get_new_env_tbar(self.state, patch, ""))
     return run_result
@@ -305,7 +305,8 @@ class MSVTbar(MSV):
     original = self.state.switch_case_map["original"]
     op = TbarPatchInfo(original)
     for neg in self.state.d4j_negative_test.copy():
-      run_result = self.run_test(op, neg)
+      fail_num, run_result = self.run_test(op, neg)
+      self.state.d4j_test_fail_num_map[neg] = fail_num
       if run_result:
         self.state.msv_logger.warning(f"Removing {neg} from negative test")
         self.state.d4j_negative_test.remove(neg)
@@ -334,13 +335,14 @@ class MSVTbar(MSV):
       result = True
       pass_result = False
       for neg in self.state.d4j_negative_test:
-        run_result = self.run_test(patch, neg)
+        fail_num, run_result = self.run_test(patch, neg)
+        if fail_num >= 0 and self.state.d4j_test_fail_num_map[neg] > fail_num:
+          self.state.msv_logger.info(f"Partial pass: {neg}, fail {fail_num}/{self.state.d4j_test_fail_num_map[neg]}")
+          pass_exists = True
         if not run_result:
           result = False
           if self.state.use_partial_validation:
             break
-        else:
-          pass_exists = True
       result_handler.update_result_tbar(self.state, patch, pass_exists)
       if result and self.state.use_pass_test:
         pass_result = self.run_test_positive(patch)
@@ -349,4 +351,7 @@ class MSVTbar(MSV):
       result_handler.remove_patch_tbar(self.state, patch)
 
 class MSVRecoder(MSVTbar):
-  
+  def run(self) -> None:
+    self.initialize()
+    while(self.is_alive()):
+      self.state.iteration += 1

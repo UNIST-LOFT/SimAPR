@@ -1167,6 +1167,8 @@ class TbarPatchInfo:
     self.func_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.file_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
   def remove_patch(self, state: 'MSVState') -> None:
+    if self.tbar_switch_info.location not in self.tbar_type_info.tbar_switch_info_map:
+      state.msv_logger.critical(f"{self.tbar_switch_info.location} not in {self.tbar_type_info.tbar_switch_info_map}")
     del self.tbar_type_info.tbar_switch_info_map[self.tbar_switch_info.location]
     if len(self.tbar_type_info.tbar_switch_info_map) == 0:
       del self.line_info.tbar_type_info_map[self.tbar_type_info.mutation]
@@ -1297,6 +1299,7 @@ class MSVState:
   positive_test: List[int]        # Positive test case
   d4j_negative_test: List[str]
   d4j_positive_test: List[str]
+  d4j_test_fail_num_map: Dict[str, int]
   profile_map: Dict[int, Profile] # test case number -> Profile (of original program)
   priority_list: List[Tuple[str, int, float]]  # (file_name, line_number, score)
   priority_map: Dict[str, FileLine] # f"{file_name}:{line_number}" -> FileLine
@@ -1317,7 +1320,7 @@ class MSVState:
   tbar_mode: bool
   recoder_mode: bool
   use_exp_alpha: bool
-  tbar_patch_ranking: List[str]
+  patch_ranking: List[str]
   def __init__(self) -> None:
     self.mode = MSVMode.guided
     self.msv_path = ""
@@ -1346,6 +1349,7 @@ class MSVState:
     self.positive_test = list()
     self.d4j_negative_test = list()
     self.d4j_positive_test = list()
+    self.d4j_test_fail_num_map = dict()
     self.tbar_buggy_project: str = ""
     self.profile_map = dict()
     self.priority_list = list()
@@ -1390,7 +1394,7 @@ class MSVState:
     self.run_all_test=False
     self.regression_php_mode=''
     self.top_fl=0
-    self.tbar_patch_ranking = list()
+    self.patch_ranking = list()
     self.use_fixed_halflife=False
     self.regression_test_info:List[int]=list()
     self.language_model_path='./Google-word2vec.txt'

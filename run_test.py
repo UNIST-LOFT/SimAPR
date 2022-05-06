@@ -170,8 +170,8 @@ def parse_location(state: MSVState, new_env: Dict[str, str], tests: Set[int]) ->
         for i in range(start, end + 1):
           state.test_to_location[test][file].add(i)
 
-
-def run_fail_test_tbar(state: MSVState, new_env: Dict[str, str]) -> Tuple[bool, bool]:
+# return (pass_exists, passed, timeout)
+def run_fail_test_tbar(state: MSVState, new_env: Dict[str, str]) -> Tuple[int, bool, bool]:
   state.cycle += 1
   state.msv_logger.info(f"@{state.cycle} Run tbar test {new_env['MSV_TEST']} with {new_env['MSV_LOCATION']}")
   args = state.args
@@ -193,21 +193,28 @@ def run_fail_test_tbar(state: MSVState, new_env: Dict[str, str]) -> Tuple[bool, 
     for child in children:
       child.kill()
     test_proc.kill()
-    return False,True
+    return -1, False, True
   result_str = so.decode('utf-8').strip()
   if result_str == "":
     state.msv_logger.info("Result: FAIL - output is empty")
-    return False, is_timeout
+    return -1, False, is_timeout
   state.msv_logger.debug(result_str)
 
+  result_str.strip()
   if '\n' in result_str:
     result_str=result_str.splitlines()[0]
-  result_str.strip()
-  if result_str != new_env["MSV_TEST"]:
+  tokens = result_str.split(":")
+  if len(tokens) < 2:
+    state.msv_logger.info("Result: FAIL - output is not valid")
+    return -1, False, is_timeout
+  if tokens[0] != new_env["MSV_TEST"] or not tokens[1].isdigit():
     state.msv_logger.info(f"Result: Fail... exp: {new_env['MSV_TEST']} out: {result_str}")
-    return False, False
+    return -1, False, False
+  if int(tokens[1]) > 0:
+    state.msv_logger.info(f"Result: partial ({tokens[1]}")
+    return int(tokens[1]), False, False
   state.msv_logger.info("Result: PASS")
-  return True, False
+  return 0, True, False
   # try:
   #   if int(result_str) == selected_test:
   #     state.msv_logger.warning("Result: PASS")

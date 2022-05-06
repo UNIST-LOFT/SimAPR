@@ -879,6 +879,9 @@ def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
   has_high_qual_patch = False
   for loc in state.tbar_patch_ranking:
     tbar_switch_info: TbarSwitchInfo = state.switch_case_map[loc]
+    if loc not in tbar_switch_info.parent.tbar_switch_info_map:
+      state.msv_logger.warning(f"No switch info  {tbar_switch_info.location} in patch: {tbar_switch_info.parent.tbar_switch_info_map}")
+      continue
     cur_score = get_ochiai(tbar_switch_info.same_seapr_pf.pass_count, tbar_switch_info.same_seapr_pf.fail_count,
       tbar_switch_info.diff_seapr_pf.pass_count, tbar_switch_info.diff_seapr_pf.fail_count)
     if tbar_switch_info.same_seapr_pf.pass_count > 0:
@@ -888,4 +891,5 @@ def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
       selected_patch = tbar_switch_info
   if not has_high_qual_patch:
     return select_patch_tbar(state)
+  state.tbar_patch_ranking.remove(selected_patch.location)
   return TbarPatchInfo(selected_patch)
