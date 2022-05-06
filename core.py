@@ -194,6 +194,7 @@ class FileInfo:
     self.prophet_score:list=[]
     self.has_init_patch=False
     self.case_update_count: int = 0
+    self.score_list: List[float] = list()
   def __hash__(self) -> int:
     return hash(self.file_name)
   def __eq__(self, other) -> bool:
@@ -220,6 +221,7 @@ class FuncInfo:
     self.prophet_score: List[float] = []
     self.has_init_patch=False
     self.case_update_count: int = 0
+    self.score_list: List[float] = list()
   def __hash__(self) -> int:
     return hash(self.id)
   def __eq__(self, other) -> bool:
@@ -250,6 +252,7 @@ class LineInfo:
     self.tbar_type_info_map: Dict[str, TbarTypeInfo] = dict()
     self.line_id = -1
     self.recoder_case_info_map: Dict[int, RecoderCaseInfo] = dict()
+    self.score_list: List[float] = list()
   def __hash__(self) -> int:
     return hash(self.uuid)
   def __eq__(self, other) -> bool:
@@ -296,8 +299,27 @@ class TbarSwitchInfo:
   def __eq__(self, other) -> bool:
     return self.location == other.location
 
+class RecoderTypeInfo:
+  def __init__(self, parent: LineInfo, mode: int) -> None:
+    self.parent = parent
+    self.mode = mode
+    self.pf = PassFail()
+    self.positive_pf = PassFail()
+    self.output_pf = PassFail()
+    self.update_count: int = 0
+    self.total_case_info: int = 0
+    self.case_update_count: int = 0
+    self.out_dist: float = -1.0
+    self.score_list: List[float] = list()
+    self.out_dist_map: Dict[int, float] = dict()
+    self.recoder_switch_info_map: Dict[str, RecoderCaseInfo] = dict()
+  def __hash__(self) -> int:
+    return hash(self.mode)
+  def __eq__(self, other) -> bool:
+    return self.mode == other.mode
+
 class RecoderCaseInfo:
-  def __init__(self, parent: LineInfo, location: str, case_id: int) -> None:
+  def __init__(self, parent: RecoderTypeInfo, location: str, case_id: int) -> None:
     self.parent = parent
     self.location = location
     self.case_id = case_id
@@ -308,7 +330,7 @@ class RecoderCaseInfo:
     self.total_case_info: int = 0
     self.case_update_count: int = 0
     self.out_dist: float = -1.0
-    self.fl_score: float = 0
+    self.prob: float = 0
     self.out_dist_map: Dict[int, float] = dict()
     self.same_seapr_pf = PassFail()
     self.diff_seapr_pf = PassFail()
@@ -317,7 +339,7 @@ class RecoderCaseInfo:
   def __eq__(self, other) -> bool:
     return self.location == other.location
   def to_str(self) -> str:
-    return f"{self.parent.line_id}-{self.case_id}"
+    return f"{self.parent.parent.line_id}-{self.case_id}"
 
 class SwitchInfo:
   def __init__(self, parent: LineInfo, switch_number: int) -> None:
@@ -778,7 +800,7 @@ class MSVEnvVar:
     new_env["MSV_LOCATION"] = str(patch.tbar_switch_info.location)
     new_env["MSV_WORKDIR"] = state.work_dir
     new_env["MSV_BUGGY_LOCATION"] = patch.file_info.file_name
-    new_env["MSV_BUGGY_PROJECT"] = state.tbar_buggy_project
+    new_env["MSV_BUGGY_PROJECT"] = state.d4j_buggy_project
     new_env["MSV_OUTPUT_DISTANCE_FILE"] = f"/tmp/{uuid.uuid4()}.out"
     return new_env
   @staticmethod
@@ -1350,7 +1372,7 @@ class MSVState:
     self.d4j_negative_test = list()
     self.d4j_positive_test = list()
     self.d4j_test_fail_num_map = dict()
-    self.tbar_buggy_project: str = ""
+    self.d4j_buggy_project: str = ""
     self.profile_map = dict()
     self.priority_list = list()
     self.fl_score:List[LocationScore]=list()

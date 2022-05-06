@@ -13,7 +13,7 @@ import shutil
 
 from core import *
 
-from msv import MSV, MSVTbar
+from msv import MSV, MSVTbar, MSVRecoder
 import add_sim_score
 
 def parse_args(argv: list) -> MSVState:
@@ -231,6 +231,97 @@ def read_fl_info(state: MSVState, priority:dict) -> list:
     final_locs.append((loc.file,loc.line))
   return final_locs
 
+def read_info_recoder(state: MSVState) -> None:
+  with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
+    info = json.load(f)
+    state.d4j_negative_test = info['d4j_negative_test']
+    state.d4j_positive_test = info['d4j_positive_test']
+    file_map = state.file_info_map
+    ff_map: Dict[str, Dict[str, Tuple[int, int]]] = dict()
+    for file in info["func_locations"]:
+      file_name = file["file"]
+      ff_map[file_name] = dict()
+      for func in file["functions"]:
+        func_name = func["function"]
+        begin = func["begin"]
+        end = func["end"]
+        func_id = f"{func_name}:{begin}-{end}"
+        ff_map[file_name][func_id] = (begin, end)
+        state.function_to_location_map[func_name] = (file_name, begin, end)
+    for file in info['rules']:
+      if len(file['lines']) == 0:
+        continue
+      file_info = FileInfo(file['file_name'])
+      file_name = file['file_name']
+      file_map[file['file_name']] = file_info
+      for line in file['lines']:
+        func_info = None
+        line_info = None
+        if len(line['switches']) == 0:
+          continue
+        for func_id in ff_map[file_name]:
+          fn_range = ff_map[file_name][func_id]
+          line_num = int(line['line'])
+          if fn_range[0] <= line_num <= fn_range[1]:
+            if func_id not in file_info.func_info_map:
+              func_info = FuncInfo(file_info, func_id.split(":")[0], fn_range[0], fn_range[1])
+              file_info.func_info_map[func_info.id] = func_info
+            else:
+              func_info = file_info.func_info_map[func_id]
+            line_info = LineInfo(func_info, int(line['line']))
+            func_info.line_info_map[line_info.uuid] = line_info
+            break
+        if line_info is None:
+          # No function found for this line!!!
+          # Use default...
+          func_info = FuncInfo(file_info, "no_function_found", int(line['line']), int(line['line']))
+          file_info.func_info_map[func_info.id] = func_info
+          ff_map[file_name][func_info.id] = (int(line['line']), int(line['line']))
+          line_info = LineInfo(func_info, int(line['line']))
+          line_info.line_id = line['id']
+          func_info.line_info_map[line_info.uuid] = line_info
+        fl_score = line["fl_score"]
+        state.line_list.append(line_info)
+        line_info.fl_score_list.append(fl_score)
+        func_info.fl_score_list.append(fl_score)
+        file_info.fl_score_list.append(fl_score)
+        file_line = FileLine(file_info, line_info, 0)
+        state.priority_map[f"{file_info.file_name}:{line_info.line_number}"] = file_line
+        for cs in line["cases"]:
+          case_id = cs["case"]
+          mode = cs["mode"]
+          location = cs["location"]
+          prob = cs["prob"]
+          if mode not in line_info.tbar_type_info_map:
+            line_info.tbar_type_info_map[mode] = RecoderTypeInfo(line_info, mode)
+          recoder_type_info = line_info.tbar_type_info_map[mode]
+          recoder_case_info = RecoderCaseInfo(recoder_type_info, location, case_id)
+          recoder_type_info.tbar_switch_info_map[case_id] = recoder_case_info
+          state.switch_case_map[f"{line_info.line_id}-{case_id}"] = recoder_case_info
+          recoder_case_info.prob = prob
+          recoder_type_info.total_case_info += 1
+          line_info.total_case_info += 1
+          func_info.total_case_info += 1
+          file_info.total_case_info += 1
+        if len(line_info.tbar_type_info_map)==0:
+          del func_info.line_info_map[line_info.uuid]
+      for func in file_info.func_info_map.copy().values():
+        if len(func.line_info_map)==0:
+          del file_info.func_info_map[func.id]
+      if len(file_info.func_info_map)==0:
+        del state.file_info_map[file_info.file_name]
+  state.d4j_buggy_project = info["project_name"]
+  state.patch_ranking = info["ranking"]
+  #Add original to switch_case_map
+  temp_file: FileInfo = FileInfo('original')
+  temp_func = FuncInfo(temp_file, "original_fn", 0, 0)
+  temp_file.func_info_map["original_fn:0-0"] = temp_func
+  temp_line: LineInfo = LineInfo(temp_func, 0)
+  # temp_file.line_info_list.append(temp_line)
+  temp_recoder_type = RecoderTypeInfo(temp_line, 0)
+  temp_recoder_case = RecoderCaseInfo(temp_recoder_type, "original", 0)
+  state.switch_case_map["0-0"] = temp_recoder_case
+
 def read_info_tbar(state: MSVState) -> None:
   with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
     info = json.load(f)
@@ -323,7 +414,7 @@ def read_info_tbar(state: MSVState) -> None:
           del file_info.func_info_map[func.id]
       if len(file_info.func_info_map)==0:
         del state.file_info_map[file_info.file_name]
-  state.tbar_buggy_project = info["project_name"]
+  state.d4j_buggy_project = info["project_name"]
   # Read ranking
   ranking = info['ranking']
   for rank in ranking:
@@ -810,6 +901,10 @@ def main(argv: list):
     read_info_tbar(state)
     state.msv_logger.info('TBar mode: Initialized!')
     msv = MSVTbar(state)
+  elif state.recoder_mode:
+    read_info_recoder(state)
+    state.msv_logger.info('Recoder mode: Initialized!')
+    msv = MSVRecoder(state)
   else:
     read_info(state)
     read_fl_score(state)
