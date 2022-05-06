@@ -732,7 +732,7 @@ def select_patch_tbar_mode(state: MSVState) -> TbarPatchInfo:
     return select_patch_tbar_guided(state)
 
 def select_patch_tbar(state: MSVState) -> TbarPatchInfo:
-  loc = state.tbar_patch_ranking.pop(0)
+  loc = state.patch_ranking.pop(0)
   caseinfo = state.switch_case_map[loc]
   return TbarPatchInfo(caseinfo)
 
@@ -877,7 +877,7 @@ def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
   selected_patch: TbarSwitchInfo = None
   max_score = 0.0
   has_high_qual_patch = False
-  for loc in state.tbar_patch_ranking:
+  for loc in state.patch_ranking:
     tbar_switch_info: TbarSwitchInfo = state.switch_case_map[loc]
     if loc not in tbar_switch_info.parent.tbar_switch_info_map:
       state.msv_logger.warning(f"No switch info  {tbar_switch_info.location} in patch: {tbar_switch_info.parent.tbar_switch_info_map}")
@@ -891,5 +891,5 @@ def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
       selected_patch = tbar_switch_info
   if not has_high_qual_patch:
     return select_patch_tbar(state)
-  state.tbar_patch_ranking.remove(selected_patch.location)
+  state.patch_ranking.remove(selected_patch.location)
   return TbarPatchInfo(selected_patch)

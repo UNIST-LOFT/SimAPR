@@ -327,7 +327,7 @@ def read_info_tbar(state: MSVState) -> None:
   # Read ranking
   ranking = info['ranking']
   for rank in ranking:
-    state.tbar_patch_ranking.append(rank['location'])
+    state.patch_ranking.append(rank['location'])
   #Add original to switch_case_map
   temp_file: FileInfo = FileInfo('original')
   temp_func = FuncInfo(temp_file, "original_fn", 0, 0)
