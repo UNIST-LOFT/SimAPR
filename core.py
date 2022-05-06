@@ -250,6 +250,7 @@ class LineInfo:
     self.has_init_patch=False
     self.case_update_count: int = 0
     self.tbar_type_info_map: Dict[str, TbarTypeInfo] = dict()
+    self.recoder_type_info_map: Dict[int, RecoderTypeInfo] = dict()
     self.line_id = -1
     self.recoder_case_info_map: Dict[int, RecoderCaseInfo] = dict()
     self.score_list: List[float] = list()
@@ -312,7 +313,7 @@ class RecoderTypeInfo:
     self.out_dist: float = -1.0
     self.score_list: List[float] = list()
     self.out_dist_map: Dict[int, float] = dict()
-    self.recoder_switch_info_map: Dict[str, RecoderCaseInfo] = dict()
+    self.recoder_case_info_map: Dict[int, RecoderCaseInfo] = dict()
   def __hash__(self) -> int:
     return hash(self.mode)
   def __eq__(self, other) -> bool:
@@ -1230,17 +1231,92 @@ class TbarPatchInfo:
 class RecoderPatchInfo:
   def __init__(self, recoder_case_info: RecoderCaseInfo) -> None:
     self.recoder_case_info = recoder_case_info
-    self.line_info = self.recoder_case_info.parent
+    self.recoder_type_info = recoder_case_info.parent
+    self.line_info = self.recoder_type_info.parent
     self.func_info = self.line_info.parent
     self.file_info = self.func_info.parent
     self.out_dist = -1.0
     self.out_diff = False
-  def update_result(self, result: bool, n: float, b_n: float, exp_alpha: bool, fixed_beta: bool) -> None:
-    self.recoder_case_info.pf.update(result, n, b_n, exp_alpha, fixed_beta)
+  def update_result(self, result: bool, n: float, b_n:float,exp_alpha: bool, fixed_beta: bool) -> None:
+    self.recoder_case_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
+    self.recoder_type_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.line_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.func_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.file_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
-
+  def update_result_out_dist(self, state: 'MSVState', result: bool, dist: float, test: int) -> None:
+    self.out_dist = dist
+    is_diff = True
+    if test in state.original_output_distance_map:
+      is_diff = dist != state.original_output_distance_map[test]
+    tmp = self.recoder_case_info.update_count * self.recoder_case_info.out_dist
+    self.recoder_case_info.out_dist = (tmp + dist) / (self.recoder_case_info.update_count + 1)
+    self.recoder_case_info.update_count += 1
+    self.recoder_case_info.output_pf.update(is_diff, 1.0)
+    tmp = self.recoder_type_info.update_count * self.recoder_type_info.out_dist
+    self.recoder_type_info.out_dist = (tmp + dist) / (self.recoder_type_info.update_count + 1)
+    self.recoder_type_info.update_count += 1
+    self.recoder_type_info.output_pf.update(is_diff, 1.0)
+    tmp = self.line_info.update_count * self.line_info.out_dist
+    self.line_info.out_dist = (tmp + dist) / (self.line_info.update_count + 1)
+    self.line_info.update_count += 1
+    self.line_info.output_pf.update(is_diff, 1.0)
+    tmp = self.func_info.update_count * self.func_info.out_dist
+    self.func_info.out_dist = (tmp + dist) / (self.func_info.update_count + 1)
+    self.func_info.update_count += 1
+    self.func_info.output_pf.update(is_diff, 1.0)
+    tmp = self.file_info.update_count * self.file_info.out_dist
+    self.file_info.out_dist = (tmp + dist) / (self.file_info.update_count + 1)
+    self.file_info.update_count += 1
+    self.file_info.output_pf.update(is_diff, 1.0)    
+  def update_result_positive(self, result: bool, n: float, b_n:float,exp_alpha: bool, fixed_beta: bool) -> None:
+    self.recoder_case_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
+    self.recoder_type_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
+    self.line_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
+    self.func_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
+    self.file_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
+  def remove_patch(self, state: 'MSVState') -> None:
+    if self.recoder_case_info.case_id not in self.recoder_type_info.recoder_case_info_map:
+      state.msv_logger.critical(f"{self.recoder_case_info.case_id} not in {self.recoder_type_info.recoder_case_info_map}")
+    del self.recoder_type_info.recoder_case_info_map[self.recoder_case_info.case_id]
+    if len(self.recoder_type_info.recoder_case_info_map) == 0:
+      del self.line_info.recoder_type_info_map[self.recoder_type_info.mutation]
+    if len(self.line_info.recoder_type_info_map) == 0:
+      score = self.line_info.fl_score
+      self.func_info.fl_score_list.remove(score)
+      self.file_info.fl_score_list.remove(score)
+      del self.func_info.line_info_map[self.line_info.uuid]
+    if len(self.func_info.line_info_map) == 0:
+      del self.file_info.func_info_map[self.func_info.id]
+    if len(self.file_info.func_info_map) == 0:
+      del state.file_info_map[self.file_info.file_name]
+    self.recoder_case_info.case_update_count += 1
+    self.recoder_type_info.case_update_count += 1
+    self.line_info.case_update_count += 1
+    self.func_info.case_update_count += 1
+    self.file_info.case_update_count += 1
+    prob = self.recoder_case_info.prob
+    self.recoder_type_info.score_list.remove(prob)
+    self.line_info.score_list.remove(prob)
+    self.func_info.score_list.remove(prob)
+    self.file_info.score_list.remove(prob)
+  def to_json_object(self) -> dict:
+    conf = dict()
+    conf["location"] = self.recoder_case_info.location
+    conf["id"] = self.line_info.line_id
+    conf["case_id"] = self.recoder_case_info.case_id
+    return conf
+  def to_str(self) -> str:
+    return f"{self.recoder_case_info.location}"
+  def __str__(self) -> str:
+    return self.to_str()
+  def to_str_sw_cs(self) -> str:
+    return self.to_str()
+  @staticmethod
+  def list_to_str(selected_patch: list) -> str:
+    result = list()
+    for patch in selected_patch:
+      result.append(patch.to_str())
+    return ",".join(result)
 
 @dataclass
 class MSVResult:
@@ -1312,7 +1388,8 @@ class MSVState:
   new_revlog: str
   patch_info_map: Dict[str, FileInfo]  # fine_name: str -> FileInfo
   file_info_map: Dict[str, FileInfo]   # file_name: str -> FileInfo
-  switch_case_map: Dict[str, Union[CaseInfo, TbarCaseInfo]] # f"{switch_number}-{case_number}" -> SwitchCase
+  switch_case_map: Dict[str, Union[CaseInfo, TbarCaseInfo, RecoderCaseInfo]] # f"{switch_number}-{case_number}" -> SwitchCase
+  patch_location_map: Dict[str, Union[TbarCaseInfo, RecoderCaseInfo]]
   selected_patch: List[PatchInfo] # Unused
   selected_test: List[int]        # Unused
   used_patch: List[MSVResult]

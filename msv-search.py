@@ -282,7 +282,7 @@ def read_info_recoder(state: MSVState) -> None:
           func_info.line_info_map[line_info.uuid] = line_info
         fl_score = line["fl_score"]
         state.line_list.append(line_info)
-        line_info.fl_score_list.append(fl_score)
+        line_info.fl_score = fl_score
         func_info.fl_score_list.append(fl_score)
         file_info.fl_score_list.append(fl_score)
         file_line = FileLine(file_info, line_info, 0)
@@ -292,18 +292,19 @@ def read_info_recoder(state: MSVState) -> None:
           mode = cs["mode"]
           location = cs["location"]
           prob = cs["prob"]
-          if mode not in line_info.tbar_type_info_map:
-            line_info.tbar_type_info_map[mode] = RecoderTypeInfo(line_info, mode)
-          recoder_type_info = line_info.tbar_type_info_map[mode]
+          if mode not in line_info.recoder_type_info_map:
+            line_info.recoder_type_info_map[mode] = RecoderTypeInfo(line_info, mode)
+          recoder_type_info = line_info.recoder_type_info_map[mode]
           recoder_case_info = RecoderCaseInfo(recoder_type_info, location, case_id)
-          recoder_type_info.tbar_case_info_map[case_id] = recoder_case_info
+          recoder_type_info.recoder_case_info_map[case_id] = recoder_case_info
           state.switch_case_map[f"{line_info.line_id}-{case_id}"] = recoder_case_info
+          state.patch_location_map[location] = recoder_case_info
           recoder_case_info.prob = prob
           recoder_type_info.total_case_info += 1
           line_info.total_case_info += 1
           func_info.total_case_info += 1
           file_info.total_case_info += 1
-        if len(line_info.tbar_type_info_map)==0:
+        if len(line_info.recoder_type_info_map)==0:
           del func_info.line_info_map[line_info.uuid]
       for func in file_info.func_info_map.copy().values():
         if len(func.line_info_map)==0:
@@ -321,6 +322,7 @@ def read_info_recoder(state: MSVState) -> None:
   temp_recoder_type = RecoderTypeInfo(temp_line, 0)
   temp_recoder_case = RecoderCaseInfo(temp_recoder_type, "original", 0)
   state.switch_case_map["0-0"] = temp_recoder_case
+  state.patch_location_map["original"] = temp_recoder_case
 
 def read_info_tbar(state: MSVState) -> None:
   with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
@@ -398,6 +400,7 @@ def read_info_tbar(state: MSVState) -> None:
           tbar_case_info = TbarCaseInfo(tbar_type_info, location, start, end)
           tbar_type_info.tbar_case_info_map[location] = tbar_case_info
           state.switch_case_map[location] = tbar_case_info
+          state.patch_location_map[location] = tbar_case_info
           tbar_case_info.fl_score = fl_score
           tbar_type_info.fl_score_list.append(fl_score)
           tbar_type_info.total_case_info += 1
@@ -428,6 +431,7 @@ def read_info_tbar(state: MSVState) -> None:
   temp_tbar_type = TbarTypeInfo(temp_line, "original_mut")
   temp_tbar_case = TbarCaseInfo(temp_tbar_type, "original", 0, 0)
   state.switch_case_map["original"] = temp_tbar_case
+  state.patch_location_map["original"] = temp_tbar_case
   if state.use_simulation_mode:
     with open(state.prev_data, "r") as f:
       prev_info = json.load(f)
@@ -920,7 +924,7 @@ def main(argv: list):
   except:
     state.msv_logger.error('MSV is crashed!!!!!!!!!!!!!!!!')
     state.msv_logger.exception("Got exception in msv.run()")
-    exit(1)
+    raise
   state.msv_logger.info('MSV is finished')
   msv.save_result()
 
