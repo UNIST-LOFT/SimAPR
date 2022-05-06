@@ -271,13 +271,13 @@ class TbarTypeInfo:
     self.out_dist: float = -1.0
     self.fl_score_list: List[float] = list()
     self.out_dist_map: Dict[int, float] = dict()
-    self.tbar_switch_info_map: Dict[str, TbarSwitchInfo] = dict()
+    self.tbar_case_info_map: Dict[str, TbarCaseInfo] = dict()
   def __hash__(self) -> int:
     return hash(self.mutation)
   def __eq__(self, other) -> bool:
     return self.mutation == other.mutation
 
-class TbarSwitchInfo:
+class TbarCaseInfo:
   def __init__(self, parent: TbarTypeInfo, location: str, start: int, end: int) -> None:
     self.parent = parent
     self.location = location
@@ -797,7 +797,7 @@ class MSVEnvVar:
     new_env = os.environ.copy()
     new_env["MSV_UUID"] = str(state.uuid)
     new_env["MSV_TEST"] = str(test)
-    new_env["MSV_LOCATION"] = str(patch.tbar_switch_info.location)
+    new_env["MSV_LOCATION"] = str(patch.tbar_case_info.location)
     new_env["MSV_WORKDIR"] = state.work_dir
     new_env["MSV_BUGGY_LOCATION"] = patch.file_info.file_name
     new_env["MSV_BUGGY_PROJECT"] = state.d4j_buggy_project
@@ -1143,16 +1143,16 @@ class PatchInfo:
     return ",".join(result)
 
 class TbarPatchInfo:
-  def __init__(self, tbar_switch_info: TbarSwitchInfo) -> None:
-    self.tbar_switch_info = tbar_switch_info
-    self.tbar_type_info = tbar_switch_info.parent
+  def __init__(self, tbar_case_info: TbarCaseInfo) -> None:
+    self.tbar_case_info = tbar_case_info
+    self.tbar_type_info = tbar_case_info.parent
     self.line_info = self.tbar_type_info.parent
     self.func_info = self.line_info.parent
     self.file_info = self.func_info.parent
     self.out_dist = -1.0
     self.out_diff = False
   def update_result(self, result: bool, n: float, b_n:float,exp_alpha: bool, fixed_beta: bool) -> None:
-    self.tbar_switch_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
+    self.tbar_case_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.tbar_type_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.line_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.func_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
@@ -1162,10 +1162,10 @@ class TbarPatchInfo:
     is_diff = True
     if test in state.original_output_distance_map:
       is_diff = dist != state.original_output_distance_map[test]
-    tmp = self.tbar_switch_info.update_count * self.tbar_switch_info.out_dist
-    self.tbar_switch_info.out_dist = (tmp + dist) / (self.tbar_switch_info.update_count + 1)
-    self.tbar_switch_info.update_count += 1
-    self.tbar_switch_info.output_pf.update(is_diff, 1.0)
+    tmp = self.tbar_case_info.update_count * self.tbar_case_info.out_dist
+    self.tbar_case_info.out_dist = (tmp + dist) / (self.tbar_case_info.update_count + 1)
+    self.tbar_case_info.update_count += 1
+    self.tbar_case_info.output_pf.update(is_diff, 1.0)
     tmp = self.tbar_type_info.update_count * self.tbar_type_info.out_dist
     self.tbar_type_info.out_dist = (tmp + dist) / (self.tbar_type_info.update_count + 1)
     self.tbar_type_info.update_count += 1
@@ -1183,16 +1183,16 @@ class TbarPatchInfo:
     self.file_info.update_count += 1
     self.file_info.output_pf.update(is_diff, 1.0)    
   def update_result_positive(self, result: bool, n: float, b_n:float,exp_alpha: bool, fixed_beta: bool) -> None:
-    self.tbar_switch_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
+    self.tbar_case_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.tbar_type_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.line_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.func_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.file_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
   def remove_patch(self, state: 'MSVState') -> None:
-    if self.tbar_switch_info.location not in self.tbar_type_info.tbar_switch_info_map:
-      state.msv_logger.critical(f"{self.tbar_switch_info.location} not in {self.tbar_type_info.tbar_switch_info_map}")
-    del self.tbar_type_info.tbar_switch_info_map[self.tbar_switch_info.location]
-    if len(self.tbar_type_info.tbar_switch_info_map) == 0:
+    if self.tbar_case_info.location not in self.tbar_type_info.tbar_case_info_map:
+      state.msv_logger.critical(f"{self.tbar_case_info.location} not in {self.tbar_type_info.tbar_case_info_map}")
+    del self.tbar_type_info.tbar_case_info_map[self.tbar_case_info.location]
+    if len(self.tbar_type_info.tbar_case_info_map) == 0:
       del self.line_info.tbar_type_info_map[self.tbar_type_info.mutation]
     if len(self.line_info.tbar_type_info_map) == 0:
       del self.func_info.line_info_map[self.line_info.uuid]
@@ -1200,22 +1200,22 @@ class TbarPatchInfo:
       del self.file_info.func_info_map[self.func_info.id]
     if len(self.file_info.func_info_map) == 0:
       del state.file_info_map[self.file_info.file_name]
-    self.tbar_switch_info.case_update_count += 1
+    self.tbar_case_info.case_update_count += 1
     self.tbar_type_info.case_update_count += 1
     self.line_info.case_update_count += 1
     self.func_info.case_update_count += 1
     self.file_info.case_update_count += 1
-    score = self.tbar_switch_info.fl_score
+    score = self.tbar_case_info.fl_score
     self.tbar_type_info.fl_score_list.remove(score)
     self.line_info.fl_score_list.remove(score)
     self.func_info.fl_score_list.remove(score)
     self.file_info.fl_score_list.remove(score)
   def to_json_object(self) -> dict:
     conf = dict()
-    conf["location"] = self.tbar_switch_info.location
+    conf["location"] = self.tbar_case_info.location
     return conf
   def to_str(self) -> str:
-    return f"{self.tbar_switch_info.location}"
+    return f"{self.tbar_case_info.location}"
   def __str__(self) -> str:
     return self.to_str()
   def to_str_sw_cs(self) -> str:
@@ -1312,7 +1312,7 @@ class MSVState:
   new_revlog: str
   patch_info_map: Dict[str, FileInfo]  # fine_name: str -> FileInfo
   file_info_map: Dict[str, FileInfo]   # file_name: str -> FileInfo
-  switch_case_map: Dict[str, Union[CaseInfo, TbarSwitchInfo]] # f"{switch_number}-{case_number}" -> SwitchCase
+  switch_case_map: Dict[str, Union[CaseInfo, TbarCaseInfo]] # f"{switch_number}-{case_number}" -> SwitchCase
   selected_patch: List[PatchInfo] # Unused
   selected_test: List[int]        # Unused
   used_patch: List[MSVResult]

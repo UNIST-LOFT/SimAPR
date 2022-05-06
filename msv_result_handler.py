@@ -246,10 +246,10 @@ def remove_patch(state: MSVState, patches: List[PatchInfo]) -> None:
 def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: bool) -> None:
   selected_patch.update_result(result, 1, state.params[PT.b_dec],state.use_exp_alpha, state.use_fixed_beta)
   if state.mode == MSVMode.seapr:
-    # if selected_patch.tbar_switch_info.location in state.patch_ranking:
-    #   state.patch_ranking.remove(selected_patch.tbar_switch_info.location)
+    # if selected_patch.tbar_case_info.location in state.patch_ranking:
+    #   state.patch_ranking.remove(selected_patch.tbar_case_info.location)
     for loc in state.patch_ranking:
-      ts: TbarSwitchInfo = state.switch_case_map[loc]
+      ts: TbarCaseInfo = state.switch_case_map[loc]
       tbar_type_info = ts.parent
       line_info = tbar_type_info.parent
       func_info = line_info.parent

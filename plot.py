@@ -6,7 +6,7 @@ from matplotlib import use
 import matplotlib.pyplot as plt
 from matplotlib.transforms import Bbox
 import json
-from core import PatchInfo, FileInfo, FuncInfo, LineInfo, SwitchInfo, TypeInfo, CaseInfo, PatchType, PassFail, TbarPatchInfo, TbarSwitchInfo, TbarTypeInfo
+from core import PatchInfo, FileInfo, FuncInfo, LineInfo, SwitchInfo, TypeInfo, CaseInfo, PatchType, PassFail, TbarPatchInfo, TbarCaseInfo, TbarTypeInfo
 from typing import List, Tuple, Dict
 import numpy as np
 
@@ -768,7 +768,7 @@ def batch_plot(correct_patch_csv: str, in_dir: str) -> None:
     f.write(csv)  
 
 
-def read_info_tbar(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, TbarSwitchInfo]]:
+def read_info_tbar(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, TbarCaseInfo]]:
   with open(os.path.join(work_dir, 'switch-info.json'), 'r') as f:
     info = json.load(f)
     # Read test informations (which tests to run, which of them are failing test or passing test)
@@ -777,7 +777,7 @@ def read_info_tbar(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, TbarSw
     # score_map = dict()
     # Read rules to build patch tree structure
     file_map: Dict[str, FileInfo] = dict()
-    switch_case_map: Dict[str, TbarSwitchInfo] = dict()
+    switch_case_map: Dict[str, TbarCaseInfo] = dict()
     ff_map: Dict[str, Dict[str, Tuple[int, int]]] = dict()
     for file in info["func_locations"]:
       file_name = file["file"]
@@ -829,10 +829,10 @@ def read_info_tbar(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, TbarSw
           if mut not in line_info.tbar_type_info_map:
             line_info.tbar_type_info_map[mut] = TbarTypeInfo(line_info, mut)
           tbar_type_info = line_info.tbar_type_info_map[mut]
-          tbar_switch_info = TbarSwitchInfo(tbar_type_info, location, start, end)
-          tbar_type_info.tbar_switch_info_map[location] = tbar_switch_info
-          switch_case_map[location] = tbar_switch_info
-          tbar_switch_info.fl_score = fl_score
+          tbar_case_info = TbarCaseInfo(tbar_type_info, location, start, end)
+          tbar_type_info.tbar_case_info_map[location] = tbar_case_info
+          switch_case_map[location] = tbar_case_info
+          tbar_case_info.fl_score = fl_score
           tbar_type_info.fl_score_list.append(fl_score)
           tbar_type_info.total_case_info += 1
           line_info.fl_score_list.append(fl_score)
@@ -851,11 +851,11 @@ def read_info_tbar(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, TbarSw
   buggy_project = info["project_name"]
   return file_map, switch_case_map
 
-def tbar_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_patch: str, file_map: Dict[str, FileInfo], switch_case_map: Dict[str, TbarSwitchInfo]) -> None:
+def tbar_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_patch: str, file_map: Dict[str, FileInfo], switch_case_map: Dict[str, TbarCaseInfo]) -> None:
   if switch_case_map is None:
     file_map, switch_case_map = read_info_tbar(work_dir)
-  correct_tbar_switch = switch_case_map[correct_patch]
-  correct_tbar_type = correct_tbar_switch.parent
+  correct_tbar_case = switch_case_map[correct_patch]
+  correct_tbar_type = correct_tbar_case.parent
   correct_line = correct_tbar_type.parent
   correct_func = correct_line.parent
   correct_file = correct_func.parent
@@ -878,8 +878,8 @@ def tbar_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_p
       if result:
         total += 1
       config = data["config"][0]
-      tbar_switch = switch_case_map[config["location"]]
-      tbar_type = tbar_switch.parent
+      tbar_case = switch_case_map[config["location"]]
+      tbar_type = tbar_case.parent
       line = tbar_type.parent
       func = line.parent
       file = func.parent
@@ -892,7 +892,7 @@ def tbar_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_p
             dist -= 1
             if tbar_type == correct_tbar_type:
               dist -= 1
-              if tbar_switch == correct_tbar_switch:
+              if tbar_case == correct_tbar_case:
                 dist -= 1
       x.append(iter)
       y.append(dist)
@@ -903,7 +903,7 @@ def tbar_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_p
         x_p.append(iter)
         y_p.append(dist)
   y_tick = np.arange(0, 6)
-  y_label = ["switch", "type", "line", "func", "file", "diff"]
+  y_label = ["case", "type", "line", "func", "file", "diff"]
   plt.clf()
   plt.figure(figsize=(max(24, max(x) // 80), 14))
   fig, ax1 = plt.subplots(1, 1, figsize=(max(24, max(x) // 80), 14))
@@ -921,7 +921,7 @@ def tbar_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_p
   plt.savefig(out_file)
   return correct_iter, correct_time
 
-def tbar_barchart(msv_result_file: str, title: str, work_dir: str, correct_patch: str, switch_info_info: Dict[str, FileInfo] = None, switch_case_map: Dict[str, TbarSwitchInfo] = None, msv_dist_file: str = None, ) -> None:
+def tbar_barchart(msv_result_file: str, title: str, work_dir: str, correct_patch: str, switch_info_info: Dict[str, FileInfo] = None, switch_case_map: Dict[str, TbarCaseInfo] = None, msv_dist_file: str = None, ) -> None:
   if switch_info_info is None:
     switch_info_info, switch_case_map = read_info(work_dir)
   result_file_map: Dict[FileInfo, PassFail] = dict()
@@ -937,8 +937,8 @@ def tbar_barchart(msv_result_file: str, title: str, work_dir: str, correct_patch
   cond = ""
   if len(token) == 2:
     cond = token[1]
-  correct_tbar_switch = switch_case_map[sw_cs]
-  correct_tbar_type = correct_tbar_switch.parent
+  correct_tbar_case = switch_case_map[sw_cs]
+  correct_tbar_type = correct_tbar_case.parent
   correct_line = correct_tbar_type.parent
   correct_func = correct_line.parent
   correct_file = correct_func.parent
@@ -953,8 +953,8 @@ def tbar_barchart(msv_result_file: str, title: str, work_dir: str, correct_patch
         total += 1
       config = data["config"][0]
       #print(config)
-      tbar_switch = switch_case_map[config["location"]]
-      tbar_type = tbar_switch.parent
+      tbar_case = switch_case_map[config["location"]]
+      tbar_type = tbar_case.parent
       line_info = tbar_type.parent
       func_info = line_info.parent
       file_info = func_info.parent

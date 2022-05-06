@@ -296,7 +296,7 @@ def read_info_recoder(state: MSVState) -> None:
             line_info.tbar_type_info_map[mode] = RecoderTypeInfo(line_info, mode)
           recoder_type_info = line_info.tbar_type_info_map[mode]
           recoder_case_info = RecoderCaseInfo(recoder_type_info, location, case_id)
-          recoder_type_info.tbar_switch_info_map[case_id] = recoder_case_info
+          recoder_type_info.tbar_case_info_map[case_id] = recoder_case_info
           state.switch_case_map[f"{line_info.line_id}-{case_id}"] = recoder_case_info
           recoder_case_info.prob = prob
           recoder_type_info.total_case_info += 1
@@ -395,10 +395,10 @@ def read_info_tbar(state: MSVState) -> None:
           if mut not in line_info.tbar_type_info_map:
             line_info.tbar_type_info_map[mut] = TbarTypeInfo(line_info, mut)
           tbar_type_info = line_info.tbar_type_info_map[mut]
-          tbar_switch_info = TbarSwitchInfo(tbar_type_info, location, start, end)
-          tbar_type_info.tbar_switch_info_map[location] = tbar_switch_info
-          state.switch_case_map[location] = tbar_switch_info
-          tbar_switch_info.fl_score = fl_score
+          tbar_case_info = TbarCaseInfo(tbar_type_info, location, start, end)
+          tbar_type_info.tbar_case_info_map[location] = tbar_case_info
+          state.switch_case_map[location] = tbar_case_info
+          tbar_case_info.fl_score = fl_score
           tbar_type_info.fl_score_list.append(fl_score)
           tbar_type_info.total_case_info += 1
           line_info.fl_score_list.append(fl_score)
@@ -426,8 +426,8 @@ def read_info_tbar(state: MSVState) -> None:
   temp_line: LineInfo = LineInfo(temp_func, 0)
   # temp_file.line_info_list.append(temp_line)
   temp_tbar_type = TbarTypeInfo(temp_line, "original_mut")
-  temp_tbar_switch = TbarSwitchInfo(temp_tbar_type, "original", 0, 0)
-  state.switch_case_map["original"] = temp_tbar_switch
+  temp_tbar_case = TbarCaseInfo(temp_tbar_type, "original", 0, 0)
+  state.switch_case_map["original"] = temp_tbar_case
   if state.use_simulation_mode:
     with open(state.prev_data, "r") as f:
       prev_info = json.load(f)
@@ -915,7 +915,11 @@ def main(argv: list):
     state.msv_logger.info('Initialized!')
     msv = MSV(state)
   state.msv_logger.info('MSV is started')
-  msv.run()
+  try:
+    msv.run()
+  except:
+    state.msv_logger.error('MSV is crashed!!!!!!!!!!!!!!!!')
+    state.msv_logger.exception("Got exception in msv.run()")
   state.msv_logger.info('MSV is finished')
   msv.save_result()
 

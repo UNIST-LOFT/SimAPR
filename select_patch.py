@@ -848,7 +848,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   # Select type
   for tbar_type in selected_line_info.tbar_type_info_map:
     tbar_type_info = selected_line_info.tbar_type_info_map[tbar_type]
-    if len(tbar_type_info.tbar_switch_info_map) == 0:
+    if len(tbar_type_info.tbar_case_info_map) == 0:
       state.msv_logger.warning(f"No switch info in type: {tbar_type}")
       continue
     selected.append(tbar_type_info)
@@ -862,33 +862,33 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   selected_type_info: TbarTypeInfo = selected[selected_type]
   clear_list(state, p_map)
   # select tbar switch
-  for location in selected_type_info.tbar_switch_info_map:
-    location_info = selected_type_info.tbar_switch_info_map[location]
+  for location in selected_type_info.tbar_case_info_map:
+    location_info = selected_type_info.tbar_case_info_map[location]
     selected.append(location_info)
     p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
   c_map = rand_cmap
   selected_switch = select_by_probability(state, p_map, c_map)
-  selected_switch_info: TbarSwitchInfo = selected[selected_switch]
+  selected_switch_info: TbarCaseInfo = selected[selected_switch]
   clear_list(state, p_map)
   result = TbarPatchInfo(selected_switch_info)
   return result  
 
 def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
-  selected_patch: TbarSwitchInfo = None
+  selected_patch: TbarCaseInfo = None
   max_score = 0.0
   has_high_qual_patch = False
   for loc in state.patch_ranking:
-    tbar_switch_info: TbarSwitchInfo = state.switch_case_map[loc]
-    if loc not in tbar_switch_info.parent.tbar_switch_info_map:
-      state.msv_logger.warning(f"No switch info  {tbar_switch_info.location} in patch: {tbar_switch_info.parent.tbar_switch_info_map}")
+    tbar_case_info: TbarCaseInfo = state.switch_case_map[loc]
+    if loc not in tbar_case_info.parent.tbar_case_info_map:
+      state.msv_logger.warning(f"No switch info  {tbar_case_info.location} in patch: {tbar_case_info.parent.tbar_case_info_map}")
       continue
-    cur_score = get_ochiai(tbar_switch_info.same_seapr_pf.pass_count, tbar_switch_info.same_seapr_pf.fail_count,
-      tbar_switch_info.diff_seapr_pf.pass_count, tbar_switch_info.diff_seapr_pf.fail_count)
-    if tbar_switch_info.same_seapr_pf.pass_count > 0:
+    cur_score = get_ochiai(tbar_case_info.same_seapr_pf.pass_count, tbar_case_info.same_seapr_pf.fail_count,
+      tbar_case_info.diff_seapr_pf.pass_count, tbar_case_info.diff_seapr_pf.fail_count)
+    if tbar_case_info.same_seapr_pf.pass_count > 0:
       has_high_qual_patch = True
     if cur_score > max_score:
       max_score = cur_score
-      selected_patch = tbar_switch_info
+      selected_patch = tbar_case_info
   if not has_high_qual_patch:
     return select_patch_tbar(state)
   state.patch_ranking.remove(selected_patch.location)
