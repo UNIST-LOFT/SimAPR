@@ -279,3 +279,38 @@ def update_positive_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, 
 
 def remove_patch_tbar(state: MSVState, selected_patch: TbarPatchInfo) -> None:
   selected_patch.remove_patch(state)
+
+def update_result_recoder(state: MSVState, selected_patch: RecoderPatchInfo, result: bool) -> None:
+  selected_patch.update_result(result, 1, state.params[PT.b_dec],state.use_exp_alpha, state.use_fixed_beta)
+  if state.mode == MSVMode.seapr:
+    for loc in state.patch_ranking:
+      rc: RecoderCaseInfo = state.switch_case_map[loc]
+      recoder_type_info = rc.parent
+      line_info = recoder_type_info.parent
+      func_info = line_info.parent
+      file_info = func_info.parent
+      is_share = False
+      same_pattern = False
+      if state.seapr_layer == SeAPRMode.FILE:
+        if selected_patch.file_info == file_info:
+          is_share = True
+      elif state.seapr_layer == SeAPRMode.FUNCTION:
+        if selected_patch.func_info == func_info:
+          is_share = True
+      elif state.seapr_layer == SeAPRMode.LINE:
+        if selected_patch.line_info == line_info:
+          is_share = True
+      if selected_patch.recoder_type_info.mode == recoder_type_info.mode:
+        same_pattern = True
+      if is_share:
+        rc.same_seapr_pf.update(result, 1)
+      else:
+        rc.diff_seapr_pf.update(result, 1)
+      if state.use_pattern and result and same_pattern:
+        rc.same_seapr_pf.update(True, 1)
+
+def update_positive_result_recoder(state: MSVState, selected_patch: RecoderPatchInfo, result: bool) -> None:
+  selected_patch.update_result_positive(result, 1, state.params[PT.b_dec],state.use_exp_alpha, state.use_fixed_beta)
+
+def remove_patch_recoder(state: MSVState, selected_patch: RecoderPatchInfo) -> None:
+  selected_patch.remove_patch(state)

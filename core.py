@@ -807,6 +807,14 @@ class MSVEnvVar:
   @staticmethod
   def get_new_env_recoder(state: 'MSVState', patch: 'RecoderPatchInfo', test: str) -> Dict[str, str]:
     new_env = os.environ.copy()
+    new_env["MSV_UUID"] = str(state.uuid)
+    new_env["MSV_TEST"] = str(test)
+    new_env["MSV_LOCATION"] = str(patch.recoder_case_info.location)
+    new_env["MSV_WORKDIR"] = state.work_dir
+    new_env["MSV_BUGGY_LOCATION"] = patch.file_info.file_name
+    new_env["MSV_BUGGY_PROJECT"] = state.d4j_buggy_project
+    new_env["MSV_OUTPUT_DISTANCE_FILE"] = f"/tmp/{uuid.uuid4()}.out"
+    return new_env
   @staticmethod
   def get_new_env_d4j_positive_tests(state: 'MSVState', tests: List[str], new_env: Dict[str, str]) -> Dict[str, str]:
     test_list = f"/tmp/{uuid.uuid4()}.list"
