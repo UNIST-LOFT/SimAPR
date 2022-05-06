@@ -551,7 +551,7 @@ def read_info(state: MSVState) -> None:
               #case_list = type_info.case_info_list
               for c in types[t.value]:
                 is_condition = t.value == PatchType.TightenConditionKind.value or t.value==PatchType.LoosenConditionKind.value or t.value==PatchType.IfExitKind.value or \
-                            t.value==PatchType.GuardKind.value or t.value==PatchType.SpecialGuardKind.value or t.value==PatchType.ConditionKind.value
+                            t.value==PatchType.GuardKind.value or t.value==PatchType.SpecialGuardKind.value or t.value==PatchType.ConditionKind.value or t.value==PatchType.MSVExtAddConditionKind.value
                 case_info = CaseInfo(type_info, int(c), is_condition)
                 case_info.location = file_line
                 if t not in line_info.type_priority:
@@ -734,18 +734,19 @@ def gen_php_regression_test(state: MSVState):
       for line in f.readlines():
         if '{' in line:
           is_start=True
-        elif '}' in test:
+        elif '}' in line:
           break
         elif is_start:
           words=line.strip()
           begin=words.find('"')
           end=words.rfind('"')
           test=words[begin+1:end]
-          actual_test_names.append((i,test))
+          if i in state.positive_test:
+            actual_test_names.append((i,test))
           i+=1
 
     regression_tests=set()
-    with open(state.msv_path+'/php-new-regression-test','r') as f:
+    with open(state.msv_path+'/tools/php-new-regression-test','r') as f:
       for line in f.readlines():
         words=line.strip()
         begin=words.find('"')
