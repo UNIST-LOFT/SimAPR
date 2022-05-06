@@ -893,3 +893,171 @@ def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
     return select_patch_tbar(state)
   state.patch_ranking.remove(selected_patch.location)
   return TbarPatchInfo(selected_patch)
+
+def select_patch_recoder_mode(state: MSVState) -> RecoderPatchInfo:
+  if state.mode == MSVMode.recoder:
+    return select_patch_recoder(state)
+  elif state.mode == MSVMode.seapr:
+    return select_patch_recoder_seapr(state)
+  else:
+    return select_patch_recoder_guided(state)
+
+def select_patch_recoder(state: MSVState) -> RecoderPatchInfo:
+  p = state.patch_ranking.pop(0)
+  caseinfo = state.switch_case_map[p]
+  return RecoderPatchInfo(caseinfo)
+
+def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
+  if state.iteration < state.max_initial_trial:
+    return select_patch_recoder(state)
+  pf_rand = PassFail()
+  rand_cmap = {PT.rand: 1.0}
+  # lists which are used to store the scores of each patch
+  selected = list()
+  p_rand = list() # random
+  p_b = list() # basic
+  p_p = list() # plausible
+  p_fl = list() # fault localization
+  p_o = list() # output
+  p_odist = list() # output distance
+  p_cov = list() # coverage
+  p_map = {PT.selected: selected, PT.rand: p_rand, PT.basic: p_b, 
+          PT.plau: p_p, PT.fl: p_fl, PT.out: p_o, PT.cov: p_cov, PT.odist: p_odist}
+  c_map = state.c_map.copy()
+  iter = max(0, state.iteration - state.max_initial_trial)
+  # TODO: decay * alpha + beta * 0.5 ** (iter / halflife)
+  decay = 1 - (0.5 ** (iter / state.params[PT.halflife]))
+  for key in state.params_decay:
+    diff = state.params_decay[key] - state.params[key]
+    if key not in c_map:
+      continue
+    c_map[key] += diff * decay
+
+  explore=False
+  # Initially, select patch with prophet strategy
+  selected_case_info = None
+  # state.max_initial_trial = 0
+  explore = state.params[PT.epsilon] > random.random()
+  if explore:
+    state.msv_logger.info("Explore!")
+    c_map[PT.cov] = state.params[PT.cov] # default = 2.0
+    if PT.cov in state.params_decay:
+      diff = state.params_decay[PT.cov] - state.params[PT.cov]
+      c_map[PT.cov] += diff * decay
+  else:
+    state.msv_logger.info("Exploit!")
+
+  for file_name in state.file_info_map:
+    file_info = state.file_info_map[file_name]
+    if len(file_info.func_info_map) == 0:
+      state.msv_logger.warning(f"No line info in file: {file_info.file_name}")
+      continue
+    selected.append(file_info)
+    p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_fl.append(max(file_info.fl_score_list))
+    p_b.append(file_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_p.append(file_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_o.append(file_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    if explore:
+      min_coverage=1.0
+      for func in file_info.func_info_map.values():
+        if min_coverage>func.case_update_count/func.total_case_info:
+          min_coverage=func.case_update_count/func.total_case_info
+      p_cov.append(1 - min_coverage)
+  selected_file = select_by_probability(state, p_map, c_map)
+  selected_file_info: FileInfo = selected[selected_file]
+  clear_list(state, p_map)
+
+  # Select function
+  for func_id in selected_file_info.func_info_map:
+    func_info = selected_file_info.func_info_map[func_id]
+    if len(func_info.line_info_map) == 0:
+      state.msv_logger.warning(f"No line info in function: {func_info.func_name}")
+      continue
+    selected.append(func_info)
+    p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_fl.append(max(func_info.fl_score_list))
+    p_b.append(func_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_p.append(func_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_o.append(func_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    if explore:
+      min_coverage=1.0
+      for line in func_info.line_info_map.values():
+        if min_coverage>line.case_update_count/line.total_case_info:
+          min_coverage=line.case_update_count/line.total_case_info
+      p_cov.append(1 - min_coverage)
+  selected_func = select_by_probability(state, p_map, c_map)
+  selected_func_info: FuncInfo = selected[selected_func]
+  clear_list(state, p_map)
+
+  # Select line
+  for line_uuid in selected_func_info.line_info_map:
+    line_info = selected_func_info.line_info_map[line_uuid]
+    if len(line_info.tbar_type_info_map) == 0:
+      state.msv_logger.warning(f"No switch info in line: {selected_file_info.file_name}: {line_info.line_number}")
+      continue
+    selected.append(line_info)
+    p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_fl.append(line_info.fl_score)
+    p_b.append(line_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_p.append(line_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_o.append(line_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    if explore:
+      min_coverage=1.0
+      for switch in line_info.switch_info_map.values():
+        if min_coverage>switch.case_update_count/switch.total_case_info:
+          min_coverage=switch.case_update_count/switch.total_case_info
+      p_cov.append(1 - min_coverage)
+  selected_line = select_by_probability(state, p_map, c_map)
+  selected_line_info: LineInfo = selected[selected_line]
+  clear_list(state, p_map)
+  del c_map[PT.fl] # No fl below line
+
+  # Select type
+  for recoder_type in selected_line_info.recoder_type_info_map:
+    recoder_type_info = selected_line_info.recoder_type_info_map[recoder_type]
+    if len(recoder_type_info.recoder_case_info_map) == 0:
+      state.msv_logger.warning(f"No switch info in type: {recoder_type}")
+      continue
+    selected.append(recoder_type_info)
+    p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_b.append(recoder_type_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_p.append(recoder_type_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_o.append(recoder_type_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    if explore:
+      p_cov.append(1 - (recoder_type_info.case_update_count/recoder_type_info.total_case_info))
+  selected_type = select_by_probability(state, p_map, c_map)
+  selected_type_info: RecoderTypeInfo = selected[selected_type]
+  clear_list(state, p_map)
+  # select tbar switch
+  for case_id in selected_type_info.recoder_case_info_map:
+    case_info = selected_type_info.recoder_case_info_map[case_id]
+    selected.append(case_info)
+    p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+  c_map = rand_cmap
+  selected_case = select_by_probability(state, p_map, c_map)
+  selected_case_info: RecoderCaseInfo = selected[selected_case]
+  clear_list(state, p_map)
+  result = RecoderPatchInfo(selected_case_info)
+  return result  
+
+def select_patch_recoder_seapr(state: MSVState) -> TbarPatchInfo:
+  selected_patch: RecoderCaseInfo = None
+  max_score = 0.0
+  has_high_qual_patch = False
+  for loc in state.patch_ranking:
+    recoder_case_info: RecoderCaseInfo = state.switch_case_map[loc]
+    if loc not in recoder_case_info.parent.recoder_case_info_map:
+      state.msv_logger.warning(f"No switch info  {recoder_case_info.location} in patch: {recoder_case_info.parent.recoder_case_info_map}")
+      continue
+    cur_score = get_ochiai(recoder_case_info.same_seapr_pf.pass_count, recoder_case_info.same_seapr_pf.fail_count,
+      recoder_case_info.diff_seapr_pf.pass_count, recoder_case_info.diff_seapr_pf.fail_count)
+    if recoder_case_info.same_seapr_pf.pass_count > 0:
+      has_high_qual_patch = True
+    if cur_score > max_score:
+      max_score = cur_score
+      selected_patch = recoder_case_info
+  if not has_high_qual_patch:
+    return select_patch_recoder(state)
+  state.patch_ranking.remove(selected_patch.location)
+  return RecoderPatchInfo(selected_patch)
