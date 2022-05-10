@@ -1289,7 +1289,7 @@ class RecoderPatchInfo:
       state.msv_logger.critical(f"{self.recoder_case_info.case_id} not in {self.recoder_type_info.recoder_case_info_map}")
     del self.recoder_type_info.recoder_case_info_map[self.recoder_case_info.case_id]
     if len(self.recoder_type_info.recoder_case_info_map) == 0:
-      del self.line_info.recoder_type_info_map[self.recoder_type_info.mutation]
+      del self.line_info.recoder_type_info_map[self.recoder_type_info.mode]
     if len(self.line_info.recoder_type_info_map) == 0:
       score = self.line_info.fl_score
       self.func_info.fl_score_list.remove(score)
