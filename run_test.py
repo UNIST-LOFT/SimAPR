@@ -186,7 +186,7 @@ def run_fail_test_d4j(state: MSVState, new_env: Dict[str, str]) -> Tuple[int, bo
   se: bytes
   is_timeout = False
   try:
-    so, se = test_proc.communicate(timeout=state.timeout/1000)
+    so, se = test_proc.communicate()
   except:  # timeout
     state.msv_logger.info("Timeout!")
     pid=test_proc.pid
