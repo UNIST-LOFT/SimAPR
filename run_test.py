@@ -212,7 +212,7 @@ def run_fail_test_d4j(state: MSVState, new_env: Dict[str, str]) -> Tuple[int, bo
   if len(tokens) < 2:
     state.msv_logger.info("Result: FAIL - output is not valid")
     return -1, False, is_timeout
-  if tokens[0] != new_env["MSV_TEST"] or not tokens[1].isdigit():
+  if tokens[0] != new_env["MSV_TEST"] or not tokens[1].strip().isdigit():
     state.msv_logger.info(f"Result: Fail... exp: {new_env['MSV_TEST']} out: {result_str}")
     return -1, False, False
   if int(tokens[1]) > 0:

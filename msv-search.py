@@ -234,8 +234,8 @@ def read_fl_info(state: MSVState, priority:dict) -> list:
 def read_info_recoder(state: MSVState) -> None:
   with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
     info = json.load(f)
-    state.d4j_negative_test = info['d4j_negative_test']
-    state.d4j_positive_test = info['d4j_positive_test']
+    state.d4j_negative_test = info['failing_test_cases']
+    state.d4j_positive_test = info['passing_test_cases']
     file_map = state.file_info_map
     ff_map: Dict[str, Dict[str, Tuple[int, int]]] = dict()
     for file in info["func_locations"]:
@@ -251,13 +251,13 @@ def read_info_recoder(state: MSVState) -> None:
     for file in info['rules']:
       if len(file['lines']) == 0:
         continue
-      file_info = FileInfo(file['file_name'])
-      file_name = file['file_name']
-      file_map[file['file_name']] = file_info
+      file_info = FileInfo(file['file'])
+      file_name = file['file']
+      file_map[file['file']] = file_info
       for line in file['lines']:
         func_info = None
         line_info = None
-        if len(line['switches']) == 0:
+        if len(line['cases']) == 0:
           continue
         for func_id in ff_map[file_name]:
           fn_range = ff_map[file_name][func_id]
@@ -269,6 +269,7 @@ def read_info_recoder(state: MSVState) -> None:
             else:
               func_info = file_info.func_info_map[func_id]
             line_info = LineInfo(func_info, int(line['line']))
+            line_info.line_id = line['id']
             func_info.line_info_map[line_info.uuid] = line_info
             break
         if line_info is None:
@@ -300,6 +301,10 @@ def read_info_recoder(state: MSVState) -> None:
           state.switch_case_map[f"{line_info.line_id}-{case_id}"] = recoder_case_info
           state.patch_location_map[location] = recoder_case_info
           recoder_case_info.prob = prob
+          recoder_type_info.score_list.append(prob)
+          line_info.score_list.append(prob)
+          func_info.score_list.append(prob)
+          file_info.score_list.append(prob)
           recoder_type_info.total_case_info += 1
           line_info.total_case_info += 1
           func_info.total_case_info += 1

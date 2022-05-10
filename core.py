@@ -1458,6 +1458,7 @@ class MSVState:
     self.d4j_positive_test = list()
     self.d4j_test_fail_num_map = dict()
     self.d4j_buggy_project: str = ""
+    self.patch_location_map = dict()
     self.profile_map = dict()
     self.priority_list = list()
     self.fl_score:List[LocationScore]=list()
