@@ -75,7 +75,7 @@ class MSV:
       if self.state.mode==MSVMode.guided and not self.state.use_condition_synthesis:
         if pass_result:
           result_handler.update_result_positive(self.state, selected_patch, pass_result, fail_tests)
-          result_handler.append_result(self.state, selected_patch, True,pass_result)
+          result_handler.append_result(self.state, selected_patch, True,pass_result, True)
           result_handler.remove_patch(self.state, selected_patch)
           self.state.msv_logger.info("Result: PASS")
         else:
@@ -83,7 +83,7 @@ class MSV:
           condition.remove_same_pass_record(self.state,selected_patch[0],failed_list[0])
       else:
         result_handler.update_result_positive(self.state, selected_patch, pass_result, fail_tests)
-        result_handler.append_result(self.state, selected_patch, True,pass_result)
+        result_handler.append_result(self.state, selected_patch, True,pass_result, True)
         result_handler.remove_patch(self.state, selected_patch)
         self.state.msv_logger.info("Result: PASS" if pass_result else "Result: FAIL")
 
@@ -93,7 +93,7 @@ class MSV:
     
     else:
       result_handler.update_result(self.state, selected_patch, pass_exist, 1, selected_test, new_env)
-      result_handler.append_result(self.state, selected_patch, pass_exist,False)
+      result_handler.append_result(self.state, selected_patch, pass_exist,False, False)
       result_handler.remove_patch(self.state, selected_patch)
     return pass_exist
     
@@ -348,7 +348,7 @@ class MSVTbar(MSV):
       if result and self.state.use_pass_test:
         pass_result = self.run_test_positive(patch)
         result_handler.update_positive_result_tbar(self.state, patch, pass_result)
-      result_handler.append_result(self.state, [patch], pass_exists, pass_result)
+      result_handler.append_result(self.state, [patch], pass_exists, pass_result, result)
       result_handler.remove_patch_tbar(self.state, patch)
 
 class MSVRecoder(MSVTbar):
@@ -405,5 +405,36 @@ class MSVRecoder(MSVTbar):
       if result and self.state.use_pass_test:
         pass_result = self.run_test_positive(patch)
         result_handler.update_positive_result_recoder(self.state, patch, pass_result)
-      result_handler.append_result(self.state, [patch], pass_exists, pass_result)
+      result_handler.append_result(self.state, [patch], pass_exists, pass_result, result)
+      result_handler.remove_patch_recoder(self.state, patch)
+  def run_sim(self) -> None:
+    self.initialize()
+    self.state.start_time = time.time()
+    self.state.cycle = 0
+    while(self.is_alive()):
+      self.state.iteration += 1
+      self.state.msv_logger.info(f'[{self.state.cycle}]: executing')
+      patch = select_patch.select_patch_recoder_mode(self.state)
+      pass_exists = False
+      result = True
+      pass_result = False
+      key = patch.to_str_sw_cs()
+      if key not in self.state.simulation_data:
+        for neg in self.state.d4j_negative_test:
+          fail_num, run_result = self.run_test(patch, neg)
+          if fail_num >= 0 and self.state.d4j_test_fail_num_map[neg] > fail_num:
+            self.state.msv_logger.info(f"Partial pass: {neg}, fail {fail_num}/{self.state.d4j_test_fail_num_map[neg]}")
+            pass_exists = True
+          if not run_result:
+            result = False
+            if self.state.use_partial_validation:
+              break
+        result_handler.update_result_recoder(self.state, patch, pass_exists)
+        if result and self.state.use_pass_test:
+          pass_result = self.run_test_positive(patch)
+          result_handler.update_positive_result_recoder(self.state, patch, pass_result)
+      else:
+        msv_result = self.state.simulation_data[key]
+        
+      result_handler.append_result(self.state, [patch], pass_exists, pass_result, result)
       result_handler.remove_patch_recoder(self.state, patch)
