@@ -6,7 +6,7 @@ from matplotlib import use
 import matplotlib.pyplot as plt
 from matplotlib.transforms import Bbox
 import json
-from core import PatchInfo, FileInfo, FuncInfo, LineInfo, SwitchInfo, TypeInfo, CaseInfo, PatchType, PassFail, TbarPatchInfo, TbarCaseInfo, TbarTypeInfo
+from core import PatchInfo, FileInfo, FuncInfo, LineInfo, RecoderCaseInfo, SwitchInfo, TypeInfo, CaseInfo, PatchType, PassFail, TbarPatchInfo, TbarCaseInfo, TbarTypeInfo, RecoderTypeInfo, RecoderCaseInfo
 from typing import List, Tuple, Dict
 import numpy as np
 
@@ -1076,6 +1076,87 @@ def tbar_barchart(msv_result_file: str, title: str, work_dir: str, correct_patch
   print(f"save to {out_file}")
   plt.savefig(out_file)
 
+def read_info_recoder(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, RecoderCaseInfo]]:
+  with open(os.path.join(work_dir, 'switch-info.json'), 'r') as f:
+    info = json.load(f)
+    file_map: Dict[str, FileInfo] = dict()
+    ff_map: Dict[str, Dict[str, Tuple[int, int]]] = dict()
+    switch_case_map: Dict[str, RecoderCaseInfo] = dict()
+    for file in info["func_locations"]:
+      file_name = file["file"]
+      ff_map[file_name] = dict()
+      for func in file["functions"]:
+        func_name = func["function"]
+        begin = func["begin"]
+        end = func["end"]
+        func_id = f"{func_name}:{begin}-{end}"
+        ff_map[file_name][func_id] = (begin, end)
+    for file in info['rules']:
+      if len(file['lines']) == 0:
+        continue
+      file_info = FileInfo(file['file'])
+      file_name = file['file']
+      file_map[file['file']] = file_info
+      for line in file['lines']:
+        func_info = None
+        line_info = None
+        if len(line['cases']) == 0:
+          continue
+        for func_id in ff_map[file_name]:
+          fn_range = ff_map[file_name][func_id]
+          line_num = int(line['line'])
+          if fn_range[0] <= line_num <= fn_range[1]:
+            if func_id not in file_info.func_info_map:
+              func_info = FuncInfo(file_info, func_id.split(":")[0], fn_range[0], fn_range[1])
+              file_info.func_info_map[func_info.id] = func_info
+            else:
+              func_info = file_info.func_info_map[func_id]
+            line_info = LineInfo(func_info, int(line['line']))
+            line_info.line_id = line['id']
+            func_info.line_info_map[line_info.uuid] = line_info
+            break
+        if line_info is None:
+          # No function found for this line!!!
+          # Use default...
+          func_info = FuncInfo(file_info, "no_function_found", int(line['line']), int(line['line']))
+          file_info.func_info_map[func_info.id] = func_info
+          ff_map[file_name][func_info.id] = (int(line['line']), int(line['line']))
+          line_info = LineInfo(func_info, int(line['line']))
+          line_info.line_id = line['id']
+          func_info.line_info_map[line_info.uuid] = line_info
+        fl_score = line["fl_score"]
+        line_info.fl_score = fl_score
+        func_info.fl_score_list.append(fl_score)
+        file_info.fl_score_list.append(fl_score)
+        for cs in line["cases"]:
+          case_id = cs["case"]
+          mode = cs["mode"]
+          location = cs["location"]
+          prob = cs["prob"]
+          if mode not in line_info.recoder_type_info_map:
+            line_info.recoder_type_info_map[mode] = RecoderTypeInfo(line_info, mode)
+          recoder_type_info = line_info.recoder_type_info_map[mode]
+          recoder_case_info = RecoderCaseInfo(recoder_type_info, location, case_id)
+          recoder_type_info.recoder_case_info_map[case_id] = recoder_case_info
+          switch_case_map[f"{line_info.line_id}-{case_id}"] = recoder_case_info
+          recoder_case_info.prob = prob
+          recoder_type_info.score_list.append(prob)
+          line_info.score_list.append(prob)
+          func_info.score_list.append(prob)
+          file_info.score_list.append(prob)
+          recoder_type_info.total_case_info += 1
+          line_info.total_case_info += 1
+          func_info.total_case_info += 1
+          file_info.total_case_info += 1
+        if len(line_info.recoder_type_info_map)==0:
+          del func_info.line_info_map[line_info.uuid]
+      for func in file_info.func_info_map.copy().values():
+        if len(func.line_info_map)==0:
+          del file_info.func_info_map[func.id]
+      if len(file_info.func_info_map)==0:
+        del file_map[file_info.file_name]
+  return file_map, switch_case_map
+
 
 
 def tbar_batch_plot(correct_patch_csv: str, in_dir: str) -> None:
@@ -1112,6 +1193,124 @@ def tbar_batch_plot(correct_patch_csv: str, in_dir: str) -> None:
         iter, tm = tbar_plot_correct(result_file, dir, workdir, cp, switch_info, switch_case_map)
         csv += f"{proj},{cp},{iter},{tm}\n"
         tbar_barchart(result_file, dir, workdir, cp, switch_info, switch_case_map)
+  print(csv)
+  with open("result.csv", "w") as f:
+    f.write(csv)  
+
+
+def recoder_plot_correct(msv_result_file: str, title: str, correct_patch: str, file_map: Dict[str, FileInfo], switch_case_map: Dict[str, RecoderCaseInfo]) -> Tuple[int, float, int, float]:
+  if not os.path.exists(msv_result_file):
+    return 0,0,0,0
+  correct_recoder_case = switch_case_map[correct_patch]
+  correct_recoder_type = correct_recoder_case.parent
+  correct_line_info = correct_recoder_type.parent
+  correct_func_info = correct_line_info.parent
+  correct_file_info = correct_func_info.parent
+  x = list()
+  y = list()
+  x_b = list()
+  y_b = list()
+  x_p = list()
+  y_p = list()
+  correct_iter = 0
+  correct_tm = 0
+  found_plausible = False
+  plausible_iter = 0
+  plausible_time = 0
+  with open(msv_result_file, "r") as f:
+    info = json.load(f)
+    for data in info:
+      iter: int = data["iteration"]
+      tm: float = data["time"]
+      result: bool = data["result"]
+      pass_result: bool = data["pass_result"]
+      config = data["config"][0]
+      key = f"{config['id']}-{config['case']}"
+      recoder_case = switch_case_map[key]
+      recoder_type = recoder_case.parent
+      line_info = recoder_type.parent
+      func_info = line_info.parent
+      file_info = func_info.parent
+      if pass_result and not found_plausible:
+        plausible_iter = iter
+        plausible_time = tm
+      dist = 5
+      if file_info == correct_file_info:
+        dist -= 1
+        if func_info == correct_func_info:
+          dist -= 1
+          if line_info == correct_line_info:
+            dist -= 1
+            if recoder_type == correct_recoder_type:
+              dist -= 1
+              if recoder_case == correct_recoder_case:
+                correct_iter = iter
+                correct_tm = tm
+                dist -= 1
+      x.append(iter)
+      y.append(dist)
+      if result:
+        x_b.append(iter)
+        y_b.append(dist)
+      if pass_result:
+        x_p.append(iter)
+        y_p.append(dist)
+  y_tick = np.arange(0, 6)
+  y_label = ["case", "type", "line", "func", "file", "diff"]
+  plt.clf()
+  plt.figure(figsize=(max(24, max(x) // 80), 14))
+  fig, ax1 = plt.subplots(1, 1, figsize=(max(24, max(x) // 80), 14))
+  x_len = max(24, max(x) // 80)
+  ax1.scatter(x, y, s=1, color='k', marker=",")
+  ax1.scatter(x_b, y_b, color='r', marker=".")
+  ax1.scatter(x_p, y_p, color='c', marker="*")
+  ax1.set_yticks(y_tick)
+  ax1.set_yticklabels(labels=y_label)
+  ax1.set_title(title + " - basic(r),plausible(c)", fontsize=20)
+  ax1.set_xlabel("iteration", fontsize=16)
+  ax1.set_ylabel("distance from correct patch", fontsize=20)
+  out_file = os.path.join(os.path.dirname(msv_result_file), "out.png")
+  plt.grid()
+  plt.savefig(out_file)
+  return correct_iter, correct_tm, plausible_iter, plausible_time
+
+
+def recoder_batch_plot(correct_patch_csv: str, in_dir: str) -> None:
+  csv = ""
+  all: Dict[str, str] = dict()
+  with open(correct_patch_csv, "r") as f:
+    for line in f.readlines():
+      token = line.strip().split(",")
+      if len(token) < 2:
+        continue
+      all[token[0]] = token[1]
+  info = dict()
+  for dir in sorted(os.listdir(in_dir)):
+    if not os.path.isdir(os.path.join(in_dir, dir)):
+      continue
+    print(dir)
+    tokens = dir.split("-")
+    proj = tokens[0]
+    bid = tokens[1]
+    bugid = f"{proj}-{bid}"
+    if bugid not in all:
+      continue
+
+    result_file = os.path.join(in_dir, dir, "msv-result.json")
+    print(result_file)
+    if os.path.exists(result_file):
+      cp = all[bugid]
+      print(f"{dir} : {cp}")
+      workdir = "/root/project/Recoder/d4j/" + bugid 
+      if not os.path.exists(workdir):
+        print(f"{workdir} not exists!!!!!!!")
+        continue
+      if workdir not in info:
+        info[workdir] = read_info_recoder(workdir)
+      switch_info, switch_case_map = info[workdir]
+      iter, tm, pi, pt = recoder_plot_correct(result_file, dir, cp, switch_info, switch_case_map)
+      csv += f"{dir},{cp},{iter},{tm},{pi},{pt}\n"
+      # tbar_barchart(result_file, dir, workdir, cp, switch_info, switch_case_map)
   print(csv)
   with open("result.csv", "w") as f:
     f.write(csv)  
@@ -1162,6 +1361,8 @@ def main(argv):
     tbar_batch_plot(correct_patch, result_file)
   elif mode == "find":
     batch_find(correct_patch, result_file)
+  elif mode == "recoder":
+    recoder_batch_plot(correct_patch, result_file)
   else:
     msv_plot_correct(result_file, title, work_dir, correct_patch)
   return 0
