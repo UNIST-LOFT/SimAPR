@@ -379,6 +379,7 @@ class MSVRecoder(MSVTbar):
       run_result, failed_tests = run_test.run_pass_test_d4j_exec(self.state, new_env, self.state.d4j_positive_test)
       if not run_result:
         for ft in failed_tests:
+          self.state.msv_logger.info("Removing {} from positive test".format(ft))
           self.state.d4j_positive_test.remove(ft)
   def run(self) -> None:
     self.initialize()

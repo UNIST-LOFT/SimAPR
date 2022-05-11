@@ -272,8 +272,7 @@ def run_pass_test_d4j_exec(state: MSVState, new_env: Dict[str, str], tests: List
     if sw not in passed_tests:
       state.msv_logger.info(f"Result: FAIL at test {sw}")
       failed_tests.add(sw)
-      return False, failed_tests
-  return True, failed_tests
+  return len(failed_tests) == 0, failed_tests
 
 def run_pass_test_d4j(state: MSVState, new_env: Dict[str, str]) -> bool:
   state.cycle += 1
@@ -287,7 +286,7 @@ def run_pass_test_d4j(state: MSVState, new_env: Dict[str, str]) -> bool:
     if not run_result:
       return False
   tests.clear()
-  for test in state.d4j_negative_test:
+  for test in state.d4j_positive_test:
     if test not in state.failed_positive_test:
       tests.append(test)
   tmp_env = MSVEnvVar.get_new_env_d4j_positive_tests(state, tests, new_env.copy())
