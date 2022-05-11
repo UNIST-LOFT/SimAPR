@@ -1225,7 +1225,7 @@ def recoder_plot_correct(msv_result_file: str, title: str, correct_patch: str, f
       result: bool = data["result"]
       pass_result: bool = data["pass_result"]
       config = data["config"][0]
-      key = f"{config['id']}-{config['case']}"
+      key = f"{config['id']}-{config['case_id']}"
       recoder_case = switch_case_map[key]
       recoder_type = recoder_case.parent
       line_info = recoder_type.parent
