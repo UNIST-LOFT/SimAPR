@@ -283,7 +283,7 @@ def run_pass_test_d4j(state: MSVState, new_env: Dict[str, str]) -> bool:
     for test in state.failed_positive_test:
       tests.append(test)
     tmp_env = MSVEnvVar.get_new_env_d4j_positive_tests(state, tests, new_env.copy())
-    run_result, failed_tests = run_pass_test_d4j_exec(state, tmp_env)
+    run_result, failed_tests = run_pass_test_d4j_exec(state, tmp_env, tests)
     if not run_result:
       return False
   tests.clear()
