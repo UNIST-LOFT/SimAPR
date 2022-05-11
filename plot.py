@@ -1255,6 +1255,8 @@ def recoder_plot_correct(msv_result_file: str, title: str, correct_patch: str, f
       if pass_result:
         x_p.append(iter)
         y_p.append(dist)
+  if len(x) == 0:
+    return 0,0,0,0
   y_tick = np.arange(0, 6)
   y_label = ["case", "type", "line", "func", "file", "diff"]
   plt.clf()
