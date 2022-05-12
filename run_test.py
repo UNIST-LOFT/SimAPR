@@ -202,6 +202,7 @@ def run_fail_test_d4j(state: MSVState, new_env: Dict[str, str]) -> Tuple[int, bo
   result_str = so.decode('utf-8').strip()
   if result_str == "":
     state.msv_logger.info("Result: FAIL - output is empty")
+    state.msv_logger.debug("STDERR: " + se.decode('utf-8').strip())
     return -1, False, is_timeout
   state.msv_logger.debug(result_str)
 
