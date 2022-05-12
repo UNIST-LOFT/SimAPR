@@ -1,4 +1,3 @@
-from turtle import back
 from core import *
 
 # n: number of hierarchy
@@ -883,7 +882,7 @@ def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
   for loc in state.patch_ranking:
     tbar_case_info: TbarCaseInfo = state.switch_case_map[loc]
     if loc not in tbar_case_info.parent.tbar_case_info_map:
-      state.msv_logger.warning(f"No switch info  {tbar_case_info.location} in patch: {tbar_case_info.parent.tbar_case_info_map}")
+      # state.msv_logger.warning(f"No switch info  {tbar_case_info.location} in patch: {tbar_case_info.parent.tbar_case_info_map}")
       continue
     cur_score = get_ochiai(tbar_case_info.same_seapr_pf.pass_count, tbar_case_info.same_seapr_pf.fail_count,
       tbar_case_info.diff_seapr_pf.pass_count, tbar_case_info.diff_seapr_pf.fail_count)
@@ -997,7 +996,7 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
   # Select line
   for line_uuid in selected_func_info.line_info_map:
     line_info = selected_func_info.line_info_map[line_uuid]
-    if len(line_info.tbar_type_info_map) == 0:
+    if len(line_info.recoder_type_info_map) == 0:
       state.msv_logger.warning(f"No switch info in line: {selected_file_info.file_name}: {line_info.line_number}")
       continue
     selected.append(line_info)
@@ -1056,7 +1055,7 @@ def select_patch_recoder_seapr(state: MSVState) -> TbarPatchInfo:
   for loc in state.patch_ranking:
     recoder_case_info: RecoderCaseInfo = state.switch_case_map[loc]
     if loc not in recoder_case_info.parent.recoder_case_info_map:
-      state.msv_logger.warning(f"No switch info  {recoder_case_info.location} in patch: {recoder_case_info.parent.recoder_case_info_map}")
+      # state.msv_logger.warning(f"No switch info  {recoder_case_info.location} in patch: {recoder_case_info.parent.recoder_case_info_map}")
       continue
     cur_score = get_ochiai(recoder_case_info.same_seapr_pf.pass_count, recoder_case_info.same_seapr_pf.fail_count,
       recoder_case_info.diff_seapr_pf.pass_count, recoder_case_info.diff_seapr_pf.fail_count)
