@@ -1,3 +1,4 @@
+from turtle import back
 from core import *
 
 # n: number of hierarchy
@@ -29,7 +30,7 @@ def select_by_probability_hierarchical(state: MSVState, n: int, p1: List[float],
       p3_select_pf.append(p3[p1_select[p2_select[i]]])
     return p1_select[p2_select[PassFail.select_by_probability(p3_select_pf)]]
 
-def select_by_probability(state: MSVState, p_map: Dict[PT, List[float]], c_map: Dict[PT, float]) -> int:
+def select_by_probability(state: MSVState, p_map: Dict[PT, List[float]], c_map: Dict[PT, float], normalize: Set[PT] = {}) -> int:
   if len(p_map) == 0:
     state.msv_logger.critical("Empty p_map!!!!")
     return -1
@@ -44,7 +45,7 @@ def select_by_probability(state: MSVState, p_map: Dict[PT, List[float]], c_map: 
     if len(p) == 0:
       state.msv_logger.warning(f"Empty p {key}!!!!")
       continue
-    if key == PT.fl or key == PT.cov:
+    if key in normalize:
       p = PassFail.normalize(p)
       sigma = state.params[PT.sigma]  # default: 0.1
       p = PassFail.select_value_normal(p, sigma)
@@ -246,6 +247,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
   p_map = {PT.selected: selected, PT.rand: p_rand, PT.basic: p_b, 
           PT.plau: p_p, PT.fl: p_fl, PT.out: p_o, PT.cov: p_cov, PT.odist: p_odist}
   c_map = state.c_map.copy()
+  normalize = {PT.fl, PT.cov}
   iter = max(0, state.iteration - state.max_initial_trial)
   decay = 1 - (0.5 ** (iter / state.params[PT.halflife]))
   for key in state.params_decay:
@@ -296,7 +298,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
           if min_coverage>func.case_update_count/func.total_case_info:
             min_coverage=func.case_update_count/func.total_case_info
         p_cov.append(1 - min_coverage)
-    selected_file = select_by_probability(state, p_map, c_map)
+    selected_file = select_by_probability(state, p_map, c_map, normalize)
     selected_file_info: FileInfo = selected[selected_file]
     clear_list(state, p_map)
 
@@ -321,7 +323,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
           if min_coverage>line.case_update_count/line.total_case_info:
             min_coverage=line.case_update_count/line.total_case_info
         p_cov.append(1 - min_coverage)
-    selected_func = select_by_probability(state, p_map, c_map)
+    selected_func = select_by_probability(state, p_map, c_map, normalize)
     selected_func_info: FuncInfo = selected[selected_func]
     clear_list(state, p_map)
 
@@ -346,7 +348,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
           if min_coverage>switch.case_update_count/switch.total_case_info:
             min_coverage=switch.case_update_count/switch.total_case_info
         p_cov.append(1 - min_coverage)
-    selected_line = select_by_probability(state, p_map, c_map)
+    selected_line = select_by_probability(state, p_map, c_map, normalize)
     selected_line_info: LineInfo = selected[selected_line]
     clear_list(state, p_map)
     if not state.use_prophet_score:
@@ -372,7 +374,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
           if min_coverage>type_.case_update_count/type_.total_case_info:
             min_coverage=type_.case_update_count/type_.total_case_info
         p_cov.append(1 - min_coverage)
-    selected_switch = select_by_probability(state, p_map, c_map)
+    selected_switch = select_by_probability(state, p_map, c_map, normalize)
     selected_switch_info: SwitchInfo = selected[selected_switch]
     clear_list(state, p_map)
 
@@ -392,7 +394,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       if explore and not is_rand:
         coverage = type_info.case_update_count / type_info.total_case_info
         p_cov.append(1 - coverage)
-    selected_type = select_by_probability(state, p_map, c_map)
+    selected_type = select_by_probability(state, p_map, c_map, normalize)
     selected_type_info: TypeInfo = selected[selected_type]
     clear_list(state, p_map)
 
@@ -416,7 +418,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       p_o.append(case_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       if use_language_model:
         p_fl.append(1.0 - case_info.func_distance)
-    selected_case = select_by_probability(state, p_map, c_map)
+    selected_case = select_by_probability(state, p_map, c_map, normalize)
     selected_case_info: CaseInfo = selected[selected_case]
     clear_list(state, p_map)
     # state.msv_logger.debug(f"{selected_file_info.file_name}({len(selected_file_info.line_info_list)}):" +
@@ -756,6 +758,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   p_map = {PT.selected: selected, PT.rand: p_rand, PT.basic: p_b, 
           PT.plau: p_p, PT.fl: p_fl, PT.out: p_o, PT.cov: p_cov, PT.odist: p_odist}
   c_map = state.c_map.copy()
+  normalize: Set[PT] = {PT.fl, PT.cov}
   iter = max(0, state.iteration - state.max_initial_trial)
   # TODO: decay * alpha + beta * 0.5 ** (iter / halflife)
   decay = 1 - (0.5 ** (iter / state.params[PT.halflife]))
@@ -796,7 +799,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
         if min_coverage>func.case_update_count/func.total_case_info:
           min_coverage=func.case_update_count/func.total_case_info
       p_cov.append(1 - min_coverage)
-  selected_file = select_by_probability(state, p_map, c_map)
+  selected_file = select_by_probability(state, p_map, c_map, normalize)
   selected_file_info: FileInfo = selected[selected_file]
   clear_list(state, p_map)
 
@@ -818,7 +821,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
         if min_coverage>line.case_update_count/line.total_case_info:
           min_coverage=line.case_update_count/line.total_case_info
       p_cov.append(1 - min_coverage)
-  selected_func = select_by_probability(state, p_map, c_map)
+  selected_func = select_by_probability(state, p_map, c_map, normalize)
   selected_func_info: FuncInfo = selected[selected_func]
   clear_list(state, p_map)
 
@@ -840,7 +843,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
         if min_coverage>switch.case_update_count/switch.total_case_info:
           min_coverage=switch.case_update_count/switch.total_case_info
       p_cov.append(1 - min_coverage)
-  selected_line = select_by_probability(state, p_map, c_map)
+  selected_line = select_by_probability(state, p_map, c_map, normalize)
   selected_line_info: LineInfo = selected[selected_line]
   clear_list(state, p_map)
   del c_map[PT.fl] # No fl below line
@@ -858,7 +861,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
     p_o.append(tbar_type_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     if explore:
       p_cov.append(1 - (tbar_type_info.case_update_count/tbar_type_info.total_case_info))
-  selected_type = select_by_probability(state, p_map, c_map)
+  selected_type = select_by_probability(state, p_map, c_map, normalize)
   selected_type_info: TbarTypeInfo = selected[selected_type]
   clear_list(state, p_map)
   # select tbar switch
@@ -867,7 +870,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
     selected.append(location_info)
     p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
   c_map = rand_cmap
-  selected_switch = select_by_probability(state, p_map, c_map)
+  selected_switch = select_by_probability(state, p_map, c_map, normalize)
   selected_switch_info: TbarCaseInfo = selected[selected_switch]
   clear_list(state, p_map)
   result = TbarPatchInfo(selected_switch_info)
@@ -924,6 +927,7 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
   p_map = {PT.selected: selected, PT.rand: p_rand, PT.basic: p_b, 
           PT.plau: p_p, PT.fl: p_fl, PT.out: p_o, PT.cov: p_cov, PT.odist: p_odist}
   c_map = state.c_map.copy()
+  normalize: Set[PT] = {PT.fl, PT.cov}
   iter = max(0, state.iteration - state.max_initial_trial)
   # TODO: decay * alpha + beta * 0.5 ** (iter / halflife)
   decay = 1 - (0.5 ** (iter / state.params[PT.halflife]))
@@ -964,7 +968,7 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
         if min_coverage>func.case_update_count/func.total_case_info:
           min_coverage=func.case_update_count/func.total_case_info
       p_cov.append(1 - min_coverage)
-  selected_file = select_by_probability(state, p_map, c_map)
+  selected_file = select_by_probability(state, p_map, c_map, normalize)
   selected_file_info: FileInfo = selected[selected_file]
   clear_list(state, p_map)
 
@@ -986,7 +990,7 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
         if min_coverage>line.case_update_count/line.total_case_info:
           min_coverage=line.case_update_count/line.total_case_info
       p_cov.append(1 - min_coverage)
-  selected_func = select_by_probability(state, p_map, c_map)
+  selected_func = select_by_probability(state, p_map, c_map, normalize)
   selected_func_info: FuncInfo = selected[selected_func]
   clear_list(state, p_map)
 
@@ -1008,9 +1012,10 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
         if min_coverage>switch.case_update_count/switch.total_case_info:
           min_coverage=switch.case_update_count/switch.total_case_info
       p_cov.append(1 - min_coverage)
-  selected_line = select_by_probability(state, p_map, c_map)
+  selected_line = select_by_probability(state, p_map, c_map, normalize)
   selected_line_info: LineInfo = selected[selected_line]
   clear_list(state, p_map)
+  backup_fl = c_map[PT.fl]
   del c_map[PT.fl] # No fl below line
 
   # Select type
@@ -1026,7 +1031,7 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
     p_o.append(recoder_type_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     if explore:
       p_cov.append(1 - (recoder_type_info.case_update_count/recoder_type_info.total_case_info))
-  selected_type = select_by_probability(state, p_map, c_map)
+  selected_type = select_by_probability(state, p_map, c_map, normalize)
   selected_type_info: RecoderTypeInfo = selected[selected_type]
   clear_list(state, p_map)
   # select tbar switch
@@ -1034,8 +1039,11 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
     case_info = selected_type_info.recoder_case_info_map[case_id]
     selected.append(case_info)
     p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-  c_map = rand_cmap
-  selected_case = select_by_probability(state, p_map, c_map)
+    p_fl.append(case_info.prob)
+  c_map = rand_cmap.copy()
+  c_map[PT.fl] = backup_fl
+  normalize.remove(PT.fl)
+  selected_case = select_by_probability(state, p_map, c_map, normalize)
   selected_case_info: RecoderCaseInfo = selected[selected_case]
   clear_list(state, p_map)
   result = RecoderPatchInfo(selected_case_info)
