@@ -386,18 +386,19 @@ def read_info_tbar(state: MSVState) -> None:
         line_info = None
         if len(line['switches']) == 0:
           continue
-        for func_id in ff_map[file_name]:
-          fn_range = ff_map[file_name][func_id]
-          line_num = int(line['line'])
-          if fn_range[0] <= line_num <= fn_range[1]:
-            if func_id not in file_info.func_info_map:
-              func_info = FuncInfo(file_info, func_id.split(":")[0], fn_range[0], fn_range[1])
-              file_info.func_info_map[func_info.id] = func_info
-            else:
-              func_info = file_info.func_info_map[func_id]
-            line_info = LineInfo(func_info, int(line['line']))
-            func_info.line_info_map[line_info.uuid] = line_info
-            break
+        if file_name in ff_map:
+          for func_id in ff_map[file_name]:
+            fn_range = ff_map[file_name][func_id]
+            line_num = int(line['line'])
+            if fn_range[0] <= line_num <= fn_range[1]:
+              if func_id not in file_info.func_info_map:
+                func_info = FuncInfo(file_info, func_id.split(":")[0], fn_range[0], fn_range[1])
+                file_info.func_info_map[func_info.id] = func_info
+              else:
+                func_info = file_info.func_info_map[func_id]
+              line_info = LineInfo(func_info, int(line['line']))
+              func_info.line_info_map[line_info.uuid] = line_info
+              break
         #line_info = LineInfo(file_info, int(line['line']))
         if line_info is None:
           # No function found for this line!!!
