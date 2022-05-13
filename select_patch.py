@@ -1054,7 +1054,7 @@ def select_patch_recoder_seapr(state: MSVState) -> TbarPatchInfo:
   has_high_qual_patch = False
   for loc in state.patch_ranking:
     recoder_case_info: RecoderCaseInfo = state.switch_case_map[loc]
-    if loc not in recoder_case_info.parent.recoder_case_info_map:
+    if recoder_case_info.case_id not in recoder_case_info.parent.recoder_case_info_map:
       # state.msv_logger.warning(f"No switch info  {recoder_case_info.location} in patch: {recoder_case_info.parent.recoder_case_info_map}")
       continue
     cur_score = get_ochiai(recoder_case_info.same_seapr_pf.pass_count, recoder_case_info.same_seapr_pf.fail_count,
