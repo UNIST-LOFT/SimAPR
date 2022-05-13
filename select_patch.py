@@ -1048,7 +1048,7 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
   result = RecoderPatchInfo(selected_case_info)
   return result  
 
-def select_patch_recoder_seapr(state: MSVState) -> TbarPatchInfo:
+def select_patch_recoder_seapr(state: MSVState) -> RecoderPatchInfo:
   selected_patch: RecoderCaseInfo = None
   max_score = 0.0
   has_high_qual_patch = False
@@ -1066,5 +1066,5 @@ def select_patch_recoder_seapr(state: MSVState) -> TbarPatchInfo:
       selected_patch = recoder_case_info
   if not has_high_qual_patch:
     return select_patch_recoder(state)
-  state.patch_ranking.remove(selected_patch.location)
+  state.patch_ranking.remove(selected_patch.to_str())
   return RecoderPatchInfo(selected_patch)
