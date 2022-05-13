@@ -568,10 +568,10 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     clear_list(state, p_map)
     return PatchInfo(selected_case_info, selected_operator_info, selected_variable_info, selected_constant_info)
 
-def get_ochiai(e_f: float, e_p: float, n_f: float, n_p: float) -> float:
-  if e_f == 0.0:
+def get_ochiai(s_h: float, s_l: float, d_h: float, d_l: float) -> float:
+  if s_h == 0.0:
     return 0.0
-  return e_f / (((e_f + n_f) * (e_f + e_p)) ** 0.5)
+  return s_h / (((s_h + d_h) * (s_h + s_l)) ** 0.5)
 
 def select_patch_seapr(state: MSVState, test: int) -> PatchInfo:
   if test < 0:
