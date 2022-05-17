@@ -380,6 +380,8 @@ def read_info_tbar(state: MSVState) -> None:
         continue
       file_info = FileInfo(file['file_name'])
       file_name = file['file_name']
+      if "class_name" in file:
+        file_info.class_name = file["class_name"]
       file_map[file['file_name']] = file_info
       for line in file['lines']:
         func_info = None

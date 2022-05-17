@@ -195,6 +195,7 @@ class FileInfo:
     self.has_init_patch=False
     self.case_update_count: int = 0
     self.score_list: List[float] = list()
+    self.class_name: str = ""
   def __hash__(self) -> int:
     return hash(self.file_name)
   def __eq__(self, other) -> bool:
@@ -804,6 +805,8 @@ class MSVEnvVar:
     new_env["MSV_BUGGY_PROJECT"] = state.d4j_buggy_project
     new_env["MSV_OUTPUT_DISTANCE_FILE"] = f"/tmp/{uuid.uuid4()}.out"
     new_env["MSV_TIMEOUT"] = str(state.timeout)
+    if patch.file_info.class_name != "":
+      new_env["MSV_CLASS_NAME"] = patch.file_info.class_name
     return new_env
   @staticmethod
   def get_new_env_recoder(state: 'MSVState', patch: 'RecoderPatchInfo', test: str) -> Dict[str, str]:
