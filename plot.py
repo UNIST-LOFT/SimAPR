@@ -1234,6 +1234,7 @@ def recoder_plot_correct(msv_result_file: str, title: str, correct_patch: str, f
       if pass_result and not found_plausible:
         plausible_iter = iter
         plausible_time = tm
+        found_plausible = True
       dist = 5
       if file_info == correct_file_info:
         dist -= 1
