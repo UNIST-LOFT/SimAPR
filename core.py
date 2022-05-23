@@ -803,7 +803,7 @@ class MSVEnvVar:
     new_env["MSV_WORKDIR"] = state.work_dir
     new_env["MSV_BUGGY_LOCATION"] = patch.file_info.file_name
     new_env["MSV_BUGGY_PROJECT"] = state.d4j_buggy_project
-    new_env["MSV_OUTPUT_DISTANCE_FILE"] = f"/tmp/{uuid.uuid4()}.out"
+    new_env["MSV_TEST_RESULT_FILE"] = f"/tmp/{uuid.uuid4()}.out"
     new_env["MSV_TIMEOUT"] = str(state.timeout)
     if patch.file_info.class_name != "":
       new_env["MSV_CLASS_NAME"] = patch.file_info.class_name
@@ -817,7 +817,7 @@ class MSVEnvVar:
     new_env["MSV_WORKDIR"] = state.work_dir
     new_env["MSV_BUGGY_LOCATION"] = patch.file_info.file_name
     new_env["MSV_BUGGY_PROJECT"] = state.d4j_buggy_project
-    new_env["MSV_OUTPUT_DISTANCE_FILE"] = f"/tmp/{uuid.uuid4()}.out"
+    new_env["MSV_TEST_RESULT_FILE"] = f"/tmp/{uuid.uuid4()}.out"
     new_env["MSV_TIMEOUT"] = str(state.timeout)
     return new_env
   @staticmethod
@@ -1437,11 +1437,13 @@ class MSVState:
   recoder_mode: bool
   use_exp_alpha: bool
   patch_ranking: List[str]
+  total_basic_patch: int
   def __init__(self) -> None:
     self.mode = MSVMode.guided
     self.msv_path = ""
     self.msv_uuid = str(uuid.uuid4())
     self.cycle = 0
+    self.total_basic_patch = 0
     self.start_time = time.time()
     self.last_save_time = self.start_time
     self.is_alive = True
