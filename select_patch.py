@@ -248,7 +248,8 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
   c_map = state.c_map.copy()
   normalize = {PT.fl, PT.cov}
   iter = max(0, state.iteration - state.max_initial_trial)
-  decay = 1 - (0.5 ** (iter / state.params[PT.halflife]))
+  # decay = 1 - (0.5 ** (iter / state.params[PT.halflife]))
+  decay = 1 - (0.5 ** (state.total_basic_patch / state.params[PT.halflife]))
   for key in state.params_decay:
     diff = state.params_decay[key] - state.params[key]
     if key not in c_map:
@@ -760,7 +761,8 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   normalize: Set[PT] = {PT.fl, PT.cov}
   iter = max(0, state.iteration - state.max_initial_trial)
   # TODO: decay * alpha + beta * 0.5 ** (iter / halflife)
-  decay = 1 - (0.5 ** (iter / state.params[PT.halflife]))
+  # decay = 1 - (0.5 ** (iter / state.params[PT.halflife]))
+  decay = 1 - (0.5 ** (state.total_basic_patch / state.params[PT.halflife]))
   for key in state.params_decay:
     diff = state.params_decay[key] - state.params[key]
     if key not in c_map:
@@ -929,7 +931,8 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
   normalize: Set[PT] = {PT.fl, PT.cov}
   iter = max(0, state.iteration - state.max_initial_trial)
   # TODO: decay * alpha + beta * 0.5 ** (iter / halflife)
-  decay = 1 - (0.5 ** (iter / state.params[PT.halflife]))
+  decay = 1 - (0.5 ** (state.total_basic_patch / state.params[PT.halflife]))
+  #decay = 1 - (0.5 ** (iter / state.params[PT.halflife]))
   for key in state.params_decay:
     diff = state.params_decay[key] - state.params[key]
     if key not in c_map:
