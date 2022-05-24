@@ -803,7 +803,7 @@ class MSVEnvVar:
     new_env["MSV_WORKDIR"] = state.work_dir
     new_env["MSV_BUGGY_LOCATION"] = patch.file_info.file_name
     new_env["MSV_BUGGY_PROJECT"] = state.d4j_buggy_project
-    new_env["MSV_TEST_RESULT_FILE"] = f"/tmp/{uuid.uuid4()}.out"
+    new_env["MSV_OUTPUT_DISTANCE_FILE"] = f"/tmp/{uuid.uuid4()}.out"
     new_env["MSV_TIMEOUT"] = str(state.timeout)
     if patch.file_info.class_name != "":
       new_env["MSV_CLASS_NAME"] = patch.file_info.class_name
@@ -817,7 +817,7 @@ class MSVEnvVar:
     new_env["MSV_WORKDIR"] = state.work_dir
     new_env["MSV_BUGGY_LOCATION"] = patch.file_info.file_name
     new_env["MSV_BUGGY_PROJECT"] = state.d4j_buggy_project
-    new_env["MSV_TEST_RESULT_FILE"] = f"/tmp/{uuid.uuid4()}.out"
+    new_env["MSV_OUTPUT_DISTANCE_FILE"] = f"/tmp/{uuid.uuid4()}.out"
     new_env["MSV_TIMEOUT"] = str(state.timeout)
     return new_env
   @staticmethod
@@ -1415,6 +1415,7 @@ class MSVState:
   positive_test: List[int]        # Positive test case
   d4j_negative_test: List[str]
   d4j_positive_test: List[str]
+  d4j_failed_passing_tests: List[str]
   d4j_test_fail_num_map: Dict[str, int]
   profile_map: Dict[int, Profile] # test case number -> Profile (of original program)
   priority_list: List[Tuple[str, int, float]]  # (file_name, line_number, score)
@@ -1467,6 +1468,7 @@ class MSVState:
     self.positive_test = list()
     self.d4j_negative_test = list()
     self.d4j_positive_test = list()
+    self.d4j_failed_passing_tests = list()
     self.d4j_test_fail_num_map = dict()
     self.d4j_buggy_project: str = ""
     self.patch_location_map = dict()

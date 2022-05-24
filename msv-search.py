@@ -352,6 +352,7 @@ def read_info_tbar(state: MSVState) -> None:
     # Read test informations (which tests to run, which of them are failing test or passing test)
     state.d4j_negative_test = info["failing_test_cases"]
     state.d4j_positive_test = info["passing_test_cases"]
+    state.d4j_failed_passing_tests = set(info["failed_passing_tests"])
     # Read priority (for FL score)
     n = len(info['priority'])
     # score_map = dict()
