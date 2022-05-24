@@ -350,6 +350,43 @@ class MSVTbar(MSV):
         result_handler.update_positive_result_tbar(self.state, patch, pass_result)
       result_handler.append_result(self.state, [patch], pass_exists, pass_result, result)
       result_handler.remove_patch_tbar(self.state, patch)
+  def run_sim(self) -> None:
+    self.initialize()
+    self.state.start_time = time.time()
+    self.state.cycle = 0
+    while(self.is_alive()):
+      self.state.iteration += 1
+      self.state.msv_logger.info(f'[{self.state.cycle}]: executing')
+      patch = select_patch.select_patch_tbar_mode(self.state)
+      pass_exists = False
+      result = True
+      pass_result = False
+      key = patch.tbar_case_info.location
+      if key not in self.state.simulation_data:
+        for neg in self.state.d4j_negative_test:
+          fail_num, run_result = self.run_test(patch, neg)
+          if fail_num >= 0 and self.state.d4j_test_fail_num_map[neg] > fail_num:
+            self.state.msv_logger.info(f"Partial pass: {neg}, fail {fail_num}/{self.state.d4j_test_fail_num_map[neg]}")
+            pass_exists = True
+          if not run_result:
+            result = False
+            if self.state.use_partial_validation:
+              break
+        result_handler.update_result_tbar(self.state, patch, pass_exists)
+        if result and self.state.use_pass_test:
+          pass_result = self.run_test_positive(patch)
+          result_handler.update_positive_result_tbar(self.state, patch, pass_result)
+      else:
+        msv_result = self.state.simulation_data[key]
+        pass_exists = msv_result.result
+        run_result = msv_result.pass_all_neg_test
+        pass_result = msv_result.pass_result
+        result_handler.update_result_tbar(self.state, patch, pass_exists)
+        if run_result:
+          result_handler.update_positive_result_tbar(self.state, patch, pass_result)
+      result_handler.append_result(self.state, [patch], pass_exists, pass_result, result)
+      result_handler.remove_patch_tbar(self.state, patch)
+
 
 class MSVRecoder(MSVTbar):
   def run_test(self, patch: RecoderPatchInfo, test: int) -> Tuple[int, bool]:
@@ -435,6 +472,13 @@ class MSVRecoder(MSVTbar):
           result_handler.update_positive_result_recoder(self.state, patch, pass_result)
       else:
         msv_result = self.state.simulation_data[key]
+        msv_result = self.state.simulation_data[key]
+        pass_exists = msv_result.result
+        run_result = msv_result.pass_all_neg_test
+        pass_result = msv_result.pass_result
+        result_handler.update_result_recoder(self.state, patch, pass_exists)
+        if run_result:
+          result_handler.update_positive_result_recoder(self.state, patch, pass_result)
         
       result_handler.append_result(self.state, [patch], pass_exists, pass_result, result)
       result_handler.remove_patch_recoder(self.state, patch)

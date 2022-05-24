@@ -459,22 +459,21 @@ def read_info_tbar(state: MSVState) -> None:
   temp_tbar_case = TbarCaseInfo(temp_tbar_type, "original", 0, 0)
   state.switch_case_map["original"] = temp_tbar_case
   state.patch_location_map["original"] = temp_tbar_case
-  # if state.use_simulation_mode:
-  #   with open(state.prev_data, "r") as f:
-  #     prev_info = json.load(f)
-  #     for data in prev_info:
-  #       exec=data['execution']
-  #       iter = data["iteration"]
-  #       tm = data["time"]
-  #       result = data["result"]
-  #       pass_result = data["pass_result"]
-  #       output_distance = data["output_distance"]
-  #       conf = data["config"][0]
-  #       id = conf["id"]
-  #       case = conf["case_id"]
-  #       key = f"{id}-{case}"
-  #       case_info = state.switch_case_map[key]
-  #       state.simulation_data[key] = MSVResult(exec, iter, tm, [RecoderPatchInfo(case_info)], result, pass_result, output_distance)
+  if state.use_simulation_mode:
+    with open(state.prev_data, "r") as f:
+      prev_info = json.load(f)
+      for data in prev_info:
+        exec=data['execution']
+        iter = data["iteration"]
+        tm = data["time"]
+        result = data["result"]
+        pass_result = data["pass_result"]
+        output_distance = data["output_distance"]
+        pass_all_neg_test = data["pass_all_neg_test"]
+        conf = data["config"][0]
+        key = conf["location"]
+        case_info = state.switch_case_map[key]
+        state.simulation_data[key] = MSVResult(exec, iter, tm, [RecoderPatchInfo(case_info)], result, pass_result, output_distance, pass_all_neg_test)
 
 
 def trim_with_watch_level(state: MSVState, watch_level: str, correct_str: str) -> None:
