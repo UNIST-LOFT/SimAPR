@@ -938,6 +938,7 @@ def main(argv: list):
     read_info(state)
     read_fl_score(state)
     read_repair_conf(state)
+    gen_php_regression_test(state)
     #read_regression_test_info(state)
     if state.language_model_mean!='':
       get_function_distance(state)
