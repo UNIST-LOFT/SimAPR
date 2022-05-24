@@ -834,7 +834,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
       continue
     selected.append(line_info)
     p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_fl.append(max(line_info.fl_score_list))
+    p_fl.append(line_info.fl_score)
     p_b.append(line_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_p.append(line_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_o.append(line_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))

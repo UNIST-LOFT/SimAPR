@@ -354,15 +354,13 @@ def read_info_tbar(state: MSVState) -> None:
     state.d4j_positive_test = info["passing_test_cases"]
     state.d4j_failed_passing_tests = set(info["failed_passing_tests"])
     # Read priority (for FL score)
-    n = len(info['priority'])
-    # score_map = dict()
-    for priority in info['priority']:
-      temp_file: str = priority["file"]
-      temp_line: int = priority["line"]
-      score: float = priority["score"]
-      # score_map[f"{temp_file}:{temp_line}"] = score
-      store = (temp_file, temp_line, score)
-      state.priority_list.append(store)
+    # n = len(info['priority'])
+    # for priority in info['priority']:
+    #   temp_file: str = priority["file"]
+    #   temp_line: int = priority["line"]
+    #   score: float = priority["score"]
+    #   store = (temp_file, temp_line, score)
+    #   state.priority_list.append(store)
     # Read rules to build patch tree structure
     file_map = state.file_info_map
     ff_map: Dict[str, Dict[str, Tuple[int, int]]] = dict()
@@ -414,6 +412,9 @@ def read_info_tbar(state: MSVState) -> None:
           line_info = LineInfo(func_info, int(line['line']))
           func_info.line_info_map[line_info.uuid] = line_info
         state.line_list.append(line_info)
+        line_info.fl_score = float(line['fl_score'])
+        func_info.fl_score_list.append(line_info.fl_score)
+        file_info.fl_score_list.append(line_info.fl_score)
         file_line = FileLine(file_info, line_info, 0)
         state.priority_map[f"{file_info.file_name}:{line_info.line_number}"] = file_line
         for sw in line["switches"]:
@@ -421,7 +422,7 @@ def read_info_tbar(state: MSVState) -> None:
           start = sw["start_position"]
           end = sw["end_position"]
           location = sw["location"]
-          fl_score = sw["score"]
+          # fl_score = sw["score"]
           if mut not in line_info.tbar_type_info_map:
             line_info.tbar_type_info_map[mut] = TbarTypeInfo(line_info, mut)
           tbar_type_info = line_info.tbar_type_info_map[mut]
@@ -429,14 +430,9 @@ def read_info_tbar(state: MSVState) -> None:
           tbar_type_info.tbar_case_info_map[location] = tbar_case_info
           state.switch_case_map[location] = tbar_case_info
           state.patch_location_map[location] = tbar_case_info
-          tbar_case_info.fl_score = fl_score
-          tbar_type_info.fl_score_list.append(fl_score)
           tbar_type_info.total_case_info += 1
-          line_info.fl_score_list.append(fl_score)
           line_info.total_case_info += 1
-          func_info.fl_score_list.append(fl_score)
           func_info.total_case_info += 1
-          file_info.fl_score_list.append(fl_score)
           file_info.total_case_info += 1
         if len(line_info.tbar_type_info_map)==0:
           del func_info.line_info_map[line_info.uuid]

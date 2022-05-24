@@ -240,7 +240,6 @@ class LineInfo:
     self.positive_pf = PassFail()
     self.output_pf = PassFail()
     self.fl_score=0
-    self.fl_score_list: List[float] = list()
     self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = -1.0
     self.out_dist_map: Dict[int, float] = dict()
@@ -271,7 +270,6 @@ class TbarTypeInfo:
     self.total_case_info: int = 0
     self.case_update_count: int = 0
     self.out_dist: float = -1.0
-    self.fl_score_list: List[float] = list()
     self.out_dist_map: Dict[int, float] = dict()
     self.tbar_case_info_map: Dict[str, TbarCaseInfo] = dict()
   def __hash__(self) -> int:
@@ -292,7 +290,6 @@ class TbarCaseInfo:
     self.total_case_info: int = 0
     self.case_update_count: int = 0
     self.out_dist: float = -1.0
-    self.fl_score: float = 0
     self.out_dist_map: Dict[int, float] = dict()
     self.same_seapr_pf = PassFail()
     self.diff_seapr_pf = PassFail()
@@ -1209,6 +1206,9 @@ class TbarPatchInfo:
     if len(self.tbar_type_info.tbar_case_info_map) == 0:
       del self.line_info.tbar_type_info_map[self.tbar_type_info.mutation]
     if len(self.line_info.tbar_type_info_map) == 0:
+      score = self.line_info.fl_score
+      self.func_info.fl_score_list.remove(score)
+      self.file_info.fl_score_list.remove(score)
       del self.func_info.line_info_map[self.line_info.uuid]
     if len(self.func_info.line_info_map) == 0:
       del self.file_info.func_info_map[self.func_info.id]
@@ -1219,11 +1219,6 @@ class TbarPatchInfo:
     self.line_info.case_update_count += 1
     self.func_info.case_update_count += 1
     self.file_info.case_update_count += 1
-    score = self.tbar_case_info.fl_score
-    self.tbar_type_info.fl_score_list.remove(score)
-    self.line_info.fl_score_list.remove(score)
-    self.func_info.fl_score_list.remove(score)
-    self.file_info.fl_score_list.remove(score)
   def to_json_object(self) -> dict:
     conf = dict()
     conf["location"] = self.tbar_case_info.location
