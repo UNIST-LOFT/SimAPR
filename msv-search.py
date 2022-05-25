@@ -382,10 +382,13 @@ def read_info_tbar(state: MSVState) -> None:
       if "class_name" in file:
         file_info.class_name = file["class_name"]
       file_map[file['file_name']] = file_info
+      case_key = 'switches'
       for line in file['lines']:
         func_info = None
         line_info = None
-        if len(line['switches']) == 0:
+        if case_key not in line:
+          case_key = 'cases'
+        if len(line[case_key]) == 0:
           continue
         if file_name in ff_map:
           for func_id in ff_map[file_name]:
@@ -454,7 +457,10 @@ def read_info_tbar(state: MSVState) -> None:
   # Read ranking
   ranking = info['ranking']
   for rank in ranking:
-    state.patch_ranking.append(rank['location'])
+    if isinstance(rank, str):
+      state.patch_ranking.append(rank)
+    else:
+      state.patch_ranking.append(rank['location'])
   #Add original to switch_case_map
   temp_file: FileInfo = FileInfo('original')
   temp_func = FuncInfo(temp_file, "original_fn", 0, 0)

@@ -69,19 +69,22 @@ def deleteDirectory(dir):
 
 def compile_project_updated(work_dir, buggy_project):
     compile_proc = subprocess.Popen(["defects4j", "compile", "-w", work_dir], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+    result = True
     if "MSV_TIMEOUT" in os.environ:
         timeout = int(os.environ["MSV_TIMEOUT"])
         try:
             so, se = compile_proc.communicate(timeout=timeout/1000)
         except:
             compile_proc.kill()
+            result = False
     else:
         so, se = compile_proc.communicate()
     result_str = so.decode('utf-8').strip()
     err_str = se.decode('utf-8').strip()
     print(err_str, file=sys.stderr)
-
-    return "FAIL" not in err_str
+    if "FAIL" in result_str:
+        result = False
+    return result
 
 def run_single_test(work_dir: str, buggy_project: str, test: str = None) -> Tuple[int, List[str]]:
     cmd = ["defects4j", "test", "-w", work_dir]
