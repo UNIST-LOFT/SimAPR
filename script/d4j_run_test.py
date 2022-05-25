@@ -84,7 +84,7 @@ def compile_project_updated(work_dir, buggy_project):
     result = False
   return result
 
-def run_single_test(work_dir: str, buggy_project: str, test: str = None) -> Tuple[int, List[str]]:
+def run_single_test(work_dir: str, buggy_project: str, test: str = "") -> Tuple[int, List[str]]:
   cmd = ["defects4j", "test", "-w", work_dir]
   if test != "":
     cmd = ["defects4j", "test", "-w", work_dir, "-t", test]
