@@ -417,10 +417,19 @@ def read_info_tbar(state: MSVState) -> None:
         file_info.fl_score_list.append(line_info.fl_score)
         file_line = FileLine(file_info, line_info, 0)
         state.priority_map[f"{file_info.file_name}:{line_info.line_number}"] = file_line
-        for sw in line["switches"]:
+        cses = None
+        if "cases" in line:
+          cses = line['cases']
+        else:
+          cses = line['switches']
+        for sw in cses:
           mut = sw["mutation"]
-          start = sw["start_position"]
-          end = sw["end_position"]
+          if "start_position" in sw:
+            start = sw["start_position"]
+            end = sw["end_position"]
+          else:
+            start = 0
+            end = 0
           location = sw["location"]
           # fl_score = sw["score"]
           if mut not in line_info.tbar_type_info_map:
