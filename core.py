@@ -195,6 +195,7 @@ class FileInfo:
     self.has_init_patch=False
     self.case_update_count: int = 0
     self.score_list: List[float] = list()
+    self.class_name: str = ""
   def __hash__(self) -> int:
     return hash(self.file_name)
   def __eq__(self, other) -> bool:
@@ -239,7 +240,6 @@ class LineInfo:
     self.positive_pf = PassFail()
     self.output_pf = PassFail()
     self.fl_score=0
-    self.fl_score_list: List[float] = list()
     self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = -1.0
     self.out_dist_map: Dict[int, float] = dict()
@@ -270,7 +270,6 @@ class TbarTypeInfo:
     self.total_case_info: int = 0
     self.case_update_count: int = 0
     self.out_dist: float = -1.0
-    self.fl_score_list: List[float] = list()
     self.out_dist_map: Dict[int, float] = dict()
     self.tbar_case_info_map: Dict[str, TbarCaseInfo] = dict()
   def __hash__(self) -> int:
@@ -291,7 +290,6 @@ class TbarCaseInfo:
     self.total_case_info: int = 0
     self.case_update_count: int = 0
     self.out_dist: float = -1.0
-    self.fl_score: float = 0
     self.out_dist_map: Dict[int, float] = dict()
     self.same_seapr_pf = PassFail()
     self.diff_seapr_pf = PassFail()
@@ -804,6 +802,8 @@ class MSVEnvVar:
     new_env["MSV_BUGGY_PROJECT"] = state.d4j_buggy_project
     new_env["MSV_OUTPUT_DISTANCE_FILE"] = f"/tmp/{uuid.uuid4()}.out"
     new_env["MSV_TIMEOUT"] = str(state.timeout)
+    if patch.file_info.class_name != "":
+      new_env["MSV_CLASS_NAME"] = patch.file_info.class_name
     return new_env
   @staticmethod
   def get_new_env_recoder(state: 'MSVState', patch: 'RecoderPatchInfo', test: str) -> Dict[str, str]:
@@ -819,11 +819,12 @@ class MSVEnvVar:
     return new_env
   @staticmethod
   def get_new_env_d4j_positive_tests(state: 'MSVState', tests: List[str], new_env: Dict[str, str]) -> Dict[str, str]:
-    test_list = f"/tmp/{uuid.uuid4()}.list"
-    new_env["MSV_TEST_LIST"] = test_list
-    with open(test_list, "w") as f:
-      for test in tests:
-        f.write(test + "\n")
+    # test_list = f"/tmp/{uuid.uuid4()}.list"
+    # new_env["MSV_TEST_LIST"] = test_list
+    # with open(test_list, "w") as f:
+    #   for test in tests:
+    #     f.write(test + "\n")
+    new_env["MSV_TEST"] = "ALL"
     return new_env
 
 class PatchInfo:
@@ -1206,6 +1207,9 @@ class TbarPatchInfo:
     if len(self.tbar_type_info.tbar_case_info_map) == 0:
       del self.line_info.tbar_type_info_map[self.tbar_type_info.mutation]
     if len(self.line_info.tbar_type_info_map) == 0:
+      score = self.line_info.fl_score
+      self.func_info.fl_score_list.remove(score)
+      self.file_info.fl_score_list.remove(score)
       del self.func_info.line_info_map[self.line_info.uuid]
     if len(self.func_info.line_info_map) == 0:
       del self.file_info.func_info_map[self.func_info.id]
@@ -1216,11 +1220,6 @@ class TbarPatchInfo:
     self.line_info.case_update_count += 1
     self.func_info.case_update_count += 1
     self.file_info.case_update_count += 1
-    score = self.tbar_case_info.fl_score
-    self.tbar_type_info.fl_score_list.remove(score)
-    self.line_info.fl_score_list.remove(score)
-    self.func_info.fl_score_list.remove(score)
-    self.file_info.fl_score_list.remove(score)
   def to_json_object(self) -> dict:
     conf = dict()
     conf["location"] = self.tbar_case_info.location
@@ -1412,6 +1411,7 @@ class MSVState:
   positive_test: List[int]        # Positive test case
   d4j_negative_test: List[str]
   d4j_positive_test: List[str]
+  d4j_failed_passing_tests: List[str]
   d4j_test_fail_num_map: Dict[str, int]
   profile_map: Dict[int, Profile] # test case number -> Profile (of original program)
   priority_list: List[Tuple[str, int, float]]  # (file_name, line_number, score)
@@ -1434,11 +1434,13 @@ class MSVState:
   recoder_mode: bool
   use_exp_alpha: bool
   patch_ranking: List[str]
+  total_basic_patch: int
   def __init__(self) -> None:
     self.mode = MSVMode.guided
     self.msv_path = ""
     self.msv_uuid = str(uuid.uuid4())
     self.cycle = 0
+    self.total_basic_patch = 0
     self.start_time = time.time()
     self.last_save_time = self.start_time
     self.is_alive = True
@@ -1462,6 +1464,7 @@ class MSVState:
     self.positive_test = list()
     self.d4j_negative_test = list()
     self.d4j_positive_test = list()
+    self.d4j_failed_passing_tests = list()
     self.d4j_test_fail_num_map = dict()
     self.d4j_buggy_project: str = ""
     self.patch_location_map = dict()
@@ -1498,7 +1501,7 @@ class MSVState:
     self.use_partial_validation = True
     self.max_initial_trial = 0
     self.c_map = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.5, PT.out: 0.0}
-    self.params = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.5, PT.out: 0.0, PT.cov: 2.0, PT.sigma: 0.1, PT.halflife: 0.05, PT.epsilon: 0.1,PT.b_dec:0.0,PT.a_init:1.0,PT.b_init:1.0}
+    self.params = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.5, PT.out: 0.0, PT.cov: 2.0, PT.sigma: 0.1, PT.halflife: 1.0, PT.epsilon: 0.1,PT.b_dec:0.0,PT.a_init:1.0,PT.b_init:1.0}
     self.params_decay = {PT.fl:0.5,PT.basic:1.5,PT.plau:1.5}
     self.original_output_distance_map = dict()
     self.use_msv_ext=False

@@ -176,7 +176,7 @@ def parse_location(state: MSVState, new_env: Dict[str, str], tests: Set[int]) ->
           state.test_to_location[test][file].add(i)
 
 # return (pass_exists, passed, timeout)
-def run_fail_test_d4j(state: MSVState, new_env: Dict[str, str]) -> Tuple[int, bool, bool]:
+def run_fail_test_d4j(state: MSVState, new_env: Dict[str, str]) -> Tuple[bool, bool]:
   state.cycle += 1
   state.msv_logger.info(f"@{state.cycle} Run tbar test {new_env['MSV_TEST']} with {new_env['MSV_LOCATION']}")
   args = state.args
@@ -206,32 +206,34 @@ def run_fail_test_d4j(state: MSVState, new_env: Dict[str, str]) -> Tuple[int, bo
     return -1, False, is_timeout
   state.msv_logger.debug(result_str)
 
-  result_str.strip()
-  if '\n' in result_str:
-    result_str=result_str.splitlines()[0]
-  tokens = result_str.split(":")
-  if len(tokens) < 2:
-    state.msv_logger.info("Result: FAIL - output is not valid")
+  result = True
+  failed_tests = list()
+  for line in result_str.splitlines():
+    line = line.strip()
+    if line == "":
+      continue
+    if line.startswith("#"):
+      continue
+    if line == "PASS":
+      continue
+    if line == "FAIL":
+      result = False
+      continue
+    if line.startswith("---"):
+      ft = line.replace("---", "").strip()
+      failed_tests.append(ft)
+      continue
+    state.msv_logger.warning(f"Unknown line: {line}")
+  if result:
+    state.msv_logger.info("Result: PASS")
+    return 0, True, False
+  if len(failed_tests) == 0:
+    state.msv_logger.info("Result: FAIL - no failed test")
+    state.msv_logger.info("STDERR: " + se.decode('utf-8').strip())
     return -1, False, is_timeout
-  if tokens[0] != new_env["MSV_TEST"] or not tokens[1].strip().isdigit():
-    state.msv_logger.info(f"Result: Fail... exp: {new_env['MSV_TEST']} out: {result_str}")
-    return -1, False, False
-  if int(tokens[1]) > 0:
-    state.msv_logger.info(f"Result: partial ({tokens[1]}")
-    return int(tokens[1]), False, False
-  state.msv_logger.info("Result: PASS")
-  return 0, True, False
-  # try:
-  #   if int(result_str) == selected_test:
-  #     state.msv_logger.warning("Result: PASS")
-  #     return True, is_timeout
-  #   else:
-  #     state.msv_logger.warning("Result: FAIL")
-  #     return False, is_timeout
-  # except:
-  #   state.msv_logger.warning("Cannot parse result")
-  #   state.msv_logger.warning("Result: FAIL")
-  #   return False, is_timeout
+  else:
+    state.msv_logger.info(f"Result: FAIL - {failed_tests}")
+    return len(failed_tests), False, is_timeout
 
 def run_pass_test_d4j_exec(state: MSVState, new_env: Dict[str, str], tests: List[str]) -> Tuple[bool, Set[str]]:
   state.cycle += 1
@@ -255,38 +257,49 @@ def run_pass_test_d4j_exec(state: MSVState, new_env: Dict[str, str], tests: List
       child.kill()
     test_proc.kill()
     return False
-  passed_tests = set()
   failed_tests = set()
   result_str = so.decode('utf-8').strip()
   if result_str == "":
     state.msv_logger.info("Result: FAIL")
+    state.msv_logger.debug("STDERR: " + se.decode('utf-8').strip())
     return False, failed_tests
   state.msv_logger.debug(" ".join(result_str.splitlines()))
-
+  result = True
   for line in result_str.splitlines():
+    line = line.strip()
+    if line == "":
+      continue
     if line.startswith("#"):
       continue
-    if line.strip() == "":
+    if line == "PASS":
       continue
-    passed_tests.add(line.strip())
-  for sw in tests:
-    if sw not in passed_tests:
-      state.msv_logger.info(f"Result: FAIL at test {sw}")
-      failed_tests.add(sw)
-  return len(failed_tests) == 0, failed_tests
+    if line == "FAIL":
+      result = False
+      continue
+    if line.startswith("---"):
+      ft = line.replace("---", "").strip()
+      failed_tests.add(ft)
+      continue
+    state.msv_logger.warning(f"Unknown line: {line}")
+  if result:
+    state.msv_logger.info("Result: PASS")
+    return True, failed_tests
+  if failed_tests.issubset(state.failed_positive_test):
+    return True, set()
+  return result, failed_tests.difference(state.failed_positive_test)
 
 def run_pass_test_d4j(state: MSVState, new_env: Dict[str, str]) -> bool:
   state.cycle += 1
   state.msv_logger.info(f"@{state.cycle} Run tbar test {new_env['MSV_TEST']} with {new_env['MSV_LOCATION']}")
   tests = list()
-  if len(state.failed_positive_test) > 0:
-    for test in state.failed_positive_test:
-      tests.append(test)
-    tmp_env = MSVEnvVar.get_new_env_d4j_positive_tests(state, tests, new_env.copy())
-    run_result, failed_tests = run_pass_test_d4j_exec(state, tmp_env, tests)
-    if not run_result:
-      return False
-  tests.clear()
+  # if len(state.failed_positive_test) > 0:
+  #   for test in state.failed_positive_test:
+  #     tests.append(test)
+  #   tmp_env = MSVEnvVar.get_new_env_d4j_positive_tests(state, tests, new_env.copy())
+  #   run_result, failed_tests = run_pass_test_d4j_exec(state, tmp_env, tests)
+  #   if not run_result:
+  #     return False
+  # tests.clear()
   for test in state.d4j_positive_test:
     if test not in state.failed_positive_test:
       tests.append(test)

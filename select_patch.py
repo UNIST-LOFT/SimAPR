@@ -248,7 +248,8 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
   c_map = state.c_map.copy()
   normalize = {PT.fl, PT.cov}
   iter = max(0, state.iteration - state.max_initial_trial)
-  decay = 1 - (0.5 ** (iter / state.params[PT.halflife]))
+  # decay = 1 - (0.5 ** (iter / state.params[PT.halflife]))
+  decay = 1 - (0.5 ** (state.total_basic_patch / state.params[PT.halflife]))
   for key in state.params_decay:
     diff = state.params_decay[key] - state.params[key]
     if key not in c_map:
@@ -760,7 +761,8 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   normalize: Set[PT] = {PT.fl, PT.cov}
   iter = max(0, state.iteration - state.max_initial_trial)
   # TODO: decay * alpha + beta * 0.5 ** (iter / halflife)
-  decay = 1 - (0.5 ** (iter / state.params[PT.halflife]))
+  # decay = 1 - (0.5 ** (iter / state.params[PT.halflife]))
+  decay = 1 - (0.5 ** (state.total_basic_patch / state.params[PT.halflife]))
   for key in state.params_decay:
     diff = state.params_decay[key] - state.params[key]
     if key not in c_map:
@@ -832,7 +834,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
       continue
     selected.append(line_info)
     p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_fl.append(max(line_info.fl_score_list))
+    p_fl.append(line_info.fl_score)
     p_b.append(line_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_p.append(line_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_o.append(line_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
@@ -929,7 +931,8 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
   normalize: Set[PT] = {PT.fl, PT.cov}
   iter = max(0, state.iteration - state.max_initial_trial)
   # TODO: decay * alpha + beta * 0.5 ** (iter / halflife)
-  decay = 1 - (0.5 ** (iter / state.params[PT.halflife]))
+  decay = 1 - (0.5 ** (state.total_basic_patch / state.params[PT.halflife]))
+  #decay = 1 - (0.5 ** (iter / state.params[PT.halflife]))
   for key in state.params_decay:
     diff = state.params_decay[key] - state.params[key]
     if key not in c_map:
