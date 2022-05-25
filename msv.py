@@ -337,7 +337,7 @@ class MSVTbar(MSV):
       pass_result = False
       for neg in self.state.d4j_negative_test:
         fail_num, run_result = self.run_test(patch, neg)
-        if fail_num >= 0 and self.state.d4j_test_fail_num_map[neg] > fail_num:
+        if run_result or (fail_num >= 0 and self.state.d4j_test_fail_num_map[neg] > fail_num):
           self.state.msv_logger.info(f"Partial pass: {neg}, fail {fail_num}/{self.state.d4j_test_fail_num_map[neg]}")
           pass_exists = True
         if not run_result:
@@ -350,6 +350,7 @@ class MSVTbar(MSV):
         result_handler.update_positive_result_tbar(self.state, patch, pass_result)
       result_handler.append_result(self.state, [patch], pass_exists, pass_result, result)
       result_handler.remove_patch_tbar(self.state, patch)
+  
   def run_sim(self) -> None:
     self.initialize()
     self.state.start_time = time.time()
