@@ -9,8 +9,6 @@ from pathlib import Path
 
 from psutil import Popen
 
-recoder_location = "/root/Repair"
-
 def get_paths(project):
   project_name, bug_id = project.split("_")
   bug_id = int(bug_id)
@@ -223,6 +221,5 @@ def main(argv: List[str]) -> None:
   test_project(patch_location, buggy_location, workdir, test, buggy_project, run_original, class_file)
 
 if __name__ == "__main__":
-  recoder_location = sys.argv[1]
   # simple_test()
   main(sys.argv)
