@@ -417,8 +417,17 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       p_o.append(case_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       if use_language_model:
         p_fl.append(1.0 - case_info.func_distance)
-    selected_case = select_by_probability(state, p_map, c_map, normalize)
-    selected_case_info: CaseInfo = selected[selected_case]
+
+    # Follow the original order if there's no static guidance
+    if selected_type_info.patch_type in [PatchType.ReplaceFunctionKind, PatchType.MSVExtFunctionReplaceKind, PatchType.MSVExtReplaceFunctionInConditionKind,
+                PatchType.ReplaceKind, PatchType.AddStmtKind,PatchType.AddIfStmtKind,PatchType.AddStmtAndReplaceAtomKind]:
+      for case_num in selected_type_info.case_info_map:
+        selected_case=case_num
+        selected_case_info=selected_type_info.case_info_map[case_num]
+        break
+    else:
+      selected_case = select_by_probability(state, p_map, c_map, normalize)
+      selected_case_info: CaseInfo = selected[selected_case]
     clear_list(state, p_map)
     # state.msv_logger.debug(f"{selected_file_info.file_name}({len(selected_file_info.line_info_list)}):" +
     #         f"{selected_line_info.line_number}({len(selected_line_info.switch_info_list)}):" +
@@ -869,8 +878,15 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
     selected.append(location_info)
     p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
   c_map = rand_cmap
-  selected_switch = select_by_probability(state, p_map, c_map, normalize)
-  selected_switch_info: TbarCaseInfo = selected[selected_switch]
+
+  # Follow the original order if switch is larger than 50
+  if len(selected_type_info.tbar_case_info_map)>50:
+    for case in selected_type_info.tbar_case_info_map:
+      selected_switch_info=selected_type_info.tbar_case_info_map[case]
+      break
+  else:
+    selected_switch = select_by_probability(state, p_map, c_map, normalize)
+    selected_switch_info: TbarCaseInfo = selected[selected_switch]
   clear_list(state, p_map)
   result = TbarPatchInfo(selected_switch_info)
   return result  
