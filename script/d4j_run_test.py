@@ -91,6 +91,8 @@ def run_single_test(work_dir: str, buggy_project: str, test: str = "") -> Tuple[
   test_proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   if "MSV_TIMEOUT" in os.environ:
     timeout = int(os.environ["MSV_TIMEOUT"])
+    if cmd == "":
+      timeout *= 10
     try:
       so, se = test_proc.communicate(timeout=timeout/1000)
     except:
