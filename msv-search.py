@@ -409,6 +409,7 @@ def read_info_tbar(state: MSVState) -> None:
         if line_info is None:
           # No function found for this line!!!
           # Use default...
+          state.msv_logger.info(f"No function found {file_info.file_name}:{line['line']}")
           func_info = FuncInfo(file_info, "no_function_found", int(line['line']), int(line['line']))
           file_info.func_info_map[func_info.id] = func_info
           ff_map[file_name][func_info.id] = (int(line['line']), int(line['line']))
