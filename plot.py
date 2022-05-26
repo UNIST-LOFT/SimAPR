@@ -825,21 +825,15 @@ def read_info_tbar(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, TbarCa
           start = sw["start_position"]
           end = sw["end_position"]
           location = sw["location"]
-          fl_score = sw["score"]
           if mut not in line_info.tbar_type_info_map:
             line_info.tbar_type_info_map[mut] = TbarTypeInfo(line_info, mut)
           tbar_type_info = line_info.tbar_type_info_map[mut]
           tbar_case_info = TbarCaseInfo(tbar_type_info, location, start, end)
           tbar_type_info.tbar_case_info_map[location] = tbar_case_info
           switch_case_map[location] = tbar_case_info
-          tbar_case_info.fl_score = fl_score
-          tbar_type_info.fl_score_list.append(fl_score)
           tbar_type_info.total_case_info += 1
-          line_info.fl_score_list.append(fl_score)
           line_info.total_case_info += 1
-          func_info.fl_score_list.append(fl_score)
           func_info.total_case_info += 1
-          file_info.fl_score_list.append(fl_score)
           file_info.total_case_info += 1
         if len(line_info.tbar_type_info_map)==0:
           del func_info.line_info_map[line_info.uuid]
@@ -1234,6 +1228,7 @@ def recoder_plot_correct(msv_result_file: str, title: str, correct_patch: str, f
       if pass_result and not found_plausible:
         plausible_iter = iter
         plausible_time = tm
+        found_plausible = True
       dist = 5
       if file_info == correct_file_info:
         dist -= 1

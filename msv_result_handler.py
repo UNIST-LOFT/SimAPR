@@ -13,6 +13,8 @@ def update_result(state: MSVState, selected_patch: List[PatchInfo], run_result: 
   # else:
   #   state.msv_logger.info(f"Test {test} is not a valid test number")
   # update_result_critical(state, selected_patch, run_result, test)
+  if run_result:
+    state.total_basic_patch += 1
   if state.mode == MSVMode.seapr:
     update_result_seapr(state, selected_patch, run_result, test)
   for patch in selected_patch:
@@ -245,6 +247,8 @@ def remove_patch(state: MSVState, patches: List[PatchInfo]) -> None:
 
 def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: bool) -> None:
   selected_patch.update_result(result, 1, state.params[PT.b_dec],state.use_exp_alpha, state.use_fixed_beta)
+  if result:
+    state.total_basic_patch += 1
   if state.mode == MSVMode.seapr:
     # if selected_patch.tbar_case_info.location in state.patch_ranking:
     #   state.patch_ranking.remove(selected_patch.tbar_case_info.location)
@@ -282,6 +286,8 @@ def remove_patch_tbar(state: MSVState, selected_patch: TbarPatchInfo) -> None:
 
 def update_result_recoder(state: MSVState, selected_patch: RecoderPatchInfo, result: bool) -> None:
   selected_patch.update_result(result, 1, state.params[PT.b_dec],state.use_exp_alpha, state.use_fixed_beta)
+  if result:
+    state.total_basic_patch += 1
   if state.mode == MSVMode.seapr:
     for loc in state.patch_ranking:
       rc: RecoderCaseInfo = state.switch_case_map[loc]
