@@ -205,7 +205,7 @@ def main(argv: List[str]) -> None:
   patch_location = os.environ["MSV_LOCATION"]
   d4j_dir = os.environ["MSV_WORKDIR"]
   run_original = patch_location == "original"
-  patch_location = os.path.join(d4j_dir, patch_location)
+  patch_location = d4j_dir + os.path.sep + patch_location #os.path.join(d4j_dir, patch_location)
   buggy_location = os.environ["MSV_BUGGY_LOCATION"]
   buggy_location = os.path.join(buggy_dir, buggy_location)
   class_file = ""

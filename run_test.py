@@ -230,7 +230,7 @@ def run_fail_test_d4j(state: MSVState, new_env: Dict[str, str]) -> Tuple[bool, b
     return 0, True, False
   if len(failed_tests) == 0:
     state.msv_logger.info("Result: FAIL - no failed test")
-    state.msv_logger.info("STDERR: " + error_str)
+    state.msv_logger.debug("STDERR: " + error_str)
     return -1, False, is_timeout
   else:
     state.msv_logger.info(f"Result: FAIL - {failed_tests}")
