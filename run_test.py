@@ -285,9 +285,9 @@ def run_pass_test_d4j_exec(state: MSVState, new_env: Dict[str, str], tests: List
   if result:
     state.msv_logger.info("Result: PASS")
     return True, failed_tests
-  if failed_tests.issubset(state.failed_positive_test):
+  if failed_tests.issubset(state.d4j_failed_passing_tests):
     return True, set()
-  return result, failed_tests.difference(state.failed_positive_test)
+  return result, failed_tests.difference(state.d4j_failed_passing_tests)
 
 def run_pass_test_d4j(state: MSVState, new_env: Dict[str, str]) -> bool:
   state.cycle += 1
