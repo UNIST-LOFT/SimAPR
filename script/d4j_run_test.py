@@ -204,8 +204,8 @@ def main(argv: List[str]) -> None:
   buggy_dir = os.path.join(root_path, "buggy", buggy_project)
   patch_location = os.environ["MSV_LOCATION"]
   d4j_dir = os.environ["MSV_WORKDIR"]
-  patch_location = os.path.join(d4j_dir, patch_location)
   run_original = patch_location == "original"
+  patch_location = d4j_dir + os.path.sep + patch_location #os.path.join(d4j_dir, patch_location)
   buggy_location = os.environ["MSV_BUGGY_LOCATION"]
   buggy_location = os.path.join(buggy_dir, buggy_location)
   class_file = ""
@@ -220,7 +220,14 @@ def main(argv: List[str]) -> None:
   test = os.environ["MSV_TEST"]
   if test == "ALL":
     test = ""
-  test_project(patch_location, buggy_location, workdir, test, buggy_project, run_original, class_file)
+  test_project(
+    patch_location=patch_location, 
+    buggy_location=buggy_location, 
+    work_dir=workdir, 
+    test=test, 
+    buggy_project=buggy_project, 
+    class_file=class_file, 
+    run_original=run_original)
 
 if __name__ == "__main__":
   # simple_test()

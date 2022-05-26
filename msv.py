@@ -351,8 +351,10 @@ class MSVTbar(MSV):
       pass_result = False
       for neg in self.state.d4j_negative_test:
         fail_num, run_result = self.run_test(patch, neg)
-        if run_result or (fail_num >= 0 and self.state.d4j_test_fail_num_map[neg] > fail_num):
-          self.state.msv_logger.info(f"Partial pass: {neg}, fail {fail_num}/{self.state.d4j_test_fail_num_map[neg]}")
+        # if run_result or (fail_num >= 0 and self.state.d4j_test_fail_num_map[neg] > fail_num):
+        #   self.state.msv_logger.info(f"Partial pass: {neg}, fail {fail_num}/{self.state.d4j_test_fail_num_map[neg]}")
+        #   pass_exists = True
+        if run_result:
           pass_exists = True
         if not run_result:
           result = False
@@ -380,8 +382,10 @@ class MSVTbar(MSV):
       if key not in self.state.simulation_data:
         for neg in self.state.d4j_negative_test:
           fail_num, run_result = self.run_test(patch, neg)
-          if fail_num >= 0 and self.state.d4j_test_fail_num_map[neg] > fail_num:
-            self.state.msv_logger.info(f"Partial pass: {neg}, fail {fail_num}/{self.state.d4j_test_fail_num_map[neg]}")
+          # if fail_num >= 0 and self.state.d4j_test_fail_num_map[neg] > fail_num:
+          #   self.state.msv_logger.info(f"Partial pass: {neg}, fail {fail_num}/{self.state.d4j_test_fail_num_map[neg]}")
+          #   pass_exists = True
+          if run_result:
             pass_exists = True
           if not run_result:
             result = False
@@ -394,10 +398,10 @@ class MSVTbar(MSV):
       else:
         msv_result = self.state.simulation_data[key]
         pass_exists = msv_result.result
-        run_result = msv_result.pass_all_neg_test
+        result = msv_result.pass_all_neg_test
         pass_result = msv_result.pass_result
         result_handler.update_result_tbar(self.state, patch, pass_exists)
-        if run_result:
+        if result:
           result_handler.update_positive_result_tbar(self.state, patch, pass_result)
       result_handler.append_result(self.state, [patch], pass_exists, pass_result, result)
       result_handler.remove_patch_tbar(self.state, patch)
