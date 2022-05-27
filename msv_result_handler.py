@@ -213,7 +213,7 @@ def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result:
   tm = time.time()
   tm_interval = tm - state.start_time
   result = MSVResult(state.cycle,state.iteration,tm_interval, selected_patch, 
-          test_result, pass_test_result, selected_patch[0].out_dist, pass_all_neg_test)
+          test_result, pass_test_result, selected_patch[0].out_dist, pass_all_neg_test, compilable=compilable)
   
   if result.result:
     state.total_passed_patch+=1

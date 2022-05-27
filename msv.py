@@ -357,7 +357,6 @@ class MSVTbar(MSV):
         compilable, run_result = self.run_test(patch, neg)
         if not compilable:
           is_compilable = False
-          break
         if run_result:
           pass_exists = True
         if not run_result:
@@ -390,7 +389,6 @@ class MSVTbar(MSV):
           compilable, run_result = self.run_test(patch, neg)
           if not compilable:
             is_compilable = False
-            break
           if run_result:
             pass_exists = True
           if not run_result:
