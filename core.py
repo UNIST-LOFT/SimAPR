@@ -300,9 +300,11 @@ class TbarCaseInfo:
     return self.location == other.location
 
 class RecoderTypeInfo:
-  def __init__(self, parent: LineInfo, mode: str) -> None:
+  def __init__(self, parent: LineInfo, act: str, before: 'RecoderTypeInfo') -> None:
     self.parent = parent
-    self.mode = mode
+    self.act = act
+    self.before = before
+    self.after: Dict[str, 'RecoderTypeInfo'] = dict()
     self.pf = PassFail()
     self.positive_pf = PassFail()
     self.output_pf = PassFail()
@@ -313,10 +315,26 @@ class RecoderTypeInfo:
     self.score_list: List[float] = list()
     self.out_dist_map: Dict[int, float] = dict()
     self.recoder_case_info_map: Dict[int, RecoderCaseInfo] = dict()
+  def is_root(self) -> bool:
+    return self.before is None
+  def is_leaf(self) -> bool:
+    return len(self.after) == 0
+  def get_root(self) -> 'RecoderTypeInfo':
+    if self.before is None:
+      return self
+    return self.before.get_root()
+  def get_path(self) -> List['RecoderTypeInfo']:
+    if not self.is_leaf():
+      return list()
+    type_info = self
+    path = [type_info]
+    while not type_info.is_root():
+      type_info = type_info.before
+      path.append(type_info)
   def __hash__(self) -> int:
-    return hash(self.mode)
+    return hash(self.act)
   def __eq__(self, other) -> bool:
-    return self.mode == other.mode
+    return self.act == other.act
 
 class RecoderCaseInfo:
   def __init__(self, parent: RecoderTypeInfo, location: str, case_id: int) -> None:
