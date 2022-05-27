@@ -293,13 +293,14 @@ class TbarCaseInfo:
     self.out_dist_map: Dict[int, float] = dict()
     self.same_seapr_pf = PassFail()
     self.diff_seapr_pf = PassFail()
+    self.patch_rank: int = -1
   def __hash__(self) -> int:
     return hash(self.location)
   def __eq__(self, other) -> bool:
     return self.location == other.location
 
 class RecoderTypeInfo:
-  def __init__(self, parent: LineInfo, mode: int) -> None:
+  def __init__(self, parent: LineInfo, mode: str) -> None:
     self.parent = parent
     self.mode = mode
     self.pf = PassFail()

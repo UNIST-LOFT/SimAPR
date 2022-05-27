@@ -456,12 +456,17 @@ def read_info_tbar(state: MSVState) -> None:
         del state.file_info_map[file_info.file_name]
   state.d4j_buggy_project = info["project_name"]
   # Read ranking
+  rank_num = 0
   ranking = info['ranking']
   for rank in ranking:
+    rank_num += 1
+    loc = ""
     if isinstance(rank, str):
-      state.patch_ranking.append(rank)
+      loc = rank  
     else:
-      state.patch_ranking.append(rank['location'])
+      loc = rank['location']
+    state.patch_ranking.append(loc)
+    state.switch_case_map[loc].patch_rank = rank_num
   #Add original to switch_case_map
   temp_file: FileInfo = FileInfo('original')
   temp_func = FuncInfo(temp_file, "original_fn", 0, 0)

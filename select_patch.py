@@ -866,13 +866,18 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   selected_type_info: TbarTypeInfo = selected[selected_type]
   clear_list(state, p_map)
   # select tbar switch
+  rank: int = -1
+  selected_switch_info = None
   for location in selected_type_info.tbar_case_info_map:
     location_info = selected_type_info.tbar_case_info_map[location]
+    if rank < 0 or rank > location_info.patch_rank:
+      rank = location_info.patch_rank
+      selected_switch_info = location_info
     selected.append(location_info)
     p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
   c_map = rand_cmap
-  selected_switch = select_by_probability(state, p_map, c_map, normalize)
-  selected_switch_info: TbarCaseInfo = selected[selected_switch]
+  # selected_switch = select_by_probability(state, p_map, c_map, normalize)
+  # selected_switch_info: TbarCaseInfo = selected[selected_switch]
   clear_list(state, p_map)
   result = TbarPatchInfo(selected_switch_info)
   return result  
