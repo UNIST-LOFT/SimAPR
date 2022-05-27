@@ -1395,6 +1395,7 @@ class MSVState:
   use_pass_test: bool
   use_multi_line: int
   use_partial_validation: bool
+  ignore_compile_error: bool
   time_limit: int
   cycle_limit: int
   correct_case_info: CaseInfo
@@ -1493,6 +1494,7 @@ class MSVState:
     self.use_pattern = False
     self.use_simulation_mode = False
     self.prev_data = ""
+    self.ignore_compile_error = False
     self.simulation_data = dict()
     self.correct_patch_str: str = ""
     self.correct_case_info: CaseInfo = None
