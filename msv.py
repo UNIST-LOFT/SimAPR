@@ -370,7 +370,7 @@ class MSVTbar(MSV):
         if result and self.state.use_pass_test:
           pass_result = self.run_test_positive(patch)
           result_handler.update_positive_result_tbar(self.state, patch, pass_result)
-      result_handler.append_result(self.state, [patch], pass_exists, pass_result, result)
+      result_handler.append_result(self.state, [patch], pass_exists, pass_result, result, is_compilable)
       result_handler.remove_patch_tbar(self.state, patch)
   
   def run_sim(self) -> None:
@@ -414,7 +414,7 @@ class MSVTbar(MSV):
             result_handler.update_positive_result_tbar(self.state, patch, pass_result)
       if is_compilable or self.state.ignore_compile_error:
         self.state.iteration += 1
-      result_handler.append_result(self.state, [patch], pass_exists, pass_result, result)
+      result_handler.append_result(self.state, [patch], pass_exists, pass_result, result, is_compilable)
       result_handler.remove_patch_tbar(self.state, patch)
 
 
