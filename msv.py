@@ -295,9 +295,9 @@ class MSVTbar(MSV):
   def save_result(self) -> None:
     # TODO change
     result_handler.save_result(self.state)
-  def run_test(self, patch: TbarPatchInfo, test: int) -> Tuple[int, bool]:
-    fail_num, run_result, is_timeout = run_test.run_fail_test_d4j(self.state, MSVEnvVar.get_new_env_tbar(self.state, patch, test))
-    return fail_num, run_result
+  def run_test(self, patch: TbarPatchInfo, test: str) -> Tuple[bool, bool]:
+    compilable, run_result, is_timeout = run_test.run_fail_test_d4j(self.state, MSVEnvVar.get_new_env_tbar(self.state, patch, test))
+    return compilable, run_result
   def run_test_positive(self, patch: TbarPatchInfo) -> bool:
     run_result = run_test.run_pass_test_d4j(self.state, MSVEnvVar.get_new_env_tbar(self.state, patch, ""))
     return run_result
@@ -309,8 +309,12 @@ class MSVTbar(MSV):
       if neg in self.state.failed_positive_test:
         self.state.d4j_negative_test.remove(neg)
       else:
-        fail_num, run_result = self.run_test(op, neg)
-        self.state.d4j_test_fail_num_map[neg] = fail_num
+        compilable, run_result = self.run_test(op, neg)
+        # self.state.d4j_test_fail_num_map[neg] = fail_num
+        if not compilable:
+          self.state.msv_logger.warning("Project is not compilable")
+          self.state.is_alive = False
+          return
         if run_result:
           self.state.msv_logger.warning(f"Removing {neg} from negative test")
           self.state.d4j_negative_test.remove(neg)
@@ -350,10 +354,7 @@ class MSVTbar(MSV):
       result = True
       pass_result = False
       for neg in self.state.d4j_negative_test:
-        fail_num, run_result = self.run_test(patch, neg)
-        # if run_result or (fail_num >= 0 and self.state.d4j_test_fail_num_map[neg] > fail_num):
-        #   self.state.msv_logger.info(f"Partial pass: {neg}, fail {fail_num}/{self.state.d4j_test_fail_num_map[neg]}")
-        #   pass_exists = True
+        compilable, run_result = self.run_test(patch, neg)
         if run_result:
           pass_exists = True
         if not run_result:
@@ -381,7 +382,7 @@ class MSVTbar(MSV):
       key = patch.tbar_case_info.location
       if key not in self.state.simulation_data:
         for neg in self.state.d4j_negative_test:
-          fail_num, run_result = self.run_test(patch, neg)
+          compilable, run_result = self.run_test(patch, neg)
           # if fail_num >= 0 and self.state.d4j_test_fail_num_map[neg] > fail_num:
           #   self.state.msv_logger.info(f"Partial pass: {neg}, fail {fail_num}/{self.state.d4j_test_fail_num_map[neg]}")
           #   pass_exists = True
@@ -420,7 +421,7 @@ class MSVRecoder(MSVTbar):
     op = RecoderPatchInfo(original)
     for neg in self.state.d4j_negative_test.copy():
       fail_num, run_result = self.run_test(op, neg)
-      self.state.d4j_test_fail_num_map[neg] = fail_num
+      # self.state.d4j_test_fail_num_map[neg] = fail_num
       if run_result:
         self.state.msv_logger.warning(f"Removing {neg} from negative test")
         self.state.d4j_negative_test.remove(neg)
@@ -450,7 +451,8 @@ class MSVRecoder(MSVTbar):
       pass_result = False
       for neg in self.state.d4j_negative_test:
         fail_num, run_result = self.run_test(patch, neg)
-        if fail_num >= 0 and self.state.d4j_test_fail_num_map[neg] > fail_num:
+        # if fail_num >= 0 and self.state.d4j_test_fail_num_map[neg] > fail_num:
+        if run_result:
           self.state.msv_logger.info(f"Partial pass: {neg}, fail {fail_num}/{self.state.d4j_test_fail_num_map[neg]}")
           pass_exists = True
         if not run_result:

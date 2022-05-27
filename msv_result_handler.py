@@ -208,7 +208,7 @@ def save_result(state: MSVState) -> None:
       obj[cs]["file"] = fi
     json.dump(obj, f, indent=2)
 # Append result list, save result to file periodically
-def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result: bool,pass_test_result:bool=False, pass_all_neg_test: bool = False) -> None:
+def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result: bool,pass_test_result:bool=False, pass_all_neg_test: bool = False, compilable: bool = True) -> None:
   save_interval = 1800 # 30 minutes
   tm = time.time()
   tm_interval = tm - state.start_time

@@ -1337,7 +1337,7 @@ class MSVResult:
   pass_result: bool
   pass_all_neg_test: bool
   output_distance: float
-  def __init__(self, execution: int, iteration:int,time: float, config: List[PatchInfo], result: bool,pass_test_result:bool=False, output_distance: float = 100.0, pass_all_neg_test: bool = False) -> None:
+  def __init__(self, execution: int, iteration:int,time: float, config: List[PatchInfo], result: bool,pass_test_result:bool=False, output_distance: float = 100.0, pass_all_neg_test: bool = False, compilable: bool = True) -> None:
     self.execution = execution
     self.iteration=iteration
     self.time = time
@@ -1345,6 +1345,7 @@ class MSVResult:
     self.result = result
     self.pass_result=pass_test_result
     self.pass_all_neg_test = pass_all_neg_test
+    self.compilable = compilable
     self.output_distance = output_distance
     self.out_diff = config[0].out_diff
   def to_json_object(self,total_searched_patch:int=0,total_passed_patch:int=0,total_plausible_patch:int=0) -> dict:
@@ -1357,6 +1358,7 @@ class MSVResult:
     object["output_distance"] = self.output_distance
     object["out_diff"] = self.out_diff
     object["pass_all_neg_test"] = self.pass_all_neg_test
+    object["compilable"] = self.compilable
 
     # This total counts include this result
     object['total_searched']=total_searched_patch

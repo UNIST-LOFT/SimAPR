@@ -80,7 +80,7 @@ def compile_project_updated(work_dir, buggy_project):
   result_str = so.decode('utf-8').strip()
   err_str = se.decode('utf-8').strip()
   print(err_str, file=sys.stderr)
-  if "FAIL" in result_str:
+  if "FAIL" in err_str:
     result = False
   return result
 
@@ -134,6 +134,8 @@ def test_patched_project(patch_location: str, buggy_location: str, work_dir: str
     deleteDirectory(get_classpath(work_dir, buggy_project))
   try:
     if not compile_project_updated(work_dir, buggy_project):
+      print("FAIL")
+      print("---COMPILATION_FAILED")
       raise ValueError("Patch is not compiled")
     error_num, failed_test = run_single_test(work_dir, buggy_project, test)
     if error_num != 0:
