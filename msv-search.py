@@ -488,10 +488,11 @@ def read_info_tbar(state: MSVState) -> None:
         pass_result = data["pass_result"]
         output_distance = data["output_distance"]
         pass_all_neg_test = data["pass_all_neg_test"]
+        compilable = data['compilable']
         conf = data["config"][0]
         key = conf["location"]
         case_info = state.switch_case_map[key]
-        state.simulation_data[key] = MSVResult(exec, iter, tm, [RecoderPatchInfo(case_info)], result, pass_result, output_distance, pass_all_neg_test)
+        state.simulation_data[key] = MSVResult(exec, iter, tm, [RecoderPatchInfo(case_info)], result, pass_result, output_distance, pass_all_neg_test, compilable)
 
 
 def trim_with_watch_level(state: MSVState, watch_level: str, correct_str: str) -> None:

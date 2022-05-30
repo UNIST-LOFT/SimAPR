@@ -291,8 +291,8 @@ class TbarCaseInfo:
     self.case_update_count: int = 0
     self.out_dist: float = -1.0
     self.out_dist_map: Dict[int, float] = dict()
-    self.same_seapr_pf = PassFail()
-    self.diff_seapr_pf = PassFail()
+    self.same_seapr_pf = PassFail(1, 1)
+    self.diff_seapr_pf = PassFail(1, 1)
     self.patch_rank: int = -1
   def __hash__(self) -> int:
     return hash(self.location)

@@ -349,6 +349,8 @@ class MSVTbar(MSV):
     while self.is_alive():
       self.state.msv_logger.info(f'[{self.state.cycle}]: executing')
       patch = select_patch.select_patch_tbar_mode(self.state)
+      self.state.msv_logger.info(f"Patch: {patch.tbar_case_info.location}")
+      self.state.msv_logger.info(f"{patch.file_info.file_name}${patch.func_info.id}${patch.line_info.line_number}")
       pass_exists = False
       result = True
       pass_result = False
@@ -379,6 +381,8 @@ class MSVTbar(MSV):
     while(self.is_alive()):
       self.state.msv_logger.info(f'[{self.state.cycle}]: executing')
       patch = select_patch.select_patch_tbar_mode(self.state)
+      self.state.msv_logger.info(f"Patch: {patch.tbar_case_info.location}")
+      self.state.msv_logger.info(f"{patch.file_info.file_name}${patch.func_info.id}${patch.line_info.line_number}")
       pass_exists = False
       result = True
       pass_result = False
