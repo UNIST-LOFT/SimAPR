@@ -223,6 +223,7 @@ class FuncInfo:
     self.has_init_patch=False
     self.case_update_count: int = 0
     self.score_list: List[float] = list()
+    self.func_rank: int = -1
   def __hash__(self) -> int:
     return hash(self.id)
   def __eq__(self, other) -> bool:
@@ -332,8 +333,8 @@ class RecoderCaseInfo:
     self.out_dist: float = -1.0
     self.prob: float = 0
     self.out_dist_map: Dict[int, float] = dict()
-    self.same_seapr_pf = PassFail()
-    self.diff_seapr_pf = PassFail()
+    self.same_seapr_pf = PassFail(1, 1)
+    self.diff_seapr_pf = PassFail(1, 1)
   def __hash__(self) -> int:
     return hash(self.location)
   def __eq__(self, other) -> bool:
@@ -407,10 +408,10 @@ class CaseInfo:
     self.update_count: int = 0
     self.prophet_score:list=[]
     self.location: FileLine = None
-    self.seapr_same_high:float=0.
-    self.seapr_same_low:float=0.
-    self.seapr_diff_high:float=0.
-    self.seapr_diff_low:float=0.
+    self.seapr_same_high:float=1.0
+    self.seapr_same_low:float=1.0
+    self.seapr_diff_high:float=1.0
+    self.seapr_diff_low:float=1.0
     self.current_record:List[bool]=[] # current record, for out condition synthesis
     self.synthesis_tried:int=0 # tried counter for search record, removed after 11
     self.has_init_patch=False
