@@ -458,6 +458,7 @@ def read_info_tbar(state: MSVState) -> None:
   # Read ranking
   rank_num = 0
   ranking = info['ranking']
+  func_rank = 0
   for rank in ranking:
     rank_num += 1
     loc = ""
@@ -466,7 +467,12 @@ def read_info_tbar(state: MSVState) -> None:
     else:
       loc = rank['location']
     state.patch_ranking.append(loc)
-    state.switch_case_map[loc].patch_rank = rank_num
+    case_info = state.switch_case_map[loc]
+    case_info.patch_rank = rank_num
+    func_info = case_info.parent.parent.parent
+    if func_info.func_rank == -1:
+      func_info.func_rank = func_rank
+      func_rank += 1
   #Add original to switch_case_map
   temp_file: FileInfo = FileInfo('original')
   temp_func = FuncInfo(temp_file, "original_fn", 0, 0)
@@ -488,10 +494,11 @@ def read_info_tbar(state: MSVState) -> None:
         pass_result = data["pass_result"]
         output_distance = data["output_distance"]
         pass_all_neg_test = data["pass_all_neg_test"]
+        compilable = data['compilable']
         conf = data["config"][0]
         key = conf["location"]
         case_info = state.switch_case_map[key]
-        state.simulation_data[key] = MSVResult(exec, iter, tm, [RecoderPatchInfo(case_info)], result, pass_result, output_distance, pass_all_neg_test)
+        state.simulation_data[key] = MSVResult(exec, iter, tm, [RecoderPatchInfo(case_info)], result, pass_result, output_distance, pass_all_neg_test, compilable)
 
 
 def trim_with_watch_level(state: MSVState, watch_level: str, correct_str: str) -> None:

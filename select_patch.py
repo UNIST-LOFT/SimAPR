@@ -625,6 +625,8 @@ def select_patch_seapr(state: MSVState, test: int) -> PatchInfo:
   max_score=0.
   has_high_qual_patch=False
   for case in state.seapr_remain_cases:
+    if case.parent.parent.parent.parent.func_rank > 30:
+      continue
     cur_score=get_ochiai(case.seapr_same_high,case.seapr_same_low,case.seapr_diff_high,case.seapr_diff_low)
     if case.seapr_same_high>0:
       has_high_qual_patch=True
@@ -888,6 +890,8 @@ def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
   has_high_qual_patch = False
   for loc in state.patch_ranking:
     tbar_case_info: TbarCaseInfo = state.switch_case_map[loc]
+    if tbar_case_info.parent.parent.parent.func_rank > 30:
+      continue
     if loc not in tbar_case_info.parent.tbar_case_info_map:
       # state.msv_logger.warning(f"No switch info  {tbar_case_info.location} in patch: {tbar_case_info.parent.tbar_case_info_map}")
       continue

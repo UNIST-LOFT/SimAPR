@@ -223,6 +223,7 @@ class FuncInfo:
     self.has_init_patch=False
     self.case_update_count: int = 0
     self.score_list: List[float] = list()
+    self.func_rank: int = -1
   def __hash__(self) -> int:
     return hash(self.id)
   def __eq__(self, other) -> bool:
@@ -291,8 +292,8 @@ class TbarCaseInfo:
     self.case_update_count: int = 0
     self.out_dist: float = -1.0
     self.out_dist_map: Dict[int, float] = dict()
-    self.same_seapr_pf = PassFail()
-    self.diff_seapr_pf = PassFail()
+    self.same_seapr_pf = PassFail(1, 1)
+    self.diff_seapr_pf = PassFail(1, 1)
     self.patch_rank: int = -1
   def __hash__(self) -> int:
     return hash(self.location)
@@ -350,8 +351,8 @@ class RecoderCaseInfo:
     self.out_dist: float = -1.0
     self.prob: float = 0
     self.out_dist_map: Dict[int, float] = dict()
-    self.same_seapr_pf = PassFail()
-    self.diff_seapr_pf = PassFail()
+    self.same_seapr_pf = PassFail(1, 1)
+    self.diff_seapr_pf = PassFail(1, 1)
   def __hash__(self) -> int:
     return hash(self.location)
   def __eq__(self, other) -> bool:
@@ -425,10 +426,10 @@ class CaseInfo:
     self.update_count: int = 0
     self.prophet_score:list=[]
     self.location: FileLine = None
-    self.seapr_same_high:float=0.
-    self.seapr_same_low:float=0.
-    self.seapr_diff_high:float=0.
-    self.seapr_diff_low:float=0.
+    self.seapr_same_high:float=1.0
+    self.seapr_same_low:float=1.0
+    self.seapr_diff_high:float=1.0
+    self.seapr_diff_low:float=1.0
     self.current_record:List[bool]=[] # current record, for out condition synthesis
     self.synthesis_tried:int=0 # tried counter for search record, removed after 11
     self.has_init_patch=False
@@ -1355,7 +1356,7 @@ class MSVResult:
   pass_result: bool
   pass_all_neg_test: bool
   output_distance: float
-  def __init__(self, execution: int, iteration:int,time: float, config: List[PatchInfo], result: bool,pass_test_result:bool=False, output_distance: float = 100.0, pass_all_neg_test: bool = False) -> None:
+  def __init__(self, execution: int, iteration:int,time: float, config: List[PatchInfo], result: bool,pass_test_result:bool=False, output_distance: float = 100.0, pass_all_neg_test: bool = False, compilable: bool = True) -> None:
     self.execution = execution
     self.iteration=iteration
     self.time = time
@@ -1363,6 +1364,7 @@ class MSVResult:
     self.result = result
     self.pass_result=pass_test_result
     self.pass_all_neg_test = pass_all_neg_test
+    self.compilable = compilable
     self.output_distance = output_distance
     self.out_diff = config[0].out_diff
   def to_json_object(self,total_searched_patch:int=0,total_passed_patch:int=0,total_plausible_patch:int=0) -> dict:
@@ -1375,6 +1377,7 @@ class MSVResult:
     object["output_distance"] = self.output_distance
     object["out_diff"] = self.out_diff
     object["pass_all_neg_test"] = self.pass_all_neg_test
+    object["compilable"] = self.compilable
 
     # This total counts include this result
     object['total_searched']=total_searched_patch
@@ -1411,6 +1414,7 @@ class MSVState:
   use_pass_test: bool
   use_multi_line: int
   use_partial_validation: bool
+  ignore_compile_error: bool
   time_limit: int
   cycle_limit: int
   correct_case_info: CaseInfo
@@ -1509,6 +1513,7 @@ class MSVState:
     self.use_pattern = False
     self.use_simulation_mode = False
     self.prev_data = ""
+    self.ignore_compile_error = False
     self.simulation_data = dict()
     self.correct_patch_str: str = ""
     self.correct_case_info: CaseInfo = None
