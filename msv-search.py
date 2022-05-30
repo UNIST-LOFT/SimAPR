@@ -469,7 +469,7 @@ def read_info_tbar(state: MSVState) -> None:
     state.patch_ranking.append(loc)
     case_info = state.switch_case_map[loc]
     case_info.patch_rank = rank_num
-    func_info = case_info.parent.parent.parent.parent
+    func_info = case_info.parent.parent.parent
     if func_info.func_rank == -1:
       func_info.func_rank = func_rank
       func_rank += 1
