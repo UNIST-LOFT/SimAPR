@@ -347,12 +347,13 @@ def read_info_recoder(state: MSVState) -> None:
         pass_result = data["pass_result"]
         output_distance = data["output_distance"]
         pass_all_neg_test = data["pass_all_neg_test"]
+        compilable = data["compilable"]
         conf = data["config"][0]
         id = conf["id"]
         case = conf["case_id"]
         key = f"{id}-{case}"
         case_info = state.switch_case_map[key]
-        state.simulation_data[key] = MSVResult(exec, iter, tm, [RecoderPatchInfo(case_info)], result, pass_result, output_distance, pass_all_neg_test)
+        state.simulation_data[key] = MSVResult(exec, iter, tm, [RecoderPatchInfo(case_info)], result, pass_result, output_distance, pass_all_neg_test, compilable)
 
 def read_info_tbar(state: MSVState) -> None:
   with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
