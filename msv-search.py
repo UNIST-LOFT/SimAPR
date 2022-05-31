@@ -290,12 +290,18 @@ def read_info_recoder(state: MSVState) -> None:
         state.priority_map[f"{file_info.file_name}:{line_info.line_number}"] = file_line
         for cs in line["cases"]:
           case_id = cs["case"]
-          mode = cs["mode"]
+          # mode = cs["mode"]
+          actlist = cs["actlist"]
           location = cs["location"]
           prob = cs["prob"]
-          if mode not in line_info.recoder_type_info_map:
-            line_info.recoder_type_info_map[mode] = RecoderTypeInfo(line_info, mode)
-          recoder_type_info = line_info.recoder_type_info_map[mode]
+          type_map = line_info.recoder_type_info_map
+          prev = None
+          for act in actlist:
+            if act not in type_map:
+              type_map[act] = RecoderTypeInfo(line_info, act, prev)
+            prev = type_map[act]
+            type_map = prev.next
+          recoder_type_info = prev
           recoder_case_info = RecoderCaseInfo(recoder_type_info, location, case_id)
           recoder_type_info.recoder_case_info_map[case_id] = recoder_case_info
           state.switch_case_map[f"{line_info.line_id}-{case_id}"] = recoder_case_info
@@ -305,7 +311,8 @@ def read_info_recoder(state: MSVState) -> None:
           line_info.score_list.append(prob)
           func_info.score_list.append(prob)
           file_info.score_list.append(prob)
-          recoder_type_info.total_case_info += 1
+          for ti in recoder_type_info.get_path():
+            ti.total_case_info += 1
           line_info.total_case_info += 1
           func_info.total_case_info += 1
           file_info.total_case_info += 1
@@ -324,7 +331,7 @@ def read_info_recoder(state: MSVState) -> None:
   temp_file.func_info_map["original_fn:0-0"] = temp_func
   temp_line: LineInfo = LineInfo(temp_func, 0)
   # temp_file.line_info_list.append(temp_line)
-  temp_recoder_type = RecoderTypeInfo(temp_line, 0)
+  temp_recoder_type = RecoderTypeInfo(temp_line, 0, None)
   temp_recoder_case = RecoderCaseInfo(temp_recoder_type, "original", 0)
   state.switch_case_map["0-0"] = temp_recoder_case
   state.patch_location_map["original"] = temp_recoder_case
