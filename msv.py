@@ -449,7 +449,7 @@ class MSVRecoder(MSVTbar):
       if not run_result:
         for ft in failed_tests:
           self.state.msv_logger.info("Removing {} from positive test".format(ft))
-          self.state.d4j_positive_test.remove(ft)
+          # self.state.d4j_positive_test.remove(ft)
   def run(self) -> None:
     self.initialize()
     self.state.start_time = time.time()

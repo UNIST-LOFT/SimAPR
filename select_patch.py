@@ -1030,21 +1030,26 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
   del c_map[PT.fl] # No fl below line
 
   # Select type
-  for recoder_type in selected_line_info.recoder_type_info_map:
-    recoder_type_info = selected_line_info.recoder_type_info_map[recoder_type]
-    if len(recoder_type_info.recoder_case_info_map) == 0:
-      state.msv_logger.warning(f"No switch info in type: {recoder_type}")
-      continue
-    selected.append(recoder_type_info)
-    p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_b.append(recoder_type_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_p.append(recoder_type_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_o.append(recoder_type_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    if explore:
-      p_cov.append(1 - (recoder_type_info.case_update_count/recoder_type_info.total_case_info))
-  selected_type = select_by_probability(state, p_map, c_map, normalize)
-  selected_type_info: RecoderTypeInfo = selected[selected_type]
-  clear_list(state, p_map)
+  type_map = selected_line_info.recoder_type_info_map
+  while (len(type_map) > 0):
+    for act in type_map:
+      recoder_type_info = type_map[act]
+      if len(recoder_type_info.next) == 0 and len(recoder_type_info.recoder_case_info_map) == 0:
+        state.msv_logger.warning(f"No switch info in type: {act}")
+        continue
+      selected.append(recoder_type_info)
+      p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      p_b.append(recoder_type_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      p_p.append(recoder_type_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      p_o.append(recoder_type_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      if explore:
+        p_cov.append(1 - (recoder_type_info.case_update_count/recoder_type_info.total_case_info))
+    selected_type = select_by_probability(state, p_map, c_map, normalize)
+    selected_type_info: RecoderTypeInfo = selected[selected_type]
+    clear_list(state, p_map)
+    if selected_type_info.is_leaf():
+      break
+    type_map = selected_type_info.next
   # select tbar switch
   for case_id in selected_type_info.recoder_case_info_map:
     case_info = selected_type_info.recoder_case_info_map[case_id]

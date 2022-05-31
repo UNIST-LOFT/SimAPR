@@ -300,6 +300,7 @@ def read_info_recoder(state: MSVState) -> None:
             if act not in type_map:
               type_map[act] = RecoderTypeInfo(line_info, act, prev)
             prev = type_map[act]
+            prev.score_list.append(prob)
             type_map = prev.next
           recoder_type_info = prev
           recoder_case_info = RecoderCaseInfo(recoder_type_info, location, case_id)
@@ -307,7 +308,7 @@ def read_info_recoder(state: MSVState) -> None:
           state.switch_case_map[f"{line_info.line_id}-{case_id}"] = recoder_case_info
           state.patch_location_map[location] = recoder_case_info
           recoder_case_info.prob = prob
-          recoder_type_info.score_list.append(prob)
+          # recoder_type_info.score_list.append(prob)
           line_info.score_list.append(prob)
           func_info.score_list.append(prob)
           file_info.score_list.append(prob)

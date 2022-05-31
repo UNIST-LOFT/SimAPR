@@ -332,6 +332,7 @@ class RecoderTypeInfo:
     while not type_info.is_root():
       type_info = type_info.prev
       path.append(type_info)
+    return path
   def __hash__(self) -> int:
     return hash(self.act)
   def __eq__(self, other) -> bool:
@@ -1316,7 +1317,10 @@ class RecoderPatchInfo:
     #   del self.line_info.recoder_type_info_map[self.recoder_type_info.mode]
     for rti in self.recoder_type_info_list:
       if len(rti.next) == 0 and len(rti.recoder_case_info_map) == 0:
-        del rti.parent.recoder_type_info_map[rti.act]
+        if rti.prev is not None:
+          del rti.prev.next[rti.act]
+        else:
+          del self.line_info.recoder_type_info_map[rti.act]
     if len(self.line_info.recoder_type_info_map) == 0:
       score = self.line_info.fl_score
       self.func_info.fl_score_list.remove(score)
