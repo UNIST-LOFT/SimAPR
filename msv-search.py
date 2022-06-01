@@ -20,7 +20,7 @@ def parse_args(argv: list) -> MSVState:
   longopts = ["help", "outdir=", "workdir=", "timeout=", "msv-path=", "time-limit=", "cycle-limit=", "epsilon-greedy-exploration=",
               "mode=", "max-parallel-cpu=",'skip-valid','use-fixed-beta','use-cpr-space','use-fixed-const', 'params=', 'tbar-mode', 'recoder-mode', "use-exp-alpha",
               "use-condition-synthesis", "use-hierarchical-selection=", "use-pass-test", "use-partial-validation", "use-full-validation",
-              "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern", "use-simulation-mode=",
+              "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern", "use-simulation-mode=","cache-result=",
               "use-prophet-score", "use-fl", "use-fl-prophet-score", "watch-level=",'use-msv-ext','seapr-mode=','top-fl=','use-fixed-halflife',
               "func-dist-mean=",'lang-model-path=','use-init-trial=','regression-mode=']
   opts, args = getopt.getopt(argv[1:], "ho:w:p:t:m:c:j:T:E:M:S:", longopts)
@@ -146,6 +146,9 @@ def parse_args(argv: list) -> MSVState:
       state.tbar_mode = True
     elif o in ['--recoder-mode']:
       state.recoder_mode = True
+    elif o in ['--cache-result']:
+      state.cache_result = True
+      state.cache_file=a
 
   if sub_dir != "":
     state.out_dir = os.path.join(state.out_dir, sub_dir)
@@ -185,6 +188,15 @@ def set_logger(state: MSVState) -> logging.Logger:
   logger.info(f'params: {state.params}')
   return logger
 
+# TODO: Call this function if option specified
+def read_cache_file(state: MSVState) -> None:
+  """
+    Read test results from cache file, if --use-simulation-mode specified.
+  """
+  cache_file=state.cache_file
+  if os.path.exists(cache_file):
+    with open(cache_file, 'r') as f:
+      state.cache_data=json.load(f)
 
 def read_fl_score(state: MSVState):
   def has_patch(file,line):

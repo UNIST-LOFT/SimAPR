@@ -1513,9 +1513,12 @@ class MSVState:
     self.regression_test_info:List[int]=list()
     self.language_model_path='./Google-word2vec.txt'
     self.language_model_mean=''
+    self.cache_result=False
+    self.cache_file=''
 
     self.seapr_remain_cases:List[CaseInfo]=[]
     self.seapr_layer:SeAPRMode=SeAPRMode.FUNCTION
+    self.cache_data:Dict[str,dict]=dict()
 
 def remove_file_or_pass(file:str):
   try:
