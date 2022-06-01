@@ -200,6 +200,8 @@ class ProphetCondition:
     self.pass_test=pass_test
     self.state=state
     self.new_env = dict()
+    self.fail_time=0
+    self.pass_time=0
 
   def record(self) -> Tuple[List[List[bool]],str]:
     records=[]
@@ -215,7 +217,9 @@ class ProphetCondition:
       for i in range(10):
         self.new_env = new_env
         self.state.msv_logger.info(f"@{self.state.cycle + 1} Record [{test}]  with {self.patch.to_str()}")
+        start_time=int(time.time() * 1000)
         run_result, is_timeout = run_test.run_fail_test(self.state, patch, test, new_env)
+        self.fail_time+=int(time.time() * 1000)-start_time
         if is_timeout:
           remove_file_or_pass(temp_file)
           return None,''
@@ -245,7 +249,9 @@ class ProphetCondition:
       new_env = MSVEnvVar.get_new_env(self.state, patch, test,EnvVarMode.record_all_1)
       self.new_env = new_env
       temp_file = new_env["TMP_FILE"]
+      start_time=int(time.time() * 1000)
       run_result, is_timeout = run_test.run_fail_test(self.state, patch, test, new_env)
+      self.fail_time+=int(time.time() * 1000)-start_time
       if is_timeout:
         remove_file_or_pass(temp_file)
         return None,''
@@ -281,7 +287,9 @@ class ProphetCondition:
       self.new_env = new_env
       log_file = new_env["TMP_FILE"]
       remove_file_or_pass(log_file)
+      start_time=int(time.time() * 1000)
       run_result, is_timeout = run_test.run_fail_test(self.state, patch, test, new_env)
+      self.fail_time+=int(time.time() * 1000)-start_time
       remove_file_or_pass(new_env['MSV_OUTPUT_DISTANCE_FILE'])
       if is_timeout:
         return []
@@ -301,7 +309,9 @@ class ProphetCondition:
         self.new_env = new_env
         log_file = new_env["TMP_FILE"]
         remove_file_or_pass(log_file)
+        start_time=int(time.time())
         run_result, is_timeout = run_test.run_fail_test(self.state, patch, test, new_env)
+        self.pass_time+=int(time.time())-start_time
         
         if run_result:
           found_values=parse_value(log_file)
@@ -430,7 +440,7 @@ class ProphetCondition:
     if paths is None:
       self.state.msv_logger.info('Fail at recording')
       result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0], self.new_env)
-      result_handler.append_result(self.state, [self.patch], False)
+      result_handler.append_result(self.state, [self.patch], False,fail_time=self.fail_time,pass_time=self.pass_time)
       result_handler.remove_patch(self.state, [self.patch])
       return None
 
@@ -439,7 +449,7 @@ class ProphetCondition:
     if values is None or len(values)==0:
       self.state.msv_logger.info('Fail at collecting')
       result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0],self.new_env)
-      result_handler.append_result(self.state, [self.patch], False)
+      result_handler.append_result(self.state, [self.patch], False,fail_time=self.fail_time,pass_time=self.pass_time)
       result_handler.remove_patch(self.state, [self.patch])
       return None
     
@@ -448,7 +458,7 @@ class ProphetCondition:
     if len(conditions)==0:
       self.state.msv_logger.info('Fail to generate actual condition')
       result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0],self.new_env)
-      result_handler.append_result(self.state, [self.patch], False)
+      result_handler.append_result(self.state, [self.patch], False,fail_time=self.fail_time,pass_time=self.pass_time)
       result_handler.remove_patch(self.state, [self.patch])
       return None
     return conditions
@@ -693,6 +703,8 @@ class GuidedPathCondition:
     self.fail_test=fail_test
     self.state=state
     self.new_env = dict()
+    self.fail_time=0
+    self.pass_time=0
 
   class SynthesisResult:
     def __init__(self,var1,const_or_var2_value,operator,result,var2=-1):
@@ -732,7 +744,9 @@ class GuidedPathCondition:
       self.state.msv_logger.info(f"@{self.state.cycle + 1} Record [{test}]  with {self.patch.to_str()} and {self.patch.case_info.current_record}")
     else:
       self.state.msv_logger.info(f"@{self.state.cycle + 1} Record [{test}]  with {self.patch.to_str()} and ALL_1")
+    start_time=int(time.time() * 1000)
     run_result, is_timeout = run_test.run_fail_test(self.state, patch, test, new_env)
+    self.fail_test+=int(time.time() * 1000)-start_time
     if is_timeout:
       remove_file_or_pass(temp_file)
       return None,''
@@ -774,7 +788,9 @@ class GuidedPathCondition:
 
     self.new_env = new_env
     remove_file_or_pass(log_file)
+    start_time=int(time.time() * 1000)
     run_result, is_timeout = run_test.run_fail_test(self.state, patch, test, new_env)
+    self.fail_test+=int(time.time() * 1000)-start_time
 
     # If we failed, try next fail test
     if is_timeout:
@@ -799,7 +815,9 @@ class GuidedPathCondition:
         self.new_env = new_env
         log_file = new_env["TMP_FILE"]
         remove_file_or_pass(log_file)
+        start_time=int(time.time())
         run_result, is_timeout = run_test.run_fail_test(self.state, patch, test, new_env)
+        self.pass_time+=int(time.time())-start_time
         
         if run_result:
           found_values=parse_value(log_file)
@@ -931,7 +949,7 @@ class GuidedPathCondition:
         # Terrible fail or all record space searched
         self.state.msv_logger.info('All record searched')
         result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0], self.new_env)
-        result_handler.append_result(self.state, [self.patch], False)
+        result_handler.append_result(self.state, [self.patch], False,fail_time=self.fail_time,pass_time=self.pass_time)
         result_handler.remove_patch(self.state, [self.patch])
         return None
       elif result=='':
@@ -939,7 +957,7 @@ class GuidedPathCondition:
         if self.patch.case_info.synthesis_tried==11 or False not in record:
           # We failed in 11 times, give up
           result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0], self.new_env)
-          result_handler.append_result(self.state, [self.patch], False)
+          result_handler.append_result(self.state, [self.patch], False,fail_time=self.fail_time,pass_time=self.pass_time)
           result_handler.remove_patch(self.state, [self.patch])
           return None
         else:
@@ -961,7 +979,7 @@ class GuidedPathCondition:
       # No values found, or terrible failed
       self.state.msv_logger.warn('No values found or terrible failed')
       result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0], self.new_env)
-      result_handler.append_result(self.state, [self.patch], False)
+      result_handler.append_result(self.state, [self.patch], False,fail_time=self.fail_time,pass_time=self.pass_time)
       result_handler.remove_patch(self.state, [self.patch])
       return None
     else:
@@ -971,7 +989,7 @@ class GuidedPathCondition:
       if len(conditions)==0:
         self.state.msv_logger.info('Fail to generate actual condition')
         result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0], self.new_env)
-        result_handler.append_result(self.state, [self.patch], False)
+        result_handler.append_result(self.state, [self.patch], False,fail_time=self.fail_time,pass_time=self.pass_time)
         result_handler.remove_patch(self.state, [self.patch])
         return None
       self.patch.case_info.processed=True
