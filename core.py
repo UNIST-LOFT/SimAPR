@@ -1541,3 +1541,63 @@ def record_to_int(record: List[bool]) -> List[int]:
   for path in record:
     result.append(1 if path else 0)
   return result
+
+def append_java_cache_result(state:MSVState,case:TbarCaseInfo,compilable:bool,fail_result:bool,pass_result:bool,
+      compile_time:int,fail_time:int,pass_time:int):
+  """
+    Append result to cache file, if not exist. Otherwise, do nothing.
+    
+    state: MSVState
+    case: current patch
+    compilable: result of compile (bool)
+    fail_result: result of fail test (bool)
+    pass_result: result of pass test (bool)
+    compile_time: compile time (milisecond)
+    fail_time: fail time (milisecond)
+    pass_time: pass time (second)
+  """
+  id=case.location
+  if id not in state.cache_data:
+    current=dict()
+    current['compilable']=compilable
+    current['basic']=fail_result
+    current['plausible']=pass_result
+    current['compile_time']=compile_time
+    current['fail_time']=fail_time
+    current['pass_time']=pass_time
+
+    state.cache_data[id]=current
+
+def append_c_cache_result(state:MSVState,case:CaseInfo,compilable:bool,fail_result:bool,pass_result:bool,
+      compile_time:int,fail_time:int,pass_time:int,operator:OperatorInfo=None,variable:VariableInfo=None,constant:ConstantInfo=None):
+  """
+    Append result to cache file, if not exist. Otherwise, do nothing.
+    
+    state: MSVState
+    case: current patch
+    compilable: result of compile (bool)
+    fail_result: result of fail test (bool)
+    pass_result: result of pass test (bool)
+    compile_time: compile time (milisecond)
+    fail_time: fail time (milisecond)
+    pass_time: pass time (second)
+    operator: operator info, if exist
+    variable: variable info, if exist
+    constant: constant info, if exist
+  """
+  id=case.to_str()
+  if operator is not None:
+    id+=f":{operator.operator_type.value}"
+    if variable is not None:
+      id+=f"-{variable.variable}-{constant.constant_value}"
+  
+  if id not in state.cache_data:
+    current=dict()
+    current['compilable']=compilable
+    current['basic']=fail_result
+    current['plausible']=pass_result
+    current['compile_time']=compile_time
+    current['fail_time']=fail_time
+    current['pass_time']=pass_time
+
+    state.cache_data[id]=current
