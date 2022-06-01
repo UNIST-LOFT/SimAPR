@@ -364,16 +364,15 @@ def read_info_tbar(state: MSVState) -> None:
     # Read test informations (which tests to run, which of them are failing test or passing test)
     state.d4j_negative_test = info["failing_test_cases"]
     state.d4j_positive_test = info["passing_test_cases"]
+    state.d4j_failed_passing_tests = set(info["failed_passing_tests"])
     # Read priority (for FL score)
-    n = len(info['priority'])
-    # score_map = dict()
-    for priority in info['priority']:
-      temp_file: str = priority["file"]
-      temp_line: int = priority["line"]
-      score: float = priority["score"]
-      # score_map[f"{temp_file}:{temp_line}"] = score
-      store = (temp_file, temp_line, score)
-      state.priority_list.append(store)
+    # n = len(info['priority'])
+    # for priority in info['priority']:
+    #   temp_file: str = priority["file"]
+    #   temp_line: int = priority["line"]
+    #   score: float = priority["score"]
+    #   store = (temp_file, temp_line, score)
+    #   state.priority_list.append(store)
     # Read rules to build patch tree structure
     file_map = state.file_info_map
     ff_map: Dict[str, Dict[str, Tuple[int, int]]] = dict()
@@ -392,11 +391,16 @@ def read_info_tbar(state: MSVState) -> None:
         continue
       file_info = FileInfo(file['file_name'])
       file_name = file['file_name']
+      if "class_name" in file:
+        file_info.class_name = file["class_name"]
       file_map[file['file_name']] = file_info
+      case_key = 'switches'
       for line in file['lines']:
         func_info = None
         line_info = None
-        if len(line['switches']) == 0:
+        if case_key not in line:
+          case_key = 'cases'
+        if len(line[case_key]) == 0:
           continue
         if file_name in ff_map:
           for func_id in ff_map[file_name]:
@@ -417,20 +421,33 @@ def read_info_tbar(state: MSVState) -> None:
         if line_info is None:
           # No function found for this line!!!
           # Use default...
+          state.msv_logger.info(f"No function found {file_info.file_name}:{line['line']}")
           func_info = FuncInfo(file_info, "no_function_found", int(line['line']), int(line['line']))
           file_info.func_info_map[func_info.id] = func_info
           ff_map[file_name][func_info.id] = (int(line['line']), int(line['line']))
           line_info = LineInfo(func_info, int(line['line']))
           func_info.line_info_map[line_info.uuid] = line_info
         state.line_list.append(line_info)
+        line_info.fl_score = float(line['fl_score'])
+        func_info.fl_score_list.append(line_info.fl_score)
+        file_info.fl_score_list.append(line_info.fl_score)
         file_line = FileLine(file_info, line_info, 0)
         state.priority_map[f"{file_info.file_name}:{line_info.line_number}"] = file_line
-        for sw in line["switches"]:
+        cses = None
+        if "cases" in line:
+          cses = line['cases']
+        else:
+          cses = line['switches']
+        for sw in cses:
           mut = sw["mutation"]
-          start = sw["start_position"]
-          end = sw["end_position"]
+          if "start_position" in sw:
+            start = sw["start_position"]
+            end = sw["end_position"]
+          else:
+            start = 0
+            end = 0
           location = sw["location"]
-          fl_score = sw["score"]
+          # fl_score = sw["score"]
           if mut not in line_info.tbar_type_info_map:
             line_info.tbar_type_info_map[mut] = TbarTypeInfo(line_info, mut)
           tbar_type_info = line_info.tbar_type_info_map[mut]
@@ -438,14 +455,9 @@ def read_info_tbar(state: MSVState) -> None:
           tbar_type_info.tbar_case_info_map[location] = tbar_case_info
           state.switch_case_map[location] = tbar_case_info
           state.patch_location_map[location] = tbar_case_info
-          tbar_case_info.fl_score = fl_score
-          tbar_type_info.fl_score_list.append(fl_score)
           tbar_type_info.total_case_info += 1
-          line_info.fl_score_list.append(fl_score)
           line_info.total_case_info += 1
-          func_info.fl_score_list.append(fl_score)
           func_info.total_case_info += 1
-          file_info.fl_score_list.append(fl_score)
           file_info.total_case_info += 1
         if len(line_info.tbar_type_info_map)==0:
           del func_info.line_info_map[line_info.uuid]
@@ -458,7 +470,10 @@ def read_info_tbar(state: MSVState) -> None:
   # Read ranking
   ranking = info['ranking']
   for rank in ranking:
-    state.patch_ranking.append(rank['location'])
+    if isinstance(rank, str):
+      state.patch_ranking.append(rank)
+    else:
+      state.patch_ranking.append(rank['location'])
   #Add original to switch_case_map
   temp_file: FileInfo = FileInfo('original')
   temp_func = FuncInfo(temp_file, "original_fn", 0, 0)
@@ -469,22 +484,21 @@ def read_info_tbar(state: MSVState) -> None:
   temp_tbar_case = TbarCaseInfo(temp_tbar_type, "original", 0, 0)
   state.switch_case_map["original"] = temp_tbar_case
   state.patch_location_map["original"] = temp_tbar_case
-  # if state.use_simulation_mode:
-  #   with open(state.prev_data, "r") as f:
-  #     prev_info = json.load(f)
-  #     for data in prev_info:
-  #       exec=data['execution']
-  #       iter = data["iteration"]
-  #       tm = data["time"]
-  #       result = data["result"]
-  #       pass_result = data["pass_result"]
-  #       output_distance = data["output_distance"]
-  #       conf = data["config"][0]
-  #       id = conf["id"]
-  #       case = conf["case_id"]
-  #       key = f"{id}-{case}"
-  #       case_info = state.switch_case_map[key]
-  #       state.simulation_data[key] = MSVResult(exec, iter, tm, [RecoderPatchInfo(case_info)], result, pass_result, output_distance)
+  if state.use_simulation_mode:
+    with open(state.prev_data, "r") as f:
+      prev_info = json.load(f)
+      for data in prev_info:
+        exec=data['execution']
+        iter = data["iteration"]
+        tm = data["time"]
+        result = data["result"]
+        pass_result = data["pass_result"]
+        output_distance = data["output_distance"]
+        pass_all_neg_test = data["pass_all_neg_test"]
+        conf = data["config"][0]
+        key = conf["location"]
+        case_info = state.switch_case_map[key]
+        state.simulation_data[key] = MSVResult(exec, iter, tm, [RecoderPatchInfo(case_info)], result, pass_result, output_distance, pass_all_neg_test)
 
 
 def trim_with_watch_level(state: MSVState, watch_level: str, correct_str: str) -> None:
