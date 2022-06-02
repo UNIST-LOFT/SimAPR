@@ -207,6 +207,12 @@ def save_result(state: MSVState) -> None:
       obj[cs]["line"] = li
       obj[cs]["file"] = fi
     json.dump(obj, f, indent=2)
+
+  if state.use_simulation_mode:
+    # Save cached result to file
+    with open(state.prev_data,'w') as f:
+      json.dump(state.simulation_data,f,indent=2)
+
 # Append result list, save result to file periodically
 def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result: bool,pass_test_result:bool=False, pass_all_neg_test: bool = False,fail_time:int=0,pass_time:int=0) -> None:
   """
@@ -228,18 +234,19 @@ def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result:
   state.msv_result.append(result.to_json_object(state.total_searched_patch,state.total_passed_patch,state.total_plausible_patch))
   state.used_patch.append(result)
 
-  if state.cache_result:
+  if state.use_simulation_mode:
     # Cache test result if option used
     for patch in selected_patch:
       if state.tbar_mode or state.recoder_mode:
-        append_java_cache_result(state,patch.case_info,test_result,pass_test_result,fail_time,pass_time)
+        # For Java, case_info is tbar_case_info
+        append_java_cache_result(state,patch.tbar_case_info,test_result,pass_test_result,pass_all_neg_test,fail_time,pass_time)
       else:
         if not patch.case_info.is_condition:
-          append_c_cache_result(state,patch.case_info,test_result,pass_test_result,fail_time,pass_time)
+          append_c_cache_result(state,patch.case_info,test_result,pass_test_result,pass_all_neg_test,fail_time,pass_time)
         elif patch.operator_info.operator_type==OperatorType.ALL_1:
-          append_c_cache_result(state,patch.case_info,test_result,pass_test_result,fail_time,pass_time,patch.operator_info)
+          append_c_cache_result(state,patch.case_info,test_result,pass_test_result,pass_all_neg_test,fail_time,pass_time,patch.operator_info)
         else:
-          append_c_cache_result(state,patch.case_info,test_result,pass_test_result,fail_time,pass_time,patch.operator_info,patch.variable_info,patch.constant_info)
+          append_c_cache_result(state,patch.case_info,test_result,pass_test_result,pass_all_neg_test,fail_time,pass_time,patch.operator_info,patch.variable_info,patch.constant_info)
   
   with open(os.path.join(state.out_dir, "msv-result.csv"), 'a') as f:
     f.write(json.dumps(result.to_json_object(state.total_searched_patch,state.total_passed_patch,state.total_plausible_patch)))

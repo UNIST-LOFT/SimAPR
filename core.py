@@ -1424,7 +1424,7 @@ class MSVState:
   function_to_location_map: Dict[str, Tuple[str, int, int]] # function_name -> (file_name, line_start, line_end)
   test_to_location: Dict[int, Dict[str, Set[int]]] # test_number -> {file_name: set(line_number)}
   use_pattern: bool      # For SeAPR mode
-  simulation_data: Dict[str, MSVResult]
+  simulation_data: Dict[str, dict] # patch_id -> fail_result, pass_result, fail_time, pass_time. compile_result
   max_initial_trial: int
   c_map: Dict[PT, float]
   params: Dict[PT, float]
@@ -1516,12 +1516,9 @@ class MSVState:
     self.regression_test_info:List[int]=list()
     self.language_model_path='./Google-word2vec.txt'
     self.language_model_mean=''
-    self.cache_result=False
-    self.cache_file=''
 
     self.seapr_remain_cases:List[CaseInfo]=[]
     self.seapr_layer:SeAPRMode=SeAPRMode.FUNCTION
-    self.cache_data:Dict[str,dict]=dict()
 
 def remove_file_or_pass(file:str):
   try:
@@ -1542,7 +1539,7 @@ def record_to_int(record: List[bool]) -> List[int]:
     result.append(1 if path else 0)
   return result
 
-def append_java_cache_result(state:MSVState,case:TbarCaseInfo,fail_result:bool,pass_result:bool,
+def append_java_cache_result(state:MSVState,case:TbarCaseInfo,fail_result:bool,pass_result:bool,pass_all_fail:bool,
       fail_time:int,pass_time:int):
   """
     Append result to cache file, if not exist. Otherwise, do nothing.
@@ -1555,16 +1552,17 @@ def append_java_cache_result(state:MSVState,case:TbarCaseInfo,fail_result:bool,p
     pass_time: pass time (second)
   """
   id=case.location
-  if id not in state.cache_data:
+  if id not in state.simulation_data:
     current=dict()
     current['basic']=fail_result
     current['plausible']=pass_result
+    current['pass_all_fail']=pass_all_fail
     current['fail_time']=fail_time
     current['pass_time']=pass_time
 
-    state.cache_data[id]=current
+    state.simulation_data[id]=current
 
-def append_c_cache_result(state:MSVState,case:CaseInfo,fail_result:bool,pass_result:bool,
+def append_c_cache_result(state:MSVState,case:CaseInfo,fail_result:bool,pass_result:bool,pass_all_fail:bool,
       fail_time:int,pass_time:int,operator:OperatorInfo=None,variable:VariableInfo=None,constant:ConstantInfo=None):
   """
     Append result to cache file, if not exist. Otherwise, do nothing.
@@ -1585,11 +1583,12 @@ def append_c_cache_result(state:MSVState,case:CaseInfo,fail_result:bool,pass_res
     if variable is not None:
       id+=f"-{variable.variable}-{constant.constant_value}"
   
-  if id not in state.cache_data:
+  if id not in state.simulation_data:
     current=dict()
     current['basic']=fail_result
     current['plausible']=pass_result
+    current['pass_all_fail']=pass_all_fail
     current['fail_time']=fail_time
     current['pass_time']=pass_time
 
-    state.cache_data[id]=current
+    state.simulation_data[id]=current

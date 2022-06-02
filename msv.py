@@ -410,9 +410,11 @@ class MSVTbar(MSV):
           result_handler.update_positive_result_tbar(self.state, patch, pass_result)
       else:
         msv_result = self.state.simulation_data[key]
-        pass_exists = msv_result.result
-        result = msv_result.pass_all_neg_test
-        pass_result = msv_result.pass_result
+        pass_exists = msv_result['basic']
+        result = msv_result['pass_all_fail']
+        pass_result = msv_result['plausible']
+        fail_time=msv_result['fail_time']
+        pass_time=msv_result['pass_time']
         result_handler.update_result_tbar(self.state, patch, pass_exists)
         if result:
           result_handler.update_positive_result_tbar(self.state, patch, pass_result)
@@ -511,9 +513,11 @@ class MSVRecoder(MSVTbar):
       else:
         msv_result = self.state.simulation_data[key]
         msv_result = self.state.simulation_data[key]
-        pass_exists = msv_result.result
-        run_result = msv_result.pass_all_neg_test
-        pass_result = msv_result.pass_result
+        pass_exists = msv_result['basic']
+        run_result = msv_result['pass_all_fail']
+        pass_result = msv_result['plausible']
+        fail_time=msv_result['fail_time']
+        pass_time=msv_result['pass_time']
         result_handler.update_result_recoder(self.state, patch, pass_exists)
         if run_result:
           result_handler.update_positive_result_recoder(self.state, patch, pass_result)
