@@ -1410,6 +1410,7 @@ class MSVState:
   msv_logger: logging.Logger
   original_args: List[str]
   args: List[str]
+  msv_version: str
   mode: MSVMode
   msv_path: str
   work_dir: str
@@ -1474,6 +1475,7 @@ class MSVState:
   patch_ranking: List[str]
   total_basic_patch: int
   def __init__(self) -> None:
+    self.msv_version = "0.1.0"
     self.mode = MSVMode.guided
     self.msv_path = ""
     self.msv_uuid = str(uuid.uuid4())

@@ -182,6 +182,7 @@ def set_logger(state: MSVState) -> logging.Logger:
   logger.addHandler(ch)
   logger.info('Logger is set')
   logger.warning(f"MSV-SEARCH: {' '.join(state.original_args)}")
+  logger.warning(f"Version: {state.msv_version}")
   logger.info(f'params: {state.params}')
   return logger
 
