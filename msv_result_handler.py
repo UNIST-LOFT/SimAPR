@@ -220,12 +220,19 @@ def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result:
   if result.pass_result:
     state.total_plausible_patch+=1
   state.total_searched_patch+=1
-  
-  state.msv_result.append(result.to_json_object(state.total_searched_patch,state.total_passed_patch,state.total_plausible_patch))
+  obj = result.to_json_object(state.total_searched_patch,state.total_passed_patch,state.total_plausible_patch)
+  state.msv_result.append(obj)
   state.used_patch.append(result)
   with open(os.path.join(state.out_dir, "msv-result.csv"), 'a') as f:
-    f.write(json.dumps(result.to_json_object(state.total_searched_patch,state.total_passed_patch,state.total_plausible_patch)))
-    f.write("\n")
+    f.write(json.dumps(obj) + "\n")
+  sim_data_file = os.path.join(state.out_dir, "msv-sim-data.csv")
+  if state.use_simulation_mode:
+    sim_data_file = state.prev_data
+  if (state.use_simulation_mode) and (state.tbar_mode or state.recoder_mode) and (obj["config"][0]["location"] in state.simulation_data):
+    pass
+  else:
+    with open(sim_data_file, "a") as f:
+      f.write(json.dumps(obj) + "\n")
   if (tm - state.last_save_time) > save_interval:
     save_result(state)
 

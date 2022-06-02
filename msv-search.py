@@ -337,23 +337,35 @@ def read_info_recoder(state: MSVState) -> None:
   state.switch_case_map["0-0"] = temp_recoder_case
   state.patch_location_map["original"] = temp_recoder_case
   if state.use_simulation_mode:
-    with open(state.prev_data, "r") as f:
-      prev_info = json.load(f)
-      for data in prev_info:
-        exec=data['execution']
-        iter = data["iteration"]
-        tm = data["time"]
-        result = data["result"]
-        pass_result = data["pass_result"]
-        output_distance = data["output_distance"]
-        pass_all_neg_test = data["pass_all_neg_test"]
-        compilable = data["compilable"]
-        conf = data["config"][0]
-        id = conf["id"]
-        case = conf["case_id"]
-        key = f"{id}-{case}"
-        case_info = state.switch_case_map[key]
-        state.simulation_data[key] = MSVResult(exec, iter, tm, [RecoderPatchInfo(case_info)], result, pass_result, output_distance, pass_all_neg_test, compilable)
+    prev_info = list()
+    if state.prev_data.endswith(".csv"):
+      with open(state.prev_data, "r") as f:
+        for line in f.readlines():
+          line = line.strip()
+          if line.startswith("#"):
+            continue
+          if line == "":
+            continue
+          data = json.loads(line)
+          prev_info.append(data)
+    else:
+      with open(state.prev_data, "r") as f:
+        prev_info = json.load(f)
+    for data in prev_info:
+      exec=data['execution']
+      iter = data["iteration"]
+      tm = data["time"]
+      result = data["result"]
+      pass_result = data["pass_result"]
+      output_distance = data["output_distance"]
+      pass_all_neg_test = data["pass_all_neg_test"]
+      compilable = data["compilable"]
+      conf = data["config"][0]
+      id = conf["id"]
+      case = conf["case_id"]
+      key = f"{id}-{case}"
+      case_info = state.switch_case_map[key]
+      state.simulation_data[key] = MSVResult(exec, iter, tm, [RecoderPatchInfo(case_info)], result, pass_result, output_distance, pass_all_neg_test, compilable)
 
 def read_info_tbar(state: MSVState) -> None:
   with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
@@ -493,21 +505,33 @@ def read_info_tbar(state: MSVState) -> None:
   state.switch_case_map["original"] = temp_tbar_case
   state.patch_location_map["original"] = temp_tbar_case
   if state.use_simulation_mode:
-    with open(state.prev_data, "r") as f:
-      prev_info = json.load(f)
-      for data in prev_info:
-        exec=data['execution']
-        iter = data["iteration"]
-        tm = data["time"]
-        result = data["result"]
-        pass_result = data["pass_result"]
-        output_distance = data["output_distance"]
-        pass_all_neg_test = data["pass_all_neg_test"]
-        compilable = data['compilable']
-        conf = data["config"][0]
-        key = conf["location"]
-        case_info = state.switch_case_map[key]
-        state.simulation_data[key] = MSVResult(exec, iter, tm, [RecoderPatchInfo(case_info)], result, pass_result, output_distance, pass_all_neg_test, compilable)
+    prev_info = list()
+    if state.prev_data.endswith(".csv"):
+      with open(state.prev_data, "r") as f:
+        for line in f.readlines():
+          line = line.strip()
+          if line.startswith("#"):
+            continue
+          if line == "":
+            continue
+          data = json.loads(line)
+          prev_info.append(data)
+    else:
+      with open(state.prev_data, "r") as f:
+        prev_info = json.load(f)
+    for data in prev_info:
+      exec=data['execution']
+      iter = data["iteration"]
+      tm = data["time"]
+      result = data["result"]
+      pass_result = data["pass_result"]
+      output_distance = data["output_distance"]
+      pass_all_neg_test = data["pass_all_neg_test"]
+      compilable = data['compilable']
+      conf = data["config"][0]
+      key = conf["location"]
+      case_info = state.switch_case_map[key]
+      state.simulation_data[key] = MSVResult(exec, iter, tm, [TbarPatchInfo(case_info)], result, pass_result, output_distance, pass_all_neg_test, compilable)
 
 
 def trim_with_watch_level(state: MSVState, watch_level: str, correct_str: str) -> None:
