@@ -223,6 +223,7 @@ class FuncInfo:
     self.has_init_patch=False
     self.case_update_count: int = 0
     self.score_list: List[float] = list()
+    self.func_rank: int = -1
   def __hash__(self) -> int:
     return hash(self.id)
   def __eq__(self, other) -> bool:
@@ -250,7 +251,7 @@ class LineInfo:
     self.has_init_patch=False
     self.case_update_count: int = 0
     self.tbar_type_info_map: Dict[str, TbarTypeInfo] = dict()
-    self.recoder_type_info_map: Dict[int, RecoderTypeInfo] = dict()
+    self.recoder_type_info_map: Dict[str, RecoderTypeInfo] = dict()
     self.line_id = -1
     self.recoder_case_info_map: Dict[int, RecoderCaseInfo] = dict()
     self.score_list: List[float] = list()
@@ -291,17 +292,20 @@ class TbarCaseInfo:
     self.case_update_count: int = 0
     self.out_dist: float = -1.0
     self.out_dist_map: Dict[int, float] = dict()
-    self.same_seapr_pf = PassFail()
-    self.diff_seapr_pf = PassFail()
+    self.same_seapr_pf = PassFail(1, 1)
+    self.diff_seapr_pf = PassFail(1, 1)
+    self.patch_rank: int = -1
   def __hash__(self) -> int:
     return hash(self.location)
   def __eq__(self, other) -> bool:
     return self.location == other.location
 
 class RecoderTypeInfo:
-  def __init__(self, parent: LineInfo, mode: int) -> None:
+  def __init__(self, parent: LineInfo, act: str, prev: 'RecoderTypeInfo') -> None:
     self.parent = parent
-    self.mode = mode
+    self.act = act
+    self.prev = prev
+    self.next: Dict[str, 'RecoderTypeInfo'] = dict()
     self.pf = PassFail()
     self.positive_pf = PassFail()
     self.output_pf = PassFail()
@@ -312,10 +316,27 @@ class RecoderTypeInfo:
     self.score_list: List[float] = list()
     self.out_dist_map: Dict[int, float] = dict()
     self.recoder_case_info_map: Dict[int, RecoderCaseInfo] = dict()
+  def is_root(self) -> bool:
+    return self.prev is None
+  def is_leaf(self) -> bool:
+    return len(self.next) == 0
+  def get_root(self) -> 'RecoderTypeInfo':
+    if self.prev is None:
+      return self
+    return self.prev.get_root()
+  def get_path(self) -> List['RecoderTypeInfo']:
+    if not self.is_leaf():
+      return list()
+    type_info = self
+    path = [type_info]
+    while not type_info.is_root():
+      type_info = type_info.prev
+      path.append(type_info)
+    return path
   def __hash__(self) -> int:
-    return hash(self.mode)
+    return hash(self.act)
   def __eq__(self, other) -> bool:
-    return self.mode == other.mode
+    return self.act == other.act
 
 class RecoderCaseInfo:
   def __init__(self, parent: RecoderTypeInfo, location: str, case_id: int) -> None:
@@ -331,8 +352,8 @@ class RecoderCaseInfo:
     self.out_dist: float = -1.0
     self.prob: float = 0
     self.out_dist_map: Dict[int, float] = dict()
-    self.same_seapr_pf = PassFail()
-    self.diff_seapr_pf = PassFail()
+    self.same_seapr_pf = PassFail(1, 1)
+    self.diff_seapr_pf = PassFail(1, 1)
   def __hash__(self) -> int:
     return hash(self.location)
   def __eq__(self, other) -> bool:
@@ -406,10 +427,10 @@ class CaseInfo:
     self.update_count: int = 0
     self.prophet_score:list=[]
     self.location: FileLine = None
-    self.seapr_same_high:float=0.
-    self.seapr_same_low:float=0.
-    self.seapr_diff_high:float=0.
-    self.seapr_diff_low:float=0.
+    self.seapr_same_high:float=1.0
+    self.seapr_same_low:float=1.0
+    self.seapr_diff_high:float=1.0
+    self.seapr_diff_low:float=1.0
     self.current_record:List[bool]=[] # current record, for out condition synthesis
     self.synthesis_tried:int=0 # tried counter for search record, removed after 11
     self.has_init_patch=False
@@ -1240,7 +1261,8 @@ class TbarPatchInfo:
 class RecoderPatchInfo:
   def __init__(self, recoder_case_info: RecoderCaseInfo) -> None:
     self.recoder_case_info = recoder_case_info
-    self.recoder_type_info = recoder_case_info.parent
+    self.recoder_type_info = recoder_case_info.parent # leaf node
+    self.recoder_type_info_list = self.recoder_type_info.get_path()
     self.line_info = self.recoder_type_info.parent
     self.func_info = self.line_info.parent
     self.file_info = self.func_info.parent
@@ -1248,7 +1270,9 @@ class RecoderPatchInfo:
     self.out_diff = False
   def update_result(self, result: bool, n: float, b_n:float,exp_alpha: bool, fixed_beta: bool) -> None:
     self.recoder_case_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
-    self.recoder_type_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
+    for rti in self.recoder_type_info_list:
+      rti.pf.update(result, n,b_n, exp_alpha, fixed_beta)
+    # self.recoder_type_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.line_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.func_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.file_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
@@ -1279,7 +1303,9 @@ class RecoderPatchInfo:
     self.file_info.output_pf.update(is_diff, 1.0)    
   def update_result_positive(self, result: bool, n: float, b_n:float,exp_alpha: bool, fixed_beta: bool) -> None:
     self.recoder_case_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
-    self.recoder_type_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
+    # self.recoder_type_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
+    for rti in self.recoder_type_info_list:
+      rti.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.line_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.func_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.file_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
@@ -1287,8 +1313,14 @@ class RecoderPatchInfo:
     if self.recoder_case_info.case_id not in self.recoder_type_info.recoder_case_info_map:
       state.msv_logger.critical(f"{self.recoder_case_info.case_id} not in {self.recoder_type_info.recoder_case_info_map}")
     del self.recoder_type_info.recoder_case_info_map[self.recoder_case_info.case_id]
-    if len(self.recoder_type_info.recoder_case_info_map) == 0:
-      del self.line_info.recoder_type_info_map[self.recoder_type_info.mode]
+    # if len(self.recoder_type_info.recoder_case_info_map) == 0:
+    #   del self.line_info.recoder_type_info_map[self.recoder_type_info.mode]
+    for rti in self.recoder_type_info_list:
+      if len(rti.next) == 0 and len(rti.recoder_case_info_map) == 0:
+        if rti.prev is not None:
+          del rti.prev.next[rti.act]
+        else:
+          del self.line_info.recoder_type_info_map[rti.act]
     if len(self.line_info.recoder_type_info_map) == 0:
       score = self.line_info.fl_score
       self.func_info.fl_score_list.remove(score)
@@ -1298,16 +1330,19 @@ class RecoderPatchInfo:
       del self.file_info.func_info_map[self.func_info.id]
     if len(self.file_info.func_info_map) == 0:
       del state.file_info_map[self.file_info.file_name]
-    self.recoder_case_info.case_update_count += 1
-    self.recoder_type_info.case_update_count += 1
-    self.line_info.case_update_count += 1
-    self.func_info.case_update_count += 1
-    self.file_info.case_update_count += 1
     prob = self.recoder_case_info.prob
-    self.recoder_type_info.score_list.remove(prob)
+    # self.recoder_type_info.score_list.remove(prob)
     self.line_info.score_list.remove(prob)
     self.func_info.score_list.remove(prob)
     self.file_info.score_list.remove(prob)
+    self.recoder_case_info.case_update_count += 1
+    # self.recoder_type_info.case_update_count += 1
+    for rti in self.recoder_type_info_list:
+      rti.case_update_count += 1
+      rti.score_list.remove(prob)
+    self.line_info.case_update_count += 1
+    self.func_info.case_update_count += 1
+    self.file_info.case_update_count += 1
   def to_json_object(self) -> dict:
     conf = dict()
     conf["location"] = self.recoder_case_info.location
@@ -1336,7 +1371,7 @@ class MSVResult:
   pass_result: bool
   pass_all_neg_test: bool
   output_distance: float
-  def __init__(self, execution: int, iteration:int,time: float, config: List[PatchInfo], result: bool,pass_test_result:bool=False, output_distance: float = 100.0, pass_all_neg_test: bool = False) -> None:
+  def __init__(self, execution: int, iteration:int,time: float, config: List[PatchInfo], result: bool,pass_test_result:bool=False, output_distance: float = 100.0, pass_all_neg_test: bool = False, compilable: bool = True) -> None:
     self.execution = execution
     self.iteration=iteration
     self.time = time
@@ -1344,6 +1379,7 @@ class MSVResult:
     self.result = result
     self.pass_result=pass_test_result
     self.pass_all_neg_test = pass_all_neg_test
+    self.compilable = compilable
     self.output_distance = output_distance
     self.out_diff = config[0].out_diff
   def to_json_object(self,total_searched_patch:int=0,total_passed_patch:int=0,total_plausible_patch:int=0) -> dict:
@@ -1356,6 +1392,7 @@ class MSVResult:
     object["output_distance"] = self.output_distance
     object["out_diff"] = self.out_diff
     object["pass_all_neg_test"] = self.pass_all_neg_test
+    object["compilable"] = self.compilable
 
     # This total counts include this result
     object['total_searched']=total_searched_patch
@@ -1373,6 +1410,7 @@ class MSVState:
   msv_logger: logging.Logger
   original_args: List[str]
   args: List[str]
+  msv_version: str
   mode: MSVMode
   msv_path: str
   work_dir: str
@@ -1392,6 +1430,7 @@ class MSVState:
   use_pass_test: bool
   use_multi_line: int
   use_partial_validation: bool
+  ignore_compile_error: bool
   time_limit: int
   cycle_limit: int
   correct_case_info: CaseInfo
@@ -1411,7 +1450,7 @@ class MSVState:
   positive_test: List[int]        # Positive test case
   d4j_negative_test: List[str]
   d4j_positive_test: List[str]
-  d4j_failed_passing_tests: List[str]
+  d4j_failed_passing_tests: Set[str]
   d4j_test_fail_num_map: Dict[str, int]
   profile_map: Dict[int, Profile] # test case number -> Profile (of original program)
   priority_list: List[Tuple[str, int, float]]  # (file_name, line_number, score)
@@ -1436,6 +1475,7 @@ class MSVState:
   patch_ranking: List[str]
   total_basic_patch: int
   def __init__(self) -> None:
+    self.msv_version = "0.1.0"
     self.mode = MSVMode.guided
     self.msv_path = ""
     self.msv_uuid = str(uuid.uuid4())
@@ -1464,7 +1504,7 @@ class MSVState:
     self.positive_test = list()
     self.d4j_negative_test = list()
     self.d4j_positive_test = list()
-    self.d4j_failed_passing_tests = list()
+    self.d4j_failed_passing_tests = set()
     self.d4j_test_fail_num_map = dict()
     self.d4j_buggy_project: str = ""
     self.patch_location_map = dict()
@@ -1490,6 +1530,7 @@ class MSVState:
     self.use_pattern = False
     self.use_simulation_mode = False
     self.prev_data = ""
+    self.ignore_compile_error = False
     self.simulation_data = dict()
     self.correct_patch_str: str = ""
     self.correct_case_info: CaseInfo = None
@@ -1539,7 +1580,7 @@ def record_to_int(record: List[bool]) -> List[int]:
     result.append(1 if path else 0)
   return result
 
-def append_java_cache_result(state:MSVState,case:TbarCaseInfo,fail_result:bool,pass_result:bool,pass_all_fail:bool,
+def append_java_cache_result(state:MSVState,case:TbarCaseInfo,fail_result:bool,pass_result:bool,pass_all_fail:bool,compilable:bool,
       fail_time:int,pass_time:int):
   """
     Append result to cache file, if not exist. Otherwise, do nothing.
@@ -1557,12 +1598,13 @@ def append_java_cache_result(state:MSVState,case:TbarCaseInfo,fail_result:bool,p
     current['basic']=fail_result
     current['plausible']=pass_result
     current['pass_all_fail']=pass_all_fail
+    current['compilable']=compilable
     current['fail_time']=fail_time
     current['pass_time']=pass_time
 
     state.simulation_data[id]=current
 
-def append_c_cache_result(state:MSVState,case:CaseInfo,fail_result:bool,pass_result:bool,pass_all_fail:bool,
+def append_c_cache_result(state:MSVState,case:CaseInfo,fail_result:bool,pass_result:bool,pass_all_fail:bool,compilable:bool,
       fail_time:int,pass_time:int,operator:OperatorInfo=None,variable:VariableInfo=None,constant:ConstantInfo=None):
   """
     Append result to cache file, if not exist. Otherwise, do nothing.
@@ -1588,6 +1630,7 @@ def append_c_cache_result(state:MSVState,case:CaseInfo,fail_result:bool,pass_res
     current['basic']=fail_result
     current['plausible']=pass_result
     current['pass_all_fail']=pass_all_fail
+    current['compilable']=compilable
     current['fail_time']=fail_time
     current['pass_time']=pass_time
 

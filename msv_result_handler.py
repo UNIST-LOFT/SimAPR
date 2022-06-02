@@ -225,7 +225,7 @@ def save_result(state: MSVState) -> None:
         result=subprocess.run(['rm','-rf',sub_path],stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
 
 # Append result list, save result to file periodically
-def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result: bool,pass_test_result:bool=False, pass_all_neg_test: bool = False,fail_time:int=0,pass_time:int=0) -> None:
+def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result: bool,pass_test_result:bool=False, pass_all_neg_test: bool = False,compilable: bool = True,fail_time:int=0,pass_time:int=0) -> None:
   """
     fail_time: milisecond
     pass_time: second
@@ -234,15 +234,15 @@ def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result:
   tm = time.time()
   tm_interval = tm - state.start_time
   result = MSVResult(state.cycle,state.iteration,tm_interval, selected_patch, 
-          test_result, pass_test_result, selected_patch[0].out_dist, pass_all_neg_test)
+          test_result, pass_test_result, selected_patch[0].out_dist, pass_all_neg_test, compilable=compilable)
   
   if result.result:
     state.total_passed_patch+=1
   if result.pass_result:
     state.total_plausible_patch+=1
   state.total_searched_patch+=1
-  
-  state.msv_result.append(result.to_json_object(state.total_searched_patch,state.total_passed_patch,state.total_plausible_patch))
+  obj = result.to_json_object(state.total_searched_patch,state.total_passed_patch,state.total_plausible_patch)
+  state.msv_result.append(obj)
   state.used_patch.append(result)
 
   if state.use_simulation_mode:
@@ -250,18 +250,32 @@ def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result:
     for patch in selected_patch:
       if state.tbar_mode or state.recoder_mode:
         # For Java, case_info is tbar_case_info
-        append_java_cache_result(state,patch.tbar_case_info,test_result,pass_test_result,pass_all_neg_test,fail_time,pass_time)
+        append_java_cache_result(state,patch.tbar_case_info,test_result,pass_test_result,pass_all_neg_test,compilable,fail_time,pass_time)
       else:
         if not patch.case_info.is_condition:
-          append_c_cache_result(state,patch.case_info,test_result,pass_test_result,pass_all_neg_test,fail_time,pass_time)
+          append_c_cache_result(state,patch.case_info,test_result,pass_test_result,pass_all_neg_test,compilable,fail_time,pass_time)
         elif patch.operator_info.operator_type==OperatorType.ALL_1:
-          append_c_cache_result(state,patch.case_info,test_result,pass_test_result,pass_all_neg_test,fail_time,pass_time,patch.operator_info)
+          append_c_cache_result(state,patch.case_info,test_result,pass_test_result,pass_all_neg_test,compilable,fail_time,pass_time,patch.operator_info)
         else:
-          append_c_cache_result(state,patch.case_info,test_result,pass_test_result,pass_all_neg_test,fail_time,pass_time,patch.operator_info,patch.variable_info,patch.constant_info)
+          append_c_cache_result(state,patch.case_info,test_result,pass_test_result,pass_all_neg_test,compilable,fail_time,pass_time,patch.operator_info,patch.variable_info,patch.constant_info)
   
   with open(os.path.join(state.out_dir, "msv-result.csv"), 'a') as f:
-    f.write(json.dumps(result.to_json_object(state.total_searched_patch,state.total_passed_patch,state.total_plausible_patch)))
-    f.write("\n")
+    f.write(json.dumps(obj) + "\n")
+  sim_data_file = os.path.join(state.out_dir, "msv-sim-data.csv")
+  if state.use_simulation_mode:
+    sim_data_file = state.prev_data
+  update_sim_data = True
+  if state.use_simulation_mode:
+    if state.tbar_mode:
+      if obj["config"][0]["location"] in state.simulation_data:
+        update_sim_data = False
+    elif state.recoder_mode:
+      key = obj["config"][0]["id"] + "-" + obj["config"][0]["case_id"]
+      if key in state.simulation_data:
+        update_sim_data = False
+  if update_sim_data:
+    with open(sim_data_file, "a") as f:
+      f.write(json.dumps(obj) + "\n")
   if (tm - state.last_save_time) > save_interval:
     save_result(state)
 

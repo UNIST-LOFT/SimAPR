@@ -175,8 +175,8 @@ def parse_location(state: MSVState, new_env: Dict[str, str], tests: Set[int]) ->
         for i in range(start, end + 1):
           state.test_to_location[test][file].add(i)
 
-# return (pass_exists, passed, timeout)
-def run_fail_test_d4j(state: MSVState, new_env: Dict[str, str]) -> Tuple[bool, bool]:
+# return (compilable, passed, timeout)
+def run_fail_test_d4j(state: MSVState, new_env: Dict[str, str]) -> Tuple[bool, bool, bool]:
   state.cycle += 1
   state.msv_logger.info(f"@{state.cycle} Run tbar test {new_env['MSV_TEST']} with {new_env['MSV_LOCATION']}")
   args = state.args
@@ -198,17 +198,18 @@ def run_fail_test_d4j(state: MSVState, new_env: Dict[str, str]) -> Tuple[bool, b
     for child in children:
       child.kill()
     test_proc.kill()
-    return -1, False, True
+    return False, False, True
   result_str = so.decode('utf-8').strip()
   error_str = se.decode('utf-8').strip()
   if result_str == "":
     state.msv_logger.info("Result: FAIL - output is empty")
     state.msv_logger.debug("STDERR: " + error_str)
-    return -1, False, is_timeout
-  state.msv_logger.debug(result_str)
+    return False, False, is_timeout
+  state.msv_logger.debug(result_str.replace("\n", " "))
 
   result = True
-  failed_tests = list()
+  compilable = True
+  failed_tests = set()
   for line in result_str.splitlines():
     line = line.strip()
     if line == "":
@@ -222,19 +223,25 @@ def run_fail_test_d4j(state: MSVState, new_env: Dict[str, str]) -> Tuple[bool, b
       continue
     if line.startswith("---"):
       ft = line.replace("---", "").strip()
-      failed_tests.append(ft)
+      if ft == "COMPILATION_FAILED":
+        compilable = False
+        break
+      failed_tests.add(ft)
       continue
     state.msv_logger.warning(f"Unknown line: {line}")
+  
   if result:
     state.msv_logger.info("Result: PASS")
-    return 0, True, False
-  if len(failed_tests) == 0:
-    state.msv_logger.info("Result: FAIL - no failed test")
-    state.msv_logger.debug("STDERR: " + error_str)
-    return -1, False, is_timeout
-  else:
-    state.msv_logger.info(f"Result: FAIL - {failed_tests}")
-    return len(failed_tests), False, is_timeout
+    return True, True, False
+  if len(failed_tests) > 0 and len(state.d4j_failed_passing_tests) > 0 and failed_tests.issubset(state.d4j_failed_passing_tests):
+    state.msv_logger.info("Result: PASS")
+    return True, True, False
+  if compilable:
+    state.msv_logger.info(f"Result: FAIL - compilable - {failed_tests}")
+    return True, False, is_timeout
+  state.msv_logger.info(f"Result: FAIL - not compilable")
+  state.msv_logger.debug(f"STDERR: {error_str}")
+  return False, False, is_timeout
 
 def run_pass_test_d4j_exec(state: MSVState, new_env: Dict[str, str], tests: List[str]) -> Tuple[bool, Set[str]]:
   state.cycle += 1
@@ -285,9 +292,9 @@ def run_pass_test_d4j_exec(state: MSVState, new_env: Dict[str, str], tests: List
   if result:
     state.msv_logger.info("Result: PASS")
     return True, failed_tests
-  if failed_tests.issubset(state.failed_positive_test):
+  if failed_tests.issubset(state.d4j_failed_passing_tests):
     return True, set()
-  return result, failed_tests.difference(state.failed_positive_test)
+  return result, failed_tests.difference(state.d4j_failed_passing_tests)
 
 def run_pass_test_d4j(state: MSVState, new_env: Dict[str, str]) -> bool:
   state.cycle += 1

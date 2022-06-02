@@ -182,6 +182,7 @@ def set_logger(state: MSVState) -> logging.Logger:
   logger.addHandler(ch)
   logger.info('Logger is set')
   logger.warning(f"MSV-SEARCH: {' '.join(state.original_args)}")
+  logger.warning(f"Version: {state.msv_version}")
   logger.info(f'params: {state.params}')
   return logger
 
@@ -289,22 +290,30 @@ def read_info_recoder(state: MSVState) -> None:
         state.priority_map[f"{file_info.file_name}:{line_info.line_number}"] = file_line
         for cs in line["cases"]:
           case_id = cs["case"]
-          mode = cs["mode"]
+          # mode = cs["mode"]
+          actlist = cs["actlist"]
           location = cs["location"]
           prob = cs["prob"]
-          if mode not in line_info.recoder_type_info_map:
-            line_info.recoder_type_info_map[mode] = RecoderTypeInfo(line_info, mode)
-          recoder_type_info = line_info.recoder_type_info_map[mode]
+          type_map = line_info.recoder_type_info_map
+          prev = None
+          for act in actlist:
+            if act not in type_map:
+              type_map[act] = RecoderTypeInfo(line_info, act, prev)
+            prev = type_map[act]
+            prev.score_list.append(prob)
+            type_map = prev.next
+          recoder_type_info = prev
           recoder_case_info = RecoderCaseInfo(recoder_type_info, location, case_id)
           recoder_type_info.recoder_case_info_map[case_id] = recoder_case_info
           state.switch_case_map[f"{line_info.line_id}-{case_id}"] = recoder_case_info
           state.patch_location_map[location] = recoder_case_info
           recoder_case_info.prob = prob
-          recoder_type_info.score_list.append(prob)
+          # recoder_type_info.score_list.append(prob)
           line_info.score_list.append(prob)
           func_info.score_list.append(prob)
           file_info.score_list.append(prob)
-          recoder_type_info.total_case_info += 1
+          for ti in recoder_type_info.get_path():
+            ti.total_case_info += 1
           line_info.total_case_info += 1
           func_info.total_case_info += 1
           file_info.total_case_info += 1
@@ -323,7 +332,7 @@ def read_info_recoder(state: MSVState) -> None:
   temp_file.func_info_map["original_fn:0-0"] = temp_func
   temp_line: LineInfo = LineInfo(temp_func, 0)
   # temp_file.line_info_list.append(temp_line)
-  temp_recoder_type = RecoderTypeInfo(temp_line, 0)
+  temp_recoder_type = RecoderTypeInfo(temp_line, 0, None)
   temp_recoder_case = RecoderCaseInfo(temp_recoder_type, "original", 0)
   state.switch_case_map["0-0"] = temp_recoder_case
   state.patch_location_map["original"] = temp_recoder_case
@@ -445,12 +454,23 @@ def read_info_tbar(state: MSVState) -> None:
         del state.file_info_map[file_info.file_name]
   state.d4j_buggy_project = info["project_name"]
   # Read ranking
+  rank_num = 0
   ranking = info['ranking']
+  func_rank = 0
   for rank in ranking:
+    rank_num += 1
+    loc = ""
     if isinstance(rank, str):
-      state.patch_ranking.append(rank)
+      loc = rank  
     else:
-      state.patch_ranking.append(rank['location'])
+      loc = rank['location']
+    state.patch_ranking.append(loc)
+    case_info = state.switch_case_map[loc]
+    case_info.patch_rank = rank_num
+    func_info = case_info.parent.parent.parent
+    if func_info.func_rank == -1:
+      func_info.func_rank = func_rank
+      func_rank += 1
   #Add original to switch_case_map
   temp_file: FileInfo = FileInfo('original')
   temp_func = FuncInfo(temp_file, "original_fn", 0, 0)
@@ -882,7 +902,7 @@ def copy_previous_results(state: MSVState) -> None:
       prefix += 1
     shutil.copy(result_log, os.path.join(state.out_dir, f"bak{prefix}-msv-search.log"))
     os.remove(result_log)
-  result_files = ["msv-result.json", "msv-result.csv", "critical-info.csv"]
+  result_files = ["msv-result.json", "msv-result.csv", "critical-info.csv", "msv-sim-data.csv"]
   for result_file in result_files:
     if os.path.exists(os.path.join(state.out_dir, result_file)):
       shutil.copy(os.path.join(state.out_dir, result_file), os.path.join(state.out_dir, f"bak{prefix}-{result_file}"))

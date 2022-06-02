@@ -634,6 +634,8 @@ def select_patch_seapr(state: MSVState, test: int) -> PatchInfo:
   max_score=0.
   has_high_qual_patch=False
   for case in state.seapr_remain_cases:
+    if case.parent.parent.parent.parent.func_rank > 30:
+      continue
     cur_score=get_ochiai(case.seapr_same_high,case.seapr_same_low,case.seapr_diff_high,case.seapr_diff_low)
     if case.seapr_same_high>0:
       has_high_qual_patch=True
@@ -875,8 +877,13 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   selected_type_info: TbarTypeInfo = selected[selected_type]
   clear_list(state, p_map)
   # select tbar switch
+  rank: int = -1
+  selected_switch_info = None
   for location in selected_type_info.tbar_case_info_map:
     location_info = selected_type_info.tbar_case_info_map[location]
+    if rank < 0 or rank > location_info.patch_rank:
+      rank = location_info.patch_rank
+      selected_switch_info = location_info
     selected.append(location_info)
     p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
   c_map = rand_cmap
@@ -899,6 +906,8 @@ def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
   has_high_qual_patch = False
   for loc in state.patch_ranking:
     tbar_case_info: TbarCaseInfo = state.switch_case_map[loc]
+    if tbar_case_info.parent.parent.parent.func_rank > 30:
+      continue
     if loc not in tbar_case_info.parent.tbar_case_info_map:
       # state.msv_logger.warning(f"No switch info  {tbar_case_info.location} in patch: {tbar_case_info.parent.tbar_case_info_map}")
       continue
@@ -1037,21 +1046,26 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
   del c_map[PT.fl] # No fl below line
 
   # Select type
-  for recoder_type in selected_line_info.recoder_type_info_map:
-    recoder_type_info = selected_line_info.recoder_type_info_map[recoder_type]
-    if len(recoder_type_info.recoder_case_info_map) == 0:
-      state.msv_logger.warning(f"No switch info in type: {recoder_type}")
-      continue
-    selected.append(recoder_type_info)
-    p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_b.append(recoder_type_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_p.append(recoder_type_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_o.append(recoder_type_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    if explore:
-      p_cov.append(1 - (recoder_type_info.case_update_count/recoder_type_info.total_case_info))
-  selected_type = select_by_probability(state, p_map, c_map, normalize)
-  selected_type_info: RecoderTypeInfo = selected[selected_type]
-  clear_list(state, p_map)
+  type_map = selected_line_info.recoder_type_info_map
+  while (len(type_map) > 0):
+    for act in type_map:
+      recoder_type_info = type_map[act]
+      if len(recoder_type_info.next) == 0 and len(recoder_type_info.recoder_case_info_map) == 0:
+        state.msv_logger.warning(f"No switch info in type: {act}")
+        continue
+      selected.append(recoder_type_info)
+      p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      p_b.append(recoder_type_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      p_p.append(recoder_type_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      p_o.append(recoder_type_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      if explore:
+        p_cov.append(1 - (recoder_type_info.case_update_count/recoder_type_info.total_case_info))
+    selected_type = select_by_probability(state, p_map, c_map, normalize)
+    selected_type_info: RecoderTypeInfo = selected[selected_type]
+    clear_list(state, p_map)
+    if selected_type_info.is_leaf():
+      break
+    type_map = selected_type_info.next
   # select tbar switch
   for case_id in selected_type_info.recoder_case_info_map:
     case_info = selected_type_info.recoder_case_info_map[case_id]

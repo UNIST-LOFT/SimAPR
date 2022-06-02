@@ -304,9 +304,9 @@ class MSVTbar(MSV):
     result_handler.save_result(self.state)
   def run_test(self, patch: TbarPatchInfo, test: int) -> Tuple[int, bool,int]:
     start_time=int(time.time() * 1000)
-    fail_num, run_result, is_timeout = run_test.run_fail_test_d4j(self.state, MSVEnvVar.get_new_env_tbar(self.state, patch, test))
+    compilable, run_result, is_timeout = run_test.run_fail_test_d4j(self.state, MSVEnvVar.get_new_env_tbar(self.state, patch, test))
     run_time=int(time.time() * 1000)-start_time
-    return fail_num, run_result, run_time
+    return compilable, run_result, run_time
   def run_test_positive(self, patch: TbarPatchInfo) -> Tuple[bool,int]:
     start_time=int(time.time())
     run_result = run_test.run_pass_test_d4j(self.state, MSVEnvVar.get_new_env_tbar(self.state, patch, ""))
@@ -320,8 +320,12 @@ class MSVTbar(MSV):
       if neg in self.state.failed_positive_test:
         self.state.d4j_negative_test.remove(neg)
       else:
-        fail_num, run_result,_ = self.run_test(op, neg)
-        self.state.d4j_test_fail_num_map[neg] = fail_num
+        compilable, run_result,_ = self.run_test(op, neg)
+        # self.state.d4j_test_fail_num_map[neg] = fail_num
+        if not compilable:
+          self.state.msv_logger.warning("Project is not compilable")
+          self.state.is_alive = False
+          return
         if run_result:
           self.state.msv_logger.warning(f"Removing {neg} from negative test")
           self.state.d4j_negative_test.remove(neg)
@@ -354,29 +358,31 @@ class MSVTbar(MSV):
     self.state.start_time = time.time()
     self.state.cycle = 0
     while self.is_alive():
-      self.state.iteration += 1
       self.state.msv_logger.info(f'[{self.state.cycle}]: executing')
       patch = select_patch.select_patch_tbar_mode(self.state)
+      self.state.msv_logger.info(f"Patch: {patch.tbar_case_info.location}")
+      self.state.msv_logger.info(f"{patch.file_info.file_name}${patch.func_info.id}${patch.line_info.line_number}")
       pass_exists = False
       result = True
       pass_result = False
+      is_compilable = True
       for neg in self.state.d4j_negative_test:
-        fail_num, run_result,fail_time = self.run_test(patch, neg)
-        # if run_result or (fail_num >= 0 and self.state.d4j_test_fail_num_map[neg] > fail_num):
-        #   self.state.msv_logger.info(f"Partial pass: {neg}, fail {fail_num}/{self.state.d4j_test_fail_num_map[neg]}")
-        #   pass_exists = True
+        compilable, run_result,fail_time = self.run_test(patch, neg)
+        if not compilable:
+          is_compilable = False
         if run_result:
           pass_exists = True
         if not run_result:
           result = False
           if self.state.use_partial_validation:
             break
-      result_handler.update_result_tbar(self.state, patch, pass_exists)
-      pass_time=0
-      if result and self.state.use_pass_test:
-        pass_result,pass_time = self.run_test_positive(patch)
-        result_handler.update_positive_result_tbar(self.state, patch, pass_result)
-      result_handler.append_result(self.state, [patch], pass_exists, pass_result, result,fail_time,pass_time)
+      if is_compilable or self.state.ignore_compile_error:
+        self.state.iteration += 1
+        result_handler.update_result_tbar(self.state, patch, pass_exists)
+        if result and self.state.use_pass_test:
+          pass_result,pass_time = self.run_test_positive(patch)
+          result_handler.update_positive_result_tbar(self.state, patch, pass_result)
+      result_handler.append_result(self.state, [patch], pass_exists, pass_result, result, is_compilable,fail_time,pass_time)
       result_handler.remove_patch_tbar(self.state, patch)
   
   def run_sim(self) -> None:
@@ -384,30 +390,32 @@ class MSVTbar(MSV):
     self.state.start_time = time.time()
     self.state.cycle = 0
     while(self.is_alive()):
-      self.state.iteration += 1
       self.state.msv_logger.info(f'[{self.state.cycle}]: executing')
       patch = select_patch.select_patch_tbar_mode(self.state)
+      self.state.msv_logger.info(f"Patch: {patch.tbar_case_info.location}")
+      self.state.msv_logger.info(f"{patch.file_info.file_name}${patch.func_info.id}${patch.line_info.line_number}")
       pass_exists = False
       result = True
       pass_result = False
+      is_compilable = True
       pass_time=0
       key = patch.tbar_case_info.location
       if key not in self.state.simulation_data:
         for neg in self.state.d4j_negative_test:
-          fail_num, run_result,fail_time = self.run_test(patch, neg)
-          # if fail_num >= 0 and self.state.d4j_test_fail_num_map[neg] > fail_num:
-          #   self.state.msv_logger.info(f"Partial pass: {neg}, fail {fail_num}/{self.state.d4j_test_fail_num_map[neg]}")
-          #   pass_exists = True
+          compilable, run_result,fail_time = self.run_test(patch, neg)
+          if not compilable:
+            is_compilable = False
           if run_result:
             pass_exists = True
           if not run_result:
             result = False
             if self.state.use_partial_validation:
               break
-        result_handler.update_result_tbar(self.state, patch, pass_exists)
-        if result and self.state.use_pass_test:
-          pass_result,pass_time = self.run_test_positive(patch)
-          result_handler.update_positive_result_tbar(self.state, patch, pass_result)
+        if is_compilable or self.state.ignore_compile_error:
+          result_handler.update_result_tbar(self.state, patch, pass_exists)
+          if result and self.state.use_pass_test:
+            pass_result,pass_time = self.run_test_positive(patch)
+            result_handler.update_positive_result_tbar(self.state, patch, pass_result)
       else:
         msv_result = self.state.simulation_data[key]
         pass_exists = msv_result['basic']
@@ -415,19 +423,23 @@ class MSVTbar(MSV):
         pass_result = msv_result['plausible']
         fail_time=msv_result['fail_time']
         pass_time=msv_result['pass_time']
-        result_handler.update_result_tbar(self.state, patch, pass_exists)
-        if result:
-          result_handler.update_positive_result_tbar(self.state, patch, pass_result)
-      result_handler.append_result(self.state, [patch], pass_exists, pass_result, result,fail_time,pass_time)
+        is_compilable=msv_result['compilable']
+        if is_compilable or self.state.ignore_compile_error:
+          result_handler.update_result_tbar(self.state, patch, pass_exists)
+          if result:
+            result_handler.update_positive_result_tbar(self.state, patch, pass_result)
+      if is_compilable or self.state.ignore_compile_error:
+        self.state.iteration += 1
+      result_handler.append_result(self.state, [patch], pass_exists, pass_result, result, is_compilable,fail_time,pass_time)
       result_handler.remove_patch_tbar(self.state, patch)
 
 
 class MSVRecoder(MSVTbar):
   def run_test(self, patch: RecoderPatchInfo, test: int) -> Tuple[int, bool,int]:
     start_time=int(time.time() * 1000)
-    fail_num, run_result, is_timeout = run_test.run_fail_test_d4j(self.state, MSVEnvVar.get_new_env_recoder(self.state, patch, test))
+    compilable, run_result, is_timeout = run_test.run_fail_test_d4j(self.state, MSVEnvVar.get_new_env_recoder(self.state, patch, test))
     run_time=int(time.time() * 1000)-start_time
-    return fail_num, run_result,run_time
+    return compilable, run_result,run_time
   def run_test_positive(self, patch: RecoderPatchInfo) -> Tuple[bool,int]:
     start_time=int(time.time())
     run_result = run_test.run_pass_test_d4j(self.state, MSVEnvVar.get_new_env_recoder(self.state, patch, ""))
@@ -438,8 +450,12 @@ class MSVRecoder(MSVTbar):
     original = self.state.patch_location_map["original"]
     op = RecoderPatchInfo(original)
     for neg in self.state.d4j_negative_test.copy():
-      fail_num, run_result,_ = self.run_test(op, neg)
-      self.state.d4j_test_fail_num_map[neg] = fail_num
+      compilable, run_result,_ = self.run_test(op, neg)
+      # self.state.d4j_test_fail_num_map[neg] = fail_num
+      if not compilable:
+        self.state.msv_logger.warning("Project is not compilable")
+        self.state.is_alive = False
+        return
       if run_result:
         self.state.msv_logger.warning(f"Removing {neg} from negative test")
         self.state.d4j_negative_test.remove(neg)
@@ -455,72 +471,86 @@ class MSVRecoder(MSVTbar):
       if not run_result:
         for ft in failed_tests:
           self.state.msv_logger.info("Removing {} from positive test".format(ft))
-          self.state.d4j_positive_test.remove(ft)
+          # self.state.d4j_positive_test.remove(ft)
   def run(self) -> None:
+    if self.state.use_simulation_mode:
+      self.run_sim()
+      return
     self.initialize()
     self.state.start_time = time.time()
     self.state.cycle = 0
     while(self.is_alive()):
-      self.state.iteration += 1
       self.state.msv_logger.info(f'[{self.state.cycle}]: executing')
       patch = select_patch.select_patch_recoder_mode(self.state)
+      self.state.msv_logger.info(f"Patch: {patch.recoder_case_info.location}")
+      self.state.msv_logger.info(f"{patch.file_info.file_name}${patch.func_info.id}${patch.line_info.line_number}")
       pass_exists = False
       result = True
       pass_result = False
+      is_compilable = True
       pass_time=0
       for neg in self.state.d4j_negative_test:
-        fail_num, run_result,fail_time = self.run_test(patch, neg)
-        if fail_num >= 0 and self.state.d4j_test_fail_num_map[neg] > fail_num:
-          self.state.msv_logger.info(f"Partial pass: {neg}, fail {fail_num}/{self.state.d4j_test_fail_num_map[neg]}")
+        compilable, run_result,fail_time = self.run_test(patch, neg)
+        if not compilable:
+          is_compilable = False
+        if run_result:
           pass_exists = True
         if not run_result:
           result = False
           if self.state.use_partial_validation:
             break
-      result_handler.update_result_recoder(self.state, patch, pass_exists)
-      if result and self.state.use_pass_test:
-        pass_result,pass_time = self.run_test_positive(patch)
-        result_handler.update_positive_result_recoder(self.state, patch, pass_result)
-      result_handler.append_result(self.state, [patch], pass_exists, pass_result, result,fail_time,pass_time)
+      if is_compilable or self.state.ignore_compile_error:
+        self.state.iteration += 1
+        result_handler.update_result_recoder(self.state, patch, pass_exists)
+        if result and self.state.use_pass_test:
+          pass_result,pass_time = self.run_test_positive(patch)
+          result_handler.update_positive_result_recoder(self.state, patch, pass_result)
+      result_handler.append_result(self.state, [patch], pass_exists, pass_result, result, is_compilable,fail_time,pass_time)
       result_handler.remove_patch_recoder(self.state, patch)
   def run_sim(self) -> None:
     self.initialize()
     self.state.start_time = time.time()
     self.state.cycle = 0
     while(self.is_alive()):
-      self.state.iteration += 1
       self.state.msv_logger.info(f'[{self.state.cycle}]: executing')
       patch = select_patch.select_patch_recoder_mode(self.state)
+      self.state.msv_logger.info(f"Patch: {patch.recoder_case_info.location}")
+      self.state.msv_logger.info(f"{patch.file_info.file_name}${patch.func_info.id}${patch.line_info.line_number}")
       pass_exists = False
       result = True
       pass_result = False
+      is_compilable = True
       pass_time=0
-      key = patch.to_str_sw_cs()
+      key = patch.recoder_case_info.location
       if key not in self.state.simulation_data:
         for neg in self.state.d4j_negative_test:
-          fail_num, run_result,fail_time = self.run_test(patch, neg)
-          if fail_num >= 0 and self.state.d4j_test_fail_num_map[neg] > fail_num:
-            self.state.msv_logger.info(f"Partial pass: {neg}, fail {fail_num}/{self.state.d4j_test_fail_num_map[neg]}")
+          compilable, run_result,fail_time = self.run_test(patch, neg)
+          if not compilable:
+            is_compilable = False
+          if run_result:
             pass_exists = True
           if not run_result:
             result = False
             if self.state.use_partial_validation:
               break
-        result_handler.update_result_recoder(self.state, patch, pass_exists)
-        if result and self.state.use_pass_test:
-          pass_result,pass_time = self.run_test_positive(patch)
-          result_handler.update_positive_result_recoder(self.state, patch, pass_result)
+        if is_compilable or self.state.ignore_compile_error:
+          result_handler.update_result_recoder(self.state, patch, pass_exists)
+          if result and self.state.use_pass_test:
+            pass_result,pass_time = self.run_test_positive(patch)
+            result_handler.update_positive_result_recoder(self.state, patch, pass_result)
       else:
-        msv_result = self.state.simulation_data[key]
         msv_result = self.state.simulation_data[key]
         pass_exists = msv_result['basic']
         run_result = msv_result['pass_all_fail']
         pass_result = msv_result['plausible']
         fail_time=msv_result['fail_time']
         pass_time=msv_result['pass_time']
-        result_handler.update_result_recoder(self.state, patch, pass_exists)
-        if run_result:
-          result_handler.update_positive_result_recoder(self.state, patch, pass_result)
-        
-      result_handler.append_result(self.state, [patch], pass_exists, pass_result, result,fail_time,pass_time)
+        is_compilable=msv_result['compilable']
+        if is_compilable or self.state.ignore_compile_error:
+          result_handler.update_result_tbar(self.state, patch, pass_exists)
+          if result:
+            result_handler.update_positive_result_tbar(self.state, patch, pass_result)
+      if is_compilable or self.state.ignore_compile_error:
+        self.state.iteration += 1
+      result_handler.append_result(self.state, [patch], pass_exists, pass_result, result, is_compilable,fail_time,pass_time)
       result_handler.remove_patch_recoder(self.state, patch)
