@@ -213,6 +213,17 @@ def save_result(state: MSVState) -> None:
     with open(state.prev_data,'w') as f:
       json.dump(state.simulation_data,f,indent=2)
 
+    for key in state.simulation_data:
+      data=state.simulation_data[key]
+      if not data['basic']:
+        # Remove unnecessary infos if cached and not basic patch
+        abst_path=state.work_dir+'/'+key
+        result=subprocess.run(['rm','-rf',abst_path],stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+
+        index=key.rfind('/')
+        sub_path=state.work_dir+'/'+key[:index]
+        result=subprocess.run(['rm','-rf',sub_path],stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+
 # Append result list, save result to file periodically
 def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result: bool,pass_test_result:bool=False, pass_all_neg_test: bool = False,fail_time:int=0,pass_time:int=0) -> None:
   """
