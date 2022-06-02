@@ -228,9 +228,16 @@ def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result:
   sim_data_file = os.path.join(state.out_dir, "msv-sim-data.csv")
   if state.use_simulation_mode:
     sim_data_file = state.prev_data
-  if (state.use_simulation_mode) and (state.tbar_mode or state.recoder_mode) and (obj["config"][0]["location"] in state.simulation_data):
-    pass
-  else:
+  update_sim_data = True
+  if state.use_simulation_mode:
+    if state.tbar_mode:
+      if obj["config"][0]["location"] in state.simulation_data:
+        update_sim_data = False
+    elif state.recoder_mode:
+      key = obj["config"][0]["id"] + "-" + obj["config"][0]["case_id"]
+      if key in state.simulation_data:
+        update_sim_data = False
+  if update_sim_data:
     with open(sim_data_file, "a") as f:
       f.write(json.dumps(obj) + "\n")
   if (tm - state.last_save_time) > save_interval:

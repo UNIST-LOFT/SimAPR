@@ -976,7 +976,7 @@ def copy_previous_results(state: MSVState) -> None:
       prefix += 1
     shutil.copy(result_log, os.path.join(state.out_dir, f"bak{prefix}-msv-search.log"))
     os.remove(result_log)
-  result_files = ["msv-result.json", "msv-result.csv", "critical-info.csv"]
+  result_files = ["msv-result.json", "msv-result.csv", "critical-info.csv", "msv-sim-data.csv"]
   for result_file in result_files:
     if os.path.exists(os.path.join(state.out_dir, result_file)):
       shutil.copy(os.path.join(state.out_dir, result_file), os.path.join(state.out_dir, f"bak{prefix}-{result_file}"))
