@@ -234,7 +234,7 @@ def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result:
       if obj["config"][0]["location"] in state.simulation_data:
         update_sim_data = False
     elif state.recoder_mode:
-      key = obj["config"][0]["id"] + "-" + obj["config"][0]["case_id"]
+      key = str(obj["config"][0]["id"]) + "-" + str(obj["config"][0]["case_id"])
       if key in state.simulation_data:
         update_sim_data = False
   if update_sim_data:
