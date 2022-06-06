@@ -366,6 +366,7 @@ class MSVTbar(MSV):
       result = True
       pass_result = False
       is_compilable = True
+      pass_time=0
       for neg in self.state.d4j_negative_test:
         compilable, run_result,fail_time = self.run_test(patch, neg)
         if not compilable:
