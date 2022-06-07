@@ -215,7 +215,7 @@ def save_result(state: MSVState) -> None:
 
     for key in state.simulation_data:
       data=state.simulation_data[key]
-      if not data['basic']:
+      if not data['basic'] and state.remove_cached_file:
         # Remove unnecessary infos if cached and not basic patch
         abst_path=state.work_dir+'/'+key
         result=subprocess.run(['rm','-rf',abst_path],stdout=subprocess.PIPE,stderr=subprocess.STDOUT)

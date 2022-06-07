@@ -1557,6 +1557,7 @@ class MSVState:
     self.regression_test_info:List[int]=list()
     self.language_model_path='./Google-word2vec.txt'
     self.language_model_mean=''
+    self.remove_cached_file=False
 
     self.seapr_remain_cases:List[CaseInfo]=[]
     self.seapr_layer:SeAPRMode=SeAPRMode.FUNCTION
