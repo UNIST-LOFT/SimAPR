@@ -252,7 +252,7 @@ def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result:
         # For Java, case_info is tbar_case_info
         append_java_cache_result(state,patch.tbar_case_info,test_result,pass_test_result,pass_all_neg_test,compilable,fail_time,pass_time)
       else:
-        if not patch.case_info.is_condition:
+        if not patch.case_info.is_condition or patch.operator_info is None:
           append_c_cache_result(state,patch.case_info,test_result,pass_test_result,pass_all_neg_test,compilable,fail_time,pass_time)
         elif patch.operator_info.operator_type==OperatorType.ALL_1:
           append_c_cache_result(state,patch.case_info,test_result,pass_test_result,pass_all_neg_test,compilable,fail_time,pass_time,patch.operator_info)
@@ -262,8 +262,6 @@ def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result:
   with open(os.path.join(state.out_dir, "msv-result.csv"), 'a') as f:
     f.write(json.dumps(obj) + "\n")
   sim_data_file = os.path.join(state.out_dir, "msv-sim-data.csv")
-  if state.use_simulation_mode:
-    sim_data_file = state.prev_data
   update_sim_data = True
   if state.use_simulation_mode:
     if state.tbar_mode:

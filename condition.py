@@ -105,7 +105,7 @@ def check_condition(records: List[bool], values: List[List[int]],
   
   return result
 
-def remove_same_pass_record(state: MSVState,patch: PatchInfo,test: int) -> None:
+def remove_same_pass_record(state: MSVState,patch: PatchInfo,test: int,pass_time:int=0) -> None:
   state.msv_logger.info(
       f"@{state.cycle} Remove pass test [{test}] with {patch.to_str()}")
   new_env=MSVEnvVar.get_new_env(state,[patch],test,EnvVarMode.basic)
@@ -113,11 +113,13 @@ def remove_same_pass_record(state: MSVState,patch: PatchInfo,test: int) -> None:
   # Get record of failed pass test
   remove_file_or_pass(temp_file)
 
+  start_time=int(time.time())
   run_result, is_timeout = run_test.run_fail_test(state, [patch], test, new_env)
+  fail_time=int(time.time())-start_time
   if is_timeout:
     remove_file_or_pass(temp_file)
     result_handler.update_result_positive(state,[patch],False,{test})
-    result_handler.append_result(state,[patch],True,False)
+    result_handler.append_result(state,[patch],True,False,True,True,fail_time,pass_time)
     result_handler.remove_patch(state,[patch])
     return
 
@@ -125,7 +127,7 @@ def remove_same_pass_record(state: MSVState,patch: PatchInfo,test: int) -> None:
   if record is None or len(record)>=20:
     remove_file_or_pass(temp_file)
     result_handler.update_result_positive(state,[patch],False,{test})
-    result_handler.append_result(state,[patch],True,False)
+    result_handler.append_result(state,[patch],True,False,True,True,fail_time,pass_time)
     result_handler.remove_patch(state,[patch])
     return
   elif run_result:
@@ -140,12 +142,14 @@ def remove_same_pass_record(state: MSVState,patch: PatchInfo,test: int) -> None:
   log_file = new_env["TMP_FILE"]
   remove_file_or_pass(log_file)
 
+  start_time=int(time.time())
   run_result, is_timeout = run_test.run_fail_test(state, [patch], test, new_env)
+  start_time=int(time.time())
   if is_timeout:
     remove_file_or_pass(temp_file)
     remove_file_or_pass(log_file)
     result_handler.update_result_positive(state,[patch],False,{test})
-    result_handler.append_result(state,[patch],True,False)
+    result_handler.append_result(state,[patch],True,False,True,True,fail_time,pass_time)
     result_handler.remove_patch(state,[patch])
     return None
   value= parse_value(log_file)
@@ -158,7 +162,7 @@ def remove_same_pass_record(state: MSVState,patch: PatchInfo,test: int) -> None:
         state.msv_logger.info('Remove OperatorType.ALL_1')
         new_patch=PatchInfo(patch.case_info,op,None,None)
         result_handler.update_result_positive(state,[new_patch],False,{test})
-        result_handler.append_result(state,[new_patch],True,False)
+        result_handler.append_result(state,[new_patch],True,False,True,True,fail_time,pass_time)
         result_handler.remove_patch(state,[new_patch])
     else:
       for var in op.variable_info_list:
@@ -168,7 +172,7 @@ def remove_same_pass_record(state: MSVState,patch: PatchInfo,test: int) -> None:
             new_patch=PatchInfo(patch.case_info,op,var,const)
             
             result_handler.update_result_positive(state,[new_patch],False,{test})
-            result_handler.append_result(state,[new_patch],True,False)
+            result_handler.append_result(state,[new_patch],True,False,True,True,fail_time,pass_time)
             result_handler.remove_patch(state,[new_patch])
   
   remove_file_or_pass(temp_file)
@@ -553,7 +557,7 @@ class MyCondition:
     for cond in conditions:
       patch=[PatchInfo(cond.variable.parent.parent,cond.variable.parent,cond.variable,cond)]
       result_handler.update_result(self.state, patch, result, 1, self.state.negative_test[0],self.new_env)
-      result_handler.append_result(self.state, patch, result)
+      result_handler.append_result(self.state, patch, result,True,True)
       result_handler.remove_patch(self.state,patch)
 
   def get_same_record(self,record:list,values:list,node:ConstantInfo,conditions:List[ConstantInfo]):
@@ -580,7 +584,7 @@ class MyCondition:
     conditions.remove(target)
     result_handler.update_result(self.state, patch, True, 1, self.state.negative_test[0], self.new_env)
     result_handler.update_result_positive(self.state, patch, pass_result, fail_tests)
-    result_handler.append_result(self.state, patch, True,pass_result)
+    result_handler.append_result(self.state, patch, True,pass_result,True,True)
     result_handler.remove_patch(self.state,patch)
     if self.state.cycle_limit > 0 and self.state.cycle >= self.state.cycle_limit:
       self.state.is_alive = False
@@ -615,7 +619,7 @@ class MyCondition:
           conditions.remove(condition)
           result_handler.update_result(self.state, patch_next, True, 1, self.state.negative_test[0], self.new_env)
           result_handler.update_result_positive(self.state, patch_next, result, fail_tests)
-          result_handler.append_result(self.state, patch_next, True,result)
+          result_handler.append_result(self.state, patch_next, True,result,True,True)
           result_handler.remove_patch(self.state,patch_next)
         else:
           self.state.msv_logger.info(f"Test {str(fail_tests)} pass with {patch_next[0].to_str()}")
@@ -633,7 +637,7 @@ class MyCondition:
     if record is None:
       self.state.msv_logger.warn(f'No record found')
       result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0],self.new_env)
-      result_handler.append_result(self.state, [self.patch], False)
+      result_handler.append_result(self.state, [self.patch], False,False,True,True)
       result_handler.remove_patch(self.state, [self.patch])
       return None
     elif self.state.cycle_limit > 0 and self.state.cycle >= self.state.cycle_limit:
@@ -647,7 +651,7 @@ class MyCondition:
     if values is None or len(values)==0:
       self.state.msv_logger.warn(f'No values found')
       result_handler.update_result(self.state, [self.patch], False, 1, self.state.negative_test[0], self.new_env)
-      result_handler.append_result(self.state, [self.patch], False)
+      result_handler.append_result(self.state, [self.patch], False,False,True,True)
       result_handler.remove_patch(self.state, [self.patch])
       return None
     elif self.state.cycle_limit > 0 and self.state.cycle >= self.state.cycle_limit:
@@ -746,7 +750,7 @@ class GuidedPathCondition:
       self.state.msv_logger.info(f"@{self.state.cycle + 1} Record [{test}]  with {self.patch.to_str()} and ALL_1")
     start_time=int(time.time() * 1000)
     run_result, is_timeout = run_test.run_fail_test(self.state, patch, test, new_env)
-    self.fail_test+=int(time.time() * 1000)-start_time
+    self.fail_time+=int(time.time() * 1000)-start_time
     if is_timeout:
       remove_file_or_pass(temp_file)
       return None,''
@@ -790,7 +794,7 @@ class GuidedPathCondition:
     remove_file_or_pass(log_file)
     start_time=int(time.time() * 1000)
     run_result, is_timeout = run_test.run_fail_test(self.state, patch, test, new_env)
-    self.fail_test+=int(time.time() * 1000)-start_time
+    self.fail_time+=int(time.time() * 1000)-start_time
 
     # If we failed, try next fail test
     if is_timeout:

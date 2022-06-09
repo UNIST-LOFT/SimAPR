@@ -25,7 +25,7 @@ class MSV:
   def is_alive(self) -> bool:
     if len(self.state.file_info_map) == 0:
       self.state.is_alive = False
-    if self.state.cycle_limit > 0 and self.state.cycle >= self.state.cycle_limit:
+    if self.state.cycle_limit > 0 and self.state.iteration >= self.state.cycle_limit:
       self.state.is_alive = False
     elif self.state.time_limit > 0 and (time.time() - self.state.start_time) > self.state.time_limit:
       self.state.is_alive = False
@@ -50,7 +50,7 @@ class MSV:
         # run test
         start_time=int(time.time() * 1000)
         run_result, is_timeout = run_test.run_fail_test(self.state, selected_patch, test, new_env)
-        fail_time+=int(time.time() * 1000)-start_time
+        fail_time+=(int(time.time() * 1000)-start_time)
         result_handler.update_result_out_dist(self.state, selected_patch, run_result, test, new_env)
         if not run_result:
           final_result=False
@@ -79,18 +79,18 @@ class MSV:
       start_time=int(time.time())
       (pass_result, fail_tests) = run_test.run_pass_test(self.state, selected_patch, False)
       pass_time=int(time.time())-start_time
-      if self.state.mode==MSVMode.guided and not self.state.use_condition_synthesis:
+      if self.state.mode==MSVMode.guided and not self.state.use_condition_synthesis and not self.state.use_simulation_mode:
         if pass_result:
           result_handler.update_result_positive(self.state, selected_patch, pass_result, fail_tests)
-          result_handler.append_result(self.state, selected_patch, True,pass_result, True,fail_time,pass_time)
+          result_handler.append_result(self.state, selected_patch, True,pass_result, True,True,fail_time,pass_time)
           result_handler.remove_patch(self.state, selected_patch)
           self.state.msv_logger.info("Result: PASS")
         else:
           failed_list=list(fail_tests)
-          condition.remove_same_pass_record(self.state,selected_patch[0],failed_list[0])
+          condition.remove_same_pass_record(self.state,selected_patch[0],failed_list[0],pass_time)
       else:
         result_handler.update_result_positive(self.state, selected_patch, pass_result, fail_tests)
-        result_handler.append_result(self.state, selected_patch, True,pass_result, True,fail_time,pass_time)
+        result_handler.append_result(self.state, selected_patch, True,pass_result, True,True,fail_time,pass_time)
         result_handler.remove_patch(self.state, selected_patch)
         self.state.msv_logger.info("Result: PASS" if pass_result else "Result: FAIL")
 
@@ -100,7 +100,7 @@ class MSV:
     
     else:
       result_handler.update_result(self.state, selected_patch, pass_exist, 1, selected_test, new_env)
-      result_handler.append_result(self.state, selected_patch, pass_exist,False, False,fail_time,pass_time)
+      result_handler.append_result(self.state, selected_patch, pass_exist,False, False,True,fail_time,pass_time)
       result_handler.remove_patch(self.state, selected_patch)
     return pass_exist
     
@@ -201,7 +201,7 @@ class MSV:
                 cur_patch=PatchInfo(patch[0].case_info,cur_oper,cur_var,cur_const)
               
               self.run_test([cur_patch])
-              if self.state.cycle_limit > 0 and self.state.cycle >= self.state.cycle_limit:
+              if self.state.cycle_limit > 0 and self.state.iteration >= self.state.cycle_limit:
                 self.state.is_alive = False
               elif self.state.time_limit > 0 and (time.time() - self.state.start_time) > self.state.time_limit:
                 self.state.is_alive = False
@@ -266,7 +266,7 @@ class MSV:
                 cur_patch=PatchInfo(patch[0].case_info,cur_oper,cur_var,cur_const)
               
               self.run_test([cur_patch])
-              if self.state.cycle_limit > 0 and self.state.cycle >= self.state.cycle_limit:
+              if self.state.cycle_limit > 0 and self.state.iteration >= self.state.cycle_limit:
                 self.state.is_alive = False
               elif self.state.time_limit > 0 and (time.time() - self.state.start_time) > self.state.time_limit:
                 self.state.is_alive = False
@@ -292,7 +292,7 @@ class MSVTbar(MSV):
   def is_alive(self) -> bool:
     if len(self.state.file_info_map) == 0:
       self.state.is_alive = False
-    if self.state.cycle_limit > 0 and self.state.cycle >= self.state.cycle_limit:
+    if self.state.cycle_limit > 0 and self.state.iteration >= self.state.cycle_limit:
       self.state.is_alive = False
     elif self.state.time_limit > 0 and (time.time() - self.state.start_time) > self.state.time_limit:
       self.state.is_alive = False
