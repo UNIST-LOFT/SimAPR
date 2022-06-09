@@ -472,6 +472,29 @@ class OperatorInfo:
     if other is None:   # It can be None if record fails
       return False
     return self.operator_type == other.operator_type
+  
+  @staticmethod
+  def valueOf(value:int)->"OperatorInfo":
+    if value==0:
+      return OperatorType.EQ
+    elif value==1:
+      return OperatorType.NE
+    elif value==2:
+      return OperatorType.GT
+    elif value==3:
+      return OperatorType.LT
+    elif value==4:
+      return OperatorType.ALL_1
+    elif value==5:
+      return OperatorType.EQ_VAR
+    elif value==6:
+      return OperatorType.NE_VAR
+    elif value==7:
+      return OperatorType.GT_VAR
+    elif value==8:
+      return OperatorType.LT_VAR
+    else:
+      return OperatorType.EQ
 
 class VariableInfo:
   def __init__(self, parent: OperatorInfo, variable: int) -> None:
@@ -806,7 +829,7 @@ class MSVEnvVar:
           new_env["TMP_FILE"] = tmp_file
         else:
           del new_env["MSV_OUTPUT_DISTANCE_FILE"]
-        if patch_info.is_condition:
+        if patch_info.is_condition and patch_info.operator_info is not None:
           new_env[f"__{sw}_{cs}__OPERATOR"] = str(patch_info.operator_info.operator_type.value)
           if not patch_info.operator_info.operator_type==OperatorType.ALL_1:
             new_env[f"__{sw}_{cs}__VARIABLE"] = str(patch_info.variable_info.variable)

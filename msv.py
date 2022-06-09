@@ -165,6 +165,59 @@ class MSV:
       self.state.msv_logger.info(f'Patch {patch[0].to_str()} selected')
       if patch[0].case_info.is_condition and not self.state.use_condition_synthesis and \
             not patch[0].case_info.processed:
+        if self.state.use_simulation_mode:
+          # Check if current condition is cached
+          cached=False
+          for key in self.state.simulation_data:
+            if patch[0].case_info.to_str() in key:
+              cached=True
+              break
+          
+          if cached:
+            temp_patches=[]
+            for key in self.state.simulation_data:
+              if patch[0].case_info.to_str() in key:
+                self.state.iteration+=1
+                if key==patch[0].case_info.to_str():
+                  # Failed generating condition
+                  self.run_test(patch)
+                elif key[:len(patch[0].case_info.to_str())]==patch[0].case_info.to_str() and key[len(patch[0].case_info.to_str())]==':':
+                  # Generated condition, create temp patch
+                  conditions=key.split(':')[1].split('-')
+                  temp_oper=OperatorInfo(patch[0].case_info,OperatorInfo.valueOf(int(conditions[0])),1)
+                  for oper in patch[0].case_info.operator_info_list:
+                    if oper.operator_type==temp_oper.operator_type:
+                      temp_oper=oper
+                      break
+
+                  if int(conditions[0])!=4:
+                    temp_var=VariableInfo(temp_oper,int(conditions[1]))
+                    for var in temp_oper.variable_info_list:
+                      if var.variable==temp_var.variable:
+                        temp_var=var
+                        break
+                    
+                    temp_const=ConstantInfo(temp_var,int(conditions[2]))
+                    if temp_var not in temp_oper.variable_info_list:
+                      temp_oper.variable_info_list.append(temp_var)
+                    temp_var.constant_info_list.append(temp_const)
+                    patch[0].case_info.condition_list.append((OperatorInfo.valueOf(int(conditions[0])),temp_var.variable,temp_const.constant_value))
+                  else:
+                    patch[0].case_info.condition_list.append((OperatorInfo.valueOf(int(conditions[0])),-1,-1))
+                  
+                  if temp_oper not in patch[0].case_info.operator_info_list:
+                    patch[0].case_info.operator_info_list.append(temp_oper)
+
+                  if int(conditions[0])!=4:
+                    temp_patches.append(PatchInfo(patch[0].case_info,temp_oper,temp_var,temp_const))
+                  else:
+                    temp_patches.append(PatchInfo(patch[0].case_info,temp_oper,None,None))
+
+            self.state.iteration-=1
+            for temp_patch in temp_patches:
+              self.run_test([temp_patch])
+            continue
+
         # Our guided condition synthesis
         if self.state.mode==MSVMode.guided and self.state.iteration >= self.state.max_initial_trial:
           self.state.msv_logger.info('Run path guide condition synthesis')
