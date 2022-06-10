@@ -19,7 +19,7 @@ import add_sim_score
 def parse_args(argv: list) -> MSVState:
   longopts = ["help", "outdir=", "workdir=", "timeout=", "msv-path=", "time-limit=", "cycle-limit=", "epsilon-greedy-exploration=",
               "mode=", "max-parallel-cpu=",'skip-valid','use-fixed-beta','use-cpr-space','use-fixed-const', 'params=', 'tbar-mode', 'recoder-mode', "use-exp-alpha",
-              "use-condition-synthesis", "use-hierarchical-selection=", "use-pass-test", "use-partial-validation", "use-full-validation",
+              "use-condition-synthesis", "use-hierarchical-selection=", "use-pass-test", "use-partial-validation", "use-full-validation",'seed=',
               "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern", "use-simulation-mode=",'remove-cached-file',
               "use-prophet-score", "use-fl", "use-fl-prophet-score", "watch-level=",'use-msv-ext','seapr-mode=','top-fl=','use-fixed-halflife',
               "func-dist-mean=",'lang-model-path=','use-init-trial=','regression-mode=']
@@ -149,6 +149,9 @@ def parse_args(argv: list) -> MSVState:
       state.tbar_mode = True
     elif o in ['--recoder-mode']:
       state.recoder_mode = True
+    elif o in ['--seed']:
+      random.seed(int(a))
+      np.random.seed(int(a))
 
   if sub_dir != "":
     state.out_dir = os.path.join(state.out_dir, sub_dir)
