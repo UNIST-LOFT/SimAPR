@@ -169,7 +169,7 @@ class MSV:
           # Check if current condition is cached
           cached=False
           for key in self.state.simulation_data:
-            if patch[0].case_info.to_str() in key:
+            if key==patch[0].case_info.to_str() or (patch[0].case_info.to_str() == key[:len(patch[0].case_info.to_str())] and key[len(patch[0].case_info.to_str())]==':'):
               cached=True
               break
           
