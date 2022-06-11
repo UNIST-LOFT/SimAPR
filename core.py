@@ -115,6 +115,8 @@ class PassFail:
     else:
       return 1
   def beta_mode(self, alpha: float, beta: float) -> float:
+    if alpha+beta==2.0:
+      return 1.0
     return (alpha - 1.0) / (alpha + beta - 2.0)
   def update(self, result: bool, n: float,b_n:float=1.0, exp_alpha: bool = False, use_fixed_beta:bool=False) -> None:
     if result:
@@ -1647,7 +1649,7 @@ def append_c_cache_result(state:MSVState,case:CaseInfo,fail_result:bool,pass_res
   if operator is not None:
     id+=f":{operator.operator_type.value}"
     if variable is not None:
-      id+=f"-{variable.variable}-{constant.constant_value}"
+      id+=f"|{variable.variable}|{constant.constant_value}"
   
   if id not in state.simulation_data:
     current=dict()

@@ -183,7 +183,7 @@ class MSV:
                   self.run_test(patch)
                 elif key[:len(patch[0].case_info.to_str())]==patch[0].case_info.to_str() and key[len(patch[0].case_info.to_str())]==':':
                   # Generated condition, create temp patch
-                  conditions=key.split(':')[1].split('-')
+                  conditions=key.split(':')[1].split('|')
                   temp_oper=OperatorInfo(patch[0].case_info,OperatorInfo.valueOf(int(conditions[0])),1)
                   for oper in patch[0].case_info.operator_info_list:
                     if oper.operator_type==temp_oper.operator_type:
