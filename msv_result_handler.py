@@ -268,7 +268,7 @@ def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result:
       if obj["config"][0]["location"] in state.simulation_data:
         update_sim_data = False
     elif state.recoder_mode:
-      key = obj["config"][0]["id"] + "-" + obj["config"][0]["case_id"]
+      key = str(obj["config"][0]["id"]) + "-" + str(obj["config"][0]["case_id"])
       if key in state.simulation_data:
         update_sim_data = False
   if update_sim_data:
@@ -354,14 +354,23 @@ def update_result_recoder(state: MSVState, selected_patch: RecoderPatchInfo, res
       elif state.seapr_layer == SeAPRMode.LINE:
         if selected_patch.line_info == line_info:
           is_share = True
-      if selected_patch.recoder_type_info.mode == recoder_type_info.mode:
-        same_pattern = True
       if is_share:
         rc.same_seapr_pf.update(result, 1)
       else:
         rc.diff_seapr_pf.update(result, 1)
-      if state.use_pattern and result and same_pattern:
-        rc.same_seapr_pf.update(True, 1)
+      if state.use_pattern and result:
+        pattern = 0
+        tmp_rti = recoder_type_info
+        for rti in selected_patch.recoder_type_info_list:
+          if tmp_rti is None:
+            break
+          if rti.act == tmp_rti.act:
+            pattern += 1
+            tmp_rti = tmp_rti.prev
+          else:
+            break
+        if pattern > 0:
+          rc.same_seapr_pf.update(True, pattern)
 
 def update_positive_result_recoder(state: MSVState, selected_patch: RecoderPatchInfo, result: bool) -> None:
   selected_patch.update_result_positive(result, 1, state.params[PT.b_dec],state.use_exp_alpha, state.use_fixed_beta)
