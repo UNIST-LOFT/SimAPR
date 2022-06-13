@@ -115,6 +115,8 @@ class PassFail:
     else:
       return 1
   def beta_mode(self, alpha: float, beta: float) -> float:
+    if alpha+beta==2.0:
+      return 1.0
     return (alpha - 1.0) / (alpha + beta - 2.0)
   def update(self, result: bool, n: float,b_n:float=1.0, exp_alpha: bool = False, use_fixed_beta:bool=False) -> None:
     if result:
@@ -472,6 +474,29 @@ class OperatorInfo:
     if other is None:   # It can be None if record fails
       return False
     return self.operator_type == other.operator_type
+  
+  @staticmethod
+  def valueOf(value:int)->"OperatorInfo":
+    if value==0:
+      return OperatorType.EQ
+    elif value==1:
+      return OperatorType.NE
+    elif value==2:
+      return OperatorType.GT
+    elif value==3:
+      return OperatorType.LT
+    elif value==4:
+      return OperatorType.ALL_1
+    elif value==5:
+      return OperatorType.EQ_VAR
+    elif value==6:
+      return OperatorType.NE_VAR
+    elif value==7:
+      return OperatorType.GT_VAR
+    elif value==8:
+      return OperatorType.LT_VAR
+    else:
+      return OperatorType.EQ
 
 class VariableInfo:
   def __init__(self, parent: OperatorInfo, variable: int) -> None:
@@ -806,7 +831,7 @@ class MSVEnvVar:
           new_env["TMP_FILE"] = tmp_file
         else:
           del new_env["MSV_OUTPUT_DISTANCE_FILE"]
-        if patch_info.is_condition:
+        if patch_info.is_condition and patch_info.operator_info is not None:
           new_env[f"__{sw}_{cs}__OPERATOR"] = str(patch_info.operator_info.operator_type.value)
           if not patch_info.operator_info.operator_type==OperatorType.ALL_1:
             new_env[f"__{sw}_{cs}__VARIABLE"] = str(patch_info.variable_info.variable)
@@ -1463,7 +1488,7 @@ class MSVState:
   function_to_location_map: Dict[str, Tuple[str, int, int]] # function_name -> (file_name, line_start, line_end)
   test_to_location: Dict[int, Dict[str, Set[int]]] # test_number -> {file_name: set(line_number)}
   use_pattern: bool      # For SeAPR mode
-  simulation_data: Dict[str, MSVResult]
+  simulation_data: Dict[str, dict] # patch_id -> fail_result, pass_result, fail_time, pass_time. compile_result
   max_initial_trial: int
   c_map: Dict[PT, float]
   params: Dict[PT, float]
@@ -1557,6 +1582,7 @@ class MSVState:
     self.regression_test_info:List[int]=list()
     self.language_model_path='./Google-word2vec.txt'
     self.language_model_mean=''
+    self.remove_cached_file=False
 
     self.seapr_remain_cases:List[CaseInfo]=[]
     self.seapr_layer:SeAPRMode=SeAPRMode.FUNCTION
@@ -1579,3 +1605,59 @@ def record_to_int(record: List[bool]) -> List[int]:
   for path in record:
     result.append(1 if path else 0)
   return result
+
+def append_java_cache_result(state:MSVState,case:TbarCaseInfo,fail_result:bool,pass_result:bool,pass_all_fail:bool,compilable:bool,
+      fail_time:int,pass_time:int):
+  """
+    Append result to cache file, if not exist. Otherwise, do nothing.
+    
+    state: MSVState
+    case: current patch
+    fail_result: result of fail test (bool)
+    pass_result: result of pass test (bool)
+    fail_time: fail time (milisecond)
+    pass_time: pass time (second)
+  """
+  id=case.location
+  if id not in state.simulation_data:
+    current=dict()
+    current['basic']=fail_result
+    current['plausible']=pass_result
+    current['pass_all_fail']=pass_all_fail
+    current['compilable']=compilable
+    current['fail_time']=fail_time
+    current['pass_time']=pass_time
+
+    state.simulation_data[id]=current
+
+def append_c_cache_result(state:MSVState,case:CaseInfo,fail_result:bool,pass_result:bool,pass_all_fail:bool,compilable:bool,
+      fail_time:int,pass_time:int,operator:OperatorInfo=None,variable:VariableInfo=None,constant:ConstantInfo=None):
+  """
+    Append result to cache file, if not exist. Otherwise, do nothing.
+    
+    state: MSVState
+    case: current patch
+    fail_result: result of fail test (bool)
+    pass_result: result of pass test (bool)
+    fail_time: fail time (milisecond)
+    pass_time: pass time (second)
+    operator: operator info, if exist
+    variable: variable info, if exist
+    constant: constant info, if exist
+  """
+  id=case.to_str()
+  if operator is not None:
+    id+=f":{operator.operator_type.value}"
+    if variable is not None:
+      id+=f"|{variable.variable}|{constant.constant_value}"
+  
+  if id not in state.simulation_data:
+    current=dict()
+    current['basic']=fail_result
+    current['plausible']=pass_result
+    current['pass_all_fail']=pass_all_fail
+    current['compilable']=compilable
+    current['fail_time']=fail_time
+    current['pass_time']=pass_time
+
+    state.simulation_data[id]=current

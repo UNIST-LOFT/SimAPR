@@ -16,10 +16,7 @@ def run_fail_test(state: MSVState, selected_patch: List[PatchInfo], selected_tes
       return False, False
     if selected_patch[0].to_str() in state.simulation_data:
       msv_result = state.simulation_data[selected_patch[0].to_str()]
-      if "MSV_OUTPUT_DISTANCE_FILE" in new_env:
-        with open(new_env["MSV_OUTPUT_DISTANCE_FILE"], "w") as f:
-          f.write(str(msv_result.output_distance))
-      return msv_result.result, False
+      return msv_result['basic'], False
   # Otherwise, run the test
   test_proc = subprocess.Popen(
         args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
@@ -62,6 +59,13 @@ def run_fail_test(state: MSVState, selected_patch: List[PatchInfo], selected_tes
     return False, is_timeout
 
 def run_pass_test(state: MSVState, patch: List[PatchInfo], is_initialize: bool = False, pass_tests: List[int] = []) -> Tuple[bool, Set[int]]:
+  if state.use_simulation_mode and len(pass_tests)==0:
+    if patch[0].case_info.failed:
+      return False, {}
+    if patch[0].to_str() in state.simulation_data:
+      msv_result = state.simulation_data[patch[0].to_str()]
+      return msv_result['plausible'], {}
+
   MAX_TEST_ONCE = 1000
   state.msv_logger.info(
       f"@{state.cycle} Run pass test with {PatchInfo.list_to_str(patch)}")
@@ -142,8 +146,6 @@ def run_pass_test(state: MSVState, patch: List[PatchInfo], is_initialize: bool =
       if test not in success:
         result = False
         return_tests.add(test)
-        if not is_initialize:
-          state.failed_positive_test.add(test)
     # if is_initialize:
     #   parse_location(state, new_env, success)
     if not result:

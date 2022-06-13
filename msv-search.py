@@ -19,8 +19,8 @@ import add_sim_score
 def parse_args(argv: list) -> MSVState:
   longopts = ["help", "outdir=", "workdir=", "timeout=", "msv-path=", "time-limit=", "cycle-limit=", "epsilon-greedy-exploration=",
               "mode=", "max-parallel-cpu=",'skip-valid','use-fixed-beta','use-cpr-space','use-fixed-const', 'params=', 'tbar-mode', 'recoder-mode', "use-exp-alpha",
-              "use-condition-synthesis", "use-hierarchical-selection=", "use-pass-test", "use-partial-validation", "use-full-validation",
-              "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern", "use-simulation-mode=",
+              "use-condition-synthesis", "use-hierarchical-selection=", "use-pass-test", "use-partial-validation", "use-full-validation",'seed=',
+              "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern", "use-simulation-mode=",'remove-cached-file',
               "use-prophet-score", "use-fl", "use-fl-prophet-score", "watch-level=",'use-msv-ext','seapr-mode=','top-fl=','use-fixed-halflife',
               "func-dist-mean=",'lang-model-path=','use-init-trial=','regression-mode=']
   opts, args = getopt.getopt(argv[1:], "ho:w:p:t:m:c:j:T:E:M:S:", longopts)
@@ -121,6 +121,9 @@ def parse_args(argv: list) -> MSVState:
     elif o in ['--use-simulation-mode']:
       state.use_simulation_mode = True
       state.prev_data = a
+    elif o in ['--remove-cached-file']:
+      state.msv_logger.warn('Removing cached files, be careful!')
+      state.remove_cached_file=True
     elif o in ['--use-partial-validation']:
       state.use_partial_validation = True
     elif o in ['--use-full-validation']:
@@ -146,6 +149,9 @@ def parse_args(argv: list) -> MSVState:
       state.tbar_mode = True
     elif o in ['--recoder-mode']:
       state.recoder_mode = True
+    elif o in ['--seed']:
+      random.seed(int(a))
+      np.random.seed(int(a))
 
   if sub_dir != "":
     state.out_dir = os.path.join(state.out_dir, sub_dir)
@@ -185,7 +191,6 @@ def set_logger(state: MSVState) -> logging.Logger:
   logger.warning(f"Version: {state.msv_version}")
   logger.info(f'params: {state.params}')
   return logger
-
 
 def read_fl_score(state: MSVState):
   def has_patch(file,line):
@@ -338,35 +343,12 @@ def read_info_recoder(state: MSVState) -> None:
   state.switch_case_map["0-0"] = temp_recoder_case
   state.patch_location_map["original"] = temp_recoder_case
   if state.use_simulation_mode:
-    prev_info = list()
-    if state.prev_data.endswith(".csv"):
-      with open(state.prev_data, "r") as f:
-        for line in f.readlines():
-          line = line.strip()
-          if line.startswith("#"):
-            continue
-          if line == "":
-            continue
-          data = json.loads(line)
-          prev_info.append(data)
-    else:
+    if os.path.exists(state.prev_data):
       with open(state.prev_data, "r") as f:
         prev_info = json.load(f)
-    for data in prev_info:
-      exec=data['execution']
-      iter = data["iteration"]
-      tm = data["time"]
-      result = data["result"]
-      pass_result = data["pass_result"]
-      output_distance = data["output_distance"]
-      pass_all_neg_test = data["pass_all_neg_test"]
-      compilable = data["compilable"]
-      conf = data["config"][0]
-      id = conf["id"]
-      case = conf["case_id"]
-      key = f"{id}-{case}"
-      case_info = state.switch_case_map[key]
-      state.simulation_data[key] = MSVResult(exec, iter, tm, [RecoderPatchInfo(case_info)], result, pass_result, output_distance, pass_all_neg_test, compilable)
+        for key in prev_info:
+          data=prev_info[key]
+          state.simulation_data[key] = data
 
 def read_info_tbar(state: MSVState) -> None:
   with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
@@ -506,33 +488,12 @@ def read_info_tbar(state: MSVState) -> None:
   state.switch_case_map["original"] = temp_tbar_case
   state.patch_location_map["original"] = temp_tbar_case
   if state.use_simulation_mode:
-    prev_info = list()
-    if state.prev_data.endswith(".csv"):
-      with open(state.prev_data, "r") as f:
-        for line in f.readlines():
-          line = line.strip()
-          if line.startswith("#"):
-            continue
-          if line == "":
-            continue
-          data = json.loads(line)
-          prev_info.append(data)
-    else:
+    if os.path.exists(state.prev_data):
       with open(state.prev_data, "r") as f:
         prev_info = json.load(f)
-    for data in prev_info:
-      exec=data['execution']
-      iter = data["iteration"]
-      tm = data["time"]
-      result = data["result"]
-      pass_result = data["pass_result"]
-      output_distance = data["output_distance"]
-      pass_all_neg_test = data["pass_all_neg_test"]
-      compilable = data['compilable']
-      conf = data["config"][0]
-      key = conf["location"]
-      case_info = state.switch_case_map[key]
-      state.simulation_data[key] = MSVResult(exec, iter, tm, [TbarPatchInfo(case_info)], result, pass_result, output_distance, pass_all_neg_test, compilable)
+        for key in prev_info:
+          data=prev_info[key]
+          state.simulation_data[key] = data
 
 
 def trim_with_watch_level(state: MSVState, watch_level: str, correct_str: str) -> None:
@@ -827,42 +788,12 @@ def read_info(state: MSVState) -> None:
   temp_type.case_info_map[0] = temp_case
   state.switch_case_map["0-0"] = temp_case
   if state.use_simulation_mode:
-    with open(state.prev_data, "r") as f:
-      prev_info = json.load(f)
-      for data in prev_info:
-        exec=data['execution']
-        iter = data["iteration"]
-        tm = data["time"]
-        result = data["result"]
-        pass_result = data["pass_result"]
-        output_distance = data["output_distance"]
-        config = data["config"]
-        patch_list = list()
-        for conf in config:
-          sw = conf["switch"]
-          cs = conf["case"]
-          is_cond = conf["is_cond"]
-          op = None
-          var = None
-          con = None
-          if "operator" in conf:
-            op = conf["operator"]
-          if "variable" in conf:
-            var = conf["variable"]
-          if "constant" in conf:
-            con = conf["constant"]
-          case_info = state.switch_case_map[f'{sw}-{cs}']
-          if case_info.is_condition:
-            if op is None:
-              case_info.failed = True
-            else:
-              continue
-            #   case_info.processed = True
-            #   case_info.operator_info_list = list()
-              #op_info = OperatorInfo(case_info, op)
-          patch_info = PatchInfo(case_info, None, None, None)
-          patch_list.append(patch_info)
-          state.simulation_data[patch_info.to_str()] = MSVResult(exec,iter, tm, [patch_info], result, pass_result, output_distance)
+    if os.path.exists(state.prev_data):
+      with open(state.prev_data, "r") as f:
+        prev_info = json.load(f)
+        for key in prev_info:
+          data=prev_info[key]
+          state.simulation_data[key] = data
 
 def read_var_count(state:MSVState,sizes:list):
   for object in sizes:
