@@ -146,7 +146,7 @@ def update_result_positive(state: MSVState, selected_patch: List[PatchInfo], run
   run_result = (len(failed_tests) == 0)
   state.failed_positive_test.update(failed_tests)
   for patch in selected_patch:
-    patch.update_result_positive(run_result, len(failed_tests), state.params[PT.b_dec],state.use_exp_alpha, state.use_fixed_beta)
+    patch.update_result_positive(run_result, len(failed_tests)+1, state.params[PT.b_dec],state.use_exp_alpha, state.use_fixed_beta)
 
 def save_result(state: MSVState) -> None:
   state.last_save_time = time.time()

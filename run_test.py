@@ -146,8 +146,6 @@ def run_pass_test(state: MSVState, patch: List[PatchInfo], is_initialize: bool =
       if test not in success:
         result = False
         return_tests.add(test)
-        if not is_initialize:
-          state.failed_positive_test.add(test)
     # if is_initialize:
     #   parse_location(state, new_env, success)
     if not result:

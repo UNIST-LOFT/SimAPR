@@ -304,8 +304,8 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     selected_file_info: FileInfo = selected[selected_file]
 
     norm=PassFail.normalize(p_fl)
-    state.msv_logger.debug(f'Selected file: FL: {norm[selected_file]}, Basic: {selected_file_info.pf.beta_mode(state.params[PT.a_init],state.params[PT.b_init])}, '+
-                    f'Plausible: {selected_file_info.positive_pf.beta_mode(state.params[PT.a_init],state.params[PT.b_init])}, '+
+    state.msv_logger.debug(f'Selected file: FL: {norm[selected_file]}, Basic: {selected_file_info.pf.beta_mode(selected_file_info.pf.pass_count,selected_file_info.pf.fail_count)}, '+
+                    f'Plausible: {selected_file_info.positive_pf.beta_mode(selected_file_info.positive_pf.pass_count,selected_file_info.positive_pf.fail_count)}, '+
                     f'Coverage: {p_cov[selected_file] if not is_rand and explore else 0}')
     clear_list(state, p_map)
 
@@ -333,8 +333,8 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     selected_func = select_by_probability(state, p_map, c_map, normalize)
     selected_func_info: FuncInfo = selected[selected_func]
     norm=PassFail.normalize(p_fl)
-    state.msv_logger.debug(f'Selected function: FL: {norm[selected_func]}, Basic: {selected_func_info.pf.beta_mode(state.params[PT.a_init],state.params[PT.b_init])}, '+
-                    f'Plausible: {selected_func_info.positive_pf.beta_mode(state.params[PT.a_init],state.params[PT.b_init])}, '+
+    state.msv_logger.debug(f'Selected function: FL: {norm[selected_func]}, Basic: {selected_func_info.pf.beta_mode(selected_func_info.pf.pass_count,selected_func_info.pf.fail_count)}, '+
+                    f'Plausible: {selected_func_info.positive_pf.beta_mode(selected_func_info.positive_pf.pass_count,selected_func_info.positive_pf.fail_count)}, '+
                     f'Coverage: {p_cov[selected_func] if not is_rand and explore else 0}')
     clear_list(state, p_map)
 
@@ -362,8 +362,8 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     selected_line = select_by_probability(state, p_map, c_map, normalize)
     selected_line_info: LineInfo = selected[selected_line]
     norm=PassFail.normalize(p_fl)
-    state.msv_logger.debug(f'Selected line: FL: {norm[selected_line]}, Basic: {selected_line_info.pf.beta_mode(state.params[PT.a_init],state.params[PT.b_init])}, '+
-                    f'Plausible: {selected_line_info.positive_pf.beta_mode(state.params[PT.a_init],state.params[PT.b_init])}, '+
+    state.msv_logger.debug(f'Selected line: FL: {norm[selected_line]}, Basic: {selected_line_info.pf.beta_mode(selected_line_info.pf.pass_count,selected_line_info.pf.fail_count)}, '+
+                    f'Plausible: {selected_line_info.positive_pf.beta_mode(selected_line_info.positive_pf.pass_count,selected_line_info.positive_pf.fail_count)}, '+
                     f'Coverage: {p_cov[selected_line] if not is_rand and explore else 0}')
     clear_list(state, p_map)
     if not state.use_prophet_score:
@@ -392,8 +392,8 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     selected_switch = select_by_probability(state, p_map, c_map, normalize)
     selected_switch_info: SwitchInfo = selected[selected_switch]
     norm=PassFail.normalize(p_fl)
-    state.msv_logger.debug(f'Selected switch: FL: {norm[selected_switch]}, Basic: {selected_switch_info.pf.beta_mode(state.params[PT.a_init],state.params[PT.b_init])}, '+
-                    f'Plausible: {selected_switch_info.positive_pf.beta_mode(state.params[PT.a_init],state.params[PT.b_init])}, '+
+    state.msv_logger.debug(f'Selected switch: FL: {norm[selected_switch]}, Basic: {selected_switch_info.pf.beta_mode(selected_switch_info.pf.pass_count,selected_switch_info.pf.fail_count)}, '+
+                    f'Plausible: {selected_switch_info.positive_pf.beta_mode(selected_switch_info.positive_pf.pass_count,selected_switch_info.positive_pf.fail_count)}, '+
                     f'Coverage: {p_cov[selected_switch] if not is_rand and explore else 0}')
     clear_list(state, p_map)
 
@@ -416,8 +416,8 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     selected_type = select_by_probability(state, p_map, c_map, normalize)
     selected_type_info: TypeInfo = selected[selected_type]
     norm=PassFail.normalize(p_fl)
-    state.msv_logger.debug(f'Selected type: FL: {norm[selected_type]}, Basic: {selected_type_info.pf.beta_mode(state.params[PT.a_init],state.params[PT.b_init])}, '+
-                    f'Plausible: {selected_type_info.positive_pf.beta_mode(state.params[PT.a_init],state.params[PT.b_init])}, '+
+    state.msv_logger.debug(f'Selected type: FL: {norm[selected_type]}, Basic: {selected_type_info.pf.beta_mode(selected_type_info.pf.pass_count,selected_type_info.pf.fail_count)}, '+
+                    f'Plausible: {selected_type_info.positive_pf.beta_mode(selected_type_info.positive_pf.pass_count,selected_type_info.positive_pf.fail_count)}, '+
                     f'Coverage: {p_cov[selected_type] if not is_rand and explore else 0}')
     clear_list(state, p_map)
 
@@ -839,8 +839,8 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   selected_file = select_by_probability(state, p_map, c_map, normalize)
   selected_file_info: FileInfo = selected[selected_file]
   norm=PassFail.normalize(p_fl)
-  state.msv_logger.debug(f'Selected file: FL: {norm[selected_file]}, Basic: {selected_file_info.pf.beta_mode(state.params[PT.a_init],state.params[PT.b_init])}, '+
-                  f'Plausible: {selected_file_info.positive_pf.beta_mode(state.params[PT.a_init],state.params[PT.b_init])}, '+
+  state.msv_logger.debug(f'Selected file: FL: {norm[selected_file]}, Basic: {selected_file_info.pf.beta_mode(selected_file_info.pf.pass_count,selected_file_info.pf.fail_count)}, '+
+                  f'Plausible: {selected_file_info.positive_pf.beta_mode(selected_file_info.positive_pf.pass_count,selected_file_info.positive_pf.fail_count)}, '+
                   f'Coverage: {p_cov[selected_file] if explore else 0}')
   clear_list(state, p_map)
 
@@ -865,8 +865,8 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   selected_func = select_by_probability(state, p_map, c_map, normalize)
   selected_func_info: FuncInfo = selected[selected_func]
   norm=PassFail.normalize(p_fl)
-  state.msv_logger.debug(f'Selected function: FL: {norm[selected_func]}, Basic: {selected_func_info.pf.beta_mode(state.params[PT.a_init],state.params[PT.b_init])}, '+
-                  f'Plausible: {selected_func_info.positive_pf.beta_mode(state.params[PT.a_init],state.params[PT.b_init])}, '+
+  state.msv_logger.debug(f'Selected function: FL: {norm[selected_func]}, Basic: {selected_func_info.pf.beta_mode(selected_func_info.pf.pass_count,selected_func_info.pf.fail_count)}, '+
+                  f'Plausible: {selected_func_info.positive_pf.beta_mode(selected_func_info.positive_pf.pass_count,selected_func_info.positive_pf.fail_count)}, '+
                   f'Coverage: {p_cov[selected_func] if explore else 0}')
   clear_list(state, p_map)
 
@@ -891,8 +891,8 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   selected_line = select_by_probability(state, p_map, c_map, normalize)
   selected_line_info: LineInfo = selected[selected_line]
   norm=PassFail.normalize(p_fl)
-  state.msv_logger.debug(f'Selected line: FL: {norm[selected_line]}, Basic: {selected_line_info.pf.beta_mode(state.params[PT.a_init],state.params[PT.b_init])}, '+
-                  f'Plausible: {selected_line_info.positive_pf.beta_mode(state.params[PT.a_init],state.params[PT.b_init])}, '+
+  state.msv_logger.debug(f'Selected line: FL: {norm[selected_line]}, Basic: {selected_line_info.pf.beta_mode(selected_line_info.pf.pass_count,selected_line_info.pf.fail_count)}, '+
+                  f'Plausible: {selected_line_info.positive_pf.beta_mode(selected_line_info.positive_pf.pass_count,selected_line_info.positive_pf.fail_count)}, '+
                   f'Coverage: {p_cov[selected_line] if explore else 0}')
   clear_list(state, p_map)
   del c_map[PT.fl] # No fl below line
@@ -913,8 +913,8 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   selected_type = select_by_probability(state, p_map, c_map, normalize)
   selected_type_info: TbarTypeInfo = selected[selected_type]
   norm=PassFail.normalize(p_fl)
-  state.msv_logger.debug(f'Selected type: FL: {norm[selected_type]}, Basic: {selected_type_info.pf.beta_mode(state.params[PT.a_init],state.params[PT.b_init])}, '+
-                  f'Plausible: {selected_type_info.positive_pf.beta_mode(state.params[PT.a_init],state.params[PT.b_init])}, '+
+  state.msv_logger.debug(f'Selected type: FL: {norm[selected_type]}, Basic: {selected_type_info.pf.beta_mode(selected_type_info.pf.pass_count,selected_type_info.pf.fail_count)}, '+
+                  f'Plausible: {selected_type_info.positive_pf.beta_mode(selected_type_info.positive_pf.pass_count,selected_type_info.positive_pf.fail_count)}, '+
                   f'Coverage: {p_cov[selected_type] if explore else 0}')
   clear_list(state, p_map)
   # select tbar switch

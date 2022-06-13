@@ -177,7 +177,6 @@ class MSV:
             temp_patches=[]
             for key in self.state.simulation_data:
               if patch[0].case_info.to_str() in key:
-                self.state.iteration+=1
                 if key==patch[0].case_info.to_str():
                   # Failed generating condition
                   self.run_test(patch)
@@ -213,9 +212,10 @@ class MSV:
                   else:
                     temp_patches.append(PatchInfo(patch[0].case_info,temp_oper,None,None))
 
-            self.state.iteration-=1
             for temp_patch in temp_patches:
               self.run_test([temp_patch])
+              self.state.iteration+=1
+            self.state.iteration-=1
             continue
 
         # Our guided condition synthesis
