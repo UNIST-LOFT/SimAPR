@@ -769,9 +769,10 @@ def read_info(state: MSVState) -> None:
       trim_with_watch_level(state, state.watch_level, state.correct_patch_str)
 
   # Set halflife
-  if not state.use_fixed_halflife:
-    total_patch_len=len(state.seapr_remain_cases)
-    state.params[PT.halflife]=int(total_patch_len*state.params[PT.halflife])
+  # TODO: Fix halflife
+  # if not state.use_fixed_halflife:
+  #   total_patch_len=len(state.seapr_remain_cases)
+  #   state.params[PT.halflife]=int(total_patch_len*state.params[PT.halflife])
   #Add original to switch_case_map
   temp_file: FileInfo = FileInfo('original')
   temp_func = FuncInfo(temp_file, "original_fn", 0, 0)
