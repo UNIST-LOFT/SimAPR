@@ -215,7 +215,9 @@ class MSV:
             for temp_patch in temp_patches:
               self.run_test([temp_patch])
               self.state.iteration+=1
-            self.state.iteration-=1
+            
+            if len(temp_patches)>0:
+              self.state.iteration-=1
             continue
 
         # Our guided condition synthesis
