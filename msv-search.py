@@ -768,6 +768,20 @@ def read_info(state: MSVState) -> None:
     if len(state.watch_level) > 1:
       trim_with_watch_level(state, state.watch_level, state.correct_patch_str)
 
+  temp_func_list = list()
+  temp_func_fl_list = list()
+  for file_name in state.file_info_map:
+    file_info = state.file_info_map[file_name]
+    for func_id in file_info.func_info_map:
+      func_info = file_info.func_info_map[func_id]
+      temp_func_list.append(func_info)
+      temp_func_fl_list.append(-1 * func_info.fl_score)
+  temp_func_result = np.argsort(temp_func_fl_list)
+  for rank in range(len(temp_func_result)):
+    func_index = temp_func_result[rank]
+    func_info: FuncInfo = temp_func_list[func_index]
+    func_info.func_rank = rank
+  
   # Set halflife
   # TODO: Fix halflife
   # if not state.use_fixed_halflife:
