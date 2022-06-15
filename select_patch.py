@@ -912,8 +912,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
       p_cov.append(1 - (tbar_type_info.case_update_count/tbar_type_info.total_case_info))
   selected_type = select_by_probability(state, p_map, c_map, normalize)
   selected_type_info: TbarTypeInfo = selected[selected_type]
-  norm=PassFail.normalize(p_fl)
-  state.msv_logger.debug(f'Selected type: FL: {norm[selected_type]}/{p_fl[selected_type]}, Basic: {selected_type_info.pf.beta_mode(selected_type_info.pf.pass_count,selected_type_info.pf.fail_count)}, '+
+  state.msv_logger.debug(f'Selected type: Basic: {selected_type_info.pf.beta_mode(selected_type_info.pf.pass_count,selected_type_info.pf.fail_count)}, '+
                   f'Plausible: {selected_type_info.positive_pf.beta_mode(selected_type_info.positive_pf.pass_count,selected_type_info.positive_pf.fail_count)}, '+
                   f'Coverage: {p_cov[selected_type] if explore else 0}')
   clear_list(state, p_map)
