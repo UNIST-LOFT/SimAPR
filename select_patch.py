@@ -656,6 +656,7 @@ def select_patch_seapr(state: MSVState, test: int) -> PatchInfo:
   case_info=state.seapr_remain_cases[0]
   max_score=0.
   has_high_qual_patch=False
+  top_patches:List[CaseInfo]=[]
   for case in state.seapr_remain_cases:
     if case.parent.parent.parent.parent.func_rank > 30:
       continue
@@ -664,12 +665,22 @@ def select_patch_seapr(state: MSVState, test: int) -> PatchInfo:
       has_high_qual_patch=True
     if cur_score>max_score:
       max_score=cur_score
-      case_info=case
+      top_patches.clear()
+      top_patches.append(case)
+    elif cur_score==max_score:
+      top_patches.append(case)
   
   if not has_high_qual_patch:
     case_info=select_patch_prophet(state).case_info
   else:
     state.msv_logger.debug(f'SeAPR score: {max_score}')
+
+    top_score=top_patches[0].prophet_score[0]
+    case_info=top_patches[0]
+    for patch in top_patches:
+      if patch.prophet_score[0]>top_score:
+        top_score=patch.prophet_score[0]
+        case_info=patch
 
   if not case_info.is_condition:
     return PatchInfo(case_info, None, None, None)
