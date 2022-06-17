@@ -813,7 +813,9 @@ def read_info_tbar(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, TbarCa
               line_info = LineInfo(func_info, int(line['line']))
               func_info.line_info_map[line_info.uuid] = line_info
               break
-            
+        else:
+          ff_map[file_name] = dict()
+
         #line_info = LineInfo(file_info, int(line['line']))
         if line_info is None:
           # No function found for this line!!!
