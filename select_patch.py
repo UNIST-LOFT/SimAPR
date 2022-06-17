@@ -661,7 +661,7 @@ def select_patch_seapr(state: MSVState, test: int) -> PatchInfo:
     if case.parent.parent.parent.parent.func_rank > 30:
       continue
     cur_score=get_ochiai(case.seapr_same_high,case.seapr_same_low,case.seapr_diff_high,case.seapr_diff_low)
-    if case.seapr_same_high>0:
+    if state.iteration>1:
       has_high_qual_patch=True
     if cur_score>max_score:
       max_score=cur_score
