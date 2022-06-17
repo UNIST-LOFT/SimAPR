@@ -1157,7 +1157,7 @@ def read_info_recoder(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, Rec
           del file_info.func_info_map[func.id]
   return file_map, switch_case_map
 
-def tbar_batch_plot(correct_patch_csv: str, in_dir: str) -> None:
+def tbar_batch_plot(correct_patch_csv: str, in_dir: str,mode:str='TBar') -> None:
   csv = ""
   all: Dict[str, str] = dict()
   with open(correct_patch_csv, "r") as f:
@@ -1174,23 +1174,30 @@ def tbar_batch_plot(correct_patch_csv: str, in_dir: str) -> None:
     proj = dir.split("-")[0]
     if proj not in all:
       continue
-    for sub in sorted(os.listdir(os.path.join(in_dir, dir))):
-      result_file = os.path.join(in_dir, dir, sub, "msv-result.json")
-      print(result_file)
-      if os.path.exists(result_file):
-        cp = all[proj]
-        print(f"{dir} : {cp}")
-        workdir = "/root/project/TBarCopy/D4J/projects/" + proj
-        if not os.path.exists(workdir):
-          print(f"{workdir} not exists!!!!!!!")
-          continue
-        print(f"{result_file}, {workdir}")
-        if workdir not in info:
-          info[workdir] = read_info_tbar(workdir)
-        switch_info, switch_case_map = info[workdir]
-        iter, tm = tbar_plot_correct(result_file, dir, workdir, cp, switch_info, switch_case_map)
-        csv += f"{proj},{cp},{iter},{tm}\n"
-        tbar_barchart(result_file, dir, workdir, cp, switch_info, switch_case_map)
+    result_file = os.path.join(in_dir, dir, "msv-result.json")
+    print(result_file)
+    if os.path.exists(result_file):
+      cp = all[proj]
+      print(f"{dir} : {cp}")
+      if mode=='kpar':
+        workdir = "/root/project/kPar/d4j/" + proj
+      elif mode=='fixminer':
+        workdir = "/root/FixMiner-APR/d4j/" + proj
+      elif mode=='avatar':
+        workdir = "/root/project/AVATAR/d4j/" + proj
+      else:
+        workdir = "/root/project/TBar/d4j/" + proj
+
+      if not os.path.exists(workdir):
+        print(f"{workdir} not exists!!!!!!!")
+        continue
+      print(f"{result_file}, {workdir}")
+      if workdir not in info:
+        info[workdir] = read_info_tbar(workdir)
+      switch_info, switch_case_map = info[workdir]
+      iter, tm = tbar_plot_correct(result_file, dir, workdir, cp, switch_info, switch_case_map)
+      csv += f"{proj},{cp},{iter},{tm}\n"
+      tbar_barchart(result_file, dir, workdir, cp, switch_info, switch_case_map)
   print(csv)
   with open("result.csv", "w") as f:
     f.write(csv)  
@@ -1441,6 +1448,7 @@ def main(argv):
       print("ex) afl_plot.py -i . -o out.png -t php-2adf58 -m auto -c 54-36:0-2-12")
       print("./plot.py -o out/php/1d984a7 -i out/php/1d984a7/msv-result.json -m correct -t 1d984a7 -w /root/project/MSV-experiment/benchmarks/php/php-case-1d984a7/php-1d984a7-workdir -c 137-145:0-8-355")
       print("./plot.py -i result-tuning -c ./correct_patch.csv -m batch")
+      print("./plot.py -i result-tuning-kpar -c ./correct.csv -m tbar_batch kpar")
       exit(0)
   if output_file == "":
     output_file = os.path.join(os.path.dirname(result_file), "plot.png")
@@ -1454,7 +1462,7 @@ def main(argv):
   elif mode == "batch":
     batch_plot(correct_patch, result_file)
   elif mode == "tbar_batch":
-    tbar_batch_plot(correct_patch, result_file)
+    tbar_batch_plot(correct_patch, result_file,args[0])
   elif mode == "find":
     batch_find(correct_patch, result_file)
   elif mode == "recoder":
