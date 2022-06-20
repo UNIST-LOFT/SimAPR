@@ -1,6 +1,13 @@
 from core import *
+import numpy as np
 
-# n: number of hierarchy
+def epsilon_greedy(total:int,remain_patches:int):
+  """
+    Compute epsilin value of Epsilon-greedy algorithm
+    remain_patches: number of remaining patches, larger epsilon for larger remain_patches
+  """
+  return 1 / (1 + np.e ** (-1 / (total / 10) * (remain_patches - total / 3)))
+
 def select_by_probability_hierarchical(state: MSVState, n: int, p1: List[float], p2: List[float] = [], p3: List[float] = []) -> int:
   if len(p1) == 0:
     state.msv_logger.critical("Empty probability list!!!!")
@@ -268,7 +275,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
   if state.iteration < state.max_initial_trial:
     return select_patch_prophet(state)
   else:
-    explore = state.params[PT.epsilon] > random.random()
+    explore = False
     if explore and not is_rand:
       state.msv_logger.info("Explore!")
       c_map[PT.cov] = state.params[PT.cov] # default = 2.0
@@ -820,7 +827,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   # Initially, select patch with prophet strategy
   selected_case_info = None
   # state.max_initial_trial = 0
-  explore = state.params[PT.epsilon] > random.random()
+  explore = False
   if explore:
     state.msv_logger.info("Explore!")
     c_map[PT.cov] = state.params[PT.cov] # default = 2.0
@@ -909,47 +916,64 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   del c_map[PT.fl] # No fl below line
 
   # Select type
+  # Use random search for epsilon greedy method
+  remain_patches=0
   for tbar_type in selected_line_info.tbar_type_info_map:
-    tbar_type_info = selected_line_info.tbar_type_info_map[tbar_type]
-    if len(tbar_type_info.tbar_case_info_map) == 0:
-      state.msv_logger.warning(f"No switch info in type: {tbar_type}")
-      continue
-    selected.append(tbar_type_info)
-    p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_b.append(tbar_type_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_p.append(tbar_type_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_o.append(tbar_type_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    if explore:
-      p_cov.append(1 - (tbar_type_info.case_update_count/tbar_type_info.total_case_info))
-  selected_type = select_by_probability(state, p_map, c_map, normalize)
-  selected_type_info: TbarTypeInfo = selected[selected_type]
-  state.msv_logger.debug(f'Selected type: Basic: {selected_type_info.pf.beta_mode(selected_type_info.pf.pass_count,selected_type_info.pf.fail_count)}, '+
-                  f'Plausible: {selected_type_info.positive_pf.beta_mode(selected_type_info.positive_pf.pass_count,selected_type_info.positive_pf.fail_count)}, '+
-                  f'Coverage: {p_cov[selected_type] if explore else 0}')
-  clear_list(state, p_map)
-  # select tbar switch
-  rank: int = -1
-  selected_switch_info = None
-  for location in selected_type_info.tbar_case_info_map:
-    location_info = selected_type_info.tbar_case_info_map[location]
-    if rank < 0 or rank > location_info.patch_rank:
-      rank = location_info.patch_rank
-      selected_switch_info = location_info
-    selected.append(location_info)
-    p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-  c_map = rand_cmap
+    remain_patches+=len(selected_line_info.tbar_type_info_map[tbar_type].tbar_case_info_map)
+  epsilon=epsilon_greedy(selected_line_info.total_case_info,remain_patches)
+  is_epsilon_greedy=np.random.random()<epsilon and state.use_epsilon
 
-  # Follow the original order if switch is larger than 50
-  if len(selected_type_info.tbar_case_info_map)>50:
-    for case in selected_type_info.tbar_case_info_map:
-      selected_switch_info=selected_type_info.tbar_case_info_map[case]
-      break
+  if not is_epsilon_greedy:
+    for tbar_case_id in state.patch_ranking:
+      for tbar_type in selected_line_info.tbar_type_info_map:
+        for tbar_case in selected_line_info.tbar_type_info_map[tbar_type].tbar_case_info_map:
+          if tbar_case_id==tbar_case:
+            result=TbarPatchInfo(state.patch_ranking[tbar_case_id])
+            return result
+    assert False and "No patch found in original algorithm!"
+  
   else:
-    selected_switch = select_by_probability(state, p_map, c_map, normalize)
-    selected_switch_info: TbarCaseInfo = selected[selected_switch]
-  clear_list(state, p_map)
-  result = TbarPatchInfo(selected_switch_info)
-  return result  
+    for tbar_type in selected_line_info.tbar_type_info_map:
+      tbar_type_info = selected_line_info.tbar_type_info_map[tbar_type]
+      if len(tbar_type_info.tbar_case_info_map) == 0:
+        state.msv_logger.warning(f"No switch info in type: {tbar_type}")
+        continue
+      selected.append(tbar_type_info)
+      p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      p_b.append(tbar_type_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      p_p.append(tbar_type_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      p_o.append(tbar_type_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      if explore:
+        p_cov.append(1 - (tbar_type_info.case_update_count/tbar_type_info.total_case_info))
+    selected_type = select_by_probability(state, p_map, c_map, normalize)
+    selected_type_info: TbarTypeInfo = selected[selected_type]
+    state.msv_logger.debug(f'Selected type: Basic: {selected_type_info.pf.beta_mode(selected_type_info.pf.pass_count,selected_type_info.pf.fail_count)}, '+
+                    f'Plausible: {selected_type_info.positive_pf.beta_mode(selected_type_info.positive_pf.pass_count,selected_type_info.positive_pf.fail_count)}, '+
+                    f'Coverage: {p_cov[selected_type] if explore else 0}')
+    clear_list(state, p_map)
+    # select tbar switch
+    rank: int = -1
+    selected_switch_info = None
+    for location in selected_type_info.tbar_case_info_map:
+      location_info = selected_type_info.tbar_case_info_map[location]
+      if rank < 0 or rank > location_info.patch_rank:
+        rank = location_info.patch_rank
+        selected_switch_info = location_info
+      selected.append(location_info)
+      p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    c_map = rand_cmap
+
+    # Follow the original order if switch is larger than 50
+    if len(selected_type_info.tbar_case_info_map)>50:
+      for case in selected_type_info.tbar_case_info_map:
+        selected_switch_info=selected_type_info.tbar_case_info_map[case]
+        break
+    else:
+      selected_switch = select_by_probability(state, p_map, c_map, normalize)
+      selected_switch_info: TbarCaseInfo = selected[selected_switch]
+    clear_list(state, p_map)
+    result = TbarPatchInfo(selected_switch_info)
+    return result  
 
 def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
   selected_patch: TbarCaseInfo = None
@@ -1021,7 +1045,7 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
   # Initially, select patch with prophet strategy
   selected_case_info = None
   # state.max_initial_trial = 0
-  explore = state.params[PT.epsilon] > random.random()
+  explore = False
   if explore:
     state.msv_logger.info("Explore!")
     c_map[PT.cov] = state.params[PT.cov] # default = 2.0

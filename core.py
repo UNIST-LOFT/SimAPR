@@ -1583,6 +1583,7 @@ class MSVState:
     self.language_model_path='./Google-word2vec.txt'
     self.language_model_mean=''
     self.remove_cached_file=False
+    self.use_epsilon=True
 
     self.seapr_remain_cases:List[CaseInfo]=[]
     self.seapr_layer:SeAPRMode=SeAPRMode.FUNCTION
