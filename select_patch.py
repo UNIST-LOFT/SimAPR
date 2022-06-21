@@ -1,12 +1,12 @@
 from core import *
 import numpy as np
 
-def epsilon_greedy(total:int,remain_patches:int):
+def epsilon_greedy(total:int,x:int):
   """
     Compute epsilin value of Epsilon-greedy algorithm
-    remain_patches: number of remaining patches, larger epsilon for larger remain_patches
+    x: larger epsilon for larger x
   """
-  return 1 / (1 + np.e ** (-1 / (total / 10) * (remain_patches - total / 3)))
+  return 1 / (1 + np.e ** (-1 / (total / 10) * (x - total / 3)))
 
 def select_by_probability_hierarchical(state: MSVState, n: int, p1: List[float], p2: List[float] = [], p3: List[float] = []) -> int:
   if len(p1) == 0:
@@ -920,19 +920,21 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   remain_patches=0
   for tbar_type in selected_line_info.tbar_type_info_map:
     remain_patches+=len(selected_line_info.tbar_type_info_map[tbar_type].tbar_case_info_map)
-  epsilon=epsilon_greedy(selected_line_info.total_case_info,remain_patches)
+  epsilon=epsilon_greedy(selected_line_info.total_case_info,selected_line_info.total_case_info-remain_patches)
   is_epsilon_greedy=np.random.random()<epsilon and state.use_epsilon
 
   if not is_epsilon_greedy:
+    state.msv_logger.debug(f'Use original selection, epsilon: {epsilon}')
     for tbar_case_id in state.patch_ranking:
       for tbar_type in selected_line_info.tbar_type_info_map:
         for tbar_case in selected_line_info.tbar_type_info_map[tbar_type].tbar_case_info_map:
           if tbar_case_id==tbar_case:
-            result=TbarPatchInfo(state.patch_ranking[tbar_case_id])
+            result=TbarPatchInfo(selected_line_info.tbar_type_info_map[tbar_type].tbar_case_info_map[tbar_case_id])
             return result
     assert False and "No patch found in original algorithm!"
   
   else:
+    state.msv_logger.debug(f'Use guided search, epsilon: {epsilon}')
     for tbar_type in selected_line_info.tbar_type_info_map:
       tbar_type_info = selected_line_info.tbar_type_info_map[tbar_type]
       if len(tbar_type_info.tbar_case_info_map) == 0:
