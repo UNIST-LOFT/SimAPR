@@ -1073,7 +1073,10 @@ def tbar_barchart(msv_result_file: str, title: str, work_dir: str, correct_patch
   plt.xticks(index[:20000], line_list, rotation=60)
   out_file = os.path.join(os.path.dirname(msv_result_file), "line-plot.png")
   print(f"save to {out_file}")
-  plt.savefig(out_file)
+  try:
+    plt.savefig(out_file)
+  except:
+    print('Error to save line.png')
 
 def read_info_recoder(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, RecoderCaseInfo]]:
   with open(os.path.join(work_dir, 'switch-info.json'), 'r') as f:
