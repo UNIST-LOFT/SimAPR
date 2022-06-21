@@ -198,6 +198,7 @@ class FileInfo:
     self.case_update_count: int = 0
     self.score_list: List[float] = list()
     self.class_name: str = ""
+    self.children_basic_patches:int=0
   def __hash__(self) -> int:
     return hash(self.file_name)
   def __eq__(self, other) -> bool:
@@ -226,6 +227,7 @@ class FuncInfo:
     self.case_update_count: int = 0
     self.score_list: List[float] = list()
     self.func_rank: int = -1
+    self.children_basic_patches:int=0
   def __hash__(self) -> int:
     return hash(self.id)
   def __eq__(self, other) -> bool:
@@ -257,6 +259,7 @@ class LineInfo:
     self.line_id = -1
     self.recoder_case_info_map: Dict[int, RecoderCaseInfo] = dict()
     self.score_list: List[float] = list()
+    self.children_basic_patches:int=0
   def __hash__(self) -> int:
     return hash(self.uuid)
   def __eq__(self, other) -> bool:
@@ -275,6 +278,7 @@ class TbarTypeInfo:
     self.out_dist: float = -1.0
     self.out_dist_map: Dict[int, float] = dict()
     self.tbar_case_info_map: Dict[str, TbarCaseInfo] = dict()
+    self.children_basic_patches:int=0
   def __hash__(self) -> int:
     return hash(self.mutation)
   def __eq__(self, other) -> bool:
@@ -381,6 +385,7 @@ class SwitchInfo:
     self.prophet_score:list=[]
     self.has_init_patch=False
     self.case_update_count: int = 0
+    self.children_basic_patches:int=0
   def __hash__(self) -> int:
     return hash(self.switch_number)
   def __eq__(self, other) -> bool:
@@ -404,6 +409,7 @@ class TypeInfo:
     self.prophet_score:list=[]
     self.has_init_patch=False
     self.case_update_count: int = 0
+    self.children_basic_patches:int=0
   def __hash__(self) -> int:
     return hash(self.patch_type)
   def __eq__(self, other) -> bool:
@@ -890,6 +896,13 @@ class PatchInfo:
     self.out_dist = -1.0
     self.out_diff: bool = False
   def update_result(self, result: bool, n: float,b_n:float, use_exp_alpha: bool, use_fixed_beta:bool) -> None:
+    if result:
+      self.type_info.children_basic_patches+=1
+      self.switch_info.children_basic_patches+=1
+      self.line_info.children_basic_patches+=1
+      self.func_info.children_basic_patches+=1
+      self.file_info.children_basic_patches+=1
+
     self.case_info.pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
     self.type_info.pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
     self.switch_info.pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)

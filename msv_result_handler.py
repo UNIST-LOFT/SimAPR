@@ -306,6 +306,13 @@ def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: b
       line_info = tbar_type_info.parent
       func_info = line_info.parent
       file_info = func_info.parent
+
+      if result:
+        tbar_type_info.children_basic_patches+=1
+        line_info.children_basic_patches+=1
+        func_info.children_basic_patches+=1
+        file_info.children_basic_patches+=1
+        
       is_share = False
       same_pattern = False
       if state.seapr_layer == SeAPRMode.FILE:
