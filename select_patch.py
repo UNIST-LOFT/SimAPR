@@ -8,6 +8,12 @@ def epsilon_greedy(total:int,x:int):
   """
   return 1 / (1 + np.e ** (-1 / (total / 10) * (x - total / 3)))
 
+def weighted_mean(a:float,b:float,weight_a:float=0.9,weight_b:float=0.1):
+  """
+    Compute weighted mean, for guided decision
+  """
+  return weight_a*a+weight_b*b
+
 def select_by_probability_hierarchical(state: MSVState, n: int, p1: List[float], p2: List[float] = [], p3: List[float] = []) -> int:
   if len(p1) == 0:
     state.msv_logger.critical("Empty probability list!!!!")
