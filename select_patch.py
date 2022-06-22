@@ -21,6 +21,13 @@ def unique_function(frequency:float):
   """
   return 2**(frequency-1)
 
+def basic_patch_frequency_function(frequency:float):
+  """
+    Dummpy function for BPFreq(frequency)
+    TODO: Replqce to real implementation
+  """
+  return np.log2(frequency)
+
 def select_by_probability_hierarchical(state: MSVState, n: int, p1: List[float], p2: List[float] = [], p3: List[float] = []) -> int:
   if len(p1) == 0:
     state.msv_logger.critical("Empty probability list!!!!")
@@ -265,9 +272,10 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
   p_o = list() # output
   p_odist = list() # output distance
   p_cov = list() # coverage
-  p_frequency = list() # frequency of basic patches in subtree
+  p_frequency = list() # frequency of basic patches from total basic patches
+  p_bp_frequency=list() # frequency of basic patches from total searched patches in subtree
   p_map = {PT.selected: selected, PT.rand: p_rand, PT.basic: p_b, 
-          PT.plau: p_p, PT.fl: p_fl, PT.out: p_o, PT.cov: p_cov, PT.odist: p_odist,PT.frequency: p_frequency}
+          PT.plau: p_p, PT.fl: p_fl, PT.out: p_o, PT.cov: p_cov, PT.odist: p_odist,PT.frequency: p_frequency,PT.bp_frequency:p_bp_frequency}
   c_map = state.c_map.copy()
   normalize = {PT.fl, PT.cov}
   iter = max(0, state.iteration - state.max_initial_trial)
@@ -316,6 +324,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       p_p.append(file_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       p_o.append(file_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       p_frequency.append(file_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
+      p_bp_frequency.append(file_info.children_basic_patches/file_info.case_update_count if file_info.case_update_count > 0 else 0)
       if not is_rand and explore:
         min_coverage=1.0
         for func in file_info.func_info_map.values():
@@ -347,6 +356,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       p_p.append(func_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       p_o.append(func_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       p_frequency.append(func_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
+      p_bp_frequency.append(func_info.children_basic_patches/func_info.case_update_count if func_info.case_update_count > 0 else 0)
       if explore and not is_rand:
         min_coverage=1.0
         for line in func_info.line_info_map.values():
@@ -377,6 +387,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       p_p.append(line_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       p_o.append(line_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       p_frequency.append(line_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
+      p_bp_frequency.append(line_info.children_basic_patches/line_info.case_update_count if line_info.case_update_count > 0 else 0)
       if explore:
         min_coverage=1.0
         for switch in line_info.switch_info_map.values():
@@ -407,6 +418,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       p_p.append(switch_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       p_o.append(switch_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       p_frequency.append(switch_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
+      p_bp_frequency.append(switch_info.children_basic_patches/switch_info.case_update_count if switch_info.case_update_count > 0 else 0)
       if explore:
         temp_p1 = switch_info.pf.expect_probability()
         min_coverage=1.0
@@ -436,6 +448,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       p_p.append(type_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       p_o.append(type_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       p_frequency.append(type_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
+      p_bp_frequency.append(type_info.children_basic_patches/type_info.case_update_count if type_info.case_update_count > 0 else 0)
       if explore and not is_rand:
         coverage = type_info.case_update_count / type_info.total_case_info
         p_cov.append(1 - coverage)
@@ -828,9 +841,10 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   p_o = list() # output
   p_odist = list() # output distance
   p_cov = list() # coverage
-  p_frequency = list() # frequency of basic patches in subtree
+  p_frequency = list() # frequency of basic patches from total basic patches
+  p_bp_frequency=list() # frequency of basic patches from total searched patches in subtree
   p_map = {PT.selected: selected, PT.rand: p_rand, PT.basic: p_b, 
-          PT.plau: p_p, PT.fl: p_fl, PT.out: p_o, PT.cov: p_cov, PT.odist: p_odist,PT.frequency:p_frequency}
+          PT.plau: p_p, PT.fl: p_fl, PT.out: p_o, PT.cov: p_cov, PT.odist: p_odist,PT.frequency:p_frequency,PT.bp_frequency:p_bp_frequency}
   c_map = state.c_map.copy()
   normalize: Set[PT] = {PT.fl, PT.cov}
   iter = max(0, state.iteration - state.max_initial_trial)
@@ -869,6 +883,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
     p_p.append(file_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_o.append(file_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_frequency.append(file_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
+    p_bp_frequency.append(file_info.children_basic_patches/file_info.case_update_count if file_info.case_update_count > 0 else 0)
     if explore:
       min_coverage=1.0
       for func in file_info.func_info_map.values():
@@ -896,6 +911,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
     p_p.append(func_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_o.append(func_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_frequency.append(func_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
+    p_bp_frequency.append(func_info.children_basic_patches/func_info.case_update_count if func_info.case_update_count > 0 else 0)
     if explore:
       min_coverage=1.0
       for line in func_info.line_info_map.values():
@@ -923,6 +939,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
     p_p.append(line_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_o.append(line_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_frequency.append(line_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
+    p_bp_frequency.append(line_info.children_basic_patches/line_info.case_update_count if line_info.case_update_count > 0 else 0)
     if explore:
       min_coverage=1.0
       for switch in line_info.switch_info_map.values():
@@ -969,6 +986,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
       p_p.append(tbar_type_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       p_o.append(tbar_type_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       p_frequency.append(tbar_type_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
+      p_bp_frequency.append(tbar_type_info.children_basic_patches/tbar_type_info.case_update_count if tbar_type_info.case_update_count > 0 else 0)
       if explore:
         p_cov.append(1 - (tbar_type_info.case_update_count/tbar_type_info.total_case_info))
     selected_type = select_by_probability(state, p_map, c_map, normalize)

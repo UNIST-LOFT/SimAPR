@@ -88,7 +88,8 @@ class PT(Enum):
   b_dec=14 # decrease of beta distribution
   a_init=15 # init value of a in beta dist
   b_init=16 # init value of b in beta dist
-  frequency=17 # frequency of basic patches in subtree
+  frequency=17 # frequency of basic patches from total basic patches
+  bp_frequency=18 # frequency of basic patches from total searched patches in subtree
 
 class SeAPRMode(Enum):
   FILE=0,
