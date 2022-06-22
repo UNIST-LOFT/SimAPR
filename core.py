@@ -192,7 +192,7 @@ class PassFail:
     # return 2 * x - PassFail.concave_up(x)
     # return np.power(base, x-1)
     atzero = PassFail.concave_up(0, base)
-    return 2 * ((1 - atzero) * x + atzero) - PassFail.concave_down(x, base)
+    return 2 * ((1 - atzero) * x + atzero) - PassFail.concave_up(x, base)
 
 
 class FileInfo:
