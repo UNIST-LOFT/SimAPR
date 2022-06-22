@@ -297,6 +297,11 @@ def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: b
   selected_patch.update_result(result, 1, state.params[PT.b_dec],state.use_exp_alpha, state.use_fixed_beta)
   if result:
     state.total_basic_patch += 1
+    selected_patch.tbar_type_info.children_basic_patches+=1
+    selected_patch.line_info.children_basic_patches+=1
+    selected_patch.func_info.children_basic_patches+=1
+    selected_patch.file_info.children_basic_patches+=1
+
   if state.mode == MSVMode.seapr:
     # if selected_patch.tbar_case_info.location in state.patch_ranking:
     #   state.patch_ranking.remove(selected_patch.tbar_case_info.location)
@@ -306,12 +311,6 @@ def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: b
       line_info = tbar_type_info.parent
       func_info = line_info.parent
       file_info = func_info.parent
-
-      if result:
-        tbar_type_info.children_basic_patches+=1
-        line_info.children_basic_patches+=1
-        func_info.children_basic_patches+=1
-        file_info.children_basic_patches+=1
         
       is_share = False
       same_pattern = False
