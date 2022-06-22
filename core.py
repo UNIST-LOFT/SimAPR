@@ -12,6 +12,7 @@ import numpy as np
 from enum import Enum
 from typing import List, Dict, Tuple, Set, Union
 import uuid
+import math
 class MSVMode(Enum):
   prophet = 1
   guided = 2
@@ -88,6 +89,8 @@ class PT(Enum):
   b_dec=14 # decrease of beta distribution
   a_init=15 # init value of a in beta dist
   b_init=16 # init value of b in beta dist
+  freq=17   # frequency of basic patches in subtree
+  bp_freq=18 # frequency of basic patches in patches searched in subtree
 
 class SeAPRMode(Enum):
   FILE=0,
@@ -175,6 +178,19 @@ class PassFail:
       if rand <= 0:
         return i
     return 0
+  @staticmethod
+  def concave_up_exp(x: float, base: float = math.e) -> float:
+    return (np.power(base, x) - 1) / (base - 1)
+  @staticmethod
+  def concave_up(x: float, base: float = math.e) -> float:
+    # unique function
+    # return np.exp(1 - (1 / (x + 0.000001)))
+    # return x * x
+    return np.power(base, x-1)
+  @staticmethod
+  def concave_down(x: float, base: float = math.e) -> float:
+    # return 2 * x - PassFail.concave_up(x)
+    return np.power(base, x-1)
 
 
 class FileInfo:

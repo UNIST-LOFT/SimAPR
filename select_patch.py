@@ -8,6 +8,12 @@ def epsilon_greedy(total:int,x:int):
   """
   return 1 / (1 + np.e ** (-1 / (total / 10) * (x - total / 3)))
 
+def weighted_mean(a:float, b:float, weight_a:float=1, weight_b:float=1):
+  """
+    Compute weighted mean, for guided decision
+  """
+  return (a * weight_a + b * weight_b) / (weight_a + weight_b)
+
 def select_by_probability_hierarchical(state: MSVState, n: int, p1: List[float], p2: List[float] = [], p3: List[float] = []) -> int:
   if len(p1) == 0:
     state.msv_logger.critical("Empty probability list!!!!")
@@ -57,7 +63,13 @@ def select_by_probability(state: MSVState, p_map: Dict[PT, List[float]], c_map: 
       p = PassFail.select_value_normal(p, sigma)
     prob = PassFail.softmax(p)
     for i in range(num):
-      result[i] += c * prob[i]
+      if c == PT.basic or c == PT.plau:
+        unique = PassFail.concave_up(p_map[PT.freq][i])
+        bp_freq = PassFail.concave_down(p_map[PT.bp_freq][i])
+        if weighted_mean(unique, bp_freq) > np.random.random():
+          result[i] += c * prob[i]
+      else:
+        result[i] += c * prob[i]
   return PassFail.argmax(result)
 
 def __select_prophet_condition(selected_case:CaseInfo,state:MSVState):
