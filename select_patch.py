@@ -63,12 +63,36 @@ def select_by_probability(state: MSVState, p_map: Dict[PT, List[float]], c_map: 
       p = PassFail.select_value_normal(p, sigma)
     prob = PassFail.softmax(p)
     for i in range(num):
-      if c == PT.basic or c == PT.plau:
+      if key == PT.basic or key == PT.plau:
         unique = PassFail.concave_up(p_map[PT.freq][i])
         bp_freq = PassFail.concave_down(p_map[PT.bp_freq][i])
         if weighted_mean(unique, bp_freq) > np.random.random():
           result[i] += c * prob[i]
       else:
+        result[i] += c * prob[i]
+  return PassFail.argmax(result)
+
+def select_by_probability_original(state: MSVState, p_map: Dict[PT, List[float]], c_map: Dict[PT, float], normalize: Set[PT] = {}) -> int:
+  if len(p_map) == 0:
+    state.msv_logger.critical("Empty p_map!!!!")
+    return -1
+  num = len(p_map[PT.selected])
+  if num == 0:
+    state.msv_logger.critical("Empty selected list!!!!")
+    return -1
+  result = [0 for i in range(num)]
+  for key in c_map:
+    c = c_map[key]
+    p = p_map[key]
+    if len(p) == 0:
+      state.msv_logger.warning(f"Empty p {key}!!!!")
+      continue
+    if key in normalize:
+      p = PassFail.normalize(p)
+      sigma = state.params[PT.sigma]  # default: 0.1
+      p = PassFail.select_value_normal(p, sigma)
+    prob = PassFail.softmax(p)
+    for i in range(num):
         result[i] += c * prob[i]
   return PassFail.argmax(result)
 

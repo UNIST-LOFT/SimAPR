@@ -190,7 +190,9 @@ class PassFail:
   @staticmethod
   def concave_down(x: float, base: float = math.e) -> float:
     # return 2 * x - PassFail.concave_up(x)
-    return np.power(base, x-1)
+    # return np.power(base, x-1)
+    atzero = PassFail.concave_up(0, base)
+    return 2 * ((1 - atzero) * x + atzero) - PassFail.concave_down(x, base)
 
 
 class FileInfo:
