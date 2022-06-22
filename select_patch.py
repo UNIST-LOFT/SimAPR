@@ -80,6 +80,29 @@ def select_by_probability(state: MSVState, p_map: Dict[PT, List[float]], c_map: 
       result[i] += c * prob[i]
   return PassFail.argmax(result)
 
+def select_by_probability_2(state: MSVState, p_map: Dict[PT, List[float]], c_map: Dict[PT, float], normalize: Set[PT] = {}) -> int:
+  if len(p_map) == 0:
+    state.msv_logger.critical("Empty p_map!!!!")
+    return -1
+  num = len(p_map[PT.selected])
+  if num == 0:
+    state.msv_logger.critical("Empty selected list!!!!")
+    return -1
+  result = [0 for i in range(num)]
+  for i,map in enumerate(result):
+    unique=unique_function(p_map[PT.frequency][i])
+    bp_freq=basic_patch_frequency_function(p_map[PT.bp_frequency][i])
+    mean=weighted_mean(unique,bp_freq)
+    use_basic=np.random.random()<mean
+    use_plausible=np.random.random()<mean
+    
+    result[i]+=p_map[PT.fl][i]
+    if use_basic:
+      result[i]+=p_map[PT.basic][i]
+    if use_plausible:
+      result[i]+=p_map[PT.plau][i]
+  return PassFail.argmax(result)
+
 def __select_prophet_condition(selected_case:CaseInfo,state:MSVState):
   selected_operator=selected_case.operator_info_list[0]
   if selected_operator.operator_type==OperatorType.ALL_1:
