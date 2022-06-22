@@ -8,25 +8,11 @@ def epsilon_greedy(total:int,x:int):
   """
   return 1 / (1 + np.e ** (-1 / (total / 10) * (x - total / 3)))
 
-def weighted_mean(a:float,b:float,weight_a:float=0.5,weight_b:float=0.5):
+def weighted_mean(a:float, b:float, weight_a:float=1., weight_b:float=1.):
   """
     Compute weighted mean, for guided decision
   """
-  return weight_a*a+weight_b*b
-
-def unique_function(frequency:float):
-  """
-    Dummy function for unique(frequency)
-    TODO: Replace to real implementation
-  """
-  return 2**(frequency-1)
-
-def basic_patch_frequency_function(frequency:float):
-  """
-    Dummpy function for BPFreq(frequency)
-    TODO: Replqce to real implementation
-  """
-  return np.log2(frequency)
+  return (a * weight_a + b * weight_b) / (weight_a + weight_b)
 
 def select_by_probability_hierarchical(state: MSVState, n: int, p1: List[float], p2: List[float] = [], p3: List[float] = []) -> int:
   if len(p1) == 0:
@@ -77,10 +63,16 @@ def select_by_probability(state: MSVState, p_map: Dict[PT, List[float]], c_map: 
       p = PassFail.select_value_normal(p, sigma)
     prob = PassFail.softmax(p)
     for i in range(num):
-      result[i] += c * prob[i]
+      if key == PT.basic or key == PT.plau:
+        unique = PassFail.concave_up(p_map[PT.freq][i])
+        bp_freq = PassFail.concave_down(p_map[PT.bp_freq][i])
+        if weighted_mean(unique, bp_freq) > np.random.random():
+          result[i] += c * prob[i]
+      else:
+        result[i] += c * prob[i]
   return PassFail.argmax(result)
 
-def select_by_probability_2(state: MSVState, p_map: Dict[PT, List[float]], c_map: Dict[PT, float], normalize: Set[PT] = {}) -> int:
+def select_by_probability_original(state: MSVState, p_map: Dict[PT, List[float]], c_map: Dict[PT, float], normalize: Set[PT] = {}) -> int:
   if len(p_map) == 0:
     state.msv_logger.critical("Empty p_map!!!!")
     return -1
@@ -89,20 +81,19 @@ def select_by_probability_2(state: MSVState, p_map: Dict[PT, List[float]], c_map
     state.msv_logger.critical("Empty selected list!!!!")
     return -1
   result = [0 for i in range(num)]
-  fl_scores=PassFail.normalize(p_map[PT.fl])
-  for i,map in enumerate(result):
-    unique=unique_function(p_map[PT.frequency][i])
-    bp_freq=basic_patch_frequency_function(p_map[PT.bp_frequency][i])
-    mean=weighted_mean(unique,bp_freq)
-    use_basic=np.random.random()<mean
-    use_plausible=np.random.random()<mean
-    
-    fl_score=PassFail.select_value_normal(fl_scores,state.params[PT.sigma])
-    result[i]+=p_map[PT.fl][i]
-    if use_basic:
-      result[i]+=p_map[PT.basic][i]
-    if use_plausible:
-      result[i]+=p_map[PT.plau][i]
+  for key in c_map:
+    c = c_map[key]
+    p = p_map[key]
+    if len(p) == 0:
+      state.msv_logger.warning(f"Empty p {key}!!!!")
+      continue
+    if key in normalize:
+      p = PassFail.normalize(p)
+      sigma = state.params[PT.sigma]  # default: 0.1
+      p = PassFail.select_value_normal(p, sigma)
+    prob = PassFail.softmax(p)
+    for i in range(num):
+        result[i] += c * prob[i]
   return PassFail.argmax(result)
 
 def __select_prophet_condition(selected_case:CaseInfo,state:MSVState):

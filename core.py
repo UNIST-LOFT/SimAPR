@@ -12,6 +12,7 @@ import numpy as np
 from enum import Enum
 from typing import List, Dict, Tuple, Set, Union
 import uuid
+import math
 class MSVMode(Enum):
   prophet = 1
   guided = 2
@@ -177,6 +178,21 @@ class PassFail:
       if rand <= 0:
         return i
     return 0
+  @staticmethod
+  def concave_up_exp(x: float, base: float = math.e) -> float:
+    return (np.power(base, x) - 1) / (base - 1)
+  @staticmethod
+  def concave_up(x: float, base: float = math.e) -> float:
+    # unique function
+    # return np.exp(1 - (1 / (x + 0.000001)))
+    # return x * x
+    return np.power(base, x-1)
+  @staticmethod
+  def concave_down(x: float, base: float = math.e) -> float:
+    # return 2 * x - PassFail.concave_up(x)
+    # return np.power(base, x-1)
+    atzero = PassFail.concave_up(0, base)
+    return 2 * ((1 - atzero) * x + atzero) - PassFail.concave_down(x, base)
 
 
 class FileInfo:
