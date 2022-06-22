@@ -8,11 +8,18 @@ def epsilon_greedy(total:int,x:int):
   """
   return 1 / (1 + np.e ** (-1 / (total / 10) * (x - total / 3)))
 
-def weighted_mean(a:float,b:float,weight_a:float=0.9,weight_b:float=0.1):
+def weighted_mean(a:float,b:float,weight_a:float=0.5,weight_b:float=0.5):
   """
     Compute weighted mean, for guided decision
   """
   return weight_a*a+weight_b*b
+
+def unique_function(frequency:float):
+  """
+    Dummy function for unique(frequency)
+    TODO: Replace to real implementation
+  """
+  return 2**(frequency-1)
 
 def select_by_probability_hierarchical(state: MSVState, n: int, p1: List[float], p2: List[float] = [], p3: List[float] = []) -> int:
   if len(p1) == 0:
@@ -339,7 +346,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       p_b.append(func_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       p_p.append(func_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       p_o.append(func_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      p_frequency.append(func_info.children_basic_patches/selected_file_info.children_basic_patches if selected_file_info.children_basic_patches > 0 else 0)
+      p_frequency.append(func_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
       if explore and not is_rand:
         min_coverage=1.0
         for line in func_info.line_info_map.values():
@@ -369,7 +376,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       p_b.append(line_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       p_p.append(line_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       p_o.append(line_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      p_frequency.append(line_info.children_basic_patches/selected_func_info.children_basic_patches if selected_func_info.children_basic_patches > 0 else 0)
+      p_frequency.append(line_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
       if explore:
         min_coverage=1.0
         for switch in line_info.switch_info_map.values():
@@ -399,7 +406,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       p_b.append(switch_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       p_p.append(switch_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       p_o.append(switch_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      p_frequency.append(switch_info.children_basic_patches/selected_line_info.children_basic_patches if selected_line_info.children_basic_patches > 0 else 0)
+      p_frequency.append(switch_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
       if explore:
         temp_p1 = switch_info.pf.expect_probability()
         min_coverage=1.0
@@ -428,7 +435,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       p_b.append(type_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       p_p.append(type_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       p_o.append(type_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      p_frequency.append(type_info.children_basic_patches/selected_switch_info.children_basic_patches if selected_switch_info.children_basic_patches > 0 else 0)
+      p_frequency.append(type_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
       if explore and not is_rand:
         coverage = type_info.case_update_count / type_info.total_case_info
         p_cov.append(1 - coverage)
@@ -888,7 +895,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
     p_b.append(func_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_p.append(func_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_o.append(func_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_frequency.append(func_info.children_basic_patches/selected_file_info.children_basic_patches if selected_file_info.children_basic_patches > 0 else 0)
+    p_frequency.append(func_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
     if explore:
       min_coverage=1.0
       for line in func_info.line_info_map.values():
@@ -915,7 +922,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
     p_b.append(line_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_p.append(line_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_o.append(line_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_frequency.append(line_info.children_basic_patches/selected_func_info.children_basic_patches if selected_func_info.children_basic_patches > 0 else 0)
+    p_frequency.append(line_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
     if explore:
       min_coverage=1.0
       for switch in line_info.switch_info_map.values():
@@ -961,7 +968,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
       p_b.append(tbar_type_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       p_p.append(tbar_type_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       p_o.append(tbar_type_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      p_frequency.append(tbar_type_info.children_basic_patches/selected_line_info.children_basic_patches if selected_line_info.children_basic_patches > 0 else 0)
+      p_frequency.append(tbar_type_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
       if explore:
         p_cov.append(1 - (tbar_type_info.case_update_count/tbar_type_info.total_case_info))
     selected_type = select_by_probability(state, p_map, c_map, normalize)
