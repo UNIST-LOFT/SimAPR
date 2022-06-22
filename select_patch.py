@@ -73,7 +73,7 @@ def select_by_probability(state: MSVState, p_map: Dict[PT, List[float]], c_map: 
       continue
     if key in normalize:
       p = PassFail.normalize(p)
-      sigma = state.params[PT.sigma]  # default: 0.1
+      sigma = state.params[PT.sigma]  # default: 0.0
       p = PassFail.select_value_normal(p, sigma)
     prob = PassFail.softmax(p)
     for i in range(num):
@@ -89,6 +89,7 @@ def select_by_probability_2(state: MSVState, p_map: Dict[PT, List[float]], c_map
     state.msv_logger.critical("Empty selected list!!!!")
     return -1
   result = [0 for i in range(num)]
+  fl_scores=PassFail.normalize(p_map[PT.fl])
   for i,map in enumerate(result):
     unique=unique_function(p_map[PT.frequency][i])
     bp_freq=basic_patch_frequency_function(p_map[PT.bp_frequency][i])
@@ -96,6 +97,7 @@ def select_by_probability_2(state: MSVState, p_map: Dict[PT, List[float]], c_map
     use_basic=np.random.random()<mean
     use_plausible=np.random.random()<mean
     
+    fl_score=PassFail.select_value_normal(fl_scores,state.params[PT.sigma])
     result[i]+=p_map[PT.fl][i]
     if use_basic:
       result[i]+=p_map[PT.basic][i]
