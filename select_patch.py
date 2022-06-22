@@ -64,8 +64,8 @@ def select_by_probability(state: MSVState, p_map: Dict[PT, List[float]], c_map: 
     prob = PassFail.softmax(p)
     for i in range(num):
       if key == PT.basic or key == PT.plau:
-        unique = PassFail.concave_up(p_map[PT.freq][i])
-        bp_freq = PassFail.concave_down(p_map[PT.bp_freq][i])
+        unique = PassFail.concave_up(p_map[PT.frequency][i])
+        bp_freq = PassFail.concave_down(p_map[PT.bp_frequency][i])
         if weighted_mean(unique, bp_freq) > np.random.random():
           result[i] += c * prob[i]
       else:
