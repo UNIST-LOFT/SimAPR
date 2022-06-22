@@ -911,7 +911,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   norm=PassFail.normalize(p_fl)
   state.msv_logger.debug(f'Selected file: FL: {norm[selected_file]}/{p_fl[selected_file]}, Basic: {selected_file_info.pf.beta_mode(selected_file_info.pf.pass_count,selected_file_info.pf.fail_count)}, '+
                   f'Plausible: {selected_file_info.positive_pf.beta_mode(selected_file_info.positive_pf.pass_count,selected_file_info.positive_pf.fail_count)}, '+
-                  f'Coverage: {p_cov[selected_file] if explore else 0}')
+                  f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_file])}/{p_frequency[selected_file]}, BPFreq: {PassFail.concave_down(p_bp_frequency[selected_file])}/{p_bp_frequency[selected_file]}')
   clear_list(state, p_map)
 
   # Select function
@@ -939,7 +939,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   norm=PassFail.normalize(p_fl)
   state.msv_logger.debug(f'Selected function: FL: {norm[selected_func]}/{p_fl[selected_func]}, Basic: {selected_func_info.pf.beta_mode(selected_func_info.pf.pass_count,selected_func_info.pf.fail_count)}, '+
                   f'Plausible: {selected_func_info.positive_pf.beta_mode(selected_func_info.positive_pf.pass_count,selected_func_info.positive_pf.fail_count)}, '+
-                  f'Coverage: {p_cov[selected_func] if explore else 0}')
+                  f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_func])}/{p_frequency[selected_func]}, BPFreq: {PassFail.concave_down(p_bp_frequency[selected_func])}/{p_bp_frequency[selected_func]}')
   clear_list(state, p_map)
 
   # Select line
@@ -967,7 +967,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   norm=PassFail.normalize(p_fl)
   state.msv_logger.debug(f'Selected line: FL: {norm[selected_line]}/{p_fl[selected_line]}, Basic: {selected_line_info.pf.beta_mode(selected_line_info.pf.pass_count,selected_line_info.pf.fail_count)}, '+
                   f'Plausible: {selected_line_info.positive_pf.beta_mode(selected_line_info.positive_pf.pass_count,selected_line_info.positive_pf.fail_count)}, '+
-                  f'Coverage: {p_cov[selected_line] if explore else 0}')
+                  f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_line])}/{p_frequency[selected_line]}, BPFreq: {PassFail.concave_down(p_bp_frequency[selected_line])}/{p_bp_frequency[selected_line]}')
   clear_list(state, p_map)
   del c_map[PT.fl] # No fl below line
 
@@ -1009,7 +1009,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
     selected_type_info: TbarTypeInfo = selected[selected_type]
     state.msv_logger.debug(f'Selected type: Basic: {selected_type_info.pf.beta_mode(selected_type_info.pf.pass_count,selected_type_info.pf.fail_count)}, '+
                     f'Plausible: {selected_type_info.positive_pf.beta_mode(selected_type_info.positive_pf.pass_count,selected_type_info.positive_pf.fail_count)}, '+
-                    f'Coverage: {p_cov[selected_type] if explore else 0}')
+                    f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_type])}/{p_frequency[selected_type]}, BPFreq: {PassFail.concave_down(p_bp_frequency[selected_type])}/{p_bp_frequency[selected_type]}')
     clear_list(state, p_map)
     # select tbar switch
     rank: int = -1
