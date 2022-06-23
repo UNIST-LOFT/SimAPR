@@ -185,8 +185,9 @@ class PassFail:
   def concave_up(x: float, base: float = math.e) -> float:
     # unique function
     # return np.exp(1 - (1 / (x + 0.000001)))
-    # return x * x
-    return np.power(base, x-1)
+    return x * x
+    # return np.power(base, x-1)
+    # return PassFail.concave_up_exp(x, base)
   @staticmethod
   def concave_down(x: float, base: float = math.e) -> float:
     # return 2 * x - PassFail.concave_up(x)
