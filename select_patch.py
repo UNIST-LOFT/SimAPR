@@ -942,54 +942,56 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
                   f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_func])}/{p_frequency[selected_func]}, BPFreq: {PassFail.concave_down(p_bp_frequency[selected_func])}/{p_bp_frequency[selected_func]}')
   clear_list(state, p_map)
 
-  # Select line
-  for line_uuid in selected_func_info.line_info_map:
-    line_info = selected_func_info.line_info_map[line_uuid]
-    if len(line_info.tbar_type_info_map) == 0:
-      state.msv_logger.warning(f"No switch info in line: {selected_file_info.file_name}: {line_info.line_number}")
-      continue
-    selected.append(line_info)
-    p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_fl.append(line_info.fl_score)
-    p_b.append(line_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_p.append(line_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_o.append(line_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_frequency.append(line_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
-    p_bp_frequency.append(line_info.children_basic_patches/line_info.case_update_count if line_info.case_update_count > 0 else 0)
-    if explore:
-      min_coverage=1.0
-      for switch in line_info.switch_info_map.values():
-        if min_coverage>switch.case_update_count/switch.total_case_info:
-          min_coverage=switch.case_update_count/switch.total_case_info
-      p_cov.append(1 - min_coverage)
-  selected_line = select_by_probability(state, p_map, c_map, normalize)
-  selected_line_info: LineInfo = selected[selected_line]
-  norm=PassFail.normalize(p_fl)
-  state.msv_logger.debug(f'Selected line: FL: {norm[selected_line]}/{p_fl[selected_line]}, Basic: {selected_line_info.pf.beta_mode(selected_line_info.pf.pass_count,selected_line_info.pf.fail_count)}, '+
-                  f'Plausible: {selected_line_info.positive_pf.beta_mode(selected_line_info.positive_pf.pass_count,selected_line_info.positive_pf.fail_count)}, '+
-                  f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_line])}/{p_frequency[selected_line]}, BPFreq: {PassFail.concave_down(p_bp_frequency[selected_line])}/{p_bp_frequency[selected_line]}')
-  clear_list(state, p_map)
-  del c_map[PT.fl] # No fl below line
-
-  # Select type
   # Use random search for epsilon greedy method
   remain_patches=0
-  for tbar_type in selected_line_info.tbar_type_info_map:
-    remain_patches+=len(selected_line_info.tbar_type_info_map[tbar_type].tbar_case_info_map)
-  epsilon=epsilon_greedy(selected_line_info.total_case_info,selected_line_info.total_case_info-remain_patches)
+  for line in selected_func_info.line_info_map:
+    for tbar_type in selected_func_info.line_info_map[line].tbar_type_info_map:
+      remain_patches+=len(selected_func_info.line_info_map[line].tbar_type_info_map[tbar_type].tbar_case_info_map)
+  epsilon=epsilon_greedy(selected_func_info.total_case_info,selected_func_info.total_case_info-remain_patches)
   is_epsilon_greedy=np.random.random()<epsilon and state.use_epsilon
 
   if not is_epsilon_greedy:
     state.msv_logger.debug(f'Use original selection, epsilon: {epsilon}')
     for tbar_case_id in state.patch_ranking:
-      for tbar_type in selected_line_info.tbar_type_info_map:
-        for tbar_case in selected_line_info.tbar_type_info_map[tbar_type].tbar_case_info_map:
-          if tbar_case_id==tbar_case:
-            result=TbarPatchInfo(selected_line_info.tbar_type_info_map[tbar_type].tbar_case_info_map[tbar_case_id])
-            return result
+      for line in selected_func_info.line_info_map:
+        for tbar_type in selected_func_info.line_info_map[line].tbar_type_info_map:
+          for tbar_case in selected_func_info.line_info_map[line].tbar_type_info_map[tbar_type].tbar_case_info_map:
+            if tbar_case_id==tbar_case:
+              result=TbarPatchInfo(selected_line_info.tbar_type_info_map[tbar_type].tbar_case_info_map[tbar_case_id])
+              return result
     assert False and "No patch found in original algorithm!"
-  
+
   else:
+    # Select line
+    for line_uuid in selected_func_info.line_info_map:
+      line_info = selected_func_info.line_info_map[line_uuid]
+      if len(line_info.tbar_type_info_map) == 0:
+        state.msv_logger.warning(f"No switch info in line: {selected_file_info.file_name}: {line_info.line_number}")
+        continue
+      selected.append(line_info)
+      p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      p_fl.append(line_info.fl_score)
+      p_b.append(line_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      p_p.append(line_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      p_o.append(line_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      p_frequency.append(line_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
+      p_bp_frequency.append(line_info.children_basic_patches/line_info.case_update_count if line_info.case_update_count > 0 else 0)
+      if explore:
+        min_coverage=1.0
+        for switch in line_info.switch_info_map.values():
+          if min_coverage>switch.case_update_count/switch.total_case_info:
+            min_coverage=switch.case_update_count/switch.total_case_info
+        p_cov.append(1 - min_coverage)
+    selected_line = select_by_probability(state, p_map, c_map, normalize)
+    selected_line_info: LineInfo = selected[selected_line]
+    norm=PassFail.normalize(p_fl)
+    state.msv_logger.debug(f'Selected line: FL: {norm[selected_line]}/{p_fl[selected_line]}, Basic: {selected_line_info.pf.beta_mode(selected_line_info.pf.pass_count,selected_line_info.pf.fail_count)}, '+
+                    f'Plausible: {selected_line_info.positive_pf.beta_mode(selected_line_info.positive_pf.pass_count,selected_line_info.positive_pf.fail_count)}, '+
+                    f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_line])}/{p_frequency[selected_line]}, BPFreq: {PassFail.concave_down(p_bp_frequency[selected_line])}/{p_bp_frequency[selected_line]}')
+    clear_list(state, p_map)
+    del c_map[PT.fl] # No fl below line
+
+  # Select type
     state.msv_logger.debug(f'Use guided search, epsilon: {epsilon}')
     for tbar_type in selected_line_info.tbar_type_info_map:
       tbar_type_info = selected_line_info.tbar_type_info_map[tbar_type]
