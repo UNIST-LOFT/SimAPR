@@ -494,6 +494,8 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       p_b.append(case_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       p_p.append(case_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
       p_o.append(case_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+      p_frequency.append(0)
+      p_bp_frequency.append(0)
       if use_language_model:
         p_fl.append(1.0 - case_info.func_distance)
 
