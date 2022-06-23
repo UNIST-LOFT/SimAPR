@@ -957,7 +957,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
         for tbar_type in selected_func_info.line_info_map[line].tbar_type_info_map:
           for tbar_case in selected_func_info.line_info_map[line].tbar_type_info_map[tbar_type].tbar_case_info_map:
             if tbar_case_id==tbar_case:
-              result=TbarPatchInfo(selected_line_info.tbar_type_info_map[tbar_type].tbar_case_info_map[tbar_case_id])
+              result=TbarPatchInfo(selected_func_info.line_info_map[line].tbar_type_info_map[tbar_type].tbar_case_info_map[tbar_case_id])
               return result
     assert False and "No patch found in original algorithm!"
 
