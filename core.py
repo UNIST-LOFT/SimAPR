@@ -154,7 +154,13 @@ class PassFail:
     return f_x.tolist()
   @staticmethod
   def argmax(x: List[float]) -> int:
-    return np.argmax(x)
+    m = max(x)
+    tmp = list()
+    for i in range(len(x)):
+      if x[i] == m:
+        tmp.append(i)
+    return np.random.choice(tmp)
+    # return np.argmax(x)
   @staticmethod
   def select_value_normal(x: List[float], sigma: float) -> List[float]:
     for i in range(len(x)):
