@@ -945,11 +945,11 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   clear_list(state, p_map)
 
   # Use random search for epsilon greedy method
-  remain_patches=0
-  for line in selected_func_info.line_info_map:
-    for tbar_type in selected_func_info.line_info_map[line].tbar_type_info_map:
-      remain_patches+=len(selected_func_info.line_info_map[line].tbar_type_info_map[tbar_type].tbar_case_info_map)
-  epsilon=epsilon_greedy(selected_func_info.total_case_info,selected_func_info.total_case_info-remain_patches)
+  max_score=0.0
+  for score in selected_func_info.total_patches_by_score:
+    if score>max_score and selected_func_info.total_patches_by_score[score]!=selected_func_info.searched_patches_by_score[score]:
+      max_score=score
+  epsilon=epsilon_greedy(selected_func_info.total_patches_by_score[max_score],selected_func_info.searched_patches_by_score[max_score])
   is_epsilon_greedy=np.random.random()<epsilon and state.use_epsilon
 
   if not is_epsilon_greedy:

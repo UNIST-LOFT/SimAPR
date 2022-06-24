@@ -253,6 +253,9 @@ class FuncInfo:
     self.score_list: List[float] = list()
     self.func_rank: int = -1
     self.children_basic_patches:int=0
+
+    self.total_patches_by_score:Dict[float,int]=dict() # Total patches grouped by score
+    self.searched_patches_by_score:Dict[float,int]=dict() # Total searched patches grouped by score
   def __hash__(self) -> int:
     return hash(self.id)
   def __eq__(self, other) -> bool:
@@ -1304,6 +1307,8 @@ class TbarPatchInfo:
     self.line_info.case_update_count += 1
     self.func_info.case_update_count += 1
     self.file_info.case_update_count += 1
+    self.func_info.searched_patches_by_score[self.line_info.fl_score]+=1
+
   def to_json_object(self) -> dict:
     conf = dict()
     conf["location"] = self.tbar_case_info.location

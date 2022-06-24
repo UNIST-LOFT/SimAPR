@@ -452,6 +452,10 @@ def read_info_tbar(state: MSVState) -> None:
           line_info.total_case_info += 1
           func_info.total_case_info += 1
           file_info.total_case_info += 1
+          if line_info.fl_score not in func_info.total_patches_by_score:
+            func_info.total_patches_by_score[line_info.fl_score]=0
+            func_info.searched_patches_by_score[line_info.fl_score]=0
+          func_info.total_patches_by_score[line_info.fl_score]+=1
         if len(line_info.tbar_type_info_map)==0:
           del func_info.line_info_map[line_info.uuid]
       for func in file_info.func_info_map.copy().values():
