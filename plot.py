@@ -1246,7 +1246,7 @@ def tbar_batch_plot(correct_patch_csv: str, in_dir: str,mode:str='TBar') -> None
       switch_info, switch_case_map,fl_list = info[workdir]
       iter, tm = tbar_plot_correct(result_file, dir, workdir, cp, switch_info, switch_case_map,fl_list)
       csv += f"{proj},{cp},{iter},{tm}\n"
-      tbar_barchart(result_file, dir, workdir, cp, switch_info, switch_case_map)
+      # tbar_barchart(result_file, dir, workdir, cp, switch_info, switch_case_map)
   print(csv)
   with open("result.csv", "w") as f:
     f.write(csv)  
