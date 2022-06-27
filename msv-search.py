@@ -750,11 +750,11 @@ def read_info(state: MSVState) -> None:
                       sw_cs_key = f'{switch_info.switch_number}-{case_info.case_number}'
                       state.switch_case_map[sw_cs_key] = case_info
                       file_line.case_map[sw_cs_key] = case_info
+                      
+                      case_info.prophet_score.append(current_score)
                       if case_info.prophet_score[0] not in state.c_patch_ranking:
                         state.c_patch_ranking[case_info.prophet_score[0]]=[]
                       state.c_patch_ranking[case_info.prophet_score[0]].append(case_info)
-                      
-                      case_info.prophet_score.append(current_score)
                       type_info.prophet_score.append(current_score)
                       switch_info.prophet_score.append(current_score)
                       line_info.prophet_score.append(current_score)

@@ -441,7 +441,7 @@ class SwitchInfo:
   def __hash__(self) -> int:
     return hash(self.switch_number)
   def __eq__(self, other) -> bool:
-    return self.switch_number == other.switch_number and self.parent==other.parent
+    return self.switch_number == other.switch_number
 
 class TypeInfo:
   def __init__(self, parent: SwitchInfo, patch_type: PatchType) -> None:

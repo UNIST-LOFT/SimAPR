@@ -62,7 +62,7 @@ def select_by_probability(state: MSVState, p_map: Dict[PT, List[float]], c_map: 
       sigma = state.params[PT.sigma]  # default: 0.0
       p = PassFail.select_value_normal(p, sigma)
     # prob = PassFail.softmax(p)
-    prob=0. # Not use FL for guided search
+    prob=[0 for _ in range(num)] # Not use FL for guided search
     for i in range(num):
       if key == PT.basic or key == PT.plau:
         unique = PassFail.concave_up(p_map[PT.frequency][i])
@@ -113,10 +113,27 @@ def epsilon_search(state:MSVState,source=None):
     sorted_scores=sorted(state.java_patch_ranking.keys(),reverse=True)
     for e in sorted_scores:
       for case in state.java_patch_ranking[e]:
-        top_all_patches.append(state.switch_case_map[case])
-        if state.switch_case_map[case] in state.switch_case_map[case].parent.tbar_case_info_map.values():
-          # Not searched yet
-          top_fl_patches.append(state.switch_case_map[case])
+        source_has=False
+        if source is None:
+          source_has=True
+        elif type(source)==FileInfo:
+          if state.switch_case_map[case].parent.parent.parent.parent==source:
+            source_has=True
+        elif type(source)==FuncInfo:
+          if state.switch_case_map[case].parent.parent.parent==source:
+            source_has=True
+        elif type(source)==LineInfo:
+          if state.switch_case_map[case].parent.parent==source:
+            source_has=True
+        elif type(source)==TbarTypeInfo:
+          if state.switch_case_map[case].parent==source:
+            source_has=True
+
+        if source_has:
+          top_all_patches.append(state.switch_case_map[case])
+          if state.switch_case_map[case] in state.switch_case_map[case].parent.tbar_case_info_map.values():
+            # Not searched yet
+            top_fl_patches.append(state.switch_case_map[case])
       
       if len(top_fl_patches)>0:
         break
@@ -126,11 +143,31 @@ def epsilon_search(state:MSVState,source=None):
   else:
     sorted_scores=sorted(state.c_patch_ranking.keys(),reverse=True)
     for e in sorted_scores:
-      for case in state.c_patch_ranking[sorted_scores]:
-        top_all_patches.append(case)
-        if case in case.parent.case_info_map.values():
-          # Not searched yet
-          top_fl_patches.append(case)
+      for case in state.c_patch_ranking[e]:
+        source_has=False
+        if source is None:
+          source_has=True
+        elif type(source)==FileInfo:
+          if case.parent.parent.parent.parent.parent==source:
+            source_has=True
+        elif type(source)==FuncInfo:
+          if case.parent.parent.parent.parent==source:
+            source_has=True
+        elif type(source)==LineInfo:
+          if case.parent.parent.parent==source:
+            source_has=True
+        elif type(source)==SwitchInfo:
+          if case.parent.parent==source:
+            source_has=True
+        elif type(source)==TypeInfo:
+          if case.parent==source:
+            source_has=True
+        
+        if source_has:
+          top_all_patches.append(case)
+          if case in case.parent.case_info_map.values():
+            # Not searched yet
+            top_fl_patches.append(case)
       
       if len(top_fl_patches)>0:
         break
