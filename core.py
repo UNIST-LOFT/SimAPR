@@ -200,6 +200,11 @@ class PassFail:
     # return np.power(base, x-1)
     atzero = PassFail.concave_up(0, base)
     return 2 * ((1 - atzero) * x + atzero) - PassFail.concave_up(x, base)
+  @staticmethod
+  # fail function
+  def log_func(x: float, half: float = 50) -> float:
+    a = half + np.pow(half, 0.5)
+    return max(np.log(a - x) / np.log(a), 0.0)
 
 
 class FileInfo:
