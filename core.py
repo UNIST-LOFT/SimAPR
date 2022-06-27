@@ -224,6 +224,7 @@ class FileInfo:
     self.score_list: List[float] = list()
     self.class_name: str = ""
     self.children_basic_patches:int=0
+    self.children_plausible_patches:int=0
   def __hash__(self) -> int:
     return hash(self.file_name)
   def __eq__(self, other) -> bool:
@@ -253,6 +254,7 @@ class FuncInfo:
     self.score_list: List[float] = list()
     self.func_rank: int = -1
     self.children_basic_patches:int=0
+    self.children_plausible_patches:int=0
 
     self.total_patches_by_score:Dict[float,int]=dict() # Total patches grouped by score
     self.searched_patches_by_score:Dict[float,int]=dict() # Total searched patches grouped by score
@@ -288,6 +290,7 @@ class LineInfo:
     self.recoder_case_info_map: Dict[int, RecoderCaseInfo] = dict()
     self.score_list: List[float] = list()
     self.children_basic_patches:int=0
+    self.children_plausible_patches:int=0
   def __hash__(self) -> int:
     return hash(self.uuid)
   def __eq__(self, other) -> bool:
@@ -307,6 +310,7 @@ class TbarTypeInfo:
     self.out_dist_map: Dict[int, float] = dict()
     self.tbar_case_info_map: Dict[str, TbarCaseInfo] = dict()
     self.children_basic_patches:int=0
+    self.children_plausible_patches:int=0
   def __hash__(self) -> int:
     return hash(self.mutation)
   def __eq__(self, other) -> bool:

@@ -61,13 +61,17 @@ def select_by_probability(state: MSVState, p_map: Dict[PT, List[float]], c_map: 
       p = PassFail.normalize(p)
       sigma = state.params[PT.sigma]  # default: 0.0
       p = PassFail.select_value_normal(p, sigma)
-    prob = PassFail.softmax(p)
+    # prob = PassFail.softmax(p)
+    prob=0. # Not use FL for guided search
     for i in range(num):
       if key == PT.basic or key == PT.plau:
         unique = PassFail.concave_up(p_map[PT.frequency][i])
         bp_freq = PassFail.concave_down(p_map[PT.bp_frequency][i])
         if weighted_mean(unique, bp_freq) > np.random.random():
-          result[i] += c * prob[i]
+          if key==PT.plau:
+            result[i] += 2*c * prob[i]
+          else:
+            result[i] += c * prob[i]
       else:
         result[i] += c * prob[i]
   return PassFail.argmax(result)
@@ -842,6 +846,67 @@ def select_patch_tbar(state: MSVState) -> TbarPatchInfo:
   caseinfo = state.switch_case_map[loc]
   return TbarPatchInfo(caseinfo)
 
+def select_patch_tbar_guide_algorithm(state: MSVState,elements:dict,parent=None):
+  element_type=type(elements[0])
+  selected=[]
+  p_p=[]
+  p_b=[]
+  if element_type==FileInfo:
+    total_basic_patch=state.total_basic_patch
+    total_plausible_patch=state.total_plausible_patch
+  else:
+    total_basic_patch=parent.children_basic_patch
+    total_plausible_patch=parent.children_plausible_patch
+  
+  if total_basic_patch>0:
+    is_decided=False
+    # Follow guided search if basic patch exist
+    if total_plausible_patch:
+      # Select with plausible patch
+      for element_name in elements:
+        info = elements[element_name]
+        selected.append(info)
+        p_p.append(info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+
+      max_score=0.
+      for i in range(len(selected)):
+        if p_p[i]>max_score:
+          max_score=p_p[i]
+          max_index=i
+      
+      if False: # TODO: Finish file selection with decide()
+        return selected[max_index]
+    
+    if not is_decided:
+      # Select with basic patch
+      for element_name in elements:
+        info = elements[element_name]
+        selected.append(info)
+        p_b.append(info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+
+      max_score=0.
+      for i in range(len(selected)):
+        if p_b[i]>max_score:
+          max_score=p_b[i]
+          max_index=i
+
+      if False: # TODO: Finish file selection with decide()
+        return selected[max_index]
+      
+      if not is_decided:
+        # Select original order
+        for patch in state.patch_ranking:
+          case_info=state.switch_case_map[patch]
+          if case_info in case_info.parent.case_info_map.values():
+            if element_type==FileInfo and case_info.parent.parent.parent.parent in elements:
+              return case_info.parent.parent.parent.parent
+            elif element_type==FuncInfo and case_info.parent.parent.parent in elements:
+              return case_info.parent.parent.parent
+            elif element_type==LineInfo and case_info.parent.parent in elements:
+              return case_info.parent.parent
+            elif element_type==TbarTypeInfo and case_info.parent in elements:
+              return case_info.parent
+
 def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   """
   Select a patch for Tbar.
@@ -965,160 +1030,112 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
       else:
         raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
 
-  # Check guided is exist
-  is_guide_exist=False
-  for file_name in state.file_info_map:
-    file_info = state.file_info_map[file_name]
-    if file_info.children_basic_patches>0:
-      is_guide_exist=True
-      break
+  # Select file
+  if state.total_basic_patch>0:
+    selected_file_info: FileInfo = select_patch_tbar_guide_algorithm(state,state.file_info_map,None)
+  else:
+    selected_file_info: FileInfo = epsilon_search(None)
 
   for file_name in state.file_info_map:
-    file_info = state.file_info_map[file_name]
-    if len(file_info.func_info_map) == 0:
-      state.msv_logger.warning(f"No line info in file: {file_info.file_name}")
-      continue
-    selected.append(file_info)
-    p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    file_info=state.file_info_map[file_name]
     p_fl.append(max(file_info.fl_score_list))
     p_b.append(file_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_p.append(file_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_o.append(file_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_frequency.append(file_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
     p_bp_frequency.append(file_info.children_basic_patches/file_info.case_update_count if file_info.case_update_count > 0 else 0)
-    if explore:
-      min_coverage=1.0
-      for func in file_info.func_info_map.values():
-        if min_coverage>func.case_update_count/func.total_case_info:
-          min_coverage=func.case_update_count/func.total_case_info
-      p_cov.append(1 - min_coverage)
-  selected_file = select_by_probability(state, p_map, c_map, normalize)
-  selected_file_info: FileInfo = selected[selected_file]
   norm=PassFail.normalize(p_fl)
+  selected_file=0
+  for i,file in enumerate(state.file_info_map):
+    if state.file_info_map[file]==selected_file_info:
+      selected_file=i
+      break
   state.msv_logger.debug(f'Selected file: FL: {norm[selected_file]}/{p_fl[selected_file]}, Basic: {selected_file_info.pf.beta_mode(selected_file_info.pf.pass_count,selected_file_info.pf.fail_count)}, '+
                   f'Plausible: {selected_file_info.positive_pf.beta_mode(selected_file_info.positive_pf.pass_count,selected_file_info.positive_pf.fail_count)}, '+
                   f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_file])}/{p_frequency[selected_file]}, BPFreq: {PassFail.concave_down(p_bp_frequency[selected_file])}/{p_bp_frequency[selected_file]}')
   clear_list(state, p_map)
 
   # Select function
-  for func_id in selected_file_info.func_info_map:
-    func_info = selected_file_info.func_info_map[func_id]
-    if len(func_info.line_info_map) == 0:
-      state.msv_logger.warning(f"No line info in function: {func_info.func_name}")
-      continue
-    selected.append(func_info)
-    p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+  if selected_file_info.children_basic_patches>0:
+    selected_func_info: FuncInfo = select_patch_tbar_guide_algorithm(state,selected_file_info.func_info_map,selected_file_info)
+  else:
+    selected_func_info: FuncInfo = epsilon_search(selected_file_info)
+
+  for func_name in selected_file_info.func_info_map:
+    func_info=selected_file_info.func_info_map[func_name]
     p_fl.append(max(func_info.fl_score_list))
     p_b.append(func_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_p.append(func_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_o.append(func_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_frequency.append(func_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
     p_bp_frequency.append(func_info.children_basic_patches/func_info.case_update_count if func_info.case_update_count > 0 else 0)
-    if explore:
-      min_coverage=1.0
-      for line in func_info.line_info_map.values():
-        if min_coverage>line.case_update_count/line.total_case_info:
-          min_coverage=line.case_update_count/line.total_case_info
-      p_cov.append(1 - min_coverage)
-  selected_func = select_by_probability(state, p_map, c_map, normalize)
-  selected_func_info: FuncInfo = selected[selected_func]
+  norm=PassFail.normalize(p_fl)
+  selected_func=0
+  for i,func in enumerate(selected_file_info.func_info_map):
+    if selected_file_info.func_info_map[func]==selected_func_info:
+      selected_func=i
+      break
   norm=PassFail.normalize(p_fl)
   state.msv_logger.debug(f'Selected function: FL: {norm[selected_func]}/{p_fl[selected_func]}, Basic: {selected_func_info.pf.beta_mode(selected_func_info.pf.pass_count,selected_func_info.pf.fail_count)}, '+
                   f'Plausible: {selected_func_info.positive_pf.beta_mode(selected_func_info.positive_pf.pass_count,selected_func_info.positive_pf.fail_count)}, '+
                   f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_func])}/{p_frequency[selected_func]}, BPFreq: {PassFail.concave_down(p_bp_frequency[selected_func])}/{p_bp_frequency[selected_func]}')
   clear_list(state, p_map)
 
-  # Use random search for epsilon greedy method
-  max_score=0.0
-  for score in selected_func_info.total_patches_by_score:
-    if score>max_score and selected_func_info.total_patches_by_score[score]!=selected_func_info.searched_patches_by_score[score]:
-      max_score=score
-  epsilon=epsilon_greedy(selected_func_info.total_patches_by_score[max_score],selected_func_info.searched_patches_by_score[max_score])
-  is_epsilon_greedy=np.random.random()<epsilon and state.use_epsilon
-
-  if not is_epsilon_greedy:
-    state.msv_logger.debug(f'Use original selection, epsilon: {epsilon}')
-    for tbar_case_id in state.patch_ranking:
-      original_case=state.switch_case_map[tbar_case_id]
-      if original_case.parent.parent.parent==selected_func_info:
-        return TbarPatchInfo(original_case)
-    raise ValueError(f'No patch found in originla algorithm!')
-
+  # Select line
+  if selected_func_info.children_basic_patches>0:
+    selected_line_info: LineInfo = select_patch_tbar_guide_algorithm(state,selected_func_info.line_info_map,selected_func_info)
   else:
-    # Select line
-    for line_uuid in selected_func_info.line_info_map:
-      line_info = selected_func_info.line_info_map[line_uuid]
-      if len(line_info.tbar_type_info_map) == 0:
-        state.msv_logger.warning(f"No switch info in line: {selected_file_info.file_name}: {line_info.line_number}")
-        continue
-      selected.append(line_info)
-      p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      p_fl.append(line_info.fl_score)
-      p_b.append(line_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      p_p.append(line_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      p_o.append(line_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      p_frequency.append(line_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
-      p_bp_frequency.append(line_info.children_basic_patches/line_info.case_update_count if line_info.case_update_count > 0 else 0)
-      if explore:
-        min_coverage=1.0
-        for switch in line_info.switch_info_map.values():
-          if min_coverage>switch.case_update_count/switch.total_case_info:
-            min_coverage=switch.case_update_count/switch.total_case_info
-        p_cov.append(1 - min_coverage)
-    selected_line = select_by_probability(state, p_map, c_map, normalize)
-    selected_line_info: LineInfo = selected[selected_line]
-    norm=PassFail.normalize(p_fl)
-    state.msv_logger.debug(f'Selected line: FL: {norm[selected_line]}/{p_fl[selected_line]}, Basic: {selected_line_info.pf.beta_mode(selected_line_info.pf.pass_count,selected_line_info.pf.fail_count)}, '+
-                    f'Plausible: {selected_line_info.positive_pf.beta_mode(selected_line_info.positive_pf.pass_count,selected_line_info.positive_pf.fail_count)}, '+
-                    f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_line])}/{p_frequency[selected_line]}, BPFreq: {PassFail.concave_down(p_bp_frequency[selected_line])}/{p_bp_frequency[selected_line]}')
-    clear_list(state, p_map)
-    del c_map[PT.fl] # No fl below line
+    selected_line_info: LineInfo = epsilon_search(selected_func_info)
+
+  for line in selected_func_info.line_info_map:
+    line_info=selected_func_info.line_info_map[line]
+    p_fl.append(line_info.fl_score)
+    p_b.append(line_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_p.append(line_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_o.append(line_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_frequency.append(line_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
+    p_bp_frequency.append(line_info.children_basic_patches/line_info.case_update_count if line_info.case_update_count > 0 else 0)
+  norm=PassFail.normalize(p_fl)
+  selected_line=0
+  for i,line in enumerate(selected_func_info.line_info_map):
+    if selected_func_info.line_info_map[line]==selected_line_info:
+      selected_line=i
+      break
+  norm=PassFail.normalize(p_fl)
+  state.msv_logger.debug(f'Selected line: FL: {norm[selected_line]}/{p_fl[selected_line]}, Basic: {selected_line_info.pf.beta_mode(selected_line_info.pf.pass_count,selected_line_info.pf.fail_count)}, '+
+                  f'Plausible: {selected_line_info.positive_pf.beta_mode(selected_line_info.positive_pf.pass_count,selected_line_info.positive_pf.fail_count)}, '+
+                  f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_line])}/{p_frequency[selected_line]}, BPFreq: {PassFail.concave_down(p_bp_frequency[selected_line])}/{p_bp_frequency[selected_line]}')
+  clear_list(state, p_map)
+  del c_map[PT.fl] # No fl below line
 
   # Select type
-    state.msv_logger.debug(f'Use guided search, epsilon: {epsilon}')
-    for tbar_type in selected_line_info.tbar_type_info_map:
-      tbar_type_info = selected_line_info.tbar_type_info_map[tbar_type]
-      if len(tbar_type_info.tbar_case_info_map) == 0:
-        state.msv_logger.warning(f"No switch info in type: {tbar_type}")
-        continue
-      selected.append(tbar_type_info)
-      p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      p_b.append(tbar_type_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      p_p.append(tbar_type_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      p_o.append(tbar_type_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      p_frequency.append(tbar_type_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
-      p_bp_frequency.append(tbar_type_info.children_basic_patches/tbar_type_info.case_update_count if tbar_type_info.case_update_count > 0 else 0)
-      if explore:
-        p_cov.append(1 - (tbar_type_info.case_update_count/tbar_type_info.total_case_info))
-    selected_type = select_by_probability(state, p_map, c_map, normalize)
-    selected_type_info: TbarTypeInfo = selected[selected_type]
-    state.msv_logger.debug(f'Selected type: Basic: {selected_type_info.pf.beta_mode(selected_type_info.pf.pass_count,selected_type_info.pf.fail_count)}, '+
-                    f'Plausible: {selected_type_info.positive_pf.beta_mode(selected_type_info.positive_pf.pass_count,selected_type_info.positive_pf.fail_count)}, '+
-                    f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_type])}/{p_frequency[selected_type]}, BPFreq: {PassFail.concave_down(p_bp_frequency[selected_type])}/{p_bp_frequency[selected_type]}')
-    clear_list(state, p_map)
-    # select tbar switch
-    rank: int = -1
-    selected_switch_info = None
-    for location in selected_type_info.tbar_case_info_map:
-      location_info = selected_type_info.tbar_case_info_map[location]
-      if rank < 0 or rank > location_info.patch_rank:
-        rank = location_info.patch_rank
-        selected_switch_info = location_info
-      selected.append(location_info)
-      p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    c_map = rand_cmap
+  if selected_line_info.children_basic_patches>0:
+    selected_type_info: TbarTypeInfo = select_patch_tbar_guide_algorithm(state,selected_line_info.tbar_type_info_map,selected_line_info)
+  else:
+    selected_type_info: TbarTypeInfo = epsilon_search(selected_line_info)
 
-    # Follow the original order if switch is larger than 50
-    if len(selected_type_info.tbar_case_info_map)>50:
-      for case in selected_type_info.tbar_case_info_map:
-        selected_switch_info=selected_type_info.tbar_case_info_map[case]
-        break
-    else:
-      selected_switch = select_by_probability(state, p_map, c_map, normalize)
-      selected_switch_info: TbarCaseInfo = selected[selected_switch]
-    clear_list(state, p_map)
-    result = TbarPatchInfo(selected_switch_info)
-    return result  
+  for tbar_type in selected_line_info.tbar_type_info_map:
+    type_info=selected_line_info.tbar_type_info_map[tbar_type]
+    p_b.append(type_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_p.append(type_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_o.append(type_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_frequency.append(type_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
+    p_bp_frequency.append(type_info.children_basic_patches/type_info.case_update_count if type_info.case_update_count > 0 else 0)
+  selected_type=0
+  for i,tbar_type in enumerate(selected_line_info.tbar_type_info_map):
+    if selected_line_info.tbar_type_info_map[tbar_type]==selected_type_info:
+      selected_type=i
+      break
+  state.msv_logger.debug(f'Selected type: Basic: {selected_type_info.pf.beta_mode(selected_type_info.pf.pass_count,selected_type_info.pf.fail_count)}, '+
+                  f'Plausible: {selected_type_info.positive_pf.beta_mode(selected_type_info.positive_pf.pass_count,selected_type_info.positive_pf.fail_count)}, '+
+                  f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_type])}/{p_frequency[selected_type]}, BPFreq: {PassFail.concave_down(p_bp_frequency[selected_type])}/{p_bp_frequency[selected_type]}')
+  clear_list(state, p_map)
+
+  # select tbar switch
+  selected_switch_info:TbarCaseInfo=epsilon_search(selected_type_info)
+  clear_list(state, p_map)
+  result = TbarPatchInfo(selected_switch_info)
+  return result  
 
 def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
   selected_patch: TbarCaseInfo = None
