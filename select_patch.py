@@ -955,13 +955,10 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   if not is_epsilon_greedy:
     state.msv_logger.debug(f'Use original selection, epsilon: {epsilon}')
     for tbar_case_id in state.patch_ranking:
-      for line in selected_func_info.line_info_map:
-        for tbar_type in selected_func_info.line_info_map[line].tbar_type_info_map:
-          for tbar_case in selected_func_info.line_info_map[line].tbar_type_info_map[tbar_type].tbar_case_info_map:
-            if tbar_case_id==tbar_case:
-              result=TbarPatchInfo(selected_func_info.line_info_map[line].tbar_type_info_map[tbar_type].tbar_case_info_map[tbar_case_id])
-              return result
-    assert False and "No patch found in original algorithm!"
+      original_case=state.switch_case_map[tbar_case_id]
+      if original_case.parent.parent.parent==selected_func_info:
+        return TbarPatchInfo(original_case)
+    raise ValueError(f'No patch found in originla algorithm!')
 
   else:
     # Select line

@@ -1,4 +1,3 @@
-from matplotlib.patches import Patch
 from core import *
 from typing import List, Set, Dict, Tuple
 
