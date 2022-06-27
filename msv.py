@@ -430,7 +430,7 @@ class MSVTbar(MSV):
           pass_exists = True
         if not run_result:
           result = False
-          if self.state.use_partial_validation:
+          if self.state.use_partial_validation and self.state.mode==MSVMode.seapr:
             break
       if is_compilable or self.state.ignore_compile_error:
         self.state.iteration += 1

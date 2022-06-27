@@ -203,8 +203,11 @@ class PassFail:
   @staticmethod
   # fail function
   def log_func(x: float, half: float = 50) -> float:
-    a = half + np.pow(half, 0.5)
-    return max(np.log(a - x) / np.log(a), 0.0)
+    a = half + math.pow(half, 0.5)
+    if a-x<0:
+      return 0.
+    else:
+      return max(np.log(a - x) / np.log(a), 0.0)
 
 
 class FileInfo:
@@ -230,6 +233,8 @@ class FileInfo:
     self.class_name: str = ""
     self.children_basic_patches:int=0
     self.children_plausible_patches:int=0
+    self.consecutive_fail_count:int=0
+    self.consecutive_fail_plausible_count:int=0
   def __hash__(self) -> int:
     return hash(self.file_name)
   def __eq__(self, other) -> bool:
@@ -260,6 +265,8 @@ class FuncInfo:
     self.func_rank: int = -1
     self.children_basic_patches:int=0
     self.children_plausible_patches:int=0
+    self.consecutive_fail_count:int=0
+    self.consecutive_fail_plausible_count:int=0
 
     self.total_patches_by_score:Dict[float,int]=dict() # Total patches grouped by score
     self.searched_patches_by_score:Dict[float,int]=dict() # Total searched patches grouped by score
@@ -296,6 +303,8 @@ class LineInfo:
     self.score_list: List[float] = list()
     self.children_basic_patches:int=0
     self.children_plausible_patches:int=0
+    self.consecutive_fail_count:int=0
+    self.consecutive_fail_plausible_count:int=0
   def __hash__(self) -> int:
     return hash(self.uuid)
   def __eq__(self, other) -> bool:
@@ -316,6 +325,8 @@ class TbarTypeInfo:
     self.tbar_case_info_map: Dict[str, TbarCaseInfo] = dict()
     self.children_basic_patches:int=0
     self.children_plausible_patches:int=0
+    self.consecutive_fail_count:int=0
+    self.consecutive_fail_plausible_count:int=0
   def __hash__(self) -> int:
     return hash(self.mutation)
   def __eq__(self, other) -> bool:
@@ -1607,7 +1618,7 @@ class MSVState:
     self.use_pattern = False
     self.use_simulation_mode = False
     self.prev_data = ""
-    self.ignore_compile_error = False
+    self.ignore_compile_error = True
     self.simulation_data = dict()
     self.correct_patch_str: str = ""
     self.correct_case_info: CaseInfo = None
