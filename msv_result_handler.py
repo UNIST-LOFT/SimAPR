@@ -14,6 +14,32 @@ def update_result(state: MSVState, selected_patch: List[PatchInfo], run_result: 
   # update_result_critical(state, selected_patch, run_result, test)
   if run_result:
     state.total_basic_patch += 1
+    for patch in selected_patch:
+      patch.type_info.children_basic_patches+=1
+      patch.switch_info.children_basic_patches+=1
+      patch.line_info.children_basic_patches+=1
+      patch.func_info.children_basic_patches+=1
+      patch.file_info.children_basic_patches+=1
+
+      patch.type_info.consecutive_fail_count=0
+      patch.switch_info.consecutive_fail_count=0
+      patch.line_info.consecutive_fail_count=0
+      patch.func_info.consecutive_fail_count=0
+      patch.file_info.consecutive_fail_count=0
+  else:
+    for patch in selected_patch:
+      patch.type_info.consecutive_fail_count+=1
+      patch.switch_info.consecutive_fail_count+=1
+      patch.line_info.consecutive_fail_count+=1
+      patch.func_info.consecutive_fail_count+=1
+      patch.file_info.consecutive_fail_count+=1
+
+      patch.type_info.consecutive_fail_plausible_count+=1
+      patch.switch_info.consecutive_fail_plausible_count+=1
+      patch.line_info.consecutive_fail_plausible_count+=1
+      patch.func_info.consecutive_fail_plausible_count+=1
+      patch.file_info.consecutive_fail_plausible_count+=1
+
   if state.mode == MSVMode.seapr:
     update_result_seapr(state, selected_patch, run_result, test)
   for patch in selected_patch:
@@ -145,6 +171,24 @@ def update_result_positive(state: MSVState, selected_patch: List[PatchInfo], run
   run_result = (len(failed_tests) == 0)
   state.failed_positive_test.update(failed_tests)
   for patch in selected_patch:
+    if run_result:
+      patch.type_info.children_plausible_patches+=1
+      patch.switch_info.children_plausible_patches+=1
+      patch.line_info.children_plausible_patches+=1
+      patch.func_info.children_plausible_patches+=1
+      patch.file_info.children_plausible_patches+=1
+
+      patch.type_info.consecutive_fail_plausible_count=0
+      patch.switch_info.consecutive_fail_plausible_count=0
+      patch.line_info.consecutive_fail_plausible_count=0
+      patch.func_info.consecutive_fail_plausible_count=0
+      patch.file_info.consecutive_fail_plausible_count=0
+    else:
+      patch.type_info.consecutive_fail_plausible_count+=1
+      patch.switch_info.consecutive_fail_plausible_count+=1
+      patch.line_info.consecutive_fail_plausible_count+=1
+      patch.func_info.consecutive_fail_plausible_count+=1
+      patch.file_info.consecutive_fail_plausible_count+=1
     patch.update_result_positive(run_result, len(failed_tests)+1, state.params[PT.b_dec],state.use_exp_alpha, state.use_fixed_beta)
 
 def save_result(state: MSVState) -> None:

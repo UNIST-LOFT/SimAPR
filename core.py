@@ -462,6 +462,9 @@ class TypeInfo:
     self.has_init_patch=False
     self.case_update_count: int = 0
     self.children_basic_patches:int=0
+    self.children_plausible_patches:int=0
+    self.consecutive_fail_count:int=0
+    self.consecutive_fail_plausible_count:int=0
   def __hash__(self) -> int:
     return hash(self.patch_type)
   def __eq__(self, other) -> bool:
@@ -1655,6 +1658,9 @@ class MSVState:
 
     self.seapr_remain_cases:List[CaseInfo]=[]
     self.seapr_layer:SeAPRMode=SeAPRMode.FUNCTION
+
+    self.c_patch_ranking:Dict[float,List[CaseInfo]]=dict()
+    self.java_patch_ranking:Dict[float,List[str]]=dict()
 
 def remove_file_or_pass(file:str):
   try:

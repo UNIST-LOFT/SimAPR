@@ -109,47 +109,102 @@ def epsilon_search(state:MSVState,source=None):
   top_all_patches=[] # All top scored patches, include searched or not searched
   prev_score=0.
   # Get all top fl patches
-  for e in state.patch_ranking:
-    case_info = state.switch_case_map[e]
-    if prev_score==0. or prev_score==case_info.parent.parent.fl_score:
-      top_all_patches.append(case_info)
-      if case_info in case_info.parent.tbar_case_info_map.values():
-        # Not searched yet
-        top_fl_patches.append(case_info)
-      prev_score=case_info.parent.parent.fl_score
-    elif prev_score!=0. and prev_score>case_info.parent.parent.fl_score:
-      break
+  if state.tbar_mode:
+    sorted_scores=sorted(state.java_patch_ranking.keys(),reverse=True)
+    for e in sorted_scores:
+      for case in state.java_patch_ranking[e]:
+        top_all_patches.append(state.switch_case_map[case])
+        if state.switch_case_map[case] in state.switch_case_map[case].parent.tbar_case_info_map.values():
+          # Not searched yet
+          top_fl_patches.append(state.switch_case_map[case])
+      
+      if len(top_fl_patches)>0:
+        break
+      else:
+        top_all_patches.clear()
+        top_fl_patches.clear()
+  else:
+    sorted_scores=sorted(state.c_patch_ranking.keys(),reverse=True)
+    for e in sorted_scores:
+      for case in state.c_patch_ranking[sorted_scores]:
+        top_all_patches.append(case)
+        if case in case.parent.case_info_map.values():
+          # Not searched yet
+          top_fl_patches.append(case)
+      
+      if len(top_fl_patches)>0:
+        break
+      else:
+        top_all_patches.clear()
+        top_fl_patches.clear()
   
   result=[]
   # Get all top scored data in source
   for case_info in top_fl_patches:
-    if source is None:
-      for file in state.file_info_map:
-        if case_info.parent.parent.parent.parent==state.file_info_map[file]:
-          result.append(state.file_info_map[file])
-          break
-    elif type(source) == FileInfo:
-      for func in source.func_info_map:
-        if case_info.parent.parent.parent==source.func_info_map[func]:
-          result.append(source.func_info_map[func])
-          break
-    elif type(source) == FuncInfo:
-      for line in source.line_info_map:
-        if case_info.parent.parent==source.line_info_map[line]:
-          result.append(source.line_info_map[line])
-          break
-    elif type(source) == LineInfo:
-      for type_info in source.tbar_type_info_map:
-        if case_info.parent==source.tbar_type_info_map[type_info]:
-          result.append(source.tbar_type_info_map[type_info])
-          break
-    elif type(source) == TbarTypeInfo:
-      for case in source.tbar_case_info_map:
-        if case_info==source.tbar_case_info_map[case]:
-          result.append(source.tbar_case_info_map[case])
-          break
+    if state.tbar_mode:
+      # For java
+      if source is None:
+        for file in state.file_info_map:
+          if case_info.parent.parent.parent.parent==state.file_info_map[file]:
+            result.append(state.file_info_map[file])
+            break
+      elif type(source) == FileInfo:
+        for func in source.func_info_map:
+          if case_info.parent.parent.parent==source.func_info_map[func]:
+            result.append(source.func_info_map[func])
+            break
+      elif type(source) == FuncInfo:
+        for line in source.line_info_map:
+          if case_info.parent.parent==source.line_info_map[line]:
+            result.append(source.line_info_map[line])
+            break
+      elif type(source) == LineInfo:
+        for type_info in source.tbar_type_info_map:
+          if case_info.parent==source.tbar_type_info_map[type_info]:
+            result.append(source.tbar_type_info_map[type_info])
+            break
+      elif type(source) == TbarTypeInfo:
+        for case in source.tbar_case_info_map:
+          if case_info==source.tbar_case_info_map[case]:
+            result.append(source.tbar_case_info_map[case])
+            break
+      else:
+        raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
     else:
-      raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
+      # For C
+      if source is None:
+        for file in state.file_info_map:
+          if case_info.parent.parent.parent.parent.parent==state.file_info_map[file]:
+            result.append(state.file_info_map[file])
+            break
+      elif type(source) == FileInfo:
+        for func in source.func_info_map:
+          if case_info.parent.parent.parent.parent==source.func_info_map[func]:
+            result.append(source.func_info_map[func])
+            break
+      elif type(source) == FuncInfo:
+        for line in source.line_info_map:
+          if case_info.parent.parent.parent==source.line_info_map[line]:
+            result.append(source.line_info_map[line])
+            break
+      elif type(source) == LineInfo:
+        for switch in source.switch_info_map:
+          if case_info.parent.parent==source.switch_info_map[switch]:
+            result.append(source.switch_info_map[switch])
+            break
+      elif type(source) == SwitchInfo:
+        for type_info in source.type_info_map:
+          if case_info.parent==source.type_info_map[type_info]:
+            result.append(source.type_info_map[type_info])
+            break
+      elif type(source) == TypeInfo:
+        for case in source.case_info_map:
+          if case_info==source.case_info_map[case]:
+            result.append(source.case_info_map[case])
+            break
+      else:
+        raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
+
 
     # Get total patches and total searched patches, for epsilon greedy method
     total_patches=len(top_all_patches)
@@ -165,18 +220,37 @@ def epsilon_search(state:MSVState,source=None):
     else:
       # Return top scored layer in original
       state.msv_logger.debug(f'Use original order, epsilon: {epsilon}')
-      if source is None:
-        return top_fl_patches[0].parent.parent.parent.parent
-      elif type(source) == FileInfo:
-        return top_fl_patches[0].parent.parent.parent
-      elif type(source) == FuncInfo:
-        return top_fl_patches[0].parent.parent
-      elif type(source) == LineInfo:
-        return top_fl_patches[0].parent
-      elif type(source) == TbarTypeInfo:
-        return top_fl_patches[0]
+      if state.tbar_mode:
+        # For java
+        if source is None:
+          return top_fl_patches[0].parent.parent.parent.parent
+        elif type(source) == FileInfo:
+          return top_fl_patches[0].parent.parent.parent
+        elif type(source) == FuncInfo:
+          return top_fl_patches[0].parent.parent
+        elif type(source) == LineInfo:
+          return top_fl_patches[0].parent
+        elif type(source) == TbarTypeInfo:
+          return top_fl_patches[0]
+        else:
+          raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
       else:
-        raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
+        # For C
+        if source is None:
+          return top_fl_patches[0].parent.parent.parent.parent.parent
+        elif type(source) == FileInfo:
+          return top_fl_patches[0].parent.parent.parent.parent
+        elif type(source) == FuncInfo:
+          return top_fl_patches[0].parent.parent.parent
+        elif type(source) == LineInfo:
+          return top_fl_patches[0].parent.parent
+        elif type(source) == SwitchInfo:
+          return top_fl_patches[0].parent
+        elif type(source) == TypeInfo:
+          return top_fl_patches[0]
+        else:
+          raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
+
 
 def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
   for element in elements:
@@ -236,17 +310,35 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
       if not is_decided:
         state.msv_logger.debug(f'Use original order: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}')
         # Select original order
-        for patch in state.patch_ranking:
-          case_info=state.switch_case_map[patch]
-          if case_info in case_info.parent.tbar_case_info_map.values():
-            if element_type==FileInfo and case_info.parent.parent.parent.parent in elements.values():
-              return case_info.parent.parent.parent.parent
-            elif element_type==FuncInfo and case_info.parent.parent.parent in elements.values():
-              return case_info.parent.parent.parent
-            elif element_type==LineInfo and case_info.parent.parent in elements.values():
-              return case_info.parent.parent
-            elif element_type==TbarTypeInfo and case_info.parent in elements.values():
-              return case_info.parent
+        if state.tbar_mode:
+          # For java
+          for patch in state.patch_ranking:
+            case_info=state.switch_case_map[patch]
+            if case_info in case_info.parent.tbar_case_info_map.values():
+              if element_type==FileInfo and case_info.parent.parent.parent.parent in elements.values():
+                return case_info.parent.parent.parent.parent
+              elif element_type==FuncInfo and case_info.parent.parent.parent in elements.values():
+                return case_info.parent.parent.parent
+              elif element_type==LineInfo and case_info.parent.parent in elements.values():
+                return case_info.parent.parent
+              elif element_type==TbarTypeInfo and case_info.parent in elements.values():
+                return case_info.parent
+        else:
+          # For C
+          sorted_score=sorted(state.c_patch_ranking.keys(),reverse=True)
+          for score in sorted_score:
+            for case_info in state.c_patch_ranking[score]:
+              if case_info in case_info.parent.case_info_map.values():
+                if element_type==FileInfo and case_info.parent.parent.parent.parent.parent in elements.values():
+                  return case_info.parent.parent.parent.parent.parent
+                elif element_type==FuncInfo and case_info.parent.parent.parent.parent in elements.values():
+                  return case_info.parent.parent.parent.parent
+                elif element_type==LineInfo and case_info.parent.parent.parent in elements.values():
+                  return case_info.parent.parent.parent
+                elif element_type==SwitchInfo and case_info.parent.parent in elements.values():
+                  return case_info.parent.parent
+                elif element_type==TypeInfo and case_info.parent in elements.values():
+                  return case_info.parent
 
 def select_patch_SPR(state: MSVState) -> PatchInfo:
   # Select file and line by priority
@@ -462,192 +554,162 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       state.msv_logger.info("Exploit!")
     use_fl = state.use_fl
 
-    DELTA_INIT_PATCH=0.2
-    for file_name in state.file_info_map:
-      file_info = state.file_info_map[file_name]
-      if len(file_info.func_info_map) == 0:
-        state.msv_logger.warning(f"No line info in file: {file_info.file_name}")
-        continue
-      selected.append(file_info)
-      p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      if state.use_prophet_score and not state.use_fl:
-        p_fl.append(max(file_info.prophet_score))
-      else:
-        p_fl.append(file_info.fl_score)
-      p_b.append(file_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      p_p.append(file_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      p_o.append(file_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      p_frequency.append(file_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
-      p_bp_frequency.append(file_info.children_basic_patches/file_info.case_update_count if file_info.case_update_count > 0 else 0)
-      if not is_rand and explore:
-        min_coverage=1.0
-        for func in file_info.func_info_map.values():
-          if min_coverage>func.case_update_count/func.total_case_info:
-            min_coverage=func.case_update_count/func.total_case_info
-        p_cov.append(1 - min_coverage)
-    selected_file = select_by_probability(state, p_map, c_map, normalize)
-    selected_file_info: FileInfo = selected[selected_file]
+  if state.total_basic_patch>0:
+    selected_file_info: FileInfo = select_patch_guide_algorithm(state,state.file_info_map,None)
+  else:
+    selected_file_info: FileInfo = epsilon_search(state,None)
 
-    norm=PassFail.normalize(p_fl)
-    state.msv_logger.debug(f'Selected file: FL: {norm[selected_file]}/{p_fl[selected_file]}, Basic: {selected_file_info.pf.beta_mode(selected_file_info.pf.pass_count,selected_file_info.pf.fail_count)}, '+
-                    f'Plausible: {selected_file_info.positive_pf.beta_mode(selected_file_info.positive_pf.pass_count,selected_file_info.positive_pf.fail_count)}, '+
-                    f'Coverage: {p_cov[selected_file] if not is_rand and explore else 0}')
-    clear_list(state, p_map)
+  for file_name in state.file_info_map:
+    file_info=state.file_info_map[file_name]
+    p_fl.append(max(file_info.prophet_score))
+    p_b.append(file_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_p.append(file_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_o.append(file_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_frequency.append(file_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
+    p_bp_frequency.append(file_info.consecutive_fail_count)
+  norm=PassFail.normalize(p_fl)
+  selected_file=0
+  for i,file in enumerate(state.file_info_map):
+    if state.file_info_map[file]==selected_file_info:
+      selected_file=i
+      break
+  state.msv_logger.debug(f'Selected file: FL: {norm[selected_file]}/{p_fl[selected_file]}, Basic: {selected_file_info.pf.beta_mode(selected_file_info.pf.pass_count,selected_file_info.pf.fail_count)}, '+
+                  f'Plausible: {selected_file_info.positive_pf.beta_mode(selected_file_info.positive_pf.pass_count,selected_file_info.positive_pf.fail_count)}, '+
+                  f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_file])}/{p_frequency[selected_file]}, BPFreq: {PassFail.log_func(p_bp_frequency[selected_file])}')
+  clear_list(state, p_map)
 
-    # Select function
-    for func_id in selected_file_info.func_info_map:
-      func_info = selected_file_info.func_info_map[func_id]
-      if len(func_info.line_info_map) == 0:
-        state.msv_logger.warning(f"No line info in function: {func_info.func_name}")
-        continue
-      selected.append(func_info)
-      p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      if state.use_prophet_score and not state.use_fl:
-        p_fl.append(max(func_info.prophet_score))
-      else:
-        p_fl.append(func_info.fl_score)
-      p_b.append(func_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      p_p.append(func_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      p_o.append(func_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      p_frequency.append(func_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
-      p_bp_frequency.append(func_info.children_basic_patches/func_info.case_update_count if func_info.case_update_count > 0 else 0)
-      if explore and not is_rand:
-        min_coverage=1.0
-        for line in func_info.line_info_map.values():
-          if min_coverage>line.case_update_count/line.total_case_info:
-            min_coverage=line.case_update_count/line.total_case_info
-        p_cov.append(1 - min_coverage)
-    selected_func = select_by_probability(state, p_map, c_map, normalize)
-    selected_func_info: FuncInfo = selected[selected_func]
-    norm=PassFail.normalize(p_fl)
-    state.msv_logger.debug(f'Selected function: FL: {norm[selected_func]}/{p_fl[selected_func]}, Basic: {selected_func_info.pf.beta_mode(selected_func_info.pf.pass_count,selected_func_info.pf.fail_count)}, '+
-                    f'Plausible: {selected_func_info.positive_pf.beta_mode(selected_func_info.positive_pf.pass_count,selected_func_info.positive_pf.fail_count)}, '+
-                    f'Coverage: {p_cov[selected_func] if not is_rand and explore else 0}')
-    clear_list(state, p_map)
+  # Select function
+  if selected_file_info.children_basic_patches>0:
+    selected_func_info: FuncInfo = select_patch_guide_algorithm(state,selected_file_info.func_info_map,selected_file_info)
+  else:
+    selected_func_info: FuncInfo = epsilon_search(state,selected_file_info)
 
-    # Select line
-    for line_uuid in selected_func_info.line_info_map:
-      line_info = selected_func_info.line_info_map[line_uuid]
-      if len(line_info.switch_info_map) == 0:
-        state.msv_logger.warning(f"No switch info in line: {selected_file_info.file_name}: {line_info.line_number}")
-        continue
-      selected.append(line_info)
-      p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      if state.use_prophet_score and not state.use_fl:
-        p_fl.append(max(line_info.prophet_score))
-      else:
-        p_fl.append(line_info.fl_score)
-      p_b.append(line_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      p_p.append(line_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      p_o.append(line_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      p_frequency.append(line_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
-      p_bp_frequency.append(line_info.children_basic_patches/line_info.case_update_count if line_info.case_update_count > 0 else 0)
-      if explore:
-        min_coverage=1.0
-        for switch in line_info.switch_info_map.values():
-          if min_coverage>switch.case_update_count/switch.total_case_info:
-            min_coverage=switch.case_update_count/switch.total_case_info
-        p_cov.append(1 - min_coverage)
-    selected_line = select_by_probability(state, p_map, c_map, normalize)
-    selected_line_info: LineInfo = selected[selected_line]
-    norm=PassFail.normalize(p_fl)
-    state.msv_logger.debug(f'Selected line: FL: {norm[selected_line]}/{p_fl[selected_line]}, Basic: {selected_line_info.pf.beta_mode(selected_line_info.pf.pass_count,selected_line_info.pf.fail_count)}, '+
-                    f'Plausible: {selected_line_info.positive_pf.beta_mode(selected_line_info.positive_pf.pass_count,selected_line_info.positive_pf.fail_count)}, '+
-                    f'Coverage: {p_cov[selected_line] if not is_rand and explore else 0}')
-    clear_list(state, p_map)
-    if not state.use_prophet_score:
-      del c_map[PT.fl] # No fl below line
+  for func_name in selected_file_info.func_info_map:
+    func_info=selected_file_info.func_info_map[func_name]
+    p_fl.append(max(func_info.prophet_score))
+    p_b.append(func_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_p.append(func_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_o.append(func_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_frequency.append(func_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
+    p_bp_frequency.append(func_info.consecutive_fail_count)
+  norm=PassFail.normalize(p_fl)
+  selected_func=0
+  for i,func in enumerate(selected_file_info.func_info_map):
+    if selected_file_info.func_info_map[func]==selected_func_info:
+      selected_func=i
+      break
+  norm=PassFail.normalize(p_fl)
+  state.msv_logger.debug(f'Selected function: FL: {norm[selected_func]}/{p_fl[selected_func]}, Basic: {selected_func_info.pf.beta_mode(selected_func_info.pf.pass_count,selected_func_info.pf.fail_count)}, '+
+                  f'Plausible: {selected_func_info.positive_pf.beta_mode(selected_func_info.positive_pf.pass_count,selected_func_info.positive_pf.fail_count)}, '+
+                  f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_func])}/{p_frequency[selected_func]}, BPFreq: {PassFail.log_func(p_bp_frequency[selected_func])}')
+  clear_list(state, p_map)
 
-    # Select switch
-    for switch_num in selected_line_info.switch_info_map:
-      switch_info = selected_line_info.switch_info_map[switch_num]
-      if len(switch_info.type_info_map) == 0:
-        state.msv_logger.warning(f"No type info in switch: {selected_file_info.file_name}: {selected_line_info.line_number}: {switch_info.switch_number}")
-        continue
-      selected.append(switch_info)
-      p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      if state.use_prophet_score:
-        p_fl.append(max(switch_info.prophet_score))
-      p_b.append(switch_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      p_p.append(switch_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      p_o.append(switch_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      p_frequency.append(switch_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
-      p_bp_frequency.append(switch_info.children_basic_patches/switch_info.case_update_count if switch_info.case_update_count > 0 else 0)
-      if explore:
-        temp_p1 = switch_info.pf.expect_probability()
-        min_coverage=1.0
-        for type_ in switch_info.type_info_map.values():
-          if min_coverage>type_.case_update_count/type_.total_case_info:
-            min_coverage=type_.case_update_count/type_.total_case_info
-        p_cov.append(1 - min_coverage)
-    selected_switch = select_by_probability(state, p_map, c_map, normalize)
-    selected_switch_info: SwitchInfo = selected[selected_switch]
-    norm=PassFail.normalize(p_fl)
-    state.msv_logger.debug(f'Selected switch: FL: {norm[selected_switch]}/{p_fl[selected_switch]}, Basic: {selected_switch_info.pf.beta_mode(selected_switch_info.pf.pass_count,selected_switch_info.pf.fail_count)}, '+
-                    f'Plausible: {selected_switch_info.positive_pf.beta_mode(selected_switch_info.positive_pf.pass_count,selected_switch_info.positive_pf.fail_count)}, '+
-                    f'Coverage: {p_cov[selected_switch] if not is_rand and explore else 0}')
-    clear_list(state, p_map)
+  # Select line
+  if selected_func_info.children_basic_patches>0:
+    selected_line_info: LineInfo = select_patch_guide_algorithm(state,selected_func_info.line_info_map,selected_func_info)
+  else:
+    selected_line_info: LineInfo = epsilon_search(state,selected_func_info)
 
-    # Select type
-    for patch_type in selected_switch_info.type_info_map:
-      type_info = selected_switch_info.type_info_map[patch_type]
-      if len(type_info.case_info_map) == 0:
-        state.msv_logger.warning(f"No case info in type: {selected_file_info.file_name}: {selected_line_info.line_number}: {selected_switch_info.switch_number}: {type_info.patch_type}")
-        continue
-      selected.append(type_info)
-      p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      if state.use_prophet_score:
-        p_fl.append(max(type_info.prophet_score))
-      p_b.append(type_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      p_p.append(type_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      p_o.append(type_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      p_frequency.append(type_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
-      p_bp_frequency.append(type_info.children_basic_patches/type_info.case_update_count if type_info.case_update_count > 0 else 0)
-      if explore and not is_rand:
-        coverage = type_info.case_update_count / type_info.total_case_info
-        p_cov.append(1 - coverage)
-    selected_type = select_by_probability(state, p_map, c_map, normalize)
-    selected_type_info: TypeInfo = selected[selected_type]
-    norm=PassFail.normalize(p_fl)
-    state.msv_logger.debug(f'Selected type: FL: {norm[selected_type]}/{p_fl[selected_type]}, Basic: {selected_type_info.pf.beta_mode(selected_type_info.pf.pass_count,selected_type_info.pf.fail_count)}, '+
-                    f'Plausible: {selected_type_info.positive_pf.beta_mode(selected_type_info.positive_pf.pass_count,selected_type_info.positive_pf.fail_count)}, '+
-                    f'Coverage: {p_cov[selected_type] if not is_rand and explore else 0}')
-    clear_list(state, p_map)
+  for line_name in selected_func_info.line_info_map:
+    line_info=selected_func_info.line_info_map[line_name]
+    p_fl.append(max(line_info.prophet_score))
+    p_b.append(line_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_p.append(line_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_o.append(line_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_frequency.append(line_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
+    p_bp_frequency.append(line_info.consecutive_fail_count)
+  norm=PassFail.normalize(p_fl)
+  selected_line=0
+  for i,line in enumerate(selected_func_info.line_info_map):
+    if selected_func_info.line_info_map[line]==selected_line_info:
+      selected_line=i
+      break
+  norm=PassFail.normalize(p_fl)
+  state.msv_logger.debug(f'Selected function: FL: {norm[selected_line]}/{p_fl[selected_line]}, Basic: {selected_line_info.pf.beta_mode(selected_line_info.pf.pass_count,selected_line_info.pf.fail_count)}, '+
+                  f'Plausible: {selected_line_info.positive_pf.beta_mode(selected_line_info.positive_pf.pass_count,selected_line_info.positive_pf.fail_count)}, '+
+                  f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_line])}/{p_frequency[selected_line]}, BPFreq: {PassFail.log_func(p_bp_frequency[selected_line])}')
+  clear_list(state, p_map)
+  if not state.use_prophet_score:
+    del c_map[PT.fl] # No fl below line
 
-    if explore:
-      c_map = rand_cmap
-    # Select case
-    use_language_model = False
-    if selected_type_info.patch_type==PatchType.ReplaceFunctionKind or selected_type_info.patch_type==PatchType.MSVExtFunctionReplaceKind or selected_type_info.patch_type==PatchType.MSVExtReplaceFunctionInConditionKind:
-      use_language_model = True
-      c_map[PT.fl] = state.params[PT.fl]
-    for case_num in selected_type_info.case_info_map:
-      case_info = selected_type_info.case_info_map[case_num]
-      if not state.use_condition_synthesis and len(selected_patch)>0 and not case_info.processed: # do not select multi-line patch if patch is not processed at prophet cond syn
-        continue
-      selected.append(case_info)
-      p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      if state.use_prophet_score:
-        p_fl.append(max(case_info.prophet_score))
-      p_b.append(case_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      p_p.append(case_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      p_o.append(case_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-      p_frequency.append(0)
-      p_bp_frequency.append(0)
-      if use_language_model:
-        p_fl.append(1.0 - case_info.func_distance)
+  # Select switch
+  if selected_line_info.children_basic_patches>0:
+    selected_switch_info: SwitchInfo = select_patch_guide_algorithm(state,selected_line_info.switch_info_map,selected_line_info)
+  else:
+    selected_switch_info: SwitchInfo = epsilon_search(state,selected_line_info)
 
-    # Follow the original order if there's no static guidance
-    if selected_type_info.patch_type in [PatchType.ReplaceFunctionKind, PatchType.MSVExtFunctionReplaceKind, PatchType.MSVExtReplaceFunctionInConditionKind,
-                PatchType.ReplaceKind, PatchType.AddStmtKind,PatchType.AddIfStmtKind,PatchType.AddStmtAndReplaceAtomKind]:
-      for case_num in selected_type_info.case_info_map:
-        selected_case=case_num
-        selected_case_info=selected_type_info.case_info_map[case_num]
-        break
-    else:
-      selected_case = select_by_probability(state, p_map, c_map, normalize)
-      selected_case_info: CaseInfo = selected[selected_case]
-    clear_list(state, p_map)
+  for switch_name in selected_line_info.switch_info_map:
+    switch_info=selected_line_info.switch_info_map[switch_name]
+    p_fl.append(max(switch_info.prophet_score))
+    p_b.append(switch_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_p.append(switch_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_o.append(switch_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_frequency.append(switch_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
+    p_bp_frequency.append(switch_info.consecutive_fail_count)
+  norm=PassFail.normalize(p_fl)
+  selected_switch=0
+  for i,switch in enumerate(selected_line_info.switch_info_map):
+    if selected_line_info.switch_info_map[switch]==selected_switch_info:
+      selected_switch=i
+      break
+  norm=PassFail.normalize(p_fl)
+  state.msv_logger.debug(f'Selected function: FL: {norm[selected_switch]}/{p_fl[selected_switch]}, Basic: {selected_switch_info.pf.beta_mode(selected_switch_info.pf.pass_count,selected_switch_info.pf.fail_count)}, '+
+                  f'Plausible: {selected_switch_info.positive_pf.beta_mode(selected_switch_info.positive_pf.pass_count,selected_switch_info.positive_pf.fail_count)}, '+
+                  f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_switch])}/{p_frequency[selected_switch]}, BPFreq: {PassFail.log_func(p_bp_frequency[selected_switch])}')
+  clear_list(state, p_map)
+
+  # Select type
+  if selected_switch_info.children_basic_patches>0:
+    selected_type_info: TypeInfo = select_patch_guide_algorithm(state,selected_switch_info.type_info_map,selected_switch_info)
+  else:
+    selected_type_info: TypeInfo = epsilon_search(state,selected_switch_info)
+
+  for type_name in selected_switch_info.type_info_map:
+    type_info=selected_switch_info.type_info_map[type_name]
+    p_fl.append(max(type_info.prophet_score))
+    p_b.append(type_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_p.append(type_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_o.append(type_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_frequency.append(type_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
+    p_bp_frequency.append(type_info.consecutive_fail_count)
+  norm=PassFail.normalize(p_fl)
+  selected_type=0
+  for i,type_info in enumerate(selected_switch_info.type_info_map):
+    if selected_switch_info.type_info_map[type_info]==selected_type_info:
+      selected_type=i
+      break
+  norm=PassFail.normalize(p_fl)
+  state.msv_logger.debug(f'Selected function: FL: {norm[selected_type]}/{p_fl[selected_type]}, Basic: {selected_type_info.pf.beta_mode(selected_type_info.pf.pass_count,selected_type_info.pf.fail_count)}, '+
+                  f'Plausible: {selected_type_info.positive_pf.beta_mode(selected_type_info.positive_pf.pass_count,selected_type_info.positive_pf.fail_count)}, '+
+                  f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_type])}/{p_frequency[selected_type]}, BPFreq: {PassFail.log_func(p_bp_frequency[selected_type])}')
+  clear_list(state, p_map)
+
+  if explore:
+    c_map = rand_cmap
+  # Select case
+  use_language_model = False
+  if selected_type_info.patch_type==PatchType.ReplaceFunctionKind or selected_type_info.patch_type==PatchType.MSVExtFunctionReplaceKind or selected_type_info.patch_type==PatchType.MSVExtReplaceFunctionInConditionKind:
+    use_language_model = True
+    c_map[PT.fl] = state.params[PT.fl]
+  for case_num in selected_type_info.case_info_map:
+    case_info = selected_type_info.case_info_map[case_num]
+    if not state.use_condition_synthesis and len(selected_patch)>0 and not case_info.processed: # do not select multi-line patch if patch is not processed at prophet cond syn
+      continue
+    selected.append(case_info)
+    p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    if state.use_prophet_score:
+      p_fl.append(max(case_info.prophet_score))
+    p_b.append(case_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_p.append(case_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_o.append(case_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+    p_frequency.append(0)
+    p_bp_frequency.append(0)
+    if use_language_model:
+      p_fl.append(1.0 - case_info.func_distance)
+
+  selected_case = select_by_probability(state, p_map, c_map, normalize)
+  selected_case_info: CaseInfo = selected[selected_case]
+  clear_list(state, p_map)
     # state.msv_logger.debug(f"{selected_file_info.file_name}({len(selected_file_info.line_info_list)}):" +
     #         f"{selected_line_info.line_number}({len(selected_line_info.switch_info_list)}):" +
     #         f"{selected_switch_info.switch_number}({len(selected_switch_info.type_info_list)}):" +
@@ -1129,7 +1191,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   clear_list(state, p_map)
 
   # select tbar switch
-  selected_switch_info:TbarCaseInfo=epsilon_search(selected_type_info)
+  selected_switch_info:TbarCaseInfo=epsilon_search(state,selected_type_info)
   clear_list(state, p_map)
   result = TbarPatchInfo(selected_switch_info)
   return result  

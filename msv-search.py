@@ -453,6 +453,9 @@ def read_info_tbar(state: MSVState) -> None:
           line_info.total_case_info += 1
           func_info.total_case_info += 1
           file_info.total_case_info += 1
+          if tbar_case_info.parent.parent.fl_score not in state.java_patch_ranking:
+            state.java_patch_ranking[tbar_case_info.parent.parent.fl_score] = []
+          state.java_patch_ranking[tbar_case_info.parent.parent.fl_score].append(tbar_case_info)
           if line_info.fl_score not in func_info.total_patches_by_score:
             func_info.total_patches_by_score[line_info.fl_score]=0
             func_info.searched_patches_by_score[line_info.fl_score]=0
@@ -747,6 +750,9 @@ def read_info(state: MSVState) -> None:
                       sw_cs_key = f'{switch_info.switch_number}-{case_info.case_number}'
                       state.switch_case_map[sw_cs_key] = case_info
                       file_line.case_map[sw_cs_key] = case_info
+                      if case_info.prophet_score[0] not in state.c_patch_ranking:
+                        state.c_patch_ranking[case_info.prophet_score[0]]=[]
+                      state.c_patch_ranking[case_info.prophet_score[0]].append(case_info)
                       
                       case_info.prophet_score.append(current_score)
                       type_info.prophet_score.append(current_score)
