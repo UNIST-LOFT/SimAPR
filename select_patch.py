@@ -100,19 +100,153 @@ def select_by_probability_original(state: MSVState, p_map: Dict[PT, List[float]]
         result[i] += c * prob[i]
   return PassFail.argmax(result)
 
-def __select_prophet_condition(selected_case:CaseInfo,state:MSVState):
-  selected_operator=selected_case.operator_info_list[0]
-  if selected_operator.operator_type==OperatorType.ALL_1:
-    return selected_operator
+def epsilon_search(state:MSVState,source=None):
+  """
+    Do epsilon search if there's no basic patch.
+    source: File/Function/Line/TbarType info, or None if file selection
+  """
+  top_fl_patches:List[TbarCaseInfo]=[] # All 'not searched' top scored patches
+  top_all_patches=[] # All top scored patches, include searched or not searched
+  prev_score=0.
+  # Get all top fl patches
+  for e in state.patch_ranking:
+    case_info = state.switch_case_map[e]
+    if prev_score==0. or prev_score==case_info.parent.parent.fl_score:
+      top_all_patches.append(case_info)
+      if case_info in case_info.parent.tbar_case_info_map.values():
+        # Not searched yet
+        top_fl_patches.append(case_info)
+      prev_score=case_info.parent.parent.fl_score
+    elif prev_score!=0. and prev_score>case_info.parent.parent.fl_score:
+      break
+  
+  result=[]
+  # Get all top scored data in source
+  for case_info in top_fl_patches:
+    if source is None:
+      for file in state.file_info_map:
+        if case_info.parent.parent.parent.parent==state.file_info_map[file]:
+          result.append(state.file_info_map[file])
+          break
+    elif type(source) == FileInfo:
+      for func in source.func_info_map:
+        if case_info.parent.parent.parent==source.func_info_map[func]:
+          result.append(source.func_info_map[func])
+          break
+    elif type(source) == FuncInfo:
+      for line in source.line_info_map:
+        if case_info.parent.parent==source.line_info_map[line]:
+          result.append(source.line_info_map[line])
+          break
+    elif type(source) == LineInfo:
+      for type_info in source.tbar_type_info_map:
+        if case_info.parent==source.tbar_type_info_map[type_info]:
+          result.append(source.tbar_type_info_map[type_info])
+          break
+    elif type(source) == TbarTypeInfo:
+      for case in source.tbar_case_info_map:
+        if case_info==source.tbar_case_info_map[case]:
+          result.append(source.tbar_case_info_map[case])
+          break
+    else:
+      raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
+
+    # Get total patches and total searched patches, for epsilon greedy method
+    total_patches=len(top_all_patches)
+    total_searched=len(top_all_patches)-len(top_fl_patches)
+    epsilon=epsilon_greedy(total_patches,total_searched)
+    is_epsilon_greedy=np.random.random()<epsilon and state.use_epsilon
+
+    if is_epsilon_greedy:
+      # Perform random search in epsilon probability
+      state.msv_logger.debug(f'Use epsilon greedy method, epsilon: {epsilon}')
+      index=random.randint(0,len(result)-1)
+      return result[index]
+    else:
+      # Return top scored layer in original
+      state.msv_logger.debug(f'Use original order, epsilon: {epsilon}')
+      if source is None:
+        return top_fl_patches[0].parent.parent.parent.parent
+      elif type(source) == FileInfo:
+        return top_fl_patches[0].parent.parent.parent
+      elif type(source) == FuncInfo:
+        return top_fl_patches[0].parent.parent
+      elif type(source) == LineInfo:
+        return top_fl_patches[0].parent
+      elif type(source) == TbarTypeInfo:
+        return top_fl_patches[0]
+      else:
+        raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
+
+def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
+  for element in elements:
+    element_type=type(elements[element])
+  selected=[]
+  p_p=[]
+  p_b=[]
+  if element_type==FileInfo:
+    total_basic_patch=state.total_basic_patch
+    total_plausible_patch=state.total_plausible_patch
   else:
-    selected_var=selected_operator.variable_info_list[0]
-    for var in selected_operator.variable_info_list:
-      if len(var.constant_info_list)>0:
-        selected_var=var
-        break
+    total_basic_patch=parent.children_basic_patches
+    total_plausible_patch=parent.children_plausible_patches
+  
+  if total_basic_patch>0:
+    is_decided=False
+    # Follow guided search if basic patch exist
+    if total_plausible_patch:
+      # Select with plausible patch
+      for element_name in elements:
+        info = elements[element_name]
+        selected.append(info)
+        p_p.append(info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
 
-    return selected_var.constant_info_list[0]
+      max_score=0.
+      for i in range(len(selected)):
+        if p_p[i]>max_score:
+          max_score=p_p[i]
+          max_index=i
+      
+      freq=total_plausible_patch/state.total_plausible_patch if state.total_plausible_patch > 0 else 0.
+      bp_freq=selected[max_index].consecutive_fail_plausible_count
+      if random.random()< weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq)):
+        state.msv_logger.debug(f'Use guidance with plausible patch: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}')
+        return selected[max_index]
+    
+    if not is_decided:
+      # Select with basic patch
+      selected.clear()
+      for element_name in elements:
+        info = elements[element_name]
+        selected.append(info)
+        p_b.append(info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
 
+      max_score=0.
+      for i in range(len(selected)):
+        if p_b[i]>max_score:
+          max_score=p_b[i]
+          max_index=i
+
+      freq=total_basic_patch/state.total_basic_patch if state.total_basic_patch > 0 else 0.
+      bp_freq=selected[max_index].consecutive_fail_count
+      if random.random()< weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq)):
+        state.msv_logger.debug(f'Use guidance with basic patch: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}')
+        return selected[max_index]
+      
+      if not is_decided:
+        state.msv_logger.debug(f'Use original order: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}')
+        # Select original order
+        for patch in state.patch_ranking:
+          case_info=state.switch_case_map[patch]
+          if case_info in case_info.parent.tbar_case_info_map.values():
+            if element_type==FileInfo and case_info.parent.parent.parent.parent in elements.values():
+              return case_info.parent.parent.parent.parent
+            elif element_type==FuncInfo and case_info.parent.parent.parent in elements.values():
+              return case_info.parent.parent.parent
+            elif element_type==LineInfo and case_info.parent.parent in elements.values():
+              return case_info.parent.parent
+            elif element_type==TbarTypeInfo and case_info.parent in elements.values():
+              return case_info.parent
 
 def select_patch_SPR(state: MSVState) -> PatchInfo:
   # Select file and line by priority
@@ -846,76 +980,6 @@ def select_patch_tbar(state: MSVState) -> TbarPatchInfo:
   caseinfo = state.switch_case_map[loc]
   return TbarPatchInfo(caseinfo)
 
-def select_patch_tbar_guide_algorithm(state: MSVState,elements:dict,parent=None):
-  for element in elements:
-    element_type=type(elements[element])
-  selected=[]
-  p_p=[]
-  p_b=[]
-  if element_type==FileInfo:
-    total_basic_patch=state.total_basic_patch
-    total_plausible_patch=state.total_plausible_patch
-  else:
-    total_basic_patch=parent.children_basic_patches
-    total_plausible_patch=parent.children_plausible_patches
-  
-  if total_basic_patch>0:
-    is_decided=False
-    # Follow guided search if basic patch exist
-    if total_plausible_patch:
-      # Select with plausible patch
-      for element_name in elements:
-        info = elements[element_name]
-        selected.append(info)
-        p_p.append(info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-
-      max_score=0.
-      for i in range(len(selected)):
-        if p_p[i]>max_score:
-          max_score=p_p[i]
-          max_index=i
-      
-      freq=total_plausible_patch/state.total_plausible_patch if state.total_plausible_patch > 0 else 0.
-      bp_freq=selected[max_index].consecutive_fail_plausible_count
-      if random.random()< weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq)):
-        state.msv_logger.debug(f'Use guidance with plausible patch: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}')
-        return selected[max_index]
-    
-    if not is_decided:
-      # Select with basic patch
-      selected.clear()
-      for element_name in elements:
-        info = elements[element_name]
-        selected.append(info)
-        p_b.append(info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-
-      max_score=0.
-      for i in range(len(selected)):
-        if p_b[i]>max_score:
-          max_score=p_b[i]
-          max_index=i
-
-      freq=total_basic_patch/state.total_basic_patch if state.total_basic_patch > 0 else 0.
-      bp_freq=selected[max_index].consecutive_fail_count
-      if random.random()< weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq)):
-        state.msv_logger.debug(f'Use guidance with basic patch: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}')
-        return selected[max_index]
-      
-      if not is_decided:
-        state.msv_logger.debug(f'Use original order: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}')
-        # Select original order
-        for patch in state.patch_ranking:
-          case_info=state.switch_case_map[patch]
-          if case_info in case_info.parent.tbar_case_info_map.values():
-            if element_type==FileInfo and case_info.parent.parent.parent.parent in elements.values():
-              return case_info.parent.parent.parent.parent
-            elif element_type==FuncInfo and case_info.parent.parent.parent in elements.values():
-              return case_info.parent.parent.parent
-            elif element_type==LineInfo and case_info.parent.parent in elements.values():
-              return case_info.parent.parent
-            elif element_type==TbarTypeInfo and case_info.parent in elements.values():
-              return case_info.parent
-
 def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   """
   Select a patch for Tbar.
@@ -963,89 +1027,11 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   else:
     state.msv_logger.info("Exploit!")
 
-  def epsilon_search(source=None):
-    """
-      Do epsilon search if there's no basic patch.
-      source: File/Function/Line/TbarType info, or None if file selection
-    """
-    top_fl_patches:List[TbarCaseInfo]=[] # All 'not searched' top scored patches
-    top_all_patches=[] # All top scored patches, include searched or not searched
-    prev_score=0.
-    # Get all top fl patches
-    for e in state.patch_ranking:
-      case_info = state.switch_case_map[e]
-      if prev_score==0. or prev_score==case_info.parent.parent.fl_score:
-        top_all_patches.append(case_info)
-        if case_info in case_info.parent.tbar_case_info_map.values():
-          # Not searched yet
-          top_fl_patches.append(case_info)
-        prev_score=case_info.parent.parent.fl_score
-      elif prev_score!=0. and prev_score>case_info.parent.parent.fl_score:
-        break
-    
-    result=[]
-    # Get all top scored data in source
-    for case_info in top_fl_patches:
-      if source is None:
-        for file in state.file_info_map:
-          if case_info.parent.parent.parent.parent==state.file_info_map[file]:
-            result.append(state.file_info_map[file])
-            break
-      elif type(source) == FileInfo:
-        for func in source.func_info_map:
-          if case_info.parent.parent.parent==source.func_info_map[func]:
-            result.append(source.func_info_map[func])
-            break
-      elif type(source) == FuncInfo:
-        for line in source.line_info_map:
-          if case_info.parent.parent==source.line_info_map[line]:
-            result.append(source.line_info_map[line])
-            break
-      elif type(source) == LineInfo:
-        for type_info in source.tbar_type_info_map:
-          if case_info.parent==source.tbar_type_info_map[type_info]:
-            result.append(source.tbar_type_info_map[type_info])
-            break
-      elif type(source) == TbarTypeInfo:
-        for case in source.tbar_case_info_map:
-          if case_info==source.tbar_case_info_map[case]:
-            result.append(source.tbar_case_info_map[case])
-            break
-      else:
-        raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
-
-    # Get total patches and total searched patches, for epsilon greedy method
-    total_patches=len(top_all_patches)
-    total_searched=len(top_all_patches)-len(top_fl_patches)
-    epsilon=epsilon_greedy(total_patches,total_searched)
-    is_epsilon_greedy=np.random.random()<epsilon and state.use_epsilon
-
-    if is_epsilon_greedy:
-      # Perform random search in epsilon probability
-      state.msv_logger.debug(f'Use epsilon greedy method, epsilon: {epsilon}')
-      index=random.randint(0,len(result)-1)
-      return result[index]
-    else:
-      # Return top scored layer in original
-      state.msv_logger.debug(f'Use original order, epsilon: {epsilon}')
-      if source is None:
-        return top_fl_patches[0].parent.parent.parent.parent
-      elif type(source) == FileInfo:
-        return top_fl_patches[0].parent.parent.parent
-      elif type(source) == FuncInfo:
-        return top_fl_patches[0].parent.parent
-      elif type(source) == LineInfo:
-        return top_fl_patches[0].parent
-      elif type(source) == TbarTypeInfo:
-        return top_fl_patches[0]
-      else:
-        raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
-
   # Select file
   if state.total_basic_patch>0:
-    selected_file_info: FileInfo = select_patch_tbar_guide_algorithm(state,state.file_info_map,None)
+    selected_file_info: FileInfo = select_patch_guide_algorithm(state,state.file_info_map,None)
   else:
-    selected_file_info: FileInfo = epsilon_search(None)
+    selected_file_info: FileInfo = epsilon_search(state,None)
 
   for file_name in state.file_info_map:
     file_info=state.file_info_map[file_name]
@@ -1068,9 +1054,9 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
 
   # Select function
   if selected_file_info.children_basic_patches>0:
-    selected_func_info: FuncInfo = select_patch_tbar_guide_algorithm(state,selected_file_info.func_info_map,selected_file_info)
+    selected_func_info: FuncInfo = select_patch_guide_algorithm(state,selected_file_info.func_info_map,selected_file_info)
   else:
-    selected_func_info: FuncInfo = epsilon_search(selected_file_info)
+    selected_func_info: FuncInfo = epsilon_search(state,selected_file_info)
 
   for func_name in selected_file_info.func_info_map:
     func_info=selected_file_info.func_info_map[func_name]
@@ -1094,9 +1080,9 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
 
   # Select line
   if selected_func_info.children_basic_patches>0:
-    selected_line_info: LineInfo = select_patch_tbar_guide_algorithm(state,selected_func_info.line_info_map,selected_func_info)
+    selected_line_info: LineInfo = select_patch_guide_algorithm(state,selected_func_info.line_info_map,selected_func_info)
   else:
-    selected_line_info: LineInfo = epsilon_search(selected_func_info)
+    selected_line_info: LineInfo = epsilon_search(state,selected_func_info)
 
   for line in selected_func_info.line_info_map:
     line_info=selected_func_info.line_info_map[line]
@@ -1121,9 +1107,9 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
 
   # Select type
   if selected_line_info.children_basic_patches>0:
-    selected_type_info: TbarTypeInfo = select_patch_tbar_guide_algorithm(state,selected_line_info.tbar_type_info_map,selected_line_info)
+    selected_type_info: TbarTypeInfo = select_patch_guide_algorithm(state,selected_line_info.tbar_type_info_map,selected_line_info)
   else:
-    selected_type_info: TbarTypeInfo = epsilon_search(selected_line_info)
+    selected_type_info: TbarTypeInfo = epsilon_search(state,selected_line_info)
 
   for tbar_type in selected_line_info.tbar_type_info_map:
     type_info=selected_line_info.tbar_type_info_map[tbar_type]

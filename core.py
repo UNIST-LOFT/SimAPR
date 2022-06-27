@@ -434,10 +434,14 @@ class SwitchInfo:
     self.has_init_patch=False
     self.case_update_count: int = 0
     self.children_basic_patches:int=0
+    self.children_plausible_patches:int=0
+    self.consecutive_fail_count:int=0
+    self.consecutive_fail_plausible_count:int=0
+
   def __hash__(self) -> int:
     return hash(self.switch_number)
   def __eq__(self, other) -> bool:
-    return self.switch_number == other.switch_number
+    return self.switch_number == other.switch_number and self.parent==other.parent
 
 class TypeInfo:
   def __init__(self, parent: SwitchInfo, patch_type: PatchType) -> None:
@@ -461,7 +465,7 @@ class TypeInfo:
   def __hash__(self) -> int:
     return hash(self.patch_type)
   def __eq__(self, other) -> bool:
-    return self.patch_type == other.patch_type
+    return self.patch_type == other.patch_type and self.parent==other.parent
 
 class CaseInfo:
   def __init__(self, parent: TypeInfo, case_number: int, is_condition: bool) -> None:
@@ -491,6 +495,7 @@ class CaseInfo:
     self.synthesis_tried:int=0 # tried counter for search record, removed after 11
     self.has_init_patch=False
     self.func_distance=0.9999 # If it is function replace, save distance of function name
+    self.total_case_info=1
     self.parent.total_case_info += 1
     self.parent.parent.total_case_info += 1
     self.parent.parent.parent.total_case_info += 1
