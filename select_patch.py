@@ -117,23 +117,23 @@ def epsilon_search(state:MSVState,source=None):
         if source is None:
           source_has=True
         elif type(source)==FileInfo:
-          if state.switch_case_map[case].parent.parent.parent.parent==source:
+          if case.parent.parent.parent.parent==source:
             source_has=True
         elif type(source)==FuncInfo:
-          if state.switch_case_map[case].parent.parent.parent==source:
+          if case.parent.parent.parent==source:
             source_has=True
         elif type(source)==LineInfo:
-          if state.switch_case_map[case].parent.parent==source:
+          if case.parent.parent==source:
             source_has=True
         elif type(source)==TbarTypeInfo:
-          if state.switch_case_map[case].parent==source:
+          if case.parent==source:
             source_has=True
 
         if source_has:
-          top_all_patches.append(state.switch_case_map[case])
-          if state.switch_case_map[case] in state.switch_case_map[case].parent.tbar_case_info_map.values():
+          top_all_patches.append(case)
+          if case in case.parent.tbar_case_info_map.values():
             # Not searched yet
-            top_fl_patches.append(state.switch_case_map[case])
+            top_fl_patches.append(case)
       
       if len(top_fl_patches)>0:
         break

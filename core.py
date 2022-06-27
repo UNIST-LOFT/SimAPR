@@ -1660,7 +1660,7 @@ class MSVState:
     self.seapr_layer:SeAPRMode=SeAPRMode.FUNCTION
 
     self.c_patch_ranking:Dict[float,List[CaseInfo]]=dict()
-    self.java_patch_ranking:Dict[float,List[str]]=dict()
+    self.java_patch_ranking:Dict[float,List[TbarCaseInfo]]=dict()
 
 def remove_file_or_pass(file:str):
   try:
