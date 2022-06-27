@@ -448,6 +448,7 @@ def read_info_tbar(state: MSVState) -> None:
           tbar_type_info.tbar_case_info_map[location] = tbar_case_info
           state.switch_case_map[location] = tbar_case_info
           state.patch_location_map[location] = tbar_case_info
+          tbar_case_info.total_case_info+=1
           tbar_type_info.total_case_info += 1
           line_info.total_case_info += 1
           func_info.total_case_info += 1

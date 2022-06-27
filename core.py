@@ -310,7 +310,7 @@ class TbarTypeInfo:
   def __hash__(self) -> int:
     return hash(self.mutation)
   def __eq__(self, other) -> bool:
-    return self.mutation == other.mutation
+    return self.mutation == other.mutation and self.parent==other.parent
 
 class TbarCaseInfo:
   def __init__(self, parent: TbarTypeInfo, location: str, start: int, end: int) -> None:
