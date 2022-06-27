@@ -273,7 +273,7 @@ class FuncInfo:
   def __hash__(self) -> int:
     return hash(self.id)
   def __eq__(self, other) -> bool:
-    return self.id == other.id
+    return self.id == other.id and self.parent.file_name == other.parent.file_name
 
 class LineInfo:
   def __init__(self, parent: FuncInfo, line_number: int) -> None:
