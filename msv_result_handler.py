@@ -15,12 +15,6 @@ def update_result(state: MSVState, selected_patch: List[PatchInfo], run_result: 
   if run_result:
     state.total_basic_patch += 1
     for patch in selected_patch:
-      patch.type_info.children_basic_patches+=1
-      patch.switch_info.children_basic_patches+=1
-      patch.line_info.children_basic_patches+=1
-      patch.func_info.children_basic_patches+=1
-      patch.file_info.children_basic_patches+=1
-
       patch.type_info.consecutive_fail_count=0
       patch.switch_info.consecutive_fail_count=0
       patch.line_info.consecutive_fail_count=0
