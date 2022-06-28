@@ -112,28 +112,31 @@ def epsilon_search(state:MSVState,source=None):
   if state.tbar_mode:
     sorted_scores=sorted(state.java_patch_ranking.keys(),reverse=True)
     for e in sorted_scores:
-      for case in state.java_patch_ranking[e]:
-        source_has=False
-        if source is None:
-          source_has=True
-        elif type(source)==FileInfo:
-          if case.parent.parent.parent.parent==source:
+      cur_patches=state.java_patch_ranking[e]
+      for case in state.patch_ranking:
+        cur_patch=state.switch_case_map[case]
+        if cur_patch in cur_patches:
+          source_has=False
+          if source is None:
             source_has=True
-        elif type(source)==FuncInfo:
-          if case.parent.parent.parent==source:
-            source_has=True
-        elif type(source)==LineInfo:
-          if case.parent.parent==source:
-            source_has=True
-        elif type(source)==TbarTypeInfo:
-          if case.parent==source:
-            source_has=True
+          elif type(source)==FileInfo:
+            if cur_patch.parent.parent.parent.parent==source:
+              source_has=True
+          elif type(source)==FuncInfo:
+            if cur_patch.parent.parent.parent==source:
+              source_has=True
+          elif type(source)==LineInfo:
+            if cur_patch.parent.parent==source:
+              source_has=True
+          elif type(source)==TbarTypeInfo:
+            if cur_patch.parent==source:
+              source_has=True
 
-        if source_has:
-          top_all_patches.append(case)
-          if case in case.parent.tbar_case_info_map.values():
-            # Not searched yet
-            top_fl_patches.append(case)
+          if source_has:
+            top_all_patches.append(cur_patch)
+            if cur_patch in cur_patch.parent.tbar_case_info_map.values():
+              # Not searched yet
+              top_fl_patches.append(cur_patch)
       
       if len(top_fl_patches)>0:
         break
@@ -175,7 +178,7 @@ def epsilon_search(state:MSVState,source=None):
         top_all_patches.clear()
         top_fl_patches.clear()
   
-  result=[]
+  result=set()
   # Get all top scored data in source
   for case_info in top_fl_patches:
     if state.tbar_mode:
@@ -183,27 +186,27 @@ def epsilon_search(state:MSVState,source=None):
       if source is None:
         for file in state.file_info_map:
           if case_info.parent.parent.parent.parent==state.file_info_map[file]:
-            result.append(state.file_info_map[file])
+            result.add(state.file_info_map[file])
             break
       elif type(source) == FileInfo:
         for func in source.func_info_map:
           if case_info.parent.parent.parent==source.func_info_map[func]:
-            result.append(source.func_info_map[func])
+            result.add(source.func_info_map[func])
             break
       elif type(source) == FuncInfo:
         for line in source.line_info_map:
           if case_info.parent.parent==source.line_info_map[line]:
-            result.append(source.line_info_map[line])
+            result.add(source.line_info_map[line])
             break
       elif type(source) == LineInfo:
         for type_info in source.tbar_type_info_map:
           if case_info.parent==source.tbar_type_info_map[type_info]:
-            result.append(source.tbar_type_info_map[type_info])
+            result.add(source.tbar_type_info_map[type_info])
             break
       elif type(source) == TbarTypeInfo:
         for case in source.tbar_case_info_map:
           if case_info==source.tbar_case_info_map[case]:
-            result.append(source.tbar_case_info_map[case])
+            result.add(source.tbar_case_info_map[case])
             break
       else:
         raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
@@ -212,81 +215,82 @@ def epsilon_search(state:MSVState,source=None):
       if source is None:
         for file in state.file_info_map:
           if case_info.parent.parent.parent.parent.parent==state.file_info_map[file]:
-            result.append(state.file_info_map[file])
+            result.add(state.file_info_map[file])
             break
       elif type(source) == FileInfo:
         for func in source.func_info_map:
           if case_info.parent.parent.parent.parent==source.func_info_map[func]:
-            result.append(source.func_info_map[func])
+            result.add(source.func_info_map[func])
             break
       elif type(source) == FuncInfo:
         for line in source.line_info_map:
           if case_info.parent.parent.parent==source.line_info_map[line]:
-            result.append(source.line_info_map[line])
+            result.add(source.line_info_map[line])
             break
       elif type(source) == LineInfo:
         for switch in source.switch_info_map:
           if case_info.parent.parent==source.switch_info_map[switch]:
-            result.append(source.switch_info_map[switch])
+            result.add(source.switch_info_map[switch])
             break
       elif type(source) == SwitchInfo:
         for type_info in source.type_info_map:
           if case_info.parent==source.type_info_map[type_info]:
-            result.append(source.type_info_map[type_info])
+            result.add(source.type_info_map[type_info])
             break
       elif type(source) == TypeInfo:
         for case in source.case_info_map:
           if case_info==source.case_info_map[case]:
-            result.append(source.case_info_map[case])
+            result.add(source.case_info_map[case])
             break
       else:
         raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
 
 
-    # Get total patches and total searched patches, for epsilon greedy method
-    total_patches=len(top_all_patches)
-    total_searched=len(top_all_patches)-len(top_fl_patches)
-    epsilon=epsilon_greedy(total_patches,total_searched)
-    is_epsilon_greedy=np.random.random()<epsilon and state.use_epsilon
+  # Get total patches and total searched patches, for epsilon greedy method
+  total_patches=len(top_all_patches)
+  total_searched=len(top_all_patches)-len(top_fl_patches)
+  epsilon=epsilon_greedy(total_patches,total_searched)
+  is_epsilon_greedy=np.random.random()<epsilon and state.use_epsilon
+  result=list(result)
 
-    if is_epsilon_greedy:
-      # Perform random search in epsilon probability
-      state.msv_logger.debug(f'Use epsilon greedy method, epsilon: {epsilon}')
-      index=random.randint(0,len(result)-1)
-      return result[index]
-    else:
-      # Return top scored layer in original
-      state.msv_logger.debug(f'Use original order, epsilon: {epsilon}')
-      if state.tbar_mode:
-        # For java
-        if source is None:
-          return top_fl_patches[0].parent.parent.parent.parent
-        elif type(source) == FileInfo:
-          return top_fl_patches[0].parent.parent.parent
-        elif type(source) == FuncInfo:
-          return top_fl_patches[0].parent.parent
-        elif type(source) == LineInfo:
-          return top_fl_patches[0].parent
-        elif type(source) == TbarTypeInfo:
-          return top_fl_patches[0]
-        else:
-          raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
+  if is_epsilon_greedy:
+    # Perform random search in epsilon probability
+    state.msv_logger.debug(f'Use epsilon greedy method, epsilon: {epsilon}')
+    index=random.randint(0,len(result)-1)
+    return result[index]
+  else:
+    # Return top scored layer in original
+    state.msv_logger.debug(f'Use original order, epsilon: {epsilon}')
+    if state.tbar_mode:
+      # For java
+      if source is None:
+        return top_fl_patches[0].parent.parent.parent.parent
+      elif type(source) == FileInfo:
+        return top_fl_patches[0].parent.parent.parent
+      elif type(source) == FuncInfo:
+        return top_fl_patches[0].parent.parent
+      elif type(source) == LineInfo:
+        return top_fl_patches[0].parent
+      elif type(source) == TbarTypeInfo:
+        return top_fl_patches[0]
       else:
-        # For C
-        if source is None:
-          return top_fl_patches[0].parent.parent.parent.parent.parent
-        elif type(source) == FileInfo:
-          return top_fl_patches[0].parent.parent.parent.parent
-        elif type(source) == FuncInfo:
-          return top_fl_patches[0].parent.parent.parent
-        elif type(source) == LineInfo:
-          return top_fl_patches[0].parent.parent
-        elif type(source) == SwitchInfo:
-          return top_fl_patches[0].parent
-        elif type(source) == TypeInfo:
-          return top_fl_patches[0]
-        else:
-          raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
+        raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
+    else:
+      # For C
+      if source is None:
+        return top_fl_patches[0].parent.parent.parent.parent.parent
+      elif type(source) == FileInfo:
+        return top_fl_patches[0].parent.parent.parent.parent
+      elif type(source) == FuncInfo:
+        return top_fl_patches[0].parent.parent.parent
+      elif type(source) == LineInfo:
+        return top_fl_patches[0].parent.parent
+      elif type(source) == SwitchInfo:
+        return top_fl_patches[0].parent
+      elif type(source) == TypeInfo:
+        return top_fl_patches[0]
+      else:
+        raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
 
 
 def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
