@@ -207,7 +207,7 @@ def main(argv: List[str]) -> None:
   root_path = argv[1]
   buggy_project = os.environ["MSV_BUGGY_PROJECT"]
   proj, pid = buggy_project.split("_")
-  buggy_dir = os.path.join(root_path, "buggy", buggy_project)
+  buggy_dir = os.path.join(root_path, buggy_project)
   patch_location = os.environ["MSV_LOCATION"]
   d4j_dir = os.environ["MSV_WORKDIR"]
   run_original = patch_location == "original"
