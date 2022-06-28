@@ -318,7 +318,7 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
           max_score=p_p[i]
           max_index=i
       
-      freq=selected[max_index].children_plausible_patch/state.total_plausible_patch if state.total_plausible_patch > 0 else 0.
+      freq=selected[max_index].children_plausible_patches/state.total_plausible_patch if state.total_plausible_patch > 0 else 0.
       bp_freq=selected[max_index].consecutive_fail_plausible_count
       if random.random()< weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq)):
         state.msv_logger.debug(f'Use guidance with plausible patch: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}')
@@ -338,7 +338,7 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
           max_score=p_b[i]
           max_index=i
 
-      freq=selected[max_index].children_basic_patch/state.total_basic_patch if state.total_basic_patch > 0 else 0.
+      freq=selected[max_index].children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0.
       bp_freq=selected[max_index].consecutive_fail_count
       if random.random()< weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq)):
         state.msv_logger.debug(f'Use guidance with basic patch: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}')
