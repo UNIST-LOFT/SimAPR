@@ -203,35 +203,23 @@ def epsilon_search(state:MSVState,source=None):
     else:
       # For C
       if source is None:
-        for file in state.file_info_map:
-          if case_info.parent.parent.parent.parent.parent==state.file_info_map[file]:
-            result.add(state.file_info_map[file])
-            break
+          if case_info.parent.parent.parent.parent.parent in state.file_info_map.values():
+            result.add(case_info.parent.parent.parent.parent.parent)
       elif type(source) == FileInfo:
-        for func in source.func_info_map:
-          if case_info.parent.parent.parent.parent==source.func_info_map[func]:
-            result.add(source.func_info_map[func])
-            break
+          if case_info.parent.parent.parent.parent in source.func_info_map.values():
+            result.add(case_info.parent.parent.parent.parent)
       elif type(source) == FuncInfo:
-        for line in source.line_info_map:
-          if case_info.parent.parent.parent==source.line_info_map[line]:
-            result.add(source.line_info_map[line])
-            break
+          if case_info.parent.parent.parent in source.line_info_map.values():
+            result.add(case_info.parent.parent.parent)
       elif type(source) == LineInfo:
-        for switch in source.switch_info_map:
-          if case_info.parent.parent==source.switch_info_map[switch]:
-            result.add(source.switch_info_map[switch])
-            break
+          if case_info.parent.parent in source.switch_info_map.values():
+            result.add(case_info.parent.parent)
       elif type(source) == SwitchInfo:
-        for type_info in source.type_info_map:
-          if case_info.parent==source.type_info_map[type_info]:
-            result.add(source.type_info_map[type_info])
-            break
+          if case_info.parent in source.type_info_map.values():
+            result.add(case_info.parent)
       elif type(source) == TypeInfo:
-        for case in source.case_info_map:
-          if case_info==source.case_info_map[case]:
-            result.add(source.case_info_map[case])
-            break
+          if case_info in source.case_info_map.values():
+            result.add(case_info)
       else:
         raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
 
