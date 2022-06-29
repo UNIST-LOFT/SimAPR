@@ -107,42 +107,32 @@ def epsilon_search(state:MSVState,source=None):
   """
   top_fl_patches:List[TbarCaseInfo]=[] # All 'not searched' top scored patches
   top_all_patches=[] # All top scored patches, include searched or not searched
-  prev_score=0.
   # Get all top fl patches
   if state.tbar_mode:
     sorted_scores=sorted(state.java_patch_ranking.keys(),reverse=True)
     for e in sorted_scores:
-      cur_patches=state.java_patch_ranking[e]
-      for case in state.patch_ranking:
-        cur_patch=state.switch_case_map[case]
-        # Simple optimization: state.patch_ranking is sorted with FL score!
-        if cur_patch.parent.parent.fl_score<e:
-          break
-        elif cur_patch.parent.parent.fl_score!=e:
-          continue
-        
-        if cur_patch in cur_patches:
-          source_has=False
-          if source is None:
+      for case in state.java_patch_ranking[e]:
+        source_has=False
+        if source is None:
+          source_has=True
+        elif type(source)==FileInfo:
+          if case.parent.parent.parent.parent==source:
             source_has=True
-          elif type(source)==FileInfo:
-            if cur_patch.parent.parent.parent.parent==source:
-              source_has=True
-          elif type(source)==FuncInfo:
-            if cur_patch.parent.parent.parent==source:
-              source_has=True
-          elif type(source)==LineInfo:
-            if cur_patch.parent.parent==source:
-              source_has=True
-          elif type(source)==TbarTypeInfo:
-            if cur_patch.parent==source:
-              source_has=True
+        elif type(source)==FuncInfo:
+          if case.parent.parent.parent==source:
+            source_has=True
+        elif type(source)==LineInfo:
+          if case.parent.parent==source:
+            source_has=True
+        elif type(source)==TbarTypeInfo:
+          if case.parent==source:
+            source_has=True
 
-          if source_has:
-            top_all_patches.append(cur_patch)
-            if cur_patch in cur_patch.parent.tbar_case_info_map.values():
-              # Not searched yet
-              top_fl_patches.append(cur_patch)
+        if source_has:
+          top_all_patches.append(case)
+          if case in case.parent.tbar_case_info_map.values():
+            # Not searched yet
+            top_fl_patches.append(case)
       
       if len(top_fl_patches)>0:
         break
@@ -182,8 +172,7 @@ def epsilon_search(state:MSVState,source=None):
         break
       else:
         top_all_patches.clear()
-        top_fl_patches.clear()
-  
+        top_fl_patches.clear()  
 
   # Get total patches and total searched patches, for epsilon greedy method
   total_patches=len(top_all_patches)
