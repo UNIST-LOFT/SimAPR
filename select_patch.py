@@ -115,6 +115,12 @@ def epsilon_search(state:MSVState,source=None):
       cur_patches=state.java_patch_ranking[e]
       for case in state.patch_ranking:
         cur_patch=state.switch_case_map[case]
+        # Simple optimization: state.patch_ranking is sorted with FL score!
+        if cur_patch.parent.parent.fl_score<e:
+          break
+        elif cur_patch.parent.parent.fl_score!=e:
+          continue
+        
         if cur_patch in cur_patches:
           source_has=False
           if source is None:
