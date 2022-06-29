@@ -178,62 +178,65 @@ def epsilon_search(state:MSVState,source=None):
         top_all_patches.clear()
         top_fl_patches.clear()
   
-  result=set()
-  # Get all top scored data in source
-  for case_info in top_fl_patches:
-    if state.tbar_mode:
-      # For java
-      if source is None:
-        if case_info.parent.parent.parent.parent in state.file_info_map.values():
-          result.add(case_info.parent.parent.parent.parent)
-      elif type(source) == FileInfo:
-          if case_info.parent.parent.parent in source.func_info_map.values():
-            result.add(case_info.parent.parent.parent)
-      elif type(source) == FuncInfo:
-          if case_info.parent.parent in source.line_info_map.values():
-            result.add(case_info.parent.parent)
-      elif type(source) == LineInfo:
-          if case_info.parent in source.tbar_type_info_map.values():
-            result.add(case_info.parent)
-      elif type(source) == TbarTypeInfo:
-          if case_info in source.tbar_case_info_map.values():
-            result.add(case_info)
-      else:
-        raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
-    else:
-      # For C
-      if source is None:
-          if case_info.parent.parent.parent.parent.parent in state.file_info_map.values():
-            result.add(case_info.parent.parent.parent.parent.parent)
-      elif type(source) == FileInfo:
-          if case_info.parent.parent.parent.parent in source.func_info_map.values():
-            result.add(case_info.parent.parent.parent.parent)
-      elif type(source) == FuncInfo:
-          if case_info.parent.parent.parent in source.line_info_map.values():
-            result.add(case_info.parent.parent.parent)
-      elif type(source) == LineInfo:
-          if case_info.parent.parent in source.switch_info_map.values():
-            result.add(case_info.parent.parent)
-      elif type(source) == SwitchInfo:
-          if case_info.parent in source.type_info_map.values():
-            result.add(case_info.parent)
-      elif type(source) == TypeInfo:
-          if case_info in source.case_info_map.values():
-            result.add(case_info)
-      else:
-        raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
-
 
   # Get total patches and total searched patches, for epsilon greedy method
   total_patches=len(top_all_patches)
   total_searched=len(top_all_patches)-len(top_fl_patches)
   epsilon=epsilon_greedy(total_patches,total_searched)
   is_epsilon_greedy=np.random.random()<epsilon and state.use_epsilon
-  result=list(result)
 
   if is_epsilon_greedy:
     # Perform random search in epsilon probability
     state.msv_logger.debug(f'Use epsilon greedy method, epsilon: {epsilon}')
+
+    # First, find all available candidates
+    result=set()
+    # Get all top scored data in source
+    for case_info in top_fl_patches:
+      if state.tbar_mode:
+        # For java
+        if source is None:
+          if case_info.parent.parent.parent.parent in state.file_info_map.values():
+            result.add(case_info.parent.parent.parent.parent)
+        elif type(source) == FileInfo:
+          if case_info.parent.parent.parent in source.func_info_map.values():
+            result.add(case_info.parent.parent.parent)
+        elif type(source) == FuncInfo:
+          if case_info.parent.parent in source.line_info_map.values():
+            result.add(case_info.parent.parent)
+        elif type(source) == LineInfo:
+          if case_info.parent in source.tbar_type_info_map.values():
+            result.add(case_info.parent)
+        elif type(source) == TbarTypeInfo:
+          if case_info in source.tbar_case_info_map.values():
+            result.add(case_info)
+        else:
+          raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
+      else:
+        # For C
+        if source is None:
+          if case_info.parent.parent.parent.parent.parent in state.file_info_map.values():
+            result.add(case_info.parent.parent.parent.parent.parent)
+        elif type(source) == FileInfo:
+          if case_info.parent.parent.parent.parent in source.func_info_map.values():
+            result.add(case_info.parent.parent.parent.parent)
+        elif type(source) == FuncInfo:
+          if case_info.parent.parent.parent in source.line_info_map.values():
+            result.add(case_info.parent.parent.parent)
+        elif type(source) == LineInfo:
+          if case_info.parent.parent in source.switch_info_map.values():
+            result.add(case_info.parent.parent)
+        elif type(source) == SwitchInfo:
+          if case_info.parent in source.type_info_map.values():
+            result.add(case_info.parent)
+        elif type(source) == TypeInfo:
+          if case_info in source.case_info_map.values():
+            result.add(case_info)
+        else:
+          raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
+
+    # Choose random element in candidates
+    result=list(result)
     index=random.randint(0,len(result)-1)
     return result[index]
   else:
@@ -581,9 +584,6 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
   for file_name in state.file_info_map:
     file_info=state.file_info_map[file_name]
     p_fl.append(max(file_info.prophet_score))
-    p_b.append(file_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_p.append(file_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_o.append(file_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_frequency.append(file_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
     p_bp_frequency.append(file_info.consecutive_fail_count)
   norm=PassFail.normalize(p_fl)
@@ -606,9 +606,6 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
   for func_name in selected_file_info.func_info_map:
     func_info=selected_file_info.func_info_map[func_name]
     p_fl.append(max(func_info.prophet_score))
-    p_b.append(func_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_p.append(func_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_o.append(func_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_frequency.append(func_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
     p_bp_frequency.append(func_info.consecutive_fail_count)
   norm=PassFail.normalize(p_fl)
@@ -632,9 +629,6 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
   for line_name in selected_func_info.line_info_map:
     line_info=selected_func_info.line_info_map[line_name]
     p_fl.append(max(line_info.prophet_score))
-    p_b.append(line_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_p.append(line_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_o.append(line_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_frequency.append(line_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
     p_bp_frequency.append(line_info.consecutive_fail_count)
   norm=PassFail.normalize(p_fl)
@@ -660,9 +654,6 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
   for switch_name in selected_line_info.switch_info_map:
     switch_info=selected_line_info.switch_info_map[switch_name]
     p_fl.append(max(switch_info.prophet_score))
-    p_b.append(switch_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_p.append(switch_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_o.append(switch_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_frequency.append(switch_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
     p_bp_frequency.append(switch_info.consecutive_fail_count)
   norm=PassFail.normalize(p_fl)
@@ -686,9 +677,6 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
   for type_name in selected_switch_info.type_info_map:
     type_info=selected_switch_info.type_info_map[type_name]
     p_fl.append(max(type_info.prophet_score))
-    p_b.append(type_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_p.append(type_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_o.append(type_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_frequency.append(type_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
     p_bp_frequency.append(type_info.consecutive_fail_count)
   norm=PassFail.normalize(p_fl)
@@ -1117,9 +1105,6 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   for file_name in state.file_info_map:
     file_info=state.file_info_map[file_name]
     p_fl.append(max(file_info.fl_score_list))
-    p_b.append(file_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_p.append(file_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_o.append(file_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_frequency.append(file_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
     p_bp_frequency.append(file_info.consecutive_fail_count)
   norm=PassFail.normalize(p_fl)
@@ -1142,9 +1127,6 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   for func_name in selected_file_info.func_info_map:
     func_info=selected_file_info.func_info_map[func_name]
     p_fl.append(max(func_info.fl_score_list))
-    p_b.append(func_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_p.append(func_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_o.append(func_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_frequency.append(func_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
     p_bp_frequency.append(func_info.consecutive_fail_count)
   norm=PassFail.normalize(p_fl)
@@ -1168,9 +1150,6 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   for line in selected_func_info.line_info_map:
     line_info=selected_func_info.line_info_map[line]
     p_fl.append(line_info.fl_score)
-    p_b.append(line_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_p.append(line_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_o.append(line_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_frequency.append(line_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
     p_bp_frequency.append(line_info.consecutive_fail_count)
   norm=PassFail.normalize(p_fl)
@@ -1194,9 +1173,6 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
 
   for tbar_type in selected_line_info.tbar_type_info_map:
     type_info=selected_line_info.tbar_type_info_map[tbar_type]
-    p_b.append(type_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_p.append(type_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_o.append(type_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
     p_frequency.append(type_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
     p_bp_frequency.append(type_info.consecutive_fail_count)
   selected_type=0
