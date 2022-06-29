@@ -184,30 +184,20 @@ def epsilon_search(state:MSVState,source=None):
     if state.tbar_mode:
       # For java
       if source is None:
-        for file in state.file_info_map:
-          if case_info.parent.parent.parent.parent==state.file_info_map[file]:
-            result.add(state.file_info_map[file])
-            break
+        if case_info.parent.parent.parent.parent in state.file_info_map.values():
+          result.add(case_info.parent.parent.parent.parent)
       elif type(source) == FileInfo:
-        for func in source.func_info_map:
-          if case_info.parent.parent.parent==source.func_info_map[func]:
-            result.add(source.func_info_map[func])
-            break
+          if case_info.parent.parent.parent in source.func_info_map.values():
+            result.add(case_info.parent.parent.parent)
       elif type(source) == FuncInfo:
-        for line in source.line_info_map:
-          if case_info.parent.parent==source.line_info_map[line]:
-            result.add(source.line_info_map[line])
-            break
+          if case_info.parent.parent in source.line_info_map.values():
+            result.add(case_info.parent.parent)
       elif type(source) == LineInfo:
-        for type_info in source.tbar_type_info_map:
-          if case_info.parent==source.tbar_type_info_map[type_info]:
-            result.add(source.tbar_type_info_map[type_info])
-            break
+          if case_info.parent in source.tbar_type_info_map.values():
+            result.add(case_info.parent)
       elif type(source) == TbarTypeInfo:
-        for case in source.tbar_case_info_map:
-          if case_info==source.tbar_case_info_map[case]:
-            result.add(source.tbar_case_info_map[case])
-            break
+          if case_info in source.tbar_case_info_map.values():
+            result.add(case_info)
       else:
         raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
     else:
