@@ -117,7 +117,7 @@ def epsilon_search(state:MSVState,source=None):
           break
     else:
       for score in source.remain_patches_by_score:
-        if len(source.remain_patches_by_score)>0:
+        if len(source.remain_patches_by_score[score])>0:
           top_fl_patches=source.remain_patches_by_score[score]
           top_all_patches=source.patches_by_score[score]
           break
