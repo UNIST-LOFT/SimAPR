@@ -235,6 +235,8 @@ class FileInfo:
     self.children_plausible_patches:int=0
     self.consecutive_fail_count:int=0
     self.consecutive_fail_plausible_count:int=0
+    self.patches_by_score:Dict[float,List[CaseInfo]]=dict()
+    self.remain_patches_by_score:Dict[float,List[CaseInfo]]=dict()
   def __hash__(self) -> int:
     return hash(self.file_name)
   def __eq__(self, other) -> bool:
@@ -267,6 +269,8 @@ class FuncInfo:
     self.children_plausible_patches:int=0
     self.consecutive_fail_count:int=0
     self.consecutive_fail_plausible_count:int=0
+    self.patches_by_score:Dict[float,List[CaseInfo]]=dict()
+    self.remain_patches_by_score:Dict[float,List[CaseInfo]]=dict()
 
     self.total_patches_by_score:Dict[float,int]=dict() # Total patches grouped by score
     self.searched_patches_by_score:Dict[float,int]=dict() # Total searched patches grouped by score
@@ -305,6 +309,8 @@ class LineInfo:
     self.children_plausible_patches:int=0
     self.consecutive_fail_count:int=0
     self.consecutive_fail_plausible_count:int=0
+    self.patches_by_score:Dict[float,List[CaseInfo]]=dict()
+    self.remain_patches_by_score:Dict[float,List[CaseInfo]]=dict()
   def __hash__(self) -> int:
     return hash(self.uuid)
   def __eq__(self, other) -> bool:
@@ -327,6 +333,8 @@ class TbarTypeInfo:
     self.children_plausible_patches:int=0
     self.consecutive_fail_count:int=0
     self.consecutive_fail_plausible_count:int=0
+    self.patches_by_score:Dict[float,List[CaseInfo]]=dict()
+    self.remain_patches_by_score:Dict[float,List[CaseInfo]]=dict()
   def __hash__(self) -> int:
     return hash(self.mutation)
   def __eq__(self, other) -> bool:
@@ -437,6 +445,8 @@ class SwitchInfo:
     self.children_plausible_patches:int=0
     self.consecutive_fail_count:int=0
     self.consecutive_fail_plausible_count:int=0
+    self.patches_by_score:Dict[float,List[CaseInfo]]=dict()
+    self.remain_patches_by_score:Dict[float,List[CaseInfo]]=dict()
 
   def __hash__(self) -> int:
     return hash(self.switch_number)
@@ -465,6 +475,8 @@ class TypeInfo:
     self.children_plausible_patches:int=0
     self.consecutive_fail_count:int=0
     self.consecutive_fail_plausible_count:int=0
+    self.patches_by_score:Dict[float,List[CaseInfo]]=dict()
+    self.remain_patches_by_score:Dict[float,List[CaseInfo]]=dict()
   def __hash__(self) -> int:
     return hash(self.patch_type)
   def __eq__(self, other) -> bool:
@@ -1332,9 +1344,14 @@ class TbarPatchInfo:
       del state.file_info_map[self.file_info.file_name]
     self.tbar_case_info.case_update_count += 1
     self.tbar_type_info.case_update_count += 1
+    self.tbar_type_info.remain_patches_by_score[self.line_info.fl_score].remove(self.tbar_case_info)
     self.line_info.case_update_count += 1
+    self.line_info.remain_patches_by_score[self.line_info.fl_score].remove(self.tbar_case_info)
     self.func_info.case_update_count += 1
+    self.func_info.remain_patches_by_score[self.line_info.fl_score].remove(self.tbar_case_info)
     self.file_info.case_update_count += 1
+    self.file_info.remain_patches_by_score[self.line_info.fl_score].remove(self.tbar_case_info)
+    state.java_remain_patch_ranking[self.line_info.fl_score].remove(self.tbar_case_info)
     self.func_info.searched_patches_by_score[self.line_info.fl_score]+=1
 
   def to_json_object(self) -> dict:
@@ -1661,6 +1678,7 @@ class MSVState:
 
     self.c_patch_ranking:Dict[float,List[CaseInfo]]=dict()
     self.java_patch_ranking:Dict[float,List[TbarCaseInfo]]=dict()
+    self.java_remain_patch_ranking:Dict[float,List[TbarCaseInfo]]=dict()
 
 def remove_file_or_pass(file:str):
   try:

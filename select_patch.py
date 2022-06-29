@@ -109,36 +109,18 @@ def epsilon_search(state:MSVState,source=None):
   top_all_patches=[] # All top scored patches, include searched or not searched
   # Get all top fl patches
   if state.tbar_mode:
-    sorted_scores=sorted(state.java_patch_ranking.keys(),reverse=True)
-    for e in sorted_scores:
-      for case in state.java_patch_ranking[e]:
-        source_has=False
-        if source is None:
-          source_has=True
-        elif type(source)==FileInfo:
-          if case.parent.parent.parent.parent==source:
-            source_has=True
-        elif type(source)==FuncInfo:
-          if case.parent.parent.parent==source:
-            source_has=True
-        elif type(source)==LineInfo:
-          if case.parent.parent==source:
-            source_has=True
-        elif type(source)==TbarTypeInfo:
-          if case.parent==source:
-            source_has=True
-
-        if source_has:
-          top_all_patches.append(case)
-          if case in case.parent.tbar_case_info_map.values():
-            # Not searched yet
-            top_fl_patches.append(case)
-      
-      if len(top_fl_patches)>0:
-        break
-      else:
-        top_all_patches.clear()
-        top_fl_patches.clear()
+    if source is None:
+      for score in state.java_remain_patch_ranking:
+        if len(state.java_remain_patch_ranking[score])>0:
+          top_fl_patches=state.java_remain_patch_ranking[score]
+          top_all_patches=state.java_patch_ranking[score]
+          break
+    else:
+      for score in source.remain_patches_by_score:
+        if len(source.remain_patches_by_score)>0:
+          top_fl_patches=source.remain_patches_by_score[score]
+          top_all_patches=source.patches_by_score[score]
+          break
   else:
     sorted_scores=sorted(state.c_patch_ranking.keys(),reverse=True)
     for e in sorted_scores:
