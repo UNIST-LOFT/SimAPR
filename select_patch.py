@@ -117,7 +117,7 @@ def epsilon_search(state:MSVState,source=None):
           break
     else:
       for score in source.remain_patches_by_score:
-        if len(source.remain_patches_by_score)>0:
+        if len(source.remain_patches_by_score[score])>0:
           top_fl_patches=source.remain_patches_by_score[score]
           top_all_patches=source.patches_by_score[score]
           break
@@ -272,14 +272,20 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
       for element_name in elements:
         info = elements[element_name]
         selected.append(info)
-        p_p.append(info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+        if info.positive_pf.pass_count>0:
+          p_p.append(info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+        else:
+          p_p.append(0.)
 
       max_score=0.
+      max_index=-1
       for i in range(len(selected)):
         if p_p[i]>max_score:
           max_score=p_p[i]
           max_index=i
       
+      if max_index==-1:
+        return epsilon_search(state,parent)
       freq=selected[max_index].children_plausible_patches/state.total_plausible_patch if state.total_plausible_patch > 0 else 0.
       bp_freq=selected[max_index].consecutive_fail_plausible_count
       if random.random()< weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq)):
@@ -292,14 +298,20 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
       for element_name in elements:
         info = elements[element_name]
         selected.append(info)
-        p_b.append(info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+        if info.pf.pass_count>0:
+          p_b.append(info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+        else:
+          p_b.append(0.)
 
       max_score=0.
+      max_index=-1
       for i in range(len(selected)):
         if p_b[i]>max_score:
           max_score=p_b[i]
           max_index=i
 
+      if max_index==-1:
+        return epsilon_search(state,parent)
       freq=selected[max_index].children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0.
       bp_freq=selected[max_index].consecutive_fail_count
       if random.random()< weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq)):
