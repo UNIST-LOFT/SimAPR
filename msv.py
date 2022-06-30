@@ -433,11 +433,11 @@ class MSVTbar(MSV):
           if self.state.use_partial_validation and self.state.mode==MSVMode.seapr:
             break
       if is_compilable or self.state.ignore_compile_error:
-        self.state.iteration += 1
         result_handler.update_result_tbar(self.state, patch, pass_exists)
         if result and self.state.use_pass_test:
           pass_result,pass_time = self.run_test_positive(patch)
           result_handler.update_positive_result_tbar(self.state, patch, pass_result)
+      self.state.iteration += 1
       result_handler.append_result(self.state, [patch], pass_exists, pass_result, result, is_compilable,fail_time,pass_time)
       result_handler.remove_patch_tbar(self.state, patch)
   

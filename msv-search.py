@@ -21,7 +21,7 @@ def parse_args(argv: list) -> MSVState:
               "mode=", "max-parallel-cpu=",'skip-valid','use-fixed-beta','use-cpr-space','use-fixed-const', 'params=', 'tbar-mode', 'recoder-mode', "use-exp-alpha",
               "use-condition-synthesis", "use-hierarchical-selection=", "use-pass-test", "use-partial-validation", "use-full-validation",'seed=',
               "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern", "use-simulation-mode=",'remove-cached-file',
-              "use-prophet-score", "use-fl", "use-fl-prophet-score", "watch-level=",'use-msv-ext','seapr-mode=','top-fl=','use-fixed-halflife',
+              "use-prophet-score", "use-fl", "use-fl-prophet-score", "watch-level=",'use-msv-ext','seapr-mode=','top-fl=','use-fixed-halflife','ignore-compile-error',
               "func-dist-mean=",'lang-model-path=','use-init-trial=','regression-mode=']
   opts, args = getopt.getopt(argv[1:], "ho:w:p:t:m:c:j:T:E:M:S:", longopts)
   state = MSVState()
@@ -153,6 +153,8 @@ def parse_args(argv: list) -> MSVState:
     elif o in ['--seed']:
       random.seed(int(a))
       np.random.seed(int(a))
+    elif o in ['--ignore-compile-error']:
+      state.ignore_compile_error = False
 
   if sub_dir != "":
     state.out_dir = os.path.join(state.out_dir, sub_dir)
