@@ -12,3 +12,4 @@ six==1.16.0
 nltk
 gensim
 pyemd
+pyyaml
