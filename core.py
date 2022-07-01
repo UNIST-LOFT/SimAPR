@@ -1252,6 +1252,9 @@ class PatchInfo:
 
   def to_json_object(self) -> dict:
     conf = dict()
+    conf['file']=self.file_info.file_name
+    conf['function']=self.func_info.func_name
+    conf['line']=self.line_info.line_number
     conf["switch"] = self.switch_info.switch_number
     conf["case"] = self.case_info.case_number
     conf["is_cond"] = self.is_condition
