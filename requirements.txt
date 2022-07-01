@@ -1,13 +1,13 @@
 cycler==0.11.0
 dataclasses==0.8
 kiwisolver==1.3.1
-matplotlib==3.3.4
-numpy==1.19.5
+matplotlib
+numpy
 Pillow==8.4.0
-psutil==5.9.0
+psutil
 pyparsing==3.0.6
 python-dateutil==2.8.2
-python-Levenshtein==0.12.2
+python-Levenshtein
 six==1.16.0
 nltk
 gensim
