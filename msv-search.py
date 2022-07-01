@@ -21,7 +21,7 @@ def parse_args(argv: list) -> MSVState:
               "mode=", "max-parallel-cpu=",'skip-valid','use-fixed-beta','use-cpr-space','use-fixed-const', 'params=', 'tbar-mode', 'recoder-mode', "use-exp-alpha",
               "use-condition-synthesis", "use-hierarchical-selection=", "use-pass-test", "use-partial-validation", "use-full-validation",'seed=',
               "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern", "use-simulation-mode=",'remove-cached-file',
-              "use-prophet-score", "use-fl", "use-fl-prophet-score", "watch-level=",'use-msv-ext','seapr-mode=','top-fl=','use-fixed-halflife',
+              "use-prophet-score", "use-fl", "use-fl-prophet-score", "watch-level=",'use-msv-ext','seapr-mode=','top-fl=','use-fixed-halflife','ignore-compile-error',
               "func-dist-mean=",'lang-model-path=','use-init-trial=','regression-mode=']
   opts, args = getopt.getopt(argv[1:], "ho:w:p:t:m:c:j:T:E:M:S:", longopts)
   state = MSVState()
@@ -153,6 +153,8 @@ def parse_args(argv: list) -> MSVState:
     elif o in ['--seed']:
       random.seed(int(a))
       np.random.seed(int(a))
+    elif o in ['--ignore-compile-error']:
+      state.ignore_compile_error = False
 
   if sub_dir != "":
     state.out_dir = os.path.join(state.out_dir, sub_dir)
@@ -448,10 +450,15 @@ def read_info_tbar(state: MSVState) -> None:
           tbar_type_info.tbar_case_info_map[location] = tbar_case_info
           state.switch_case_map[location] = tbar_case_info
           state.patch_location_map[location] = tbar_case_info
+          tbar_case_info.total_case_info+=1
           tbar_type_info.total_case_info += 1
           line_info.total_case_info += 1
           func_info.total_case_info += 1
           file_info.total_case_info += 1
+          if line_info.fl_score not in func_info.total_patches_by_score:
+            func_info.total_patches_by_score[line_info.fl_score]=0
+            func_info.searched_patches_by_score[line_info.fl_score]=0
+          func_info.total_patches_by_score[line_info.fl_score]+=1
         if len(line_info.tbar_type_info_map)==0:
           del func_info.line_info_map[line_info.uuid]
       for func in file_info.func_info_map.copy().values():
@@ -471,8 +478,40 @@ def read_info_tbar(state: MSVState) -> None:
       loc = rank  
     else:
       loc = rank['location']
+
     state.patch_ranking.append(loc)
     case_info = state.switch_case_map[loc]
+    fl_score=case_info.parent.parent.fl_score
+    if fl_score not in state.java_patch_ranking:
+      state.java_patch_ranking[fl_score] = []
+      state.java_remain_patch_ranking[fl_score] = []
+    state.java_patch_ranking[fl_score].append(case_info)
+    state.java_remain_patch_ranking[fl_score].append(case_info)
+    
+    if fl_score not in case_info.parent.patches_by_score:
+      case_info.parent.patches_by_score[fl_score] = []
+      case_info.parent.remain_patches_by_score[fl_score]=[]
+    case_info.parent.patches_by_score[fl_score].append(case_info)
+    case_info.parent.remain_patches_by_score[fl_score].append(case_info)
+
+    if fl_score not in case_info.parent.parent.patches_by_score:
+      case_info.parent.parent.patches_by_score[fl_score] = []
+      case_info.parent.parent.remain_patches_by_score[fl_score]=[]
+    case_info.parent.parent.patches_by_score[fl_score].append(case_info)
+    case_info.parent.parent.remain_patches_by_score[fl_score].append(case_info)
+
+    if fl_score not in case_info.parent.parent.parent.patches_by_score:
+      case_info.parent.parent.parent.patches_by_score[fl_score] = []
+      case_info.parent.parent.parent.remain_patches_by_score[fl_score]=[]
+    case_info.parent.parent.parent.patches_by_score[fl_score].append(case_info)
+    case_info.parent.parent.parent.remain_patches_by_score[fl_score].append(case_info)
+
+    if fl_score not in case_info.parent.parent.parent.parent.patches_by_score:
+      case_info.parent.parent.parent.parent.patches_by_score[fl_score] = []
+      case_info.parent.parent.parent.parent.remain_patches_by_score[fl_score]=[]
+    case_info.parent.parent.parent.parent.patches_by_score[fl_score].append(case_info)
+    case_info.parent.parent.parent.parent.remain_patches_by_score[fl_score].append(case_info)
+
     case_info.patch_rank = rank_num
     func_info = case_info.parent.parent.parent
     if func_info.func_rank == -1:
@@ -744,6 +783,9 @@ def read_info(state: MSVState) -> None:
                       file_line.case_map[sw_cs_key] = case_info
                       
                       case_info.prophet_score.append(current_score)
+                      if case_info.prophet_score[0] not in state.c_patch_ranking:
+                        state.c_patch_ranking[case_info.prophet_score[0]]=[]
+                      state.c_patch_ranking[case_info.prophet_score[0]].append(case_info)
                       type_info.prophet_score.append(current_score)
                       switch_info.prophet_score.append(current_score)
                       line_info.prophet_score.append(current_score)

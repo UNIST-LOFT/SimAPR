@@ -768,7 +768,7 @@ def batch_plot(correct_patch_csv: str, in_dir: str) -> None:
     f.write(csv)  
 
 
-def read_info_tbar(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, TbarCaseInfo]]:
+def read_info_tbar(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, TbarCaseInfo],List[float]]:
   with open(os.path.join(work_dir, 'switch-info.json'), 'r') as f:
     info = json.load(f)
     # Read test informations (which tests to run, which of them are failing test or passing test)
@@ -779,6 +779,7 @@ def read_info_tbar(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, TbarCa
     file_map: Dict[str, FileInfo] = dict()
     switch_case_map: Dict[str, TbarCaseInfo] = dict()
     ff_map: Dict[str, Dict[str, Tuple[int, int]]] = dict()
+    fl_list:List[float]=list()
     for file in info["func_locations"]:
       file_name = file["file"]
       ff_map[file_name] = dict()
@@ -847,12 +848,15 @@ def read_info_tbar(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, TbarCa
           del file_info.func_info_map[func.id]
       if len(file_info.func_info_map)==0:
         del file_map[file_info.file_name]
-  buggy_project = info["project_name"]
-  return file_map, switch_case_map
 
-def tbar_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_patch: str, file_map: Dict[str, FileInfo], switch_case_map: Dict[str, TbarCaseInfo]) -> None:
+    for fl in info['priority']:
+      fl_list.append(fl['fl_score'])
+  buggy_project = info["project_name"]
+  return file_map, switch_case_map,fl_list
+
+def tbar_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_patch: str, file_map: Dict[str, FileInfo], switch_case_map: Dict[str, TbarCaseInfo],fl_list:List[float]) -> None:
   if switch_case_map is None:
-    file_map, switch_case_map = read_info_tbar(work_dir)
+    file_map, switch_case_map,fl_list = read_info_tbar(work_dir)
   correct_tbar_case = switch_case_map[correct_patch]
   correct_tbar_type = correct_tbar_case.parent
   correct_line = correct_tbar_type.parent
@@ -864,6 +868,15 @@ def tbar_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_p
   y_b = list()
   x_p = list()
   y_p = list()
+  fl_x=list()
+  fl_y=list()
+  fl_b_x=list()
+  fl_b_y=list()
+  fl_p_x=list()
+  fl_p_y=list()
+  fl_c_x=list()
+  fl_c_y=list()
+  fl_result:list=[]
   correct_iter = 0
   correct_time = 0
   with open(msv_result_file, "r") as f:
@@ -895,12 +908,27 @@ def tbar_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_p
                 dist -= 1
       x.append(iter)
       y.append(dist)
+
+      fl_rank=int(config['location'][1:].split('_')[0].strip()) # TODO: Add more tools
+      fl_x.append(iter)
+      fl_y.append(fl_list[fl_rank])
+
       if result:
         x_b.append(iter)
         y_b.append(dist)
+        fl_b_x.append(iter)
+        fl_b_y.append(fl_list[fl_rank])
       if pass_result:
         x_p.append(iter)
         y_p.append(dist)
+        fl_p_x.append(iter)
+        fl_p_y.append(fl_list[fl_rank])
+      if config['location']==correct_patch:
+        fl_c_x.append(iter)
+        fl_c_y.append(fl_list[fl_rank])
+  
+  if len(x)==0:
+    return 0,0
   y_tick = np.arange(0, 6)
   y_label = ["case", "type", "line", "func", "file", "diff"]
   plt.clf()
@@ -918,6 +946,22 @@ def tbar_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_p
   out_file = os.path.join(os.path.dirname(msv_result_file), "out.png")
   plt.grid()
   plt.savefig(out_file)
+
+  plt.clf()
+  plt.figure(figsize=(max(24, max(fl_x) // 80), 14))
+  fig, ax1 = plt.subplots(1, 1, figsize=(max(24, max(fl_x) // 80), 14))
+  x_len = max(24, max(fl_x) // 80)
+  ax1.scatter(fl_x, fl_y, s=1, color='k', marker=",")
+  ax1.scatter(fl_b_x, fl_b_y, color='r', marker=".")
+  ax1.scatter(fl_p_x, fl_p_y, color='c', marker="*")
+  ax1.scatter(fl_c_x, fl_c_y, color='g', marker="*")
+  ax1.set_title(title + "fl scores - basic(r),plausible(c),correct(g)", fontsize=20)
+  ax1.set_xlabel("iteration", fontsize=16)
+  ax1.set_ylabel("FL score", fontsize=20)
+  out_file = os.path.join(os.path.dirname(msv_result_file), "fl_out.png")
+  plt.grid()
+  plt.savefig(out_file)
+
   return correct_iter, correct_time
 
 def tbar_barchart(msv_result_file: str, title: str, work_dir: str, correct_patch: str, switch_info_info: Dict[str, FileInfo] = None, switch_case_map: Dict[str, TbarCaseInfo] = None, msv_dist_file: str = None, ) -> None:
@@ -1202,10 +1246,10 @@ def tbar_batch_plot(correct_patch_csv: str, in_dir: str,mode:str='TBar') -> None
       print(f"{result_file}, {workdir}")
       if workdir not in info:
         info[workdir] = read_info_tbar(workdir)
-      switch_info, switch_case_map = info[workdir]
-      iter, tm = tbar_plot_correct(result_file, dir, workdir, cp, switch_info, switch_case_map)
+      switch_info, switch_case_map,fl_list = info[workdir]
+      iter, tm = tbar_plot_correct(result_file, dir, workdir, cp, switch_info, switch_case_map,fl_list)
       csv += f"{proj},{cp},{iter},{tm}\n"
-      tbar_barchart(result_file, dir, workdir, cp, switch_info, switch_case_map)
+      # tbar_barchart(result_file, dir, workdir, cp, switch_info, switch_case_map)
   print(csv)
   with open("result.csv", "w") as f:
     f.write(csv)  

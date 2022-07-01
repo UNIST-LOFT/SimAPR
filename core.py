@@ -12,6 +12,7 @@ import numpy as np
 from enum import Enum
 from typing import List, Dict, Tuple, Set, Union
 import uuid
+import math
 class MSVMode(Enum):
   prophet = 1
   guided = 2
@@ -88,6 +89,8 @@ class PT(Enum):
   b_dec=14 # decrease of beta distribution
   a_init=15 # init value of a in beta dist
   b_init=16 # init value of b in beta dist
+  frequency=17 # frequency of basic patches from total basic patches
+  bp_frequency=18 # frequency of basic patches from total searched patches in subtree
 
 class SeAPRMode(Enum):
   FILE=0,
@@ -151,7 +154,13 @@ class PassFail:
     return f_x.tolist()
   @staticmethod
   def argmax(x: List[float]) -> int:
-    return np.argmax(x)
+    m = max(x)
+    tmp = list()
+    for i in range(len(x)):
+      if x[i] == m:
+        tmp.append(i)
+    return np.random.choice(tmp)
+    # return np.argmax(x)
   @staticmethod
   def select_value_normal(x: List[float], sigma: float) -> List[float]:
     for i in range(len(x)):
@@ -175,6 +184,30 @@ class PassFail:
       if rand <= 0:
         return i
     return 0
+  @staticmethod
+  def concave_up_exp(x: float, base: float = math.e) -> float:
+    return (np.power(base, x) - 1) / (base - 1)
+  @staticmethod
+  def concave_up(x: float, base: float = math.e) -> float:
+    # unique function
+    # return np.exp(1 - (1 / (x + 0.000001)))
+    return x * x
+    # return np.power(base, x-1)
+    # return PassFail.concave_up_exp(x, base)
+  @staticmethod
+  def concave_down(x: float, base: float = math.e) -> float:
+    # return 2 * x - PassFail.concave_up(x)
+    # return np.power(base, x-1)
+    atzero = PassFail.concave_up(0, base)
+    return 2 * ((1 - atzero) * x + atzero) - PassFail.concave_up(x, base)
+  @staticmethod
+  # fail function
+  def log_func(x: float, half: float = 50) -> float:
+    a = half + math.pow(half, 0.5)
+    if a-x<0:
+      return 0.
+    else:
+      return max(np.log(a - x) / np.log(a), 0.0)
 
 
 class FileInfo:
@@ -198,6 +231,12 @@ class FileInfo:
     self.case_update_count: int = 0
     self.score_list: List[float] = list()
     self.class_name: str = ""
+    self.children_basic_patches:int=0
+    self.children_plausible_patches:int=0
+    self.consecutive_fail_count:int=0
+    self.consecutive_fail_plausible_count:int=0
+    self.patches_by_score:Dict[float,List[CaseInfo]]=dict()
+    self.remain_patches_by_score:Dict[float,List[CaseInfo]]=dict()
   def __hash__(self) -> int:
     return hash(self.file_name)
   def __eq__(self, other) -> bool:
@@ -226,10 +265,19 @@ class FuncInfo:
     self.case_update_count: int = 0
     self.score_list: List[float] = list()
     self.func_rank: int = -1
+    self.children_basic_patches:int=0
+    self.children_plausible_patches:int=0
+    self.consecutive_fail_count:int=0
+    self.consecutive_fail_plausible_count:int=0
+    self.patches_by_score:Dict[float,List[CaseInfo]]=dict()
+    self.remain_patches_by_score:Dict[float,List[CaseInfo]]=dict()
+
+    self.total_patches_by_score:Dict[float,int]=dict() # Total patches grouped by score
+    self.searched_patches_by_score:Dict[float,int]=dict() # Total searched patches grouped by score
   def __hash__(self) -> int:
     return hash(self.id)
   def __eq__(self, other) -> bool:
-    return self.id == other.id
+    return self.id == other.id and self.parent.file_name == other.parent.file_name
 
 class LineInfo:
   def __init__(self, parent: FuncInfo, line_number: int) -> None:
@@ -257,6 +305,12 @@ class LineInfo:
     self.line_id = -1
     self.recoder_case_info_map: Dict[int, RecoderCaseInfo] = dict()
     self.score_list: List[float] = list()
+    self.children_basic_patches:int=0
+    self.children_plausible_patches:int=0
+    self.consecutive_fail_count:int=0
+    self.consecutive_fail_plausible_count:int=0
+    self.patches_by_score:Dict[float,List[CaseInfo]]=dict()
+    self.remain_patches_by_score:Dict[float,List[CaseInfo]]=dict()
   def __hash__(self) -> int:
     return hash(self.uuid)
   def __eq__(self, other) -> bool:
@@ -275,10 +329,16 @@ class TbarTypeInfo:
     self.out_dist: float = -1.0
     self.out_dist_map: Dict[int, float] = dict()
     self.tbar_case_info_map: Dict[str, TbarCaseInfo] = dict()
+    self.children_basic_patches:int=0
+    self.children_plausible_patches:int=0
+    self.consecutive_fail_count:int=0
+    self.consecutive_fail_plausible_count:int=0
+    self.patches_by_score:Dict[float,List[CaseInfo]]=dict()
+    self.remain_patches_by_score:Dict[float,List[CaseInfo]]=dict()
   def __hash__(self) -> int:
     return hash(self.mutation)
   def __eq__(self, other) -> bool:
-    return self.mutation == other.mutation
+    return self.mutation == other.mutation and self.parent==other.parent
 
 class TbarCaseInfo:
   def __init__(self, parent: TbarTypeInfo, location: str, start: int, end: int) -> None:
@@ -381,6 +441,13 @@ class SwitchInfo:
     self.prophet_score:list=[]
     self.has_init_patch=False
     self.case_update_count: int = 0
+    self.children_basic_patches:int=0
+    self.children_plausible_patches:int=0
+    self.consecutive_fail_count:int=0
+    self.consecutive_fail_plausible_count:int=0
+    self.patches_by_score:Dict[float,List[CaseInfo]]=dict()
+    self.remain_patches_by_score:Dict[float,List[CaseInfo]]=dict()
+
   def __hash__(self) -> int:
     return hash(self.switch_number)
   def __eq__(self, other) -> bool:
@@ -404,10 +471,16 @@ class TypeInfo:
     self.prophet_score:list=[]
     self.has_init_patch=False
     self.case_update_count: int = 0
+    self.children_basic_patches:int=0
+    self.children_plausible_patches:int=0
+    self.consecutive_fail_count:int=0
+    self.consecutive_fail_plausible_count:int=0
+    self.patches_by_score:Dict[float,List[CaseInfo]]=dict()
+    self.remain_patches_by_score:Dict[float,List[CaseInfo]]=dict()
   def __hash__(self) -> int:
     return hash(self.patch_type)
   def __eq__(self, other) -> bool:
-    return self.patch_type == other.patch_type
+    return self.patch_type == other.patch_type and self.parent==other.parent
 
 class CaseInfo:
   def __init__(self, parent: TypeInfo, case_number: int, is_condition: bool) -> None:
@@ -437,6 +510,7 @@ class CaseInfo:
     self.synthesis_tried:int=0 # tried counter for search record, removed after 11
     self.has_init_patch=False
     self.func_distance=0.9999 # If it is function replace, save distance of function name
+    self.total_case_info=1
     self.parent.total_case_info += 1
     self.parent.parent.total_case_info += 1
     self.parent.parent.parent.total_case_info += 1
@@ -890,6 +964,13 @@ class PatchInfo:
     self.out_dist = -1.0
     self.out_diff: bool = False
   def update_result(self, result: bool, n: float,b_n:float, use_exp_alpha: bool, use_fixed_beta:bool) -> None:
+    if result:
+      self.type_info.children_basic_patches+=1
+      self.switch_info.children_basic_patches+=1
+      self.line_info.children_basic_patches+=1
+      self.func_info.children_basic_patches+=1
+      self.file_info.children_basic_patches+=1
+
     self.case_info.pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
     self.type_info.pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
     self.switch_info.pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
@@ -1263,9 +1344,16 @@ class TbarPatchInfo:
       del state.file_info_map[self.file_info.file_name]
     self.tbar_case_info.case_update_count += 1
     self.tbar_type_info.case_update_count += 1
+    self.tbar_type_info.remain_patches_by_score[self.line_info.fl_score].remove(self.tbar_case_info)
     self.line_info.case_update_count += 1
+    self.line_info.remain_patches_by_score[self.line_info.fl_score].remove(self.tbar_case_info)
     self.func_info.case_update_count += 1
+    self.func_info.remain_patches_by_score[self.line_info.fl_score].remove(self.tbar_case_info)
     self.file_info.case_update_count += 1
+    self.file_info.remain_patches_by_score[self.line_info.fl_score].remove(self.tbar_case_info)
+    state.java_remain_patch_ranking[self.line_info.fl_score].remove(self.tbar_case_info)
+    self.func_info.searched_patches_by_score[self.line_info.fl_score]+=1
+
   def to_json_object(self) -> dict:
     conf = dict()
     conf["location"] = self.tbar_case_info.location
@@ -1555,7 +1643,7 @@ class MSVState:
     self.use_pattern = False
     self.use_simulation_mode = False
     self.prev_data = ""
-    self.ignore_compile_error = False
+    self.ignore_compile_error = True
     self.simulation_data = dict()
     self.correct_patch_str: str = ""
     self.correct_case_info: CaseInfo = None
@@ -1567,8 +1655,8 @@ class MSVState:
     self.use_partial_validation = True
     self.max_initial_trial = 0
     self.c_map = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.0}
-    self.params = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.0, PT.cov: 2.0, PT.sigma: 0.0, PT.halflife: 1.0, PT.epsilon: 0.0,PT.b_dec:0.0,PT.a_init:1.0,PT.b_init:1.0}
-    self.params_decay = {PT.fl:1.0,PT.basic:1.5,PT.plau:1.5}
+    self.params = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.0, PT.cov: 2.0, PT.sigma: 0.0, PT.halflife: 1.0, PT.epsilon: 0.0,PT.b_dec:0.0,PT.a_init:2.0,PT.b_init:2.0}
+    self.params_decay = {PT.fl:1.0,PT.basic:1.0,PT.plau:1.0}
     self.original_output_distance_map = dict()
     self.use_msv_ext=False
     self.tbar_mode = False
@@ -1587,6 +1675,10 @@ class MSVState:
 
     self.seapr_remain_cases:List[CaseInfo]=[]
     self.seapr_layer:SeAPRMode=SeAPRMode.FUNCTION
+
+    self.c_patch_ranking:Dict[float,List[CaseInfo]]=dict()
+    self.java_patch_ranking:Dict[float,List[TbarCaseInfo]]=dict()
+    self.java_remain_patch_ranking:Dict[float,List[TbarCaseInfo]]=dict()
 
 def remove_file_or_pass(file:str):
   try:

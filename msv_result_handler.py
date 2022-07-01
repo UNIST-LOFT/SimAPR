@@ -1,4 +1,3 @@
-from matplotlib.patches import Patch
 from core import *
 from typing import List, Set, Dict, Tuple
 
@@ -15,6 +14,26 @@ def update_result(state: MSVState, selected_patch: List[PatchInfo], run_result: 
   # update_result_critical(state, selected_patch, run_result, test)
   if run_result:
     state.total_basic_patch += 1
+    for patch in selected_patch:
+      patch.type_info.consecutive_fail_count=0
+      patch.switch_info.consecutive_fail_count=0
+      patch.line_info.consecutive_fail_count=0
+      patch.func_info.consecutive_fail_count=0
+      patch.file_info.consecutive_fail_count=0
+  else:
+    for patch in selected_patch:
+      patch.type_info.consecutive_fail_count+=1
+      patch.switch_info.consecutive_fail_count+=1
+      patch.line_info.consecutive_fail_count+=1
+      patch.func_info.consecutive_fail_count+=1
+      patch.file_info.consecutive_fail_count+=1
+
+      patch.type_info.consecutive_fail_plausible_count+=1
+      patch.switch_info.consecutive_fail_plausible_count+=1
+      patch.line_info.consecutive_fail_plausible_count+=1
+      patch.func_info.consecutive_fail_plausible_count+=1
+      patch.file_info.consecutive_fail_plausible_count+=1
+
   if state.mode == MSVMode.seapr:
     update_result_seapr(state, selected_patch, run_result, test)
   for patch in selected_patch:
@@ -146,6 +165,24 @@ def update_result_positive(state: MSVState, selected_patch: List[PatchInfo], run
   run_result = (len(failed_tests) == 0)
   state.failed_positive_test.update(failed_tests)
   for patch in selected_patch:
+    if run_result:
+      patch.type_info.children_plausible_patches+=1
+      patch.switch_info.children_plausible_patches+=1
+      patch.line_info.children_plausible_patches+=1
+      patch.func_info.children_plausible_patches+=1
+      patch.file_info.children_plausible_patches+=1
+
+      patch.type_info.consecutive_fail_plausible_count=0
+      patch.switch_info.consecutive_fail_plausible_count=0
+      patch.line_info.consecutive_fail_plausible_count=0
+      patch.func_info.consecutive_fail_plausible_count=0
+      patch.file_info.consecutive_fail_plausible_count=0
+    else:
+      patch.type_info.consecutive_fail_plausible_count+=1
+      patch.switch_info.consecutive_fail_plausible_count+=1
+      patch.line_info.consecutive_fail_plausible_count+=1
+      patch.func_info.consecutive_fail_plausible_count+=1
+      patch.file_info.consecutive_fail_plausible_count+=1
     patch.update_result_positive(run_result, len(failed_tests)+1, state.params[PT.b_dec],state.use_exp_alpha, state.use_fixed_beta)
 
 def save_result(state: MSVState) -> None:
@@ -297,6 +334,24 @@ def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: b
   selected_patch.update_result(result, 1, state.params[PT.b_dec],state.use_exp_alpha, state.use_fixed_beta)
   if result:
     state.total_basic_patch += 1
+    selected_patch.tbar_type_info.children_basic_patches+=1
+    selected_patch.line_info.children_basic_patches+=1
+    selected_patch.func_info.children_basic_patches+=1
+    selected_patch.file_info.children_basic_patches+=1
+    selected_patch.tbar_type_info.consecutive_fail_count=0
+    selected_patch.line_info.consecutive_fail_count=0
+    selected_patch.func_info.consecutive_fail_count=0
+    selected_patch.file_info.consecutive_fail_count=0
+  else:
+    selected_patch.tbar_type_info.consecutive_fail_count+=1
+    selected_patch.line_info.consecutive_fail_count+=1
+    selected_patch.func_info.consecutive_fail_count+=1
+    selected_patch.file_info.consecutive_fail_count+=1
+    selected_patch.tbar_type_info.consecutive_fail_plausible_count+=1
+    selected_patch.line_info.consecutive_fail_plausible_count+=1
+    selected_patch.func_info.consecutive_fail_plausible_count+=1
+    selected_patch.file_info.consecutive_fail_plausible_count+=1
+
   if state.mode == MSVMode.seapr:
     # if selected_patch.tbar_case_info.location in state.patch_ranking:
     #   state.patch_ranking.remove(selected_patch.tbar_case_info.location)
@@ -306,6 +361,7 @@ def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: b
       line_info = tbar_type_info.parent
       func_info = line_info.parent
       file_info = func_info.parent
+        
       is_share = False
       same_pattern = False
       if state.seapr_layer == SeAPRMode.FILE:
@@ -327,6 +383,21 @@ def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: b
         ts.same_seapr_pf.update(True, 1)
 
 def update_positive_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: bool) -> None:
+  if result:
+    selected_patch.tbar_type_info.children_plausible_patches+=1
+    selected_patch.line_info.children_plausible_patches+=1
+    selected_patch.func_info.children_plausible_patches+=1
+    selected_patch.file_info.children_plausible_patches+=1
+    selected_patch.tbar_type_info.consecutive_fail_plausible_count=0
+    selected_patch.line_info.consecutive_fail_plausible_count=0
+    selected_patch.func_info.consecutive_fail_plausible_count=0
+    selected_patch.file_info.consecutive_fail_plausible_count=0
+  else:
+    selected_patch.tbar_type_info.consecutive_fail_plausible_count+=1
+    selected_patch.line_info.consecutive_fail_plausible_count+=1
+    selected_patch.func_info.consecutive_fail_plausible_count+=1
+    selected_patch.file_info.consecutive_fail_plausible_count+=1
+    
   selected_patch.update_result_positive(result, 1, state.params[PT.b_dec],state.use_exp_alpha, state.use_fixed_beta)
 
 def remove_patch_tbar(state: MSVState, selected_patch: TbarPatchInfo) -> None:

@@ -1,11 +1,10 @@
-import os
-import subprocess
-from typing import List, Tuple, Dict
-
-from matplotlib.style import available
-from core import CaseInfo, ConstantInfo, EnvVarMode, MSVEnvVar, MSVState, OperatorInfo, OperatorType, PatchInfo, VariableInfo, remove_file_or_pass
+from typing import Dict, List, Tuple
 import msv_result_handler as result_handler
 import run_test
+from core import (CaseInfo, ConstantInfo, EnvVarMode, MSVEnvVar, MSVState,
+                  OperatorInfo, OperatorType, PatchInfo, VariableInfo,
+                  remove_file_or_pass)
+
 
 def parse_record(temp_file: str) -> List[bool]:
   try:
@@ -468,6 +467,7 @@ class ProphetCondition:
     return conditions
 
 import time
+
 
 class MyCondition:
   def __init__(self,patch: PatchInfo,state: MSVState, fail_test: list, pass_test: list) -> None:
