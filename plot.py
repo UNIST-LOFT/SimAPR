@@ -608,21 +608,37 @@ def msv_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_pa
       x.append(iter)
       y.append(dist)
       fl_x.append(iter)
-      fl_y.append(max(case_info.prophet_score))
+      if len(case_info.prophet_score)>0:
+        fl_y.append(max(case_info.prophet_score))
+      else:
+        fl_y.append(-20)
       y_od.append(out_dist)
       if result:
         x_b.append(iter)
         y_b.append(dist)
         fl_b_x.append(iter)
-        fl_b_y.append(max(case_info.prophet_score))
+        if len(case_info.prophet_score)>0:
+          fl_b_y.append(max(case_info.prophet_score))
+        else:
+          fl_b_y.append(-20)
       if pass_result:
         x_p.append(iter)
         y_p.append(dist)
         fl_p_x.append(iter)
-        fl_p_y.append(max(case_info.prophet_score))
+        if len(case_info.prophet_score)>0:
+          fl_p_y.append(max(case_info.prophet_score))
+        else:
+          fl_p_y.append(-20)
       if out_diff:
         x_o.append(iter)
         y_o.append(dist)
+
+      if correct_case==case_info:
+        fl_c_x.append(iter)
+        if len(case_info.prophet_score)>0:
+          fl_c_y.append(max(case_info.prophet_score))
+        else:
+          fl_c_y.append(-20)
       # if found:
       #   break
   y_tick = np.arange(0, 7)
