@@ -113,21 +113,18 @@ def read_info(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, CaseInfo]]:
                     current_score=prophet_score['scores']
                     break
               
-                else:
-                  if type_info.patch_type!=PatchType.ConditionKind: # Original Prophet doesn't have ConditionKind
-                    if True:
-                      #case_list.append(case_info)
-                      case_map[int(c)] = case_info
-                      switch_case_map[f"{switch_info.switch_number}-{case_info.case_number}"] = case_info
-                      sw_cs_key = f'{switch_info.switch_number}-{case_info.case_number}'
-                      switch_case_map[sw_cs_key] = case_info
-                      for score in current_score:
-                        case_info.prophet_score.append(score)
-                        type_info.prophet_score.append(score)
-                        switch_info.prophet_score.append(score)
-                        line_info.prophet_score.append(score)
-                        func_info.prophet_score.append(score)
-                        file_info.prophet_score.append(score)
+                #case_list.append(case_info)
+                case_map[int(c)] = case_info
+                switch_case_map[f"{switch_info.switch_number}-{case_info.case_number}"] = case_info
+                sw_cs_key = f'{switch_info.switch_number}-{case_info.case_number}'
+                switch_case_map[sw_cs_key] = case_info
+                for score in current_score:
+                  case_info.prophet_score.append(score)
+                  type_info.prophet_score.append(score)
+                  switch_info.prophet_score.append(score)
+                  line_info.prophet_score.append(score)
+                  func_info.prophet_score.append(score)
+                  file_info.prophet_score.append(score)
                 
               if len(type_info.case_info_map)==0:
                 del switch_info.type_info_map[t]
