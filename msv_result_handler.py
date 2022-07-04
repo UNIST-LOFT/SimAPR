@@ -162,7 +162,6 @@ def update_result_critical(state: MSVState, selected_patch: List[PatchInfo], run
     patch.add_profile(test, original_profile, p_diff)
 
 def update_result_positive(state: MSVState, selected_patch: List[PatchInfo], run_result: bool, failed_tests: Set[int]) -> None:
-  run_result = (len(failed_tests) == 0)
   state.failed_positive_test.update(failed_tests)
   for patch in selected_patch:
     if run_result:
