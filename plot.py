@@ -542,6 +542,14 @@ def msv_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_pa
   x_o = list()
   y_o = list()
   y_od = list()
+  fl_x=list()
+  fl_y=list()
+  fl_b_x=list()
+  fl_b_y=list()
+  fl_p_x=list()
+  fl_p_y=list()
+  fl_c_x=list()
+  fl_c_y=list()
   correct_iter = 0
   correct_time = 0
   with open(msv_result_file, "r") as f:
@@ -599,13 +607,19 @@ def msv_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_pa
                   dist -= 1
       x.append(iter)
       y.append(dist)
+      fl_x.append(iter)
+      fl_y.append(max(case_info.prophet_score))
       y_od.append(out_dist)
       if result:
         x_b.append(iter)
         y_b.append(dist)
+        fl_b_x.append(iter)
+        fl_b_y.append(max(case_info.prophet_score))
       if pass_result:
         x_p.append(iter)
         y_p.append(dist)
+        fl_p_x.append(iter)
+        fl_p_y.append(max(case_info.prophet_score))
       if out_diff:
         x_o.append(iter)
         y_o.append(dist)
@@ -634,6 +648,22 @@ def msv_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_pa
   ax2.scatter(x, y_od, s=1, color='m', marker='.')
   ax2.set_ylabel("output distance (log scale)", fontsize=20)
   plt.savefig(out_diff_file)
+
+  plt.clf()
+  plt.figure(figsize=(max(24, max(fl_x) // 80), 14))
+  fig, ax1 = plt.subplots(1, 1, figsize=(max(24, max(fl_x) // 80), 14))
+  x_len = max(24, max(fl_x) // 80)
+  ax1.scatter(fl_x, fl_y, s=1, color='k', marker=",")
+  ax1.scatter(fl_b_x, fl_b_y, color='r', marker=".")
+  ax1.scatter(fl_p_x, fl_p_y, color='c', marker="*")
+  ax1.scatter(fl_c_x, fl_c_y, color='g', marker="*")
+  ax1.set_title(title + "fl scores - basic(r),plausible(c),correct(g)", fontsize=20)
+  ax1.set_xlabel("iteration", fontsize=16)
+  ax1.set_ylabel("FL score", fontsize=20)
+  out_file = os.path.join(os.path.dirname(msv_result_file), "fl_out.png")
+  plt.grid()
+  plt.savefig(out_file)
+
   return correct_iter, correct_time
 
 def msv_find_correct(msv_result_file: str, correct_patch: str) -> Tuple[int, float]:
