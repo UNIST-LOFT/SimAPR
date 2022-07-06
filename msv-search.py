@@ -771,6 +771,10 @@ def read_info(state: MSVState) -> None:
                       line_info.prophet_score.append(current_score)
                       func_info.prophet_score.append(current_score)
                       file_info.prophet_score.append(current_score)
+                      if current_score>state.max_prophet_score:
+                        state.max_prophet_score=current_score
+                      if current_score<state.min_prophet_score:
+                        state.min_prophet_score=current_score
                 else:
                   if type_info.patch_type!=PatchType.ConditionKind: # Original Prophet doesn't have ConditionKind
                     if f'{switch_info.switch_number}-{case_info.case_number}' not in state.var_counts or state.var_counts[f'{switch_info.switch_number}-{case_info.case_number}']>0:
@@ -791,6 +795,10 @@ def read_info(state: MSVState) -> None:
                       line_info.prophet_score.append(current_score)
                       func_info.prophet_score.append(current_score)
                       file_info.prophet_score.append(current_score)
+                      if current_score>state.max_prophet_score:
+                        state.max_prophet_score=current_score
+                      if current_score<state.min_prophet_score:
+                        state.min_prophet_score=current_score
                 
               if len(type_info.case_info_map)==0:
                 del switch_info.type_info_map[t]

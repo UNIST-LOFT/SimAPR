@@ -33,6 +33,13 @@ def update_result(state: MSVState, selected_patch: List[PatchInfo], run_result: 
       patch.line_info.consecutive_fail_plausible_count+=1
       patch.func_info.consecutive_fail_plausible_count+=1
       patch.file_info.consecutive_fail_plausible_count+=1
+  
+  for patch in selected_patch:
+    if state.previous_score==max(patch.case_info.prophet_score):
+      state.same_consecutive_score+=1
+    else:
+      state.same_consecutive_score=0
+      state.previous_score=max(patch.case_info.prophet_score)
 
   if state.mode == MSVMode.seapr:
     update_result_seapr(state, selected_patch, run_result, test)
@@ -350,6 +357,12 @@ def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: b
     selected_patch.line_info.consecutive_fail_plausible_count+=1
     selected_patch.func_info.consecutive_fail_plausible_count+=1
     selected_patch.file_info.consecutive_fail_plausible_count+=1
+
+  if state.previous_score==max(selected_patch.line_info.fl_score):
+    state.same_consecutive_score+=1
+  else:
+    state.same_consecutive_score=0
+    state.previous_score=max(selected_patch.line_info.fl_score)
 
   if state.mode == MSVMode.seapr:
     # if selected_patch.tbar_case_info.location in state.patch_ranking:

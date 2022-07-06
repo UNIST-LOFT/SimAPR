@@ -1,3 +1,4 @@
+from operator import ne
 from core import *
 import numpy as np
 
@@ -13,6 +14,20 @@ def weighted_mean(a:float, b:float, weight_a:float=1., weight_b:float=1.):
     Compute weighted mean, for guided decision
   """
   return (a * weight_a + b * weight_b) / (weight_a + weight_b)
+
+def get_static_score(state:MSVState,element):
+  if state.tbar_mode:
+    if type(element)==FileInfo or type(element)==FuncInfo:
+      return max(element.fl_score_list)
+    elif type(element)==LineInfo:
+      return element.fl_score
+    elif type(element)==TbarTypeInfo:
+      return element.parent.fl_score
+    elif type(element)==TbarCaseInfo:
+      return element.parent.parent.fl_score
+    else: raise ValueError(f'Unknown element type {type(element)}')
+  else:
+    return max(element.prophet_score)
 
 def select_by_probability_hierarchical(state: MSVState, n: int, p1: List[float], p2: List[float] = [], p3: List[float] = []) -> int:
   if len(p1) == 0:
@@ -106,21 +121,32 @@ def epsilon_search(state:MSVState,source=None):
     source: File/Function/Line/TbarType info, or None if file selection
   """
   top_fl_patches:List[TbarCaseInfo]=[] # All 'not searched' top scored patches
+  next_top_fl_patches:List[TbarCaseInfo]=[] # All 'not searched' secondary scored patches
   top_all_patches=[] # All top scored patches, include searched or not searched
+  next_top_all_patches=[] # All secondary scored patches, include searched or not searched
   # Get all top fl patches
   if state.tbar_mode:
     if source is None:
       for score in state.java_remain_patch_ranking:
         if len(state.java_remain_patch_ranking[score])>0:
-          top_fl_patches=state.java_remain_patch_ranking[score]
-          top_all_patches=state.java_patch_ranking[score]
-          break
+          if len(top_fl_patches)>0:
+            next_top_fl_patches=state.java_remain_patch_ranking[score]
+            next_top_all_patches=state.java_patch_ranking[score]
+            break
+          else:
+            top_fl_patches=state.java_remain_patch_ranking[score]
+            top_all_patches=state.java_patch_ranking[score]
     else:
       for score in source.remain_patches_by_score:
         if len(source.remain_patches_by_score[score])>0:
-          top_fl_patches=source.remain_patches_by_score[score]
-          top_all_patches=source.patches_by_score[score]
-          break
+          if len(top_fl_patches)>0:
+            next_top_fl_patches=source.remain_patches_by_score[score]
+            next_top_all_patches=source.patches_by_score[score]
+            break
+          else:
+            top_fl_patches=source.remain_patches_by_score[score]
+            top_all_patches=source.patches_by_score[score]
+
   else:
     sorted_scores=sorted(state.c_patch_ranking.keys(),reverse=True)
     for e in sorted_scores:
@@ -145,16 +171,25 @@ def epsilon_search(state:MSVState,source=None):
             source_has=True
         
         if source_has:
-          top_all_patches.append(case)
-          if case in case.parent.case_info_map.values():
-            # Not searched yet
-            top_fl_patches.append(case)
+          if len(top_fl_patches)>0:
+            next_top_all_patches.append(case)
+            if case in case.parent.case_info_map.values():
+              # Not searched yet
+              next_top_fl_patches.append(case)
+          else:  
+            top_all_patches.append(case)
+            if case in case.parent.case_info_map.values():
+              # Not searched yet
+              top_fl_patches.append(case)
       
-      if len(top_fl_patches)>0:
+      if len(next_top_fl_patches)>0:
         break
-      else:
+      elif len(top_fl_patches)==0:
         top_all_patches.clear()
-        top_fl_patches.clear()  
+        top_fl_patches.clear()
+      elif len(next_top_fl_patches)==0:
+        next_top_fl_patches.clear()
+        next_top_all_patches.clear()
 
   # Get total patches and total searched patches, for epsilon greedy method
   total_patches=len(top_all_patches)
@@ -218,40 +253,44 @@ def epsilon_search(state:MSVState,source=None):
     return result[index]
   else:
     # Return top scored layer in original
-    state.msv_logger.debug(f'Use original order, epsilon: {epsilon}')
+    state.msv_logger.debug(f'Use original order, epsilon: {epsilon}, secondary: {state.same_consecutive_score}')
+    cur_fl_patches=top_fl_patches if state.same_consecutive_score<state.MAX_CONSECUTIVE_SAME_SCORE or len(next_top_fl_patches)==0 else next_top_fl_patches
     if state.tbar_mode:
       # For java
       if source is None:
-        return top_fl_patches[0].parent.parent.parent.parent
+        return cur_fl_patches[0].parent.parent.parent.parent
       elif type(source) == FileInfo:
-        return top_fl_patches[0].parent.parent.parent
+        return cur_fl_patches[0].parent.parent.parent
       elif type(source) == FuncInfo:
-        return top_fl_patches[0].parent.parent
+        return cur_fl_patches[0].parent.parent
       elif type(source) == LineInfo:
-        return top_fl_patches[0].parent
+        return cur_fl_patches[0].parent
       elif type(source) == TbarTypeInfo:
-        return top_fl_patches[0]
+        return cur_fl_patches[0]
       else:
         raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
     else:
       # For C
       if source is None:
-        return top_fl_patches[0].parent.parent.parent.parent.parent
+        return cur_fl_patches[0].parent.parent.parent.parent.parent
       elif type(source) == FileInfo:
-        return top_fl_patches[0].parent.parent.parent.parent
+        return cur_fl_patches[0].parent.parent.parent.parent
       elif type(source) == FuncInfo:
-        return top_fl_patches[0].parent.parent.parent
+        return cur_fl_patches[0].parent.parent.parent
       elif type(source) == LineInfo:
-        return top_fl_patches[0].parent.parent
+        return cur_fl_patches[0].parent.parent
       elif type(source) == SwitchInfo:
-        return top_fl_patches[0].parent
+        return cur_fl_patches[0].parent
       elif type(source) == TypeInfo:
-        return top_fl_patches[0]
+        return cur_fl_patches[0]
       else:
         raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
 
 
 def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
+  def normalize_one(score:float):
+    return (score-state.min_prophet_score)/(state.max_prophet_score-state.min_prophet_score)
+
   for element in elements:
     element_type=type(elements[element])
   selected=[]
@@ -288,8 +327,10 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
         return epsilon_search(state,parent)
       freq=selected[max_index].children_plausible_patches/state.total_plausible_patch if state.total_plausible_patch > 0 else 0.
       bp_freq=selected[max_index].consecutive_fail_plausible_count
-      if random.random()< weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq)):
-        state.msv_logger.debug(f'Use guidance with plausible patch: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}')
+      cur_score=get_static_score(state,selected[max_index]) if state.tbar_mode else normalize_one(get_static_score(state,selected[max_index]))
+      prev_score=state.previous_score if state.tbar_mode else normalize_one(state.previous_score)
+      if random.random()< (weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq))*min(cur_score/prev_score,1.)):
+        state.msv_logger.debug(f'Use guidance with plausible patch: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}, {cur_score}/{prev_score}')
         return selected[max_index]
     
     if not is_decided:
@@ -314,15 +355,37 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
         return epsilon_search(state,parent)
       freq=selected[max_index].children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0.
       bp_freq=selected[max_index].consecutive_fail_count
-      if random.random()< weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq)):
-        state.msv_logger.debug(f'Use guidance with basic patch: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}')
+      cur_score=get_static_score(state,selected[max_index]) if state.tbar_mode else normalize_one(get_static_score(state,selected[max_index]))
+      prev_score=state.previous_score if state.tbar_mode else normalize_one(state.previous_score)
+      if random.random()< (weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq))*min(cur_score/prev_score,1.)):
+        state.msv_logger.debug(f'Use guidance with basic patch: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}, {cur_score}/{prev_score}')
         return selected[max_index]
       
       if not is_decided:
-        state.msv_logger.debug(f'Use original order: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}')
+        state.msv_logger.debug(f'Use original order: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}, secondary: {state.same_consecutive_score}')
+        if state.same_consecutive_score<state.MAX_CONSECUTIVE_SAME_SCORE:
+          is_second_score=False
+        else:
+          is_second_score=True
+          
         # Select original order
         if state.tbar_mode:
           # For java
+          for patch in state.patch_ranking:
+            case_info=state.switch_case_map[patch]
+            if is_second_score and case_info.parent.parent.fl_score>=state.previous_score:
+              continue
+            if case_info in case_info.parent.tbar_case_info_map.values():
+              if element_type==FileInfo and case_info.parent.parent.parent.parent in elements.values():
+                return case_info.parent.parent.parent.parent
+              elif element_type==FuncInfo and case_info.parent.parent.parent in elements.values():
+                return case_info.parent.parent.parent
+              elif element_type==LineInfo and case_info.parent.parent in elements.values():
+                return case_info.parent.parent
+              elif element_type==TbarTypeInfo and case_info.parent in elements.values():
+                return case_info.parent
+          
+          # No secondary score found, use top score
           for patch in state.patch_ranking:
             case_info=state.switch_case_map[patch]
             if case_info in case_info.parent.tbar_case_info_map.values():
@@ -337,6 +400,23 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
         else:
           # For C
           sorted_score=sorted(state.c_patch_ranking.keys(),reverse=True)
+          for score in sorted_score:
+            if is_second_score and score>=state.previous_score:
+              continue
+            for case_info in state.c_patch_ranking[score]:
+              if case_info in case_info.parent.case_info_map.values():
+                if element_type==FileInfo and case_info.parent.parent.parent.parent.parent in elements.values():
+                  return case_info.parent.parent.parent.parent.parent
+                elif element_type==FuncInfo and case_info.parent.parent.parent.parent in elements.values():
+                  return case_info.parent.parent.parent.parent
+                elif element_type==LineInfo and case_info.parent.parent.parent in elements.values():
+                  return case_info.parent.parent.parent
+                elif element_type==SwitchInfo and case_info.parent.parent in elements.values():
+                  return case_info.parent.parent
+                elif element_type==TypeInfo and case_info.parent in elements.values():
+                  return case_info.parent
+
+          # No secondary score found, use top score
           for score in sorted_score:
             for case_info in state.c_patch_ranking[score]:
               if case_info in case_info.parent.case_info_map.values():

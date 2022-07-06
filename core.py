@@ -1683,6 +1683,12 @@ class MSVState:
     self.java_patch_ranking:Dict[float,List[TbarCaseInfo]]=dict()
     self.java_remain_patch_ranking:Dict[float,List[TbarCaseInfo]]=dict()
 
+    self.previous_score:float=0.0
+    self.same_consecutive_score:int=0
+    self.MAX_CONSECUTIVE_SAME_SCORE=50
+    self.max_prophet_score=-1000.
+    self.min_prophet_score=1000.
+
 def remove_file_or_pass(file:str):
   try:
     if os.path.exists(file):
