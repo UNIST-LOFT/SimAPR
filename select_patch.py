@@ -204,7 +204,8 @@ def epsilon_search(state:MSVState,source=None):
     # First, find all available candidates
     result=set()
     # Get all top scored data in source
-    for case_info in top_fl_patches:
+    cur_fl_patches=top_fl_patches if state.same_consecutive_score%state.MAX_CONSECUTIVE_SAME_SCORE!=0 or len(next_top_fl_patches)==0 else next_top_fl_patches
+    for case_info in cur_fl_patches:
       if state.tbar_mode:
         # For java
         if source is None:
@@ -254,7 +255,7 @@ def epsilon_search(state:MSVState,source=None):
   else:
     # Return top scored layer in original
     state.msv_logger.debug(f'Use original order, epsilon: {epsilon}, secondary: {state.same_consecutive_score}')
-    cur_fl_patches=top_fl_patches if state.same_consecutive_score<state.MAX_CONSECUTIVE_SAME_SCORE or len(next_top_fl_patches)==0 else next_top_fl_patches
+    cur_fl_patches=top_fl_patches if state.same_consecutive_score%state.MAX_CONSECUTIVE_SAME_SCORE!=0 or len(next_top_fl_patches)==0 else next_top_fl_patches
     if state.tbar_mode:
       # For java
       if source is None:
@@ -363,7 +364,7 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
       
       if not is_decided:
         state.msv_logger.debug(f'Use original order: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}, secondary: {state.same_consecutive_score}')
-        if state.same_consecutive_score<state.MAX_CONSECUTIVE_SAME_SCORE:
+        if state.same_consecutive_score%state.MAX_CONSECUTIVE_SAME_SCORE!=50:
           is_second_score=False
         else:
           is_second_score=True
