@@ -1685,7 +1685,7 @@ class MSVState:
 
     self.previous_score:float=0.0
     self.same_consecutive_score:Dict[float,int]=dict()
-    self.MAX_CONSECUTIVE_SAME_SCORE=10
+    self.MAX_CONSECUTIVE_SAME_SCORE=50
     self.max_prophet_score=-1000.
     self.min_prophet_score=1000.
 
