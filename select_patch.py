@@ -169,7 +169,7 @@ def epsilon_search(state:MSVState):
     state.same_consecutive_score[cur_score]=1
   is_secondary=state.same_consecutive_score[cur_score]%state.MAX_CONSECUTIVE_SAME_SCORE!=0
   if not is_secondary or len(next_top_fl_patches)==0:
-    state.msv_logger.debug(f'Use original order, secondary: {state.same_consecutive_score[cur_score]}')
+    state.msv_logger.debug(f'Use original order, secondary: {state.same_consecutive_score[cur_score]}, score: {cur_score}')
     total_patches=len(top_all_patches)
     total_searched=len(top_all_patches)-len(top_fl_patches)
     epsilon=epsilon_greedy(total_patches,total_searched)
@@ -185,7 +185,7 @@ def epsilon_search(state:MSVState):
       return top_fl_patches[0]
   
   else:
-    state.msv_logger.debug(f'Use secondary order, secondary: {state.same_consecutive_score[cur_score]}')
+    state.msv_logger.debug(f'Use secondary order, secondary: {state.same_consecutive_score[cur_score]}, score: {cur_score}')
     total_patches=len(next_top_all_patches)
     total_searched=len(next_top_all_patches)-len(next_top_fl_patches)
     epsilon=epsilon_greedy(total_patches,total_searched)
