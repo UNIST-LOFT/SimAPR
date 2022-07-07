@@ -169,6 +169,7 @@ def epsilon_search(state:MSVState):
   if cur_score not in state.same_consecutive_score:
     state.same_consecutive_score[cur_score]=1
   is_secondary=state.same_consecutive_score[cur_score]%state.MAX_CONSECUTIVE_SAME_SCORE==0
+  state.same_consecutive_score[cur_score]+=1
   if not is_secondary or len(next_top_fl_patches)==0:
     state.msv_logger.debug(f'Use original order, secondary: {state.same_consecutive_score[cur_score]}, score: {cur_score}')
     total_patches=len(top_all_patches)
