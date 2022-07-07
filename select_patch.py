@@ -180,7 +180,7 @@ def epsilon_search(state:MSVState):
       # Perform random search in epsilon probability
       state.msv_logger.debug(f'Use epsilon greedy method, epsilon: {epsilon}')
       index=random.randint(0,len(top_fl_patches)-1)
-      return top_all_patches[index]
+      return top_fl_patches[index]
     else:
       state.msv_logger.debug(f'Use original order, epsilon: {epsilon}')
       return top_fl_patches[0]
@@ -196,7 +196,7 @@ def epsilon_search(state:MSVState):
       # Perform random search in epsilon probability
       state.msv_logger.debug(f'Use epsilon greedy method, epsilon: {epsilon}')
       index=random.randint(0,len(next_top_fl_patches)-1)
-      return next_top_all_patches[index]
+      return next_top_fl_patches[index]
     else:
       state.msv_logger.debug(f'Use secondary order, epsilon: {epsilon}')
       return next_top_fl_patches[0]
