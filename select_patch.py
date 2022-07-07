@@ -154,20 +154,21 @@ def epsilon_search(state:MSVState):
             # Not searched yet
             top_fl_patches.append(case)
           cur_score=e
-      
+            
       if len(next_top_fl_patches)>0:
         break
       elif len(top_fl_patches)==0:
         top_all_patches.clear()
         top_fl_patches.clear()
       elif len(next_top_fl_patches)==0 and len(top_fl_patches)>0:
+        is_next=True
         next_top_fl_patches.clear()
         next_top_all_patches.clear()
 
   # Get total patches and total searched patches, for epsilon greedy method
   if cur_score not in state.same_consecutive_score:
     state.same_consecutive_score[cur_score]=1
-  is_secondary=state.same_consecutive_score[cur_score]%state.MAX_CONSECUTIVE_SAME_SCORE!=0
+  is_secondary=state.same_consecutive_score[cur_score]%state.MAX_CONSECUTIVE_SAME_SCORE==0
   if not is_secondary or len(next_top_fl_patches)==0:
     state.msv_logger.debug(f'Use original order, secondary: {state.same_consecutive_score[cur_score]}, score: {cur_score}')
     total_patches=len(top_all_patches)
