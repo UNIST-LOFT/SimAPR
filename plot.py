@@ -811,7 +811,7 @@ def batch_plot(correct_patch_csv: str, in_dir: str) -> None:
     f.write(csv)  
 
 
-def read_info_tbar(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, TbarCaseInfo],List[dict]]:
+def read_info_tbar(work_dir: str,mode:str) -> Tuple[Dict[str, FileInfo], Dict[str, TbarCaseInfo],List[dict]]:
   with open(os.path.join(work_dir, 'switch-info.json'), 'r') as f:
     info = json.load(f)
     # Read test informations (which tests to run, which of them are failing test or passing test)
@@ -841,8 +841,12 @@ def read_info_tbar(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, TbarCa
       for line in file['lines']:
         func_info = None
         line_info = None
-        if len(line['switches']) == 0:
-          continue
+        if mode=='tbar' or mode=='kpar':
+          if len(line['switches']) == 0:
+            continue
+        else:
+          if len(line['cases']) == 0:
+            continue
 
         if file_name in ff_map:
           for func_id in ff_map[file_name]:
@@ -870,21 +874,36 @@ def read_info_tbar(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, TbarCa
           ff_map[file_name][func_info.id] = (int(line['line']), int(line['line']))
           line_info = LineInfo(func_info, int(line['line']))
           func_info.line_info_map[line_info.uuid] = line_info
-        for sw in line["switches"]:
-          mut = sw["mutation"]
-          start = sw["start_position"]
-          end = sw["end_position"]
-          location = sw["location"]
-          if mut not in line_info.tbar_type_info_map:
-            line_info.tbar_type_info_map[mut] = TbarTypeInfo(line_info, mut)
-          tbar_type_info = line_info.tbar_type_info_map[mut]
-          tbar_case_info = TbarCaseInfo(tbar_type_info, location, start, end)
-          tbar_type_info.tbar_case_info_map[location] = tbar_case_info
-          switch_case_map[location] = tbar_case_info
-          tbar_type_info.total_case_info += 1
-          line_info.total_case_info += 1
-          func_info.total_case_info += 1
-          file_info.total_case_info += 1
+        if mode=='tbar' or mode=='kpar':
+          for sw in line["switches"]:
+            mut = sw["mutation"]
+            start = sw["start_position"]
+            end = sw["end_position"]
+            location = sw["location"]
+            if mut not in line_info.tbar_type_info_map:
+              line_info.tbar_type_info_map[mut] = TbarTypeInfo(line_info, mut)
+            tbar_type_info = line_info.tbar_type_info_map[mut]
+            tbar_case_info = TbarCaseInfo(tbar_type_info, location, start, end)
+            tbar_type_info.tbar_case_info_map[location] = tbar_case_info
+            switch_case_map[location] = tbar_case_info
+            tbar_type_info.total_case_info += 1
+            line_info.total_case_info += 1
+            func_info.total_case_info += 1
+            file_info.total_case_info += 1
+        else:
+          for sw in line["cases"]:
+            mut = sw["mutation"]
+            location = sw["location"]
+            if mut not in line_info.tbar_type_info_map:
+              line_info.tbar_type_info_map[mut] = TbarTypeInfo(line_info, mut)
+            tbar_type_info = line_info.tbar_type_info_map[mut]
+            tbar_case_info = TbarCaseInfo(tbar_type_info, location, 0, 0)
+            tbar_type_info.tbar_case_info_map[location] = tbar_case_info
+            switch_case_map[location] = tbar_case_info
+            tbar_type_info.total_case_info += 1
+            line_info.total_case_info += 1
+            func_info.total_case_info += 1
+            file_info.total_case_info += 1
         if len(line_info.tbar_type_info_map)==0:
           del func_info.line_info_map[line_info.uuid]
       for func in file_info.func_info_map.copy().values():
@@ -898,9 +917,9 @@ def read_info_tbar(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, TbarCa
   buggy_project = info["project_name"]
   return file_map, switch_case_map,fl_list
 
-def tbar_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_patch: str, file_map: Dict[str, FileInfo], switch_case_map: Dict[str, TbarCaseInfo],fl_list:List[dict]) -> None:
+def tbar_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_patch: str, file_map: Dict[str, FileInfo], switch_case_map: Dict[str, TbarCaseInfo],fl_list:List[dict],mode:str) -> None:
   if switch_case_map is None:
-    file_map, switch_case_map,fl_list = read_info_tbar(work_dir)
+    file_map, switch_case_map,fl_list = read_info_tbar(work_dir,mode)
   correct_tbar_case = switch_case_map[correct_patch]
   correct_tbar_type = correct_tbar_case.parent
   correct_line = correct_tbar_type.parent
@@ -1288,9 +1307,9 @@ def tbar_batch_plot(correct_patch_csv: str, in_dir: str,mode:str='TBar') -> None
         continue
       print(f"{result_file}, {workdir}")
       if workdir not in info:
-        info[workdir] = read_info_tbar(workdir)
+        info[workdir] = read_info_tbar(workdir,mode)
       switch_info, switch_case_map,fl_list = info[workdir]
-      iter, tm = tbar_plot_correct(result_file, dir, workdir, cp, switch_info, switch_case_map,fl_list)
+      iter, tm = tbar_plot_correct(result_file, dir, workdir, cp, switch_info, switch_case_map,fl_list,mode)
       csv += f"{proj},{cp},{iter},{tm}\n"
       # tbar_barchart(result_file, dir, workdir, cp, switch_info, switch_case_map)
   print(csv)
