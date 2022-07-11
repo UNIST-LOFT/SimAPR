@@ -816,7 +816,7 @@ def read_info_tbar(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, TbarCa
     info = json.load(f)
     # Read test informations (which tests to run, which of them are failing test or passing test)
     # Read priority (for FL score)
-    n = len(info['priority'])
+    # n = len(info['priority'])
     # score_map = dict()
     # Read rules to build patch tree structure
     file_map: Dict[str, FileInfo] = dict()
@@ -893,7 +893,8 @@ def read_info_tbar(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, TbarCa
       if len(file_info.func_info_map)==0:
         del file_map[file_info.file_name]
 
-    fl_list=info['priority']
+    # fl_list=info['priority']
+    fl_list=None
   buggy_project = info["project_name"]
   return file_map, switch_case_map,fl_list
 
