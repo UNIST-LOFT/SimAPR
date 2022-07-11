@@ -855,6 +855,7 @@ def read_info_tbar(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, TbarCa
               else:
                 func_info = file_info.func_info_map[func_id]
               line_info = LineInfo(func_info, int(line['line']))
+              line_info.fl_score=line['fl_score']
               func_info.line_info_map[line_info.uuid] = line_info
               break
         else:
