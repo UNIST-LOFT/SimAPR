@@ -811,7 +811,7 @@ def batch_plot(correct_patch_csv: str, in_dir: str) -> None:
     f.write(csv)  
 
 
-def read_info_tbar(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, TbarCaseInfo],List[float]]:
+def read_info_tbar(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, TbarCaseInfo],List[dict]]:
   with open(os.path.join(work_dir, 'switch-info.json'), 'r') as f:
     info = json.load(f)
     # Read test informations (which tests to run, which of them are failing test or passing test)
@@ -892,12 +892,11 @@ def read_info_tbar(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, TbarCa
       if len(file_info.func_info_map)==0:
         del file_map[file_info.file_name]
 
-    for fl in info['priority']:
-      fl_list.append(fl['fl_score'])
+    fl_list=info['priority']
   buggy_project = info["project_name"]
   return file_map, switch_case_map,fl_list
 
-def tbar_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_patch: str, file_map: Dict[str, FileInfo], switch_case_map: Dict[str, TbarCaseInfo],fl_list:List[float]) -> None:
+def tbar_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_patch: str, file_map: Dict[str, FileInfo], switch_case_map: Dict[str, TbarCaseInfo],fl_list:List[dict]) -> None:
   if switch_case_map is None:
     file_map, switch_case_map,fl_list = read_info_tbar(work_dir)
   correct_tbar_case = switch_case_map[correct_patch]
@@ -952,23 +951,22 @@ def tbar_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_p
       x.append(iter)
       y.append(dist)
 
-      fl_rank=int(config['location'][1:].split('_')[0].strip()) # TODO: Add more tools
       fl_x.append(iter)
-      fl_y.append(fl_list[fl_rank])
+      fl_y.append(tbar_case.parent.parent.fl_score)
 
       if result:
         x_b.append(iter)
         y_b.append(dist)
         fl_b_x.append(iter)
-        fl_b_y.append(fl_list[fl_rank])
+        fl_b_y.append(tbar_case.parent.parent.fl_score)
       if pass_result:
         x_p.append(iter)
         y_p.append(dist)
         fl_p_x.append(iter)
-        fl_p_y.append(fl_list[fl_rank])
+        fl_p_y.append(tbar_case.parent.parent.fl_score)
       if config['location']==correct_patch:
         fl_c_x.append(iter)
-        fl_c_y.append(fl_list[fl_rank])
+        fl_c_y.append(tbar_case.parent.parent.fl_score)
   
   if len(x)==0:
     return 0,0
