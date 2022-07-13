@@ -21,6 +21,7 @@ import run_test
 class MSV:
   def __init__(self, state: MSVState) -> None:
     self.state = state
+    self.patch_str=""
 
   def is_alive(self) -> bool:
     if len(self.state.file_info_map) == 0:
@@ -30,6 +31,8 @@ class MSV:
     elif self.state.time_limit > 0 and (time.time() - self.state.start_time) > self.state.time_limit:
       self.state.is_alive = False
     elif len(self.state.priority_map) == 0 or len(self.state.priority_list) == 0:
+      self.state.is_alive = False
+    elif self.state.finish_at_correct_patch and self.state.correct_patch_str==self.patch_str:
       self.state.is_alive = False
     return self.state.is_alive
 
@@ -353,6 +356,8 @@ class MSVTbar(MSV):
       self.state.is_alive = False
     elif len(self.state.patch_ranking) == 0:
       self.state.is_alive = False
+    elif self.state.finish_at_correct_patch and self.state.correct_patch_str==self.patch_str:
+      self.state.is_alive = False
     return self.state.is_alive
   def save_result(self) -> None:
     # TODO change
@@ -415,6 +420,7 @@ class MSVTbar(MSV):
     while self.is_alive():
       self.state.msv_logger.info(f'[{self.state.cycle}]: executing')
       patch = select_patch.select_patch_tbar_mode(self.state)
+      self.patch_str=patch.tbar_case_info.location
       self.state.msv_logger.info(f"Patch: {patch.tbar_case_info.location}")
       self.state.msv_logger.info(f"{patch.file_info.file_name}${patch.func_info.id}${patch.line_info.line_number}")
       pass_exists = False
@@ -448,6 +454,7 @@ class MSVTbar(MSV):
     while(self.is_alive()):
       self.state.msv_logger.info(f'[{self.state.cycle}]: executing')
       patch = select_patch.select_patch_tbar_mode(self.state)
+      self.patch_str=patch.tbar_case_info.location
       self.state.msv_logger.info(f"Patch: {patch.tbar_case_info.location}")
       self.state.msv_logger.info(f"{patch.file_info.file_name}${patch.func_info.id}${patch.line_info.line_number}")
       pass_exists = False

@@ -22,7 +22,7 @@ def parse_args(argv: list) -> MSVState:
               "use-condition-synthesis", "use-hierarchical-selection=", "use-pass-test", "use-partial-validation", "use-full-validation",'seed=',
               "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern", "use-simulation-mode=",'remove-cached-file',
               "use-prophet-score", "use-fl", "use-fl-prophet-score", "watch-level=",'use-msv-ext','seapr-mode=','top-fl=','use-fixed-halflife','ignore-compile-error',
-              "func-dist-mean=",'lang-model-path=','use-init-trial=','regression-mode=']
+              "func-dist-mean=",'lang-model-path=','use-init-trial=','regression-mode=','finish-correct-patch']
   opts, args = getopt.getopt(argv[1:], "ho:w:p:t:m:c:j:T:E:M:S:", longopts)
   state = MSVState()
   state.original_args = argv
@@ -155,6 +155,8 @@ def parse_args(argv: list) -> MSVState:
       np.random.seed(int(a))
     elif o in ['--ignore-compile-error']:
       state.ignore_compile_error = False
+    elif o in ['--finish-correct-patch']:
+      state.finish_at_correct_patch=True
 
   if sub_dir != "":
     state.out_dir = os.path.join(state.out_dir, sub_dir)
