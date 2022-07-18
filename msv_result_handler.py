@@ -1,5 +1,11 @@
+from operator import itemgetter
 from core import *
 from typing import List, Set, Dict, Tuple
+
+def get_ochiai(s_h: float, s_l: float, d_h: float, d_l: float) -> float:
+  if s_h == 0.0:
+    return 0.0
+  return s_h / (((s_h + d_h) * (s_h + s_l)) ** 0.5)
 
 def update_result(state: MSVState, selected_patch: List[PatchInfo], run_result: bool, n: float, test: int, new_env: Dict[str, str], update_out_dist: bool = True) -> None:
   #if state.use_hierarchical_selection >= 2:
@@ -359,6 +365,7 @@ def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: b
   if state.mode == MSVMode.seapr:
     # if selected_patch.tbar_case_info.location in state.patch_ranking:
     #   state.patch_ranking.remove(selected_patch.tbar_case_info.location)
+    seapr_list_for_sort=[]
     for loc in state.patch_ranking:
       ts: TbarCaseInfo = state.switch_case_map[loc]
       tbar_type_info = ts.parent
@@ -385,6 +392,15 @@ def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: b
         ts.diff_seapr_pf.update(result, 1)
       if state.use_pattern and result and same_pattern:
         ts.same_seapr_pf.update(True, 1)
+
+      seapr_list_for_sort.append((1.-get_ochiai(ts.same_seapr_pf.pass_count, ts.same_seapr_pf.fail_count,
+          ts.diff_seapr_pf.pass_count, ts.diff_seapr_pf.fail_count),ts.patch_rank,ts.location))
+
+    # Sort seapr list, for debugging
+    sorted_seapr_list=sorted(seapr_list_for_sort,key=itemgetter(0,1))
+    for i,seapr_patch in enumerate(sorted_seapr_list):
+      if seapr_patch[2] in state.correct_patch_str:
+        state.msv_logger.debug(f'seapr correct: {i}, {seapr_patch[2]}, {seapr_patch[0]}')
 
 def update_positive_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: bool) -> None:
   if result:
