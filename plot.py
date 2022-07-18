@@ -917,14 +917,21 @@ def read_info_tbar(work_dir: str,mode:str) -> Tuple[Dict[str, FileInfo], Dict[st
   buggy_project = info["project_name"]
   return file_map, switch_case_map,fl_list
 
-def tbar_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_patch: str, file_map: Dict[str, FileInfo], switch_case_map: Dict[str, TbarCaseInfo],fl_list:List[dict],mode:str) -> None:
+def tbar_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_patch: List[str], file_map: Dict[str, FileInfo], switch_case_map: Dict[str, TbarCaseInfo],fl_list:List[dict],mode:str) -> None:
   if switch_case_map is None:
     file_map, switch_case_map,fl_list = read_info_tbar(work_dir,mode)
-  correct_tbar_case = switch_case_map[correct_patch]
-  correct_tbar_type = correct_tbar_case.parent
-  correct_line = correct_tbar_type.parent
-  correct_func = correct_line.parent
-  correct_file = correct_func.parent
+  correct_tbar_case=[]
+  correct_tbar_type=[]
+  correct_line=[]
+  correct_func=[]
+  correct_file=[]
+
+  for correct in correct_patch:
+    correct_tbar_case.append(switch_case_map[correct])
+    correct_tbar_type.append(correct_tbar_case[-1].parent)
+    correct_line.append(correct_tbar_type[-1].parent)
+    correct_func.append(correct_line[-1].parent)
+    correct_file.append(correct_func[-1].parent)
   x = list()
   y = list()
   x_b = list()
@@ -959,15 +966,15 @@ def tbar_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_p
       func = line.parent
       file = func.parent
       dist = 5
-      if file == correct_file:
+      if file in correct_file:
         dist -= 1
-        if func == correct_func:
+        if func in correct_func:
           dist -= 1
-          if line == correct_line:
+          if line in correct_line:
             dist -= 1
-            if tbar_type == correct_tbar_type:
+            if tbar_type in correct_tbar_type:
               dist -= 1
-              if tbar_case == correct_tbar_case:
+              if tbar_case in correct_tbar_case:
                 dist -= 1
       x.append(iter)
       y.append(dist)
@@ -985,7 +992,7 @@ def tbar_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_p
         y_p.append(dist)
         fl_p_x.append(iter)
         fl_p_y.append(tbar_case.parent.parent.fl_score)
-      if config['location']==correct_patch:
+      if config['location'] in correct_patch:
         fl_c_x.append(iter)
         fl_c_y.append(tbar_case.parent.parent.fl_score)
   
@@ -1285,13 +1292,17 @@ def tbar_batch_plot(correct_patch_csv: str, in_dir: str,mode:str='TBar') -> None
     if not os.path.isdir(os.path.join(in_dir, dir)):
       continue
     print(dir)
-    proj = dir.split("-")[0]
-    if proj not in all:
-      continue
+    proj=[]
+    for patch in dir.split(','):
+      if patch not in all:
+        continue
+      proj.append(patch)
     result_file = os.path.join(in_dir, dir, "msv-result.json")
     print(result_file)
+    cp=[]
     if os.path.exists(result_file):
-      cp = all[proj]
+      for p in proj:
+        cp.append(all[p])
       print(f"{dir} : {cp}")
       if mode=='kpar':
         workdir = "/root/project/kPar/d4j/" + proj
