@@ -292,7 +292,7 @@ def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result:
 
   state.test_time+=fail_time
   state.test_time+=pass_time
-  
+
   if state.use_simulation_mode:
     # Cache test result if option used
     for patch in selected_patch:
@@ -400,10 +400,17 @@ def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: b
           ts.diff_seapr_pf.pass_count, ts.diff_seapr_pf.fail_count),ts.patch_rank,ts.location))
 
     # Sort seapr list, for debugging
-    sorted_seapr_list=sorted(seapr_list_for_sort,key=itemgetter(0,1))
-    for i,seapr_patch in enumerate(sorted_seapr_list):
-      if seapr_patch[2] in state.correct_patch_str:
-        state.msv_logger.debug(f'seapr correct: {i}, {seapr_patch[2]}, {seapr_patch[0]}, {result}')
+    cor_set=set()
+    for cor_str in state.correct_patch_list:
+      if type(state.switch_case_map[cor_str])==TbarCaseInfo:
+        cor_set.add(state.switch_case_map[cor_str].parent.parent.parent)
+      else:
+        cor_set.add(state.switch_case_map[cor_str].parent.parent.parent.parent)
+
+      if selected_patch.func_info in cor_set and not result:
+        state.msv_logger.debug('Misguide type L')
+      elif selected_patch.func_info not in cor_set and result:
+        state.msv_logger.debug('Misguide type H')
 
 def update_positive_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: bool) -> None:
   if result:
