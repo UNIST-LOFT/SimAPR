@@ -157,6 +157,16 @@ def parse_args(argv: list) -> MSVState:
       state.ignore_compile_error = False
     elif o in ['--finish-correct-patch']:
       state.finish_at_correct_patch=True
+    elif o in ['--not-use-guide']:
+      if state.not_use_epsilon_search:
+        print('Can not use both --not-use-guide and --not-use-epsilon-search!',file=sys.stderr)
+        exit(1)
+      state.not_use_guided_search=True
+    elif o in ['--not-use-epsilon']:
+      if state.not_use_guided_search:
+        print('Can not use both --not-use-guide and --not-use-epsilon-search!',file=sys.stderr)
+        exit(1)
+      state.not_use_epsilon_search=True
 
   if sub_dir != "":
     state.out_dir = os.path.join(state.out_dir, sub_dir)

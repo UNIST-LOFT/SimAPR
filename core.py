@@ -1690,6 +1690,9 @@ class MSVState:
     self.max_prophet_score=-1000.
     self.min_prophet_score=1000.
 
+    self.not_use_guided_search=False  # Use only epsilon-greedy search
+    self.not_use_epsilon_search=False  # Use only guided search and original
+
 def remove_file_or_pass(file:str):
   try:
     if os.path.exists(file):

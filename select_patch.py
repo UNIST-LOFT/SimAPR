@@ -175,7 +175,10 @@ def epsilon_search(state:MSVState):
     total_patches=len(top_all_patches)
     total_searched=len(top_all_patches)-len(top_fl_patches)
     epsilon=epsilon_greedy(total_patches,total_searched)
-    is_epsilon_greedy=np.random.random()<epsilon and state.use_epsilon
+    if state.not_use_epsilon_search:
+      is_epsilon_greedy=False
+    else:
+      is_epsilon_greedy=np.random.random()<epsilon and state.use_epsilon
 
     if is_epsilon_greedy:
       # Perform random search in epsilon probability
@@ -191,7 +194,10 @@ def epsilon_search(state:MSVState):
     total_patches=len(next_top_all_patches)
     total_searched=len(next_top_all_patches)-len(next_top_fl_patches)
     epsilon=epsilon_greedy(total_patches,total_searched)
-    is_epsilon_greedy=np.random.random()<epsilon and state.use_epsilon
+    if state.not_use_epsilon_search:
+      is_epsilon_greedy=False
+    else:
+      is_epsilon_greedy=np.random.random()<epsilon and state.use_epsilon
 
     if is_epsilon_greedy:
       # Perform random search in epsilon probability
@@ -650,7 +656,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
       state.msv_logger.info("Exploit!")
     use_fl = state.use_fl
 
-  if state.total_basic_patch==0:
+  if state.total_basic_patch==0 or state.not_use_guided_search:
     selected_case_info= epsilon_search(state)
     return PatchInfo(selected_case_info,None,None,None)
 
@@ -1155,7 +1161,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
     state.msv_logger.info("Exploit!")
 
   # Select file
-  if state.total_basic_patch==0:
+  if state.total_basic_patch==0 or state.not_use_guided_search:
     selected_switch_info=epsilon_search(state)
     result = TbarPatchInfo(selected_switch_info)
     return result
