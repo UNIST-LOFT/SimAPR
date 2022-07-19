@@ -400,7 +400,7 @@ def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: b
     sorted_seapr_list=sorted(seapr_list_for_sort,key=itemgetter(0,1))
     for i,seapr_patch in enumerate(sorted_seapr_list):
       if seapr_patch[2] in state.correct_patch_str:
-        state.msv_logger.debug(f'seapr correct: {i}, {seapr_patch[2]}, {seapr_patch[0]}')
+        state.msv_logger.debug(f'seapr correct: {i}, {seapr_patch[2]}, {seapr_patch[0]}, {result}')
 
 def update_positive_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: bool) -> None:
   if result:
