@@ -1676,6 +1676,7 @@ class MSVState:
     self.remove_cached_file=False
     self.use_epsilon=True
     self.finish_at_correct_patch=False
+    self.count_compile_fail=True
 
     self.seapr_remain_cases:List[CaseInfo]=[]
     self.seapr_layer:SeAPRMode=SeAPRMode.FUNCTION
