@@ -418,6 +418,7 @@ def read_info_tbar(state: MSVState) -> None:
               if func_id not in file_info.func_info_map:
                 func_info = FuncInfo(file_info, func_id.split(":")[0], fn_range[0], fn_range[1])
                 file_info.func_info_map[func_info.id] = func_info
+                state.total_methods+=1
               else:
                 func_info = file_info.func_info_map[func_id]
               line_info = LineInfo(func_info, int(line['line']))
@@ -432,6 +433,7 @@ def read_info_tbar(state: MSVState) -> None:
           state.msv_logger.info(f"No function found {file_info.file_name}:{line['line']}")
           func_info = FuncInfo(file_info, "no_function_found", int(line['line']), int(line['line']))
           file_info.func_info_map[func_info.id] = func_info
+          state.total_methods+=1
           ff_map[file_name][func_info.id] = (int(line['line']), int(line['line']))
           line_info = LineInfo(func_info, int(line['line']))
           func_info.line_info_map[line_info.uuid] = line_info
@@ -477,6 +479,7 @@ def read_info_tbar(state: MSVState) -> None:
       for func in file_info.func_info_map.copy().values():
         if len(func.line_info_map)==0:
           del file_info.func_info_map[func.id]
+          state.total_methods-=1
       if len(file_info.func_info_map)==0:
         del state.file_info_map[file_info.file_name]
   state.d4j_buggy_project = info["project_name"]
@@ -1000,6 +1003,7 @@ def main(argv: list):
   state.msv_logger = set_logger(state)
   if state.tbar_mode:
     read_info_tbar(state)
+    state.msv_logger.info(f'Total methods: {state.total_methods}')
     state.msv_logger.info('TBar mode: Initialized!')
     msv = MSVTbar(state)
   elif state.recoder_mode:
