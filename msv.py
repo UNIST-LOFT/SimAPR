@@ -494,7 +494,6 @@ class MSVTbar(MSV):
         fail_time=msv_result['fail_time']
         pass_time=msv_result['pass_time']
         is_compilable=msv_result['compilable']
-        self.state.msv_logger.debug(f'{is_compilable}')
         if is_compilable or self.state.ignore_compile_error:
           result_handler.update_result_tbar(self.state, patch, pass_exists)
           if result:
