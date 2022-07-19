@@ -51,9 +51,9 @@ class MSV:
         self.state.msv_logger.info('Run normal patch')
         new_env = MSVEnvVar.get_new_env(self.state, selected_patch, test,False)
         # run test
-        start_time=int(time.time() * 1000)
+        start_time=int(time.time())
         run_result, is_timeout = run_test.run_fail_test(self.state, selected_patch, test, new_env)
-        fail_time+=(int(time.time() * 1000)-start_time)
+        fail_time+=int(time.time())-start_time
         result_handler.update_result_out_dist(self.state, selected_patch, run_result, test, new_env)
         if not run_result:
           final_result=False
@@ -66,9 +66,9 @@ class MSV:
       self.state.msv_logger.info('Run normal patch')
       new_env = MSVEnvVar.get_new_env(self.state, selected_patch, selected_test,False)
       # run test
-      start_time=int(time.time() * 1000)
+      start_time=int(time.time())
       run_result, is_timeout = run_test.run_fail_test(self.state, selected_patch, selected_test, new_env)
-      fail_time=int(time.time() * 1000)-start_time
+      fail_time=int(time.time())-start_time
       final_result=run_result
       pass_exist=run_result
       if is_init:
@@ -430,6 +430,7 @@ class MSVTbar(MSV):
       pass_time=0
       for neg in self.state.d4j_negative_test:
         compilable, run_result,fail_time = self.run_test(patch, neg)
+        fail_time/=1000
         if not compilable:
           is_compilable = False
         if run_result:
@@ -466,6 +467,7 @@ class MSVTbar(MSV):
       if key not in self.state.simulation_data:
         for neg in self.state.d4j_negative_test:
           compilable, run_result,fail_time = self.run_test(patch, neg)
+          fail_time/=1000
           if not compilable:
             is_compilable = False
           if run_result:

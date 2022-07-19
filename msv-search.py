@@ -1024,6 +1024,7 @@ def main(argv: list):
     state.msv_logger.exception("Got exception in msv.run()")
     raise
   state.msv_logger.info('MSV is finished')
+  state.msv_logger.info(f'Running time: {(time.time()-state.start_time)+state.test_time}')
   msv.save_result()
 
 

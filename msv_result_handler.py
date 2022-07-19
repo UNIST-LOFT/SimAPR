@@ -272,7 +272,7 @@ def save_result(state: MSVState) -> None:
 # Append result list, save result to file periodically
 def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result: bool,pass_test_result:bool=False, pass_all_neg_test: bool = False,compilable: bool = True,fail_time:int=0,pass_time:int=0) -> None:
   """
-    fail_time: milisecond
+    fail_time: second
     pass_time: second
   """
   save_interval = 1800 # 30 minutes
@@ -290,6 +290,9 @@ def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result:
   state.msv_result.append(obj)
   state.used_patch.append(result)
 
+  state.test_time+=fail_time
+  state.test_time+=pass_time
+  
   if state.use_simulation_mode:
     # Cache test result if option used
     for patch in selected_patch:

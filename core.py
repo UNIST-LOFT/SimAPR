@@ -1692,6 +1692,7 @@ class MSVState:
 
     self.not_use_guided_search=False  # Use only epsilon-greedy search
     self.not_use_epsilon_search=False  # Use only guided search and original
+    self.test_time=0.  # Total compile and test time
 
     self.correct_patch_list:List[str]=[]  # List of correct patch ids
 
@@ -1723,7 +1724,7 @@ def append_java_cache_result(state:MSVState,case:TbarCaseInfo,fail_result:bool,p
     case: current patch
     fail_result: result of fail test (bool)
     pass_result: result of pass test (bool)
-    fail_time: fail time (milisecond)
+    fail_time: fail time (second)
     pass_time: pass time (second)
   """
   id=case.location
@@ -1747,7 +1748,7 @@ def append_c_cache_result(state:MSVState,case:CaseInfo,fail_result:bool,pass_res
     case: current patch
     fail_result: result of fail test (bool)
     pass_result: result of pass test (bool)
-    fail_time: fail time (milisecond)
+    fail_time: fail time (second)
     pass_time: pass time (second)
     operator: operator info, if exist
     variable: variable info, if exist
