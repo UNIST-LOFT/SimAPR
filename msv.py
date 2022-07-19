@@ -21,7 +21,7 @@ import run_test
 class MSV:
   def __init__(self, state: MSVState) -> None:
     self.state = state
-    self.patch_str=""
+    self.patch_str="some init patch"
 
   def is_alive(self) -> bool:
     if len(self.state.file_info_map) == 0:
