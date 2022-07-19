@@ -407,10 +407,16 @@ def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: b
       else:
         cor_set.add(state.switch_case_map[cor_str].parent.parent.parent.parent)
 
-      if selected_patch.func_info in cor_set and not result:
-        state.msv_logger.debug('Misguide type L')
-      elif selected_patch.func_info not in cor_set and result:
-        state.msv_logger.debug('Misguide type H')
+      if selected_patch.func_info in cor_set:
+        if not result:
+          state.msv_logger.debug('Misguide type L')
+        else:
+          state.msv_logger.debug('Correct guide H')
+      elif selected_patch.func_info not in cor_set:
+        if result:
+          state.msv_logger.debug('Misguide type H')
+        else:
+          state.msv_logger.debug('Correct guide L')
 
 def update_positive_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: bool) -> None:
   if result:
