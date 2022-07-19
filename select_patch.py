@@ -404,6 +404,19 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
         score_rate=min(cur_score/prev_score,1.) if prev_score!=0. else 0.
         if random.random()< (weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq))*score_rate):
           state.msv_logger.debug(f'Use guidance with plausible patch: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}, {cur_score}/{prev_score}')
+
+          if type(selected[max_index])==FuncInfo:
+            cor_set=set()
+            for cor_str in state.correct_patch_list:
+              if type(state.switch_case_map[cor_str])==TbarCaseInfo:
+                cor_set.add(state.switch_case_map[cor_str].parent.parent.parent)
+              else:
+                cor_set.add(state.switch_case_map[cor_str].parent.parent.parent.parent)
+            if selected[max_index] in cor_set:
+              state.msv_logger.debug(f'Correct guide: {selected[max_index]}')
+            else:
+              state.msv_logger.debug(f'Incorrect guide: {selected[max_index]}')
+
           return selected[max_index]
     
     if not is_decided:
@@ -432,6 +445,19 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
         score_rate=min(cur_score/prev_score,1.) if prev_score!=0. else 0.
         if random.random()< (weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq))*score_rate):
           state.msv_logger.debug(f'Use guidance with basic patch: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}, {cur_score}/{prev_score}')
+
+          if type(selected[max_index])==FuncInfo:
+            cor_set=set()
+            for cor_str in state.correct_patch_list:
+              if type(state.switch_case_map[cor_str])==TbarCaseInfo:
+                cor_set.add(state.switch_case_map[cor_str].parent.parent.parent)
+              else:
+                cor_set.add(state.switch_case_map[cor_str].parent.parent.parent.parent)
+            if selected[max_index] in cor_set:
+              state.msv_logger.debug(f'Correct guide: {selected[max_index]}')
+            else:
+              state.msv_logger.debug(f'Incorrect guide: {selected[max_index]}')
+
           return selected[max_index]
       
       if not is_decided:

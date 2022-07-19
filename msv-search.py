@@ -42,6 +42,7 @@ def parse_args(argv: list) -> MSVState:
       state.msv_path = a
     elif o in ['-c', '--correct-patch']:
       state.correct_patch_str = a
+      state.correct_patch_list=a.split(',')
     elif o in ['--watch-level']:
       state.watch_level = a
     elif o in ['-m', '--mode']:

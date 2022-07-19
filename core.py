@@ -1693,6 +1693,8 @@ class MSVState:
     self.not_use_guided_search=False  # Use only epsilon-greedy search
     self.not_use_epsilon_search=False  # Use only guided search and original
 
+    self.correct_patch_list:List[str]=[]  # List of correct patch ids
+
 def remove_file_or_pass(file:str):
   try:
     if os.path.exists(file):
