@@ -274,6 +274,9 @@ class FuncInfo:
 
     self.total_patches_by_score:Dict[float,int]=dict() # Total patches grouped by score
     self.searched_patches_by_score:Dict[float,int]=dict() # Total searched patches grouped by score
+    self.same_seapr_pf = PassFail(1, 1)
+    self.diff_seapr_pf = PassFail(1, 1)
+    self.case_rank_list: List[str] = list()
   def __hash__(self) -> int:
     return hash(self.id)
   def __eq__(self, other) -> bool:
@@ -1246,6 +1249,7 @@ class PatchInfo:
         state.fl_score.remove(LocationScore(self.file_info.file_name,self.line_info.line_number,0,0))
     if len(self.func_info.line_info_map) == 0:
       del self.file_info.func_info_map[self.func_info.id]
+      state.func_list.remove(self.func_info)
     if len(self.file_info.func_info_map) == 0:
       del state.file_info_map[self.file_info.file_name]
 
@@ -1343,6 +1347,7 @@ class TbarPatchInfo:
       del self.func_info.line_info_map[self.line_info.uuid]
     if len(self.func_info.line_info_map) == 0:
       del self.file_info.func_info_map[self.func_info.id]
+      state.func_list.remove(self.func_info)
     if len(self.file_info.func_info_map) == 0:
       del state.file_info_map[self.file_info.file_name]
     self.tbar_case_info.case_update_count += 1
@@ -1444,6 +1449,7 @@ class RecoderPatchInfo:
       del self.func_info.line_info_map[self.line_info.uuid]
     if len(self.func_info.line_info_map) == 0:
       del self.file_info.func_info_map[self.func_info.id]
+      state.func_list.remove(self.func_info)
     if len(self.file_info.func_info_map) == 0:
       del state.file_info_map[self.file_info.file_name]
     prob = self.recoder_case_info.prob
@@ -1676,6 +1682,7 @@ class MSVState:
     self.remove_cached_file=False
     self.use_epsilon=True
     self.finish_at_correct_patch=False
+    self.func_list: List[FuncInfo] = list()
 
     self.seapr_remain_cases:List[CaseInfo]=[]
     self.seapr_layer:SeAPRMode=SeAPRMode.FUNCTION

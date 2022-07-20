@@ -260,6 +260,7 @@ def read_info_recoder(state: MSVState) -> None:
     state.d4j_positive_test = info['passing_test_cases']
     file_map = state.file_info_map
     ff_map: Dict[str, Dict[str, Tuple[int, int]]] = dict()
+    check_func: Set[FuncInfo] = set()
     for file in info["func_locations"]:
       file_name = file["file"]
       ff_map[file_name] = dict()
@@ -305,6 +306,9 @@ def read_info_recoder(state: MSVState) -> None:
           func_info.line_info_map[line_info.uuid] = line_info
         fl_score = line["fl_score"]
         state.line_list.append(line_info)
+        if func_info not in check_func:
+          check_func.add(func_info)
+          state.func_list.append(func_info)
         line_info.fl_score = fl_score
         func_info.fl_score_list.append(fl_score)
         file_info.fl_score_list.append(fl_score)
@@ -348,6 +352,9 @@ def read_info_recoder(state: MSVState) -> None:
         del state.file_info_map[file_info.file_name]
   state.d4j_buggy_project = info["project_name"]
   state.patch_ranking = info["ranking"]
+  for rank in state.patch_ranking:
+    case_info: RecoderCaseInfo = state.switch_case_map[rank]
+    case_info.parent.parent.parent.case_rank_list.append(rank)
   #Add original to switch_case_map
   temp_file: FileInfo = FileInfo('original')
   temp_func = FuncInfo(temp_file, "original_fn", 0, 0)
@@ -384,6 +391,7 @@ def read_info_tbar(state: MSVState) -> None:
     # Read rules to build patch tree structure
     file_map = state.file_info_map
     ff_map: Dict[str, Dict[str, Tuple[int, int]]] = dict()
+    check_func: Set[FuncInfo] = set()
     for file in info["func_locations"]:
       file_name = file["file"]
       ff_map[file_name] = dict()
@@ -438,6 +446,9 @@ def read_info_tbar(state: MSVState) -> None:
           line_info = LineInfo(func_info, int(line['line']))
           func_info.line_info_map[line_info.uuid] = line_info
         state.line_list.append(line_info)
+        if func_info not in check_func:
+          check_func.add(func_info)
+          state.func_list.append(func_info)
         line_info.fl_score = float(line['fl_score'])
         func_info.fl_score_list.append(line_info.fl_score)
         file_info.fl_score_list.append(line_info.fl_score)
@@ -496,7 +507,8 @@ def read_info_tbar(state: MSVState) -> None:
       loc = rank['location']
 
     state.patch_ranking.append(loc)
-    case_info = state.switch_case_map[loc]
+    case_info: TbarCaseInfo = state.switch_case_map[loc]
+    case_info.parent.parent.parent.case_rank_list.append(loc)
     fl_score=case_info.parent.parent.fl_score
     if fl_score not in state.java_patch_ranking:
       state.java_patch_ranking[fl_score] = []
@@ -628,6 +640,7 @@ def read_info(state: MSVState) -> None:
   with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
     info = json.load(f)
     read_var_count(state,info['sizes'])
+    check_func = set()
 
     def get_score(file, line, max_sec_score_map):
       for object in info['priority']:
@@ -708,6 +721,9 @@ def read_info(state: MSVState) -> None:
         if state.top_fl!=0 and (file_info.file_name,line_info.line_number) not in top_fl:
           continue
         state.line_list.append(line_info)
+        if func_info not in check_func:
+          state.func_list.append(func_info)
+          check_func.add(func_info)
         score = get_score(file_info.file_name,line_info.line_number,max_sec_score)
         line_info.fl_score = score
         if file_info.fl_score<line_info.fl_score:
