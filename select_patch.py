@@ -1336,13 +1336,17 @@ def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
   # Optimization for default SeAPR
   if not state.use_pattern and state.seapr_layer == SeAPRMode.FUNCTION:
     state.func_list.sort(key=lambda x: max(x.fl_score_list), reverse=True)
+    min_patch_rank = len(state.switch_case_map) + 1
     for func in state.func_list:
       if func.func_rank > 30:
         continue
       cur_score = get_ochiai(func.same_seapr_pf.pass_count, func.same_seapr_pf.fail_count, func.diff_seapr_pf.pass_count, func.diff_seapr_pf.fail_count)
-      if cur_score > max_score:
+      if cur_score >= max_score:
         max_score = cur_score
-        selected_patch = get_first_case_info(state, func)
+        tmp_patch = get_first_case_info(state, func)
+        if min_patch_rank > tmp_patch.patch_rank:
+          min_patch_rank = tmp_patch.patch_rank
+          selected_patch = tmp_patch
         has_high_qual_patch = True
   else:
     for loc in state.patch_ranking:
