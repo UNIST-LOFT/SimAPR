@@ -322,17 +322,17 @@ def read_info_recoder(state: MSVState) -> None:
           actlist = cs["actlist"]
           location = cs["location"]
           prob = cs["prob"]
-          type_map = line_info.recoder_type_info_map
-          prev = None
-          for act in actlist:
-            if act not in type_map:
-              type_map[act] = RecoderTypeInfo(line_info, act, prev)
-            prev = type_map[act]
-            prev.score_list.append(prob)
-            type_map = prev.next
-          recoder_type_info = prev
-          recoder_case_info = RecoderCaseInfo(recoder_type_info, location, case_id)
-          recoder_type_info.recoder_case_info_map[case_id] = recoder_case_info
+          # type_map = line_info.recoder_type_info_map
+          # prev = None
+          # for act in actlist:
+          #   if act not in type_map:
+          #     type_map[act] = RecoderTypeInfo(line_info, act, prev)
+          #   prev = type_map[act]
+          #   prev.score_list.append(prob)
+          #   type_map = prev.next
+          # recoder_type_info = prev
+          recoder_case_info = RecoderCaseInfo(line_info, location, case_id)
+          line_info.recoder_case_info_map[case_id] = recoder_case_info
           state.switch_case_map[f"{line_info.line_id}-{case_id}"] = recoder_case_info
           state.patch_location_map[location] = recoder_case_info
           recoder_case_info.prob = prob
@@ -340,12 +340,12 @@ def read_info_recoder(state: MSVState) -> None:
           line_info.score_list.append(prob)
           func_info.score_list.append(prob)
           file_info.score_list.append(prob)
-          for ti in recoder_type_info.get_path():
-            ti.total_case_info += 1
+          # for ti in recoder_type_info.get_path():
+          #   ti.total_case_info += 1
           line_info.total_case_info += 1
           func_info.total_case_info += 1
           file_info.total_case_info += 1
-        if len(line_info.recoder_type_info_map)==0:
+        if len(line_info.recoder_case_info_map)==0:
           del func_info.line_info_map[line_info.uuid]
       for func in file_info.func_info_map.copy().values():
         if len(func.line_info_map)==0:
@@ -356,7 +356,7 @@ def read_info_recoder(state: MSVState) -> None:
   state.patch_ranking = info["ranking"]
   for rank in state.patch_ranking:
     case_info: RecoderCaseInfo = state.switch_case_map[rank]
-    case_info.parent.parent.parent.case_rank_list.append(rank)
+    case_info.parent.parent.case_rank_list.append(rank)
   #Add original to switch_case_map
   temp_file: FileInfo = FileInfo('original')
   temp_func = FuncInfo(temp_file, "original_fn", 0, 0)
