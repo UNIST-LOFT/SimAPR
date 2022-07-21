@@ -1007,22 +1007,76 @@ def select_patch_seapr(state: MSVState, test: int) -> PatchInfo:
   #   if case_info is not None:
   #     break
   #   case_info = target.case_map[cs]
-  case_info=state.seapr_remain_cases[0]
-  max_score=0.
-  has_high_qual_patch=False
-  top_patches:List[CaseInfo]=[]
-  for case in state.seapr_remain_cases:
-    if case.parent.parent.parent.parent.func_rank > 30:
-      continue
-    cur_score=get_ochiai(case.seapr_same_high,case.seapr_same_low,case.seapr_diff_high,case.seapr_diff_low)
-    if state.iteration>1:
-      has_high_qual_patch=True
-    if cur_score>max_score:
-      max_score=cur_score
-      top_patches.clear()
-      top_patches.append(case)
-    elif cur_score==max_score:
-      top_patches.append(case)
+
+  def get_first_case_info(func: FuncInfo) -> CaseInfo:
+    selected_line = None
+    init = True
+    for line_uuid in func.line_info_map:
+      line = func.line_info_map[line_uuid]
+      if max(line.prophet_score) > max_score or init:
+        init = False
+        max_score = max(line.prophet_score)
+        selected_line = line  
+    # select switch
+    selected_switch = None
+    init = True
+    for switch_num in selected_line.switch_info_map:
+      switch = selected_line.switch_info_map[switch_num]
+      if max(switch.prophet_score) > max_score or init:
+        init = False
+        max_score = max(switch.prophet_score)
+        selected_switch = switch
+    # select type
+    selected_type = None
+    init = True
+    for type_num in selected_switch.type_info_map:
+      type_ = selected_switch.type_info_map[type_num]
+      if max(type_.prophet_score) > max_score or init:
+        init = False
+        max_score = max(type_.prophet_score)
+        selected_type = type_
+    # select case
+    selected_case = None
+    init = True
+    for case_num in selected_type.case_info_map:
+      case = selected_type.case_info_map[case_num]
+      if max(case.prophet_score) > max_score or init:
+        init = False
+        max_score = max(case.prophet_score)
+        selected_case = case
+    return selected_case
+
+  # Sort function by prophet score
+  if not state.use_pattern and state.seapr_layer == SeAPRMode.FUNCTION:
+    state.func_list.sort(key=lambda x: max(x.prophet_score), reverse=True)
+    max_score = 0.0
+    case_info = state.seapr_remain_cases[0]
+    has_hq_patch = False
+    for func in state.func_list:
+      if func.func_rank > 30:
+        continue
+      cur_score = get_ochiai(func.same_seapr_pf.pass_count, func.same_seapr_pf.fail_count, func.diff_seapr_pf.pass_count, func.diff_seapr_pf.fail_count)
+      if cur_score > max_score:
+        max_score = cur_score
+        case_info = get_first_case_info(func)
+        has_hq_patch = True
+  else:
+    case_info=state.seapr_remain_cases[0]
+    max_score=0.
+    has_high_qual_patch=False
+    top_patches:List[CaseInfo]=[]
+    for case in state.seapr_remain_cases:
+      if case.parent.parent.parent.parent.func_rank > 30:
+        continue
+      cur_score=get_ochiai(case.seapr_same_high,case.seapr_same_low,case.seapr_diff_high,case.seapr_diff_low)
+      if state.iteration>1:
+        has_high_qual_patch=True
+      if cur_score>max_score:
+        max_score=cur_score
+        top_patches.clear()
+        top_patches.append(case)
+      elif cur_score==max_score:
+        top_patches.append(case)
   
   if not has_high_qual_patch:
     case_info=select_patch_prophet(state).case_info
@@ -1274,20 +1328,41 @@ def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
   selected_patch: TbarCaseInfo = None
   max_score = 0.0
   has_high_qual_patch = False
-  for loc in state.patch_ranking:
-    tbar_case_info: TbarCaseInfo = state.switch_case_map[loc]
-    if tbar_case_info.parent.parent.parent.func_rank > 30:
-      continue
-    if loc not in tbar_case_info.parent.tbar_case_info_map:
-      # state.msv_logger.warning(f"No switch info  {tbar_case_info.location} in patch: {tbar_case_info.parent.tbar_case_info_map}")
-      continue
-    cur_score = get_ochiai(tbar_case_info.same_seapr_pf.pass_count, tbar_case_info.same_seapr_pf.fail_count,
-      tbar_case_info.diff_seapr_pf.pass_count, tbar_case_info.diff_seapr_pf.fail_count)
-    if tbar_case_info.same_seapr_pf.pass_count > 0:
-      has_high_qual_patch = True
-    if cur_score > max_score:
-      max_score = cur_score
-      selected_patch = tbar_case_info
+
+  def get_first_case_info(state: MSVState, func: FuncInfo) -> TbarCaseInfo:
+    loc = func.case_rank_list[0]
+    case_info: TbarCaseInfo = state.switch_case_map[loc]
+    return case_info
+  # Optimization for default SeAPR
+  if not state.use_pattern and state.seapr_layer == SeAPRMode.FUNCTION:
+    state.func_list.sort(key=lambda x: max(x.fl_score_list), reverse=True)
+    min_patch_rank = len(state.switch_case_map) + 1
+    for func in state.func_list:
+      if func.func_rank > 30:
+        continue
+      cur_score = get_ochiai(func.same_seapr_pf.pass_count, func.same_seapr_pf.fail_count, func.diff_seapr_pf.pass_count, func.diff_seapr_pf.fail_count)
+      if cur_score >= max_score:
+        max_score = cur_score
+        tmp_patch = get_first_case_info(state, func)
+        if min_patch_rank > tmp_patch.patch_rank:
+          min_patch_rank = tmp_patch.patch_rank
+          selected_patch = tmp_patch
+        has_high_qual_patch = True
+  else:
+    for loc in state.patch_ranking:
+      tbar_case_info: TbarCaseInfo = state.switch_case_map[loc]
+      if tbar_case_info.parent.parent.parent.func_rank > 30:
+        continue
+      if loc not in tbar_case_info.parent.tbar_case_info_map:
+        # state.msv_logger.warning(f"No switch info  {tbar_case_info.location} in patch: {tbar_case_info.parent.tbar_case_info_map}")
+        continue
+      cur_score = get_ochiai(tbar_case_info.same_seapr_pf.pass_count, tbar_case_info.same_seapr_pf.fail_count,
+        tbar_case_info.diff_seapr_pf.pass_count, tbar_case_info.diff_seapr_pf.fail_count)
+      if tbar_case_info.same_seapr_pf.pass_count > 0:
+        has_high_qual_patch = True
+      if cur_score > max_score:
+        max_score = cur_score
+        selected_patch = tbar_case_info
   if not has_high_qual_patch:
     return select_patch_tbar(state)
     

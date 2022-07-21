@@ -82,6 +82,15 @@ def find_func_loc(state: MSVState, base_loc: FileLine) -> Tuple[str, int, int]:
   return None
 
 def update_result_seapr(state: MSVState, selected_patch: List[PatchInfo], is_high_quality: bool, test: int) -> None:
+  # Optimization: for default SeAPR, we use cluster to update the result
+  if not state.use_pattern:
+    for func_info in state.func_list:
+      for patch in selected_patch:
+        if patch.func_info == func_info: # same function with selected patch
+          func_info.same_seapr_pf.update(is_high_quality, 1)
+        else:
+          func_info.diff_seapr_pf.update(is_high_quality, 1)
+    return
   for patch in selected_patch:
     for case in state.seapr_remain_cases:
       is_share=False
@@ -366,38 +375,45 @@ def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: b
   state.previous_score=selected_patch.line_info.fl_score
 
   if state.mode == MSVMode.seapr:
-    # if selected_patch.tbar_case_info.location in state.patch_ranking:
-    #   state.patch_ranking.remove(selected_patch.tbar_case_info.location)
-    seapr_list_for_sort=[]
-    for loc in state.patch_ranking:
-      ts: TbarCaseInfo = state.switch_case_map[loc]
-      tbar_type_info = ts.parent
-      line_info = tbar_type_info.parent
-      func_info = line_info.parent
-      file_info = func_info.parent
-        
-      is_share = False
-      same_pattern = False
-      if state.seapr_layer == SeAPRMode.FILE:
-        if selected_patch.file_info == file_info:
-          is_share = True
-      elif state.seapr_layer == SeAPRMode.FUNCTION:
-        if selected_patch.func_info == func_info:
-          is_share = True
-      elif state.seapr_layer == SeAPRMode.LINE:
-        if selected_patch.line_info == line_info:
-          is_share = True
-      if selected_patch.tbar_type_info.mutation == tbar_type_info.mutation:
-        same_pattern = True
-      if is_share:
-        ts.same_seapr_pf.update(result, 1)
-      else:
-        ts.diff_seapr_pf.update(result, 1)
-      if state.use_pattern and result and same_pattern:
-        ts.same_seapr_pf.update(True, 1)
+    # Optimization: for default SeAPR, we use cluster to update the result
+    if not state.use_pattern and state.seapr_layer == SeAPRMode.FUNCTION:
+      for func_info in state.func_list:
+        if selected_patch.func_info == func_info: # same function with selected patch
+          func_info.same_seapr_pf.update(result, 1)
+        else:
+          func_info.diff_seapr_pf.update(result, 1)
+      selected_patch.func_info.case_rank_list.pop(0)
+    else:
+      seapr_list_for_sort=[]
+      for loc in state.patch_ranking:
+        ts: TbarCaseInfo = state.switch_case_map[loc]
+        tbar_type_info = ts.parent
+        line_info = tbar_type_info.parent
+        func_info = line_info.parent
+        file_info = func_info.parent
+          
+        is_share = False
+        same_pattern = False
+        if state.seapr_layer == SeAPRMode.FILE:
+          if selected_patch.file_info == file_info:
+            is_share = True
+        elif state.seapr_layer == SeAPRMode.FUNCTION:
+          if selected_patch.func_info == func_info:
+            is_share = True
+        elif state.seapr_layer == SeAPRMode.LINE:
+          if selected_patch.line_info == line_info:
+            is_share = True
+        if selected_patch.tbar_type_info.mutation == tbar_type_info.mutation:
+          same_pattern = True
+        if is_share:
+          ts.same_seapr_pf.update(result, 1)
+        else:
+          ts.diff_seapr_pf.update(result, 1)
+        if state.use_pattern and result and same_pattern:
+          ts.same_seapr_pf.update(True, 1)
 
-      seapr_list_for_sort.append((1.-get_ochiai(ts.same_seapr_pf.pass_count, ts.same_seapr_pf.fail_count,
-          ts.diff_seapr_pf.pass_count, ts.diff_seapr_pf.fail_count),ts.patch_rank,ts.location))
+        seapr_list_for_sort.append((1.-get_ochiai(ts.same_seapr_pf.pass_count, ts.same_seapr_pf.fail_count,
+            ts.diff_seapr_pf.pass_count, ts.diff_seapr_pf.fail_count),ts.patch_rank,ts.location))
 
     # Sort seapr list, for debugging
     cor_set=set()

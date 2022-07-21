@@ -108,6 +108,7 @@ class MSV:
     return pass_exist
     
   def initialize(self) -> None:
+    self.state.seapr_remain_cases.sort(key=lambda x: max(x.prophet_score), reverse=True)
     # run original program and get original profile
     cs = self.state.switch_case_map["0-0"]
     patch = PatchInfo(cs, None, None, None)
