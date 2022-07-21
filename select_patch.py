@@ -1358,11 +1358,10 @@ def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
         continue
       cur_score = get_ochiai(tbar_case_info.same_seapr_pf.pass_count, tbar_case_info.same_seapr_pf.fail_count,
         tbar_case_info.diff_seapr_pf.pass_count, tbar_case_info.diff_seapr_pf.fail_count)
-      if tbar_case_info.same_seapr_pf.pass_count > 0:
-        has_high_qual_patch = True
       if cur_score > max_score:
         max_score = cur_score
         selected_patch = tbar_case_info
+        has_high_qual_patch = True
   if not has_high_qual_patch:
     return select_patch_tbar(state)
     
@@ -1532,19 +1531,42 @@ def select_patch_recoder_seapr(state: MSVState) -> RecoderPatchInfo:
   selected_patch: RecoderCaseInfo = None
   max_score = 0.0
   has_high_qual_patch = False
-  for loc in state.patch_ranking:
-    recoder_case_info: RecoderCaseInfo = state.switch_case_map[loc]
-    if recoder_case_info.case_id not in recoder_case_info.parent.recoder_case_info_map:
-      # state.msv_logger.warning(f"No switch info  {recoder_case_info.location} in patch: {recoder_case_info.parent.recoder_case_info_map}")
-      continue
-    cur_score = get_ochiai(recoder_case_info.same_seapr_pf.pass_count, recoder_case_info.same_seapr_pf.fail_count,
-      recoder_case_info.diff_seapr_pf.pass_count, recoder_case_info.diff_seapr_pf.fail_count)
-    if recoder_case_info.same_seapr_pf.pass_count > 0:
-      has_high_qual_patch = True
-    if cur_score > max_score:
-      max_score = cur_score
-      selected_patch = recoder_case_info
+
+  def get_first_case_info(state: MSVState, func: FuncInfo) -> RecoderCaseInfo:
+    loc = func.case_rank_list[0]
+    case_info: RecoderCaseInfo = state.switch_case_map[loc]
+    return case_info
+
+  if not state.use_pattern and state.seapr_layer == SeAPRMode.FUNCTION:
+    state.func_list.sort(key=lambda x: max(x.fl_score_list), reverse=True)
+    min_patch_rank = len(state.switch_case_map) + 1
+    for func in state.func_list:
+      if func.func_rank > 30:
+        continue
+      cur_score = get_ochiai(func.same_seapr_pf.pass_count, func.same_seapr_pf.fail_count,
+                             func.diff_seapr_pf.pass_count, func.diff_seapr_pf.fail_count)
+      if cur_score >= max_score:
+        max_score = cur_score
+        tmp_patch = get_first_case_info(state, func)
+        if min_patch_rank > tmp_patch.patch_rank:
+          min_patch_rank = tmp_patch.patch_rank
+          selected_patch = tmp_patch
+        has_high_qual_patch = True
+  else:
+    for loc in state.patch_ranking:
+      recoder_case_info: RecoderCaseInfo = state.switch_case_map[loc]
+      if recoder_case_info.case_id not in recoder_case_info.parent.recoder_case_info_map:
+        # state.msv_logger.warning(f"No switch info  {recoder_case_info.location} in patch: {recoder_case_info.parent.recoder_case_info_map}")
+        continue
+      cur_score = get_ochiai(recoder_case_info.same_seapr_pf.pass_count, recoder_case_info.same_seapr_pf.fail_count,
+        recoder_case_info.diff_seapr_pf.pass_count, recoder_case_info.diff_seapr_pf.fail_count)
+      if cur_score > max_score:
+        max_score = cur_score
+        selected_patch = recoder_case_info
+        has_high_qual_patch = True
   if not has_high_qual_patch:
     return select_patch_recoder(state)
   state.patch_ranking.remove(selected_patch.to_str())
+  if not state.use_pattern and state.seapr_layer == SeAPRMode.FUNCTION:
+    selected_patch.parent.parent.case_rank_list.pop(0)
   return RecoderPatchInfo(selected_patch)

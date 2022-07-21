@@ -462,8 +462,8 @@ def update_result_recoder(state: MSVState, selected_patch: RecoderPatchInfo, res
   if state.mode == MSVMode.seapr:
     for loc in state.patch_ranking:
       rc: RecoderCaseInfo = state.switch_case_map[loc]
-      recoder_type_info = rc.parent
-      line_info = recoder_type_info.parent
+      # recoder_type_info = rc.parent
+      line_info = rc.parent
       func_info = line_info.parent
       file_info = func_info.parent
       is_share = False
@@ -481,19 +481,19 @@ def update_result_recoder(state: MSVState, selected_patch: RecoderPatchInfo, res
         rc.same_seapr_pf.update(result, 1)
       else:
         rc.diff_seapr_pf.update(result, 1)
-      if state.use_pattern and result:
-        pattern = 0
-        tmp_rti = recoder_type_info
-        for rti in selected_patch.recoder_type_info_list:
-          if tmp_rti is None:
-            break
-          if rti.act == tmp_rti.act:
-            pattern += 1
-            tmp_rti = tmp_rti.prev
-          else:
-            break
-        if pattern > 0:
-          rc.same_seapr_pf.update(True, pattern)
+      # if state.use_pattern and result:
+      #   pattern = 0
+      #   tmp_rti = recoder_type_info
+      #   for rti in selected_patch.recoder_type_info_list:
+      #     if tmp_rti is None:
+      #       break
+      #     if rti.act == tmp_rti.act:
+      #       pattern += 1
+      #       tmp_rti = tmp_rti.prev
+      #     else:
+      #       break
+      #   if pattern > 0:
+      #     rc.same_seapr_pf.update(True, pattern)
 
 def update_positive_result_recoder(state: MSVState, selected_patch: RecoderPatchInfo, result: bool) -> None:
   selected_patch.update_result_positive(result, 1, state.params[PT.b_dec],state.use_exp_alpha, state.use_fixed_beta)

@@ -354,17 +354,27 @@ def read_info_recoder(state: MSVState) -> None:
         del state.file_info_map[file_info.file_name]
   state.d4j_buggy_project = info["project_name"]
   state.patch_ranking = info["ranking"]
+  func_rank_checker: Set[FuncInfo] = set()
+  rank_num = 0
+  func_rank = 0
   for rank in state.patch_ranking:
     case_info: RecoderCaseInfo = state.switch_case_map[rank]
-    case_info.parent.parent.case_rank_list.append(rank)
+    func_info = case_info.parent.parent
+    func_info.case_rank_list.append(rank)
+    case_info.patch_rank = rank_num
+    rank_num += 1
+    if func_info not in func_rank_checker:
+      func_rank_checker.add(func_info)
+      func_info.func_rank = func_rank
+      func_rank += 1
   #Add original to switch_case_map
   temp_file: FileInfo = FileInfo('original')
   temp_func = FuncInfo(temp_file, "original_fn", 0, 0)
   temp_file.func_info_map["original_fn:0-0"] = temp_func
   temp_line: LineInfo = LineInfo(temp_func, 0)
   # temp_file.line_info_list.append(temp_line)
-  temp_recoder_type = RecoderTypeInfo(temp_line, 0, None)
-  temp_recoder_case = RecoderCaseInfo(temp_recoder_type, "original", 0)
+  # temp_recoder_type = RecoderTypeInfo(temp_line, 0, None)
+  temp_recoder_case = RecoderCaseInfo(temp_line, "original", 0)
   state.switch_case_map["0-0"] = temp_recoder_case
   state.patch_location_map["original"] = temp_recoder_case
   if state.use_simulation_mode:
