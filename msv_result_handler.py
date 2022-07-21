@@ -382,7 +382,6 @@ def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: b
           func_info.same_seapr_pf.update(result, 1)
         else:
           func_info.diff_seapr_pf.update(result, 1)
-      selected_patch.func_info.case_rank_list.pop(0)
     else:
       seapr_list_for_sort=[]
       for loc in state.patch_ranking:

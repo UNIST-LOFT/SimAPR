@@ -1333,6 +1333,7 @@ def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
     loc = func.case_rank_list[0]
     case_info: TbarCaseInfo = state.switch_case_map[loc]
     return case_info
+
   # Optimization for default SeAPR
   if not state.use_pattern and state.seapr_layer == SeAPRMode.FUNCTION:
     state.func_list.sort(key=lambda x: max(x.fl_score_list), reverse=True)
@@ -1363,9 +1364,11 @@ def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
       if cur_score > max_score:
         max_score = cur_score
         selected_patch = tbar_case_info
+
   if not has_high_qual_patch:
     return select_patch_tbar(state)
-    
+  
+  selected_patch.parent.parent.parent.case_rank_list.pop(0)
   state.msv_logger.debug(f'SeAPR score: {max_score}')
   state.patch_ranking.remove(selected_patch.location)
   return TbarPatchInfo(selected_patch)
