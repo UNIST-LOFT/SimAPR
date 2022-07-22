@@ -299,9 +299,6 @@ def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result:
   state.msv_result.append(obj)
   state.used_patch.append(result)
 
-  state.test_time+=fail_time
-  state.test_time+=pass_time
-
   if state.use_simulation_mode:
     # Cache test result if option used
     for patch in selected_patch:

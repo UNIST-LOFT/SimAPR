@@ -16,6 +16,7 @@ def run_fail_test(state: MSVState, selected_patch: List[PatchInfo], selected_tes
       return False, False
     if selected_patch[0].to_str() in state.simulation_data:
       msv_result = state.simulation_data[selected_patch[0].to_str()]
+      state.test_time+=msv_result['fail_time']
       return msv_result['basic'], False
   # Otherwise, run the test
   test_proc = subprocess.Popen(
@@ -64,6 +65,7 @@ def run_pass_test(state: MSVState, patch: List[PatchInfo], is_initialize: bool =
       return False, {}
     if patch[0].to_str() in state.simulation_data:
       msv_result = state.simulation_data[patch[0].to_str()]
+      state.test_time+=msv_result['pass_time']
       return msv_result['plausible'], {}
 
   MAX_TEST_ONCE = 1000
