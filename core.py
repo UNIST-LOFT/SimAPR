@@ -940,6 +940,7 @@ class MSVEnvVar:
     new_env["MSV_BUGGY_PROJECT"] = state.d4j_buggy_project
     new_env["MSV_OUTPUT_DISTANCE_FILE"] = f"/tmp/{uuid.uuid4()}.out"
     new_env["MSV_TIMEOUT"] = str(state.timeout)
+    new_env["MSV_RECODER"] = "-"
     return new_env
   @staticmethod
   def get_new_env_d4j_positive_tests(state: 'MSVState', tests: List[str], new_env: Dict[str, str]) -> Dict[str, str]:

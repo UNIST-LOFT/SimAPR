@@ -10,7 +10,10 @@ from pathlib import Path
 from psutil import Popen
 
 def get_paths(project):
-  project_name, bug_id = project.split("_")
+  sep = "_"
+  if "MSV_RECODER" in os.environ:
+    sep = os.environ["MSV_RECODER"]
+  project_name, bug_id = project.split(sep)
   bug_id = int(bug_id)
   if project_name == "Math":
     return "/target/classes/", "/target/test-classes/"
@@ -206,7 +209,10 @@ def simple_test():
 def main(argv: List[str]) -> None:
   root_path = argv[1]
   buggy_project = os.environ["MSV_BUGGY_PROJECT"]
-  proj, pid = buggy_project.split("_")
+  sep = "_"
+  if "MSV_RECODER" in os.environ:
+    sep = os.environ["MSV_RECODER"]
+  proj, pid = buggy_project.split(sep)
   buggy_dir = os.path.join(root_path, buggy_project)
   patch_location = os.environ["MSV_LOCATION"]
   d4j_dir = os.environ["MSV_WORKDIR"]
@@ -217,7 +223,7 @@ def main(argv: List[str]) -> None:
   class_file = ""
   if "MSV_CLASS_NAME" in os.environ:
     class_file = os.environ["MSV_CLASS_NAME"]
-  class_file = os.path.join(buggy_dir, class_file)
+    class_file = os.path.join(buggy_dir, class_file)
   if not os.path.exists(buggy_location): # when original
     os.system(f"rm -rf {buggy_dir}")
     os.makedirs(buggy_dir, exist_ok=True)
