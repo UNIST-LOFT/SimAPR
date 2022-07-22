@@ -345,6 +345,10 @@ def read_info_recoder(state: MSVState) -> None:
           line_info.total_case_info += 1
           func_info.total_case_info += 1
           file_info.total_case_info += 1
+          if line_info.fl_score not in func_info.total_patches_by_score:
+            func_info.total_patches_by_score[line_info.fl_score] = 0
+            func_info.searched_patches_by_score[line_info.fl_score] = 0
+          func_info.total_patches_by_score[line_info.fl_score] += 1
         if len(line_info.recoder_case_info_map)==0:
           del func_info.line_info_map[line_info.uuid]
       for func in file_info.func_info_map.copy().values():
@@ -359,7 +363,9 @@ def read_info_recoder(state: MSVState) -> None:
   func_rank = 0
   for rank in state.patch_ranking:
     case_info: RecoderCaseInfo = state.switch_case_map[rank]
-    func_info = case_info.parent.parent
+    line_info = case_info.parent
+    func_info = line_info.parent
+    file_info = func_info.parent
     func_info.case_rank_list.append(rank)
     case_info.patch_rank = rank_num
     rank_num += 1
@@ -367,6 +373,28 @@ def read_info_recoder(state: MSVState) -> None:
       func_rank_checker.add(func_info)
       func_info.func_rank = func_rank
       func_rank += 1
+    fl_score = line_info.fl_score
+    if fl_score not in state.java_patch_ranking:
+      state.java_patch_ranking[fl_score] = []
+      state.java_remain_patch_ranking[fl_score] = []
+    state.java_patch_ranking[fl_score].append(case_info)
+    state.java_remain_patch_ranking[fl_score].append(case_info)
+    if fl_score not in file_info.patches_by_score:
+      file_info.patches_by_score[fl_score] = []
+      file_info.remain_patches_by_score[fl_score] = []
+    file_info.patches_by_score[fl_score].append(case_info)
+    file_info.remain_patches_by_score[fl_score].append(case_info)
+    if fl_score not in func_info.patches_by_score:
+      func_info.patches_by_score[fl_score] = []
+      func_info.remain_patches_by_score[fl_score] = []
+    func_info.patches_by_score[fl_score].append(case_info)
+    func_info.remain_patches_by_score[fl_score].append(case_info)
+    if fl_score not in line_info.patches_by_score:
+      line_info.patches_by_score[fl_score] = []
+      line_info.remain_patches_by_score[fl_score] = []
+    line_info.patches_by_score[fl_score].append(case_info)
+    line_info.remain_patches_by_score[fl_score].append(case_info)
+
   #Add original to switch_case_map
   temp_file: FileInfo = FileInfo('original')
   temp_func = FuncInfo(temp_file, "original_fn", 0, 0)

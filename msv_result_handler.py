@@ -231,36 +231,36 @@ def save_result(state: MSVState) -> None:
   #         f.write(f"{state.profile_diff.profile_dict[test][elem].values}\n")
   #       else:
   #         f.write("{}\n")
-  with open(dist_info, 'w') as f:
-    obj = dict()
-    for cs in state.switch_case_map:
-      case_info = state.switch_case_map[cs]
-      ci = dict()
-      ci["count"] = case_info.update_count
-      ci["dist"] = case_info.out_dist
-      ti = dict()
-      type_info = case_info.parent
-      ti["count"] = type_info.update_count
-      ti["dist"] = type_info.out_dist
-      switch_info = type_info.parent
-      si = dict()
-      si["count"] = switch_info.update_count
-      si["dist"] = switch_info.out_dist
-      line_info = switch_info.parent
-      li = dict()
-      li["count"] = line_info.update_count
-      li["dist"] = line_info.out_dist
-      file_info = line_info.parent
-      fi = dict()
-      fi["count"] = file_info.update_count
-      fi["dist"] = file_info.out_dist
-      obj[cs] = dict()
-      obj[cs]["case"] = ci
-      obj[cs]["type"] = ti
-      obj[cs]["switch"] = si
-      obj[cs]["line"] = li
-      obj[cs]["file"] = fi
-    json.dump(obj, f, indent=2)
+  # with open(dist_info, 'w') as f:
+  #   obj = dict()
+  #   for cs in state.switch_case_map:
+  #     case_info = state.switch_case_map[cs]
+  #     ci = dict()
+  #     ci["count"] = case_info.update_count
+  #     ci["dist"] = case_info.out_dist
+  #     ti = dict()
+  #     type_info = case_info.parent
+  #     ti["count"] = type_info.update_count
+  #     ti["dist"] = type_info.out_dist
+  #     switch_info = type_info.parent
+  #     si = dict()
+  #     si["count"] = switch_info.update_count
+  #     si["dist"] = switch_info.out_dist
+  #     line_info = switch_info.parent
+  #     li = dict()
+  #     li["count"] = line_info.update_count
+  #     li["dist"] = line_info.out_dist
+  #     file_info = line_info.parent
+  #     fi = dict()
+  #     fi["count"] = file_info.update_count
+  #     fi["dist"] = file_info.out_dist
+  #     obj[cs] = dict()
+  #     obj[cs]["case"] = ci
+  #     obj[cs]["type"] = ti
+  #     obj[cs]["switch"] = si
+  #     obj[cs]["line"] = li
+  #     obj[cs]["file"] = fi
+  #   json.dump(obj, f, indent=2)
 
   if state.use_simulation_mode:
     # Save cached result to file
@@ -459,6 +459,21 @@ def update_result_recoder(state: MSVState, selected_patch: RecoderPatchInfo, res
   selected_patch.update_result(result, 1, state.params[PT.b_dec],state.use_exp_alpha, state.use_fixed_beta)
   if result:
     state.total_basic_patch += 1
+    selected_patch.line_info.children_basic_patches += 1
+    selected_patch.func_info.children_basic_patches += 1
+    selected_patch.file_info.children_basic_patches += 1
+    selected_patch.line_info.consecutive_fail_count = 0
+    selected_patch.func_info.consecutive_fail_count = 0
+    selected_patch.file_info.consecutive_fail_count = 0
+  else:
+    selected_patch.line_info.consecutive_fail_count += 1
+    selected_patch.func_info.consecutive_fail_count += 1
+    selected_patch.file_info.consecutive_fail_count += 1
+    selected_patch.line_info.consecutive_fail_plausible_count += 1
+    selected_patch.func_info.consecutive_fail_plausible_count += 1
+    selected_patch.file_info.consecutive_fail_plausible_count += 1
+
+  state.previous_score = selected_patch.line_info.fl_score
   if state.mode == MSVMode.seapr:
     for loc in state.patch_ranking:
       rc: RecoderCaseInfo = state.switch_case_map[loc]
@@ -496,6 +511,17 @@ def update_result_recoder(state: MSVState, selected_patch: RecoderPatchInfo, res
       #     rc.same_seapr_pf.update(True, pattern)
 
 def update_positive_result_recoder(state: MSVState, selected_patch: RecoderPatchInfo, result: bool) -> None:
+  if result:
+    selected_patch.line_info.children_plausible_patches += 1
+    selected_patch.func_info.children_plausible_patches += 1
+    selected_patch.file_info.children_plausible_patches += 1
+    selected_patch.line_info.consecutive_fail_plausible_count = 0
+    selected_patch.func_info.consecutive_fail_plausible_count = 0
+    selected_patch.file_info.consecutive_fail_plausible_count = 0
+  else:
+    selected_patch.line_info.consecutive_fail_plausible_count += 1
+    selected_patch.func_info.consecutive_fail_plausible_count += 1
+    selected_patch.file_info.consecutive_fail_plausible_count += 1
   selected_patch.update_result_positive(result, 1, state.params[PT.b_dec],state.use_exp_alpha, state.use_fixed_beta)
 
 def remove_patch_recoder(state: MSVState, selected_patch: RecoderPatchInfo) -> None:

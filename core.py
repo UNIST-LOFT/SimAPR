@@ -1464,8 +1464,14 @@ class RecoderPatchInfo:
     #   rti.case_update_count += 1
     #   rti.score_list.remove(prob)
     self.line_info.case_update_count += 1
+    fl_score = self.line_info.fl_score
+    self.line_info.remain_patches_by_score[fl_score].remove(self.recoder_case_info)
     self.func_info.case_update_count += 1
+    self.func_info.remain_patches_by_score[fl_score].remove(self.recoder_case_info)
     self.file_info.case_update_count += 1
+    self.file_info.remain_patches_by_score[fl_score].remove(self.recoder_case_info)
+    state.java_remain_patch_ranking[fl_score].remove(self.recoder_case_info)
+    self.func_info.searched_patches_by_score[fl_score] += 1
   def to_json_object(self) -> dict:
     conf = dict()
     conf["location"] = self.recoder_case_info.location

@@ -16,11 +16,13 @@ def weighted_mean(a:float, b:float, weight_a:float=1., weight_b:float=1.):
   return (a * weight_a + b * weight_b) / (weight_a + weight_b)
 
 def get_static_score(state:MSVState,element):
-  if state.tbar_mode:
+  if state.tbar_mode or state.recoder_mode:
     if type(element)==FileInfo or type(element)==FuncInfo:
       return max(element.fl_score_list)
     elif type(element)==LineInfo:
       return element.fl_score
+    elif type(element) == RecoderCaseInfo:
+      return element.parent.fl_score
     elif type(element)==TbarTypeInfo:
       return element.parent.fl_score
     elif type(element)==TbarCaseInfo:
@@ -120,13 +122,13 @@ def epsilon_search(state:MSVState):
     Do epsilon search if there's no basic patch.
     source: File/Function/Line/TbarType info, or None if file selection
   """
-  top_fl_patches:List[TbarCaseInfo]=[] # All 'not searched' top scored patches
+  top_fl_patches:List[Union[TbarCaseInfo, RecoderCaseInfo, CaseInfo]]=[] # All 'not searched' top scored patches
   top_all_patches=[] # All top scored patches, include searched or not searched
   next_top_fl_patches:List[TbarCaseInfo]=[] # All 'not searched' top scored patches
   next_top_all_patches=[] # All top scored patches, include searched or not searched
   cur_score=-100.
   # Get all top fl patches
-  if state.tbar_mode:
+  if state.tbar_mode or state.recoder_mode:
     for score in state.java_remain_patch_ranking:
       if len(state.java_remain_patch_ranking[score])>0:
         if len(top_fl_patches)>0:
@@ -137,8 +139,7 @@ def epsilon_search(state:MSVState):
           top_fl_patches=state.java_remain_patch_ranking[score]
           top_all_patches=state.java_patch_ranking[score]
           cur_score=score
-
-  else:
+  else: # prophet
     sorted_scores=sorted(state.c_patch_ranking.keys(),reverse=True)
     is_next=False
     for e in sorted_scores:
@@ -216,7 +217,7 @@ def epsilon_select(state:MSVState,source=None):
   top_fl_patches:List[TbarCaseInfo]=[] # All 'not searched' top scored patches
   top_all_patches=[] # All top scored patches, include searched or not searched
   # Get all top fl patches
-  if state.tbar_mode:
+  if state.tbar_mode or state.recoder_mode:
     if source is None:
       for score in state.java_remain_patch_ranking:
         if len(state.java_remain_patch_ranking[score])>0:
@@ -298,6 +299,20 @@ def epsilon_select(state:MSVState,source=None):
             result.add(case_info)
         else:
           raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
+      elif state.recoder_mode:
+        if source is None:
+          if case_info.parent.parent.parent in state.file_info_map.values():
+            result.add(case_info.parent.parent.parent)
+        elif type(source) == FileInfo:
+          if case_info.parent.parent in source.func_info_map.values():
+            result.add(case_info.parent.parent)
+        elif type(source) == FuncInfo:
+          if case_info.parent in source.line_info_map.values():
+            result.add(case_info.parent)
+        elif type(source) == LineInfo:
+          if case_info in source.recoder_case_info_map.values():
+            result.add(case_info)
+        
       else:
         # For C
         if source is None:
@@ -343,6 +358,15 @@ def epsilon_select(state:MSVState,source=None):
         return cur_fl_patches[0]
       else:
         raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
+    elif state.recoder_mode:
+      if source is None:
+        return cur_fl_patches[0].parent.parent.parent
+      elif type(source) == FileInfo:
+        return cur_fl_patches[0].parent.parent
+      elif type(source) == FuncInfo:
+        return cur_fl_patches[0].parent
+      elif type(source) == LineInfo:
+        return cur_fl_patches[0]
     else:
       # For C
       if source is None:
@@ -1389,15 +1413,18 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
   rand_cmap = {PT.rand: 1.0}
   # lists which are used to store the scores of each patch
   selected = list()
-  p_rand = list() # random
-  p_b = list() # basic
-  p_p = list() # plausible
-  p_fl = list() # fault localization
-  p_o = list() # output
-  p_odist = list() # output distance
-  p_cov = list() # coverage
-  p_map = {PT.selected: selected, PT.rand: p_rand, PT.basic: p_b, 
-          PT.plau: p_p, PT.fl: p_fl, PT.out: p_o, PT.cov: p_cov, PT.odist: p_odist}
+  p_rand = list()  # random
+  p_b = list()  # basic
+  p_p = list()  # plausible
+  p_fl = list()  # fault localization
+  p_o = list()  # output
+  p_odist = list()  # output distance
+  p_cov = list()  # coverage
+  p_frequency = list()  # frequency of basic patches from total basic patches
+  # frequency of basic patches from total searched patches in subtree
+  p_bp_frequency = list()
+  p_map = {PT.selected: selected, PT.rand: p_rand, PT.basic: p_b,
+           PT.plau: p_p, PT.fl: p_fl, PT.out: p_o, PT.cov: p_cov, PT.odist: p_odist, PT.frequency: p_frequency, PT.bp_frequency: p_bp_frequency}
   c_map = state.c_map.copy()
   normalize: Set[PT] = {PT.fl, PT.cov}
   iter = max(0, state.iteration - state.max_initial_trial)
@@ -1423,7 +1450,18 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
       c_map[PT.cov] += diff * decay
   else:
     state.msv_logger.info("Exploit!")
-
+  
+  if state.total_basic_patch == 0 or state.not_use_guided_search:
+    selected_switch_info = epsilon_search(state)
+    result = RecoderPatchInfo(selected_switch_info)
+    return result
+  
+  selected_file_info: FileInfo = select_patch_guide_algorithm(state,state.file_info_map,None)
+  selected_func_info: FuncInfo = select_patch_guide_algorithm(state,selected_file_info.func_info_map,selected_file_info)
+  selected_line_info: LineInfo = select_patch_guide_algorithm(state,selected_func_info.line_info_map,selected_func_info)
+  selected_case_info: RecoderCaseInfo = epsilon_select(state, selected_line_info)
+  result = RecoderPatchInfo(selected_case_info)
+  return result
   for file_name in state.file_info_map:
     file_info = state.file_info_map[file_name]
     if len(file_info.func_info_map) == 0:
