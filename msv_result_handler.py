@@ -307,7 +307,11 @@ def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result:
     for patch in selected_patch:
       if state.tbar_mode or state.recoder_mode:
         # For Java, case_info is tbar_case_info
-        append_java_cache_result(state,patch.tbar_case_info,test_result,pass_test_result,pass_all_neg_test,compilable,fail_time,pass_time)
+        if state.tbar_mode:
+          case_info = patch.tbar_case_info
+        else:
+          case_info = patch.recoder_case_info
+        append_java_cache_result(state,case_info,test_result,pass_test_result,pass_all_neg_test,compilable,fail_time,pass_time)
       else:
         if not patch.case_info.is_condition or patch.operator_info is None:
           append_c_cache_result(state,patch.case_info,test_result,pass_test_result,pass_all_neg_test,compilable,fail_time,pass_time)
