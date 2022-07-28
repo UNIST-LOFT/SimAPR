@@ -1461,8 +1461,59 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
     return result
   
   selected_file_info: FileInfo = select_patch_guide_algorithm(state,state.file_info_map,None)
+  for file_name in state.file_info_map:
+    file_info=state.file_info_map[file_name]
+    p_fl.append(max(file_info.fl_score_list))
+    p_frequency.append(file_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
+    p_bp_frequency.append(file_info.consecutive_fail_count)
+  norm=PassFail.normalize(p_fl)
+  selected_file=0
+  for i,file in enumerate(state.file_info_map):
+    if state.file_info_map[file]==selected_file_info:
+      selected_file=i
+      break
+  state.msv_logger.debug(f'Selected file: FL: {norm[selected_file]}/{p_fl[selected_file]}, Basic: {selected_file_info.pf.beta_mode(selected_file_info.pf.pass_count,selected_file_info.pf.fail_count)}, '+
+                  f'Plausible: {selected_file_info.positive_pf.beta_mode(selected_file_info.positive_pf.pass_count,selected_file_info.positive_pf.fail_count)}, '+
+                  f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_file])}/{p_frequency[selected_file]}, BPFreq: {PassFail.log_func(p_bp_frequency[selected_file])}')
+  clear_list(state, p_map)
+
   selected_func_info: FuncInfo = select_patch_guide_algorithm(state,selected_file_info.func_info_map,selected_file_info)
+  for func_name in selected_file_info.func_info_map:
+    func_info=selected_file_info.func_info_map[func_name]
+    p_fl.append(max(func_info.fl_score_list))
+    p_frequency.append(func_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
+    p_bp_frequency.append(func_info.consecutive_fail_count)
+  norm=PassFail.normalize(p_fl)
+  selected_func=0
+  for i,func in enumerate(selected_file_info.func_info_map):
+    if selected_file_info.func_info_map[func]==selected_func_info:
+      selected_func=i
+      break
+  norm=PassFail.normalize(p_fl)
+  state.msv_logger.debug(f'Selected function: FL: {norm[selected_func]}/{p_fl[selected_func]}, Basic: {selected_func_info.pf.beta_mode(selected_func_info.pf.pass_count,selected_func_info.pf.fail_count)}, '+
+                  f'Plausible: {selected_func_info.positive_pf.beta_mode(selected_func_info.positive_pf.pass_count,selected_func_info.positive_pf.fail_count)}, '+
+                  f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_func])}/{p_frequency[selected_func]}, BPFreq: {PassFail.log_func(p_bp_frequency[selected_func])}')
+  clear_list(state, p_map)
+  
   selected_line_info: LineInfo = select_patch_guide_algorithm(state,selected_func_info.line_info_map,selected_func_info)
+  for line in selected_func_info.line_info_map:
+    line_info=selected_func_info.line_info_map[line]
+    p_fl.append(line_info.fl_score)
+    p_frequency.append(line_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
+    p_bp_frequency.append(line_info.consecutive_fail_count)
+  norm=PassFail.normalize(p_fl)
+  selected_line=0
+  for i,line in enumerate(selected_func_info.line_info_map):
+    if selected_func_info.line_info_map[line]==selected_line_info:
+      selected_line=i
+      break
+  norm=PassFail.normalize(p_fl)
+  state.msv_logger.debug(f'Selected line: FL: {norm[selected_line]}/{p_fl[selected_line]}, Basic: {selected_line_info.pf.beta_mode(selected_line_info.pf.pass_count,selected_line_info.pf.fail_count)}, '+
+                  f'Plausible: {selected_line_info.positive_pf.beta_mode(selected_line_info.positive_pf.pass_count,selected_line_info.positive_pf.fail_count)}, '+
+                  f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_line])}/{p_frequency[selected_line]}, BPFreq: {PassFail.log_func(p_bp_frequency[selected_line])}')
+  clear_list(state, p_map)
+  del c_map[PT.fl] # No fl below line
+  
   selected_case_info: RecoderCaseInfo = epsilon_select(state, selected_line_info)
   result = RecoderPatchInfo(selected_case_info)
   return result
