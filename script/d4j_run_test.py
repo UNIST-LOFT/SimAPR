@@ -11,6 +11,8 @@ from psutil import Popen
 
 def get_paths(project):
   project_name, bug_id = project.split("_")
+  if len(bug_id)>=4:
+    bug_id=bug_id[:-3]
   bug_id = int(bug_id)
   if project_name == "Math":
     return "/target/classes/", "/target/test-classes/"
