@@ -1733,7 +1733,7 @@ def record_to_int(record: List[bool]) -> List[int]:
   return result
 
 def append_java_cache_result(state:MSVState,case:TbarCaseInfo,fail_result:bool,pass_result:bool,pass_all_fail:bool,compilable:bool,
-      fail_time:int,pass_time:int):
+      fail_time:float, pass_time:float):
   """
     Append result to cache file, if not exist. Otherwise, do nothing.
     

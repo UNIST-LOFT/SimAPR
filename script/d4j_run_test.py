@@ -221,7 +221,10 @@ def main(argv: List[str]) -> None:
   run_original = patch_location == "original"
   patch_location = d4j_dir + os.path.sep + patch_location #os.path.join(d4j_dir, patch_location)
   buggy_location = os.environ["MSV_BUGGY_LOCATION"]
-  buggy_location = os.path.join(buggy_dir, buggy_location)
+  if buggy_location.startswith("buggy"):
+    buggy_location = os.path.join(root_path, buggy_location)
+  else:
+    buggy_location = os.path.join(buggy_dir, buggy_location)
   class_file = ""
   if "MSV_CLASS_NAME" in os.environ:
     class_file = os.environ["MSV_CLASS_NAME"]
