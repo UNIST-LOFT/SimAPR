@@ -364,9 +364,9 @@ class MSVTbar(MSV):
     # TODO change
     result_handler.save_result(self.state)
   def run_test(self, patch: TbarPatchInfo, test: int) -> Tuple[int, bool,int]:
-    start_time=int(time.time() * 1000)
+    start_time=int(time.time())
     compilable, run_result, is_timeout = run_test.run_fail_test_d4j(self.state, MSVEnvVar.get_new_env_tbar(self.state, patch, test))
-    run_time=int(time.time() * 1000)-start_time
+    run_time=int(time.time())-start_time
     return compilable, run_result, run_time
   def run_test_positive(self, patch: TbarPatchInfo) -> Tuple[bool,int]:
     start_time=int(time.time())
@@ -431,7 +431,6 @@ class MSVTbar(MSV):
       pass_time=0
       for neg in self.state.d4j_negative_test:
         compilable, run_result,fail_time = self.run_test(patch, neg)
-        fail_time/=1000
         if not compilable:
           is_compilable = False
         if run_result:
@@ -470,7 +469,6 @@ class MSVTbar(MSV):
       if key not in self.state.simulation_data:
         for neg in self.state.d4j_negative_test:
           compilable, run_result,fail_time = self.run_test(patch, neg)
-          fail_time/=1000
           if not compilable:
             is_compilable = False
           if run_result:
@@ -495,6 +493,8 @@ class MSVTbar(MSV):
         fail_time=msv_result['fail_time']
         pass_time=msv_result['pass_time']
         is_compilable=msv_result['compilable']
+        self.state.test_time+=fail_time
+        self.state.test_time+=pass_time
         if is_compilable or self.state.ignore_compile_error:
           result_handler.update_result_tbar(self.state, patch, pass_exists)
           if result:
@@ -507,9 +507,9 @@ class MSVTbar(MSV):
 
 class MSVRecoder(MSVTbar):
   def run_test(self, patch: RecoderPatchInfo, test: int) -> Tuple[int, bool,int]:
-    start_time=int(time.time() * 1000)
+    start_time=int(time.time())
     compilable, run_result, is_timeout = run_test.run_fail_test_d4j(self.state, MSVEnvVar.get_new_env_recoder(self.state, patch, test))
-    run_time=int(time.time() * 1000)-start_time
+    run_time=int(time.time())-start_time
     return compilable, run_result,run_time
   def run_test_positive(self, patch: RecoderPatchInfo) -> Tuple[bool,int]:
     start_time=int(time.time())

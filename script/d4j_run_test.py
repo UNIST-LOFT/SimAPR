@@ -14,6 +14,8 @@ def get_paths(project):
   if "MSV_RECODER" in os.environ:
     sep = os.environ["MSV_RECODER"]
   project_name, bug_id = project.split(sep)
+  if len(bug_id)>=4:
+    bug_id=bug_id[:-3]
   bug_id = int(bug_id)
   if project_name == "Math":
     return "/target/classes/", "/target/test-classes/"
@@ -227,6 +229,8 @@ def main(argv: List[str]) -> None:
   if not os.path.exists(buggy_location): # when original
     os.system(f"rm -rf {buggy_dir}")
     os.makedirs(buggy_dir, exist_ok=True)
+    if len(pid)>=4:
+      pid=pid[:-3]
     subprocess.run(f"defects4j checkout -p {proj} -v {pid}b -w {buggy_dir}", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
   workdir = buggy_dir
   test = os.environ["MSV_TEST"]
