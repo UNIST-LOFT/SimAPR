@@ -619,7 +619,7 @@ class MSVRecoder(MSVTbar):
         is_compilable=msv_result['compilable']
         if is_compilable or self.state.ignore_compile_error:
           result_handler.update_result_recoder(self.state, patch, pass_exists)
-          if pass_result:
+          if run_result:
             result_handler.update_positive_result_recoder(self.state, patch, pass_result)
       if is_compilable or self.state.ignore_compile_error:
         self.state.iteration += 1

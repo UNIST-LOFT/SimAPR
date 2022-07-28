@@ -1368,13 +1368,16 @@ def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
       if func.func_rank > 30:
         continue
       cur_score = get_ochiai(func.same_seapr_pf.pass_count, func.same_seapr_pf.fail_count, func.diff_seapr_pf.pass_count, func.diff_seapr_pf.fail_count)
-      if cur_score >= max_score:
+      if cur_score > max_score:
         max_score = cur_score
+        selected_patch = get_first_case_info(state, func)
+        min_patch_rank = selected_patch.patch_rank
+      elif cur_score == max_score:
         tmp_patch = get_first_case_info(state, func)
         if min_patch_rank > tmp_patch.patch_rank:
           min_patch_rank = tmp_patch.patch_rank
           selected_patch = tmp_patch
-        has_high_qual_patch = True
+      has_high_qual_patch = True
   else:
     for loc in state.patch_ranking:
       tbar_case_info: TbarCaseInfo = state.switch_case_map[loc]
@@ -1638,13 +1641,16 @@ def select_patch_recoder_seapr(state: MSVState) -> RecoderPatchInfo:
         continue
       cur_score = get_ochiai(func.same_seapr_pf.pass_count, func.same_seapr_pf.fail_count,
                              func.diff_seapr_pf.pass_count, func.diff_seapr_pf.fail_count)
-      if cur_score >= max_score:
+      if cur_score > max_score:
         max_score = cur_score
+        selected_patch = get_first_case_info(state, func)
+        min_patch_rank = selected_patch.patch_rank
+      elif cur_score == max_score:
         tmp_patch = get_first_case_info(state, func)
         if min_patch_rank > tmp_patch.patch_rank:
           min_patch_rank = tmp_patch.patch_rank
           selected_patch = tmp_patch
-        has_high_qual_patch = True
+      has_high_qual_patch = True
   else:
     for loc in state.patch_ranking:
       recoder_case_info: RecoderCaseInfo = state.switch_case_map[loc]
@@ -1660,6 +1666,7 @@ def select_patch_recoder_seapr(state: MSVState) -> RecoderPatchInfo:
   if not has_high_qual_patch:
     return select_patch_recoder(state)
   state.patch_ranking.remove(selected_patch.to_str())
+  state.msv_logger.debug(f"Selected patch: {selected_patch.to_str()}, seapr score: {max_score}")
   if not state.use_pattern and state.seapr_layer == SeAPRMode.FUNCTION:
     selected_patch.parent.parent.case_rank_list.pop(0)
   return RecoderPatchInfo(selected_patch)

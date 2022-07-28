@@ -476,40 +476,48 @@ def update_result_recoder(state: MSVState, selected_patch: RecoderPatchInfo, res
 
   state.previous_score = selected_patch.line_info.fl_score
   if state.mode == MSVMode.seapr:
-    for loc in state.patch_ranking:
-      rc: RecoderCaseInfo = state.switch_case_map[loc]
-      # recoder_type_info = rc.parent
-      line_info = rc.parent
-      func_info = line_info.parent
-      file_info = func_info.parent
-      is_share = False
-      same_pattern = False
-      if state.seapr_layer == SeAPRMode.FILE:
-        if selected_patch.file_info == file_info:
-          is_share = True
-      elif state.seapr_layer == SeAPRMode.FUNCTION:
-        if selected_patch.func_info == func_info:
-          is_share = True
-      elif state.seapr_layer == SeAPRMode.LINE:
-        if selected_patch.line_info == line_info:
-          is_share = True
-      if is_share:
-        rc.same_seapr_pf.update(result, 1)
-      else:
-        rc.diff_seapr_pf.update(result, 1)
-      # if state.use_pattern and result:
-      #   pattern = 0
-      #   tmp_rti = recoder_type_info
-      #   for rti in selected_patch.recoder_type_info_list:
-      #     if tmp_rti is None:
-      #       break
-      #     if rti.act == tmp_rti.act:
-      #       pattern += 1
-      #       tmp_rti = tmp_rti.prev
-      #     else:
-      #       break
-      #   if pattern > 0:
-      #     rc.same_seapr_pf.update(True, pattern)
+    # Optimization: for default SeAPR, we use cluster to update the result
+    if not state.use_pattern and state.seapr_layer == SeAPRMode.FUNCTION:
+      for func_info in state.func_list:
+        if selected_patch.func_info == func_info:  # same function with selected patch
+          func_info.same_seapr_pf.update(result, 1)
+        else:
+          func_info.diff_seapr_pf.update(result, 1)
+    else:
+      for loc in state.patch_ranking:
+        rc: RecoderCaseInfo = state.switch_case_map[loc]
+        # recoder_type_info = rc.parent
+        line_info = rc.parent
+        func_info = line_info.parent
+        file_info = func_info.parent
+        is_share = False
+        same_pattern = False
+        if state.seapr_layer == SeAPRMode.FILE:
+          if selected_patch.file_info == file_info:
+            is_share = True
+        elif state.seapr_layer == SeAPRMode.FUNCTION:
+          if selected_patch.func_info == func_info:
+            is_share = True
+        elif state.seapr_layer == SeAPRMode.LINE:
+          if selected_patch.line_info == line_info:
+            is_share = True
+        if is_share:
+          rc.same_seapr_pf.update(result, 1)
+        else:
+          rc.diff_seapr_pf.update(result, 1)
+        # if state.use_pattern and result:
+        #   pattern = 0
+        #   tmp_rti = recoder_type_info
+        #   for rti in selected_patch.recoder_type_info_list:
+        #     if tmp_rti is None:
+        #       break
+        #     if rti.act == tmp_rti.act:
+        #       pattern += 1
+        #       tmp_rti = tmp_rti.prev
+        #     else:
+        #       break
+        #   if pattern > 0:
+        #     rc.same_seapr_pf.update(True, pattern)
 
 def update_positive_result_recoder(state: MSVState, selected_patch: RecoderPatchInfo, result: bool) -> None:
   if result:
