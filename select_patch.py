@@ -408,10 +408,11 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
           if type(selected[max_index])==FuncInfo:
             cor_set=set()
             for cor_str in state.correct_patch_list:
-              if type(state.switch_case_map[cor_str])==TbarCaseInfo:
-                cor_set.add(state.switch_case_map[cor_str].parent.parent.parent)
+              parsed = cor_str.strip().split(":")
+              if type(state.switch_case_map[parsed[0]])==TbarCaseInfo:
+                cor_set.add(state.switch_case_map[parsed[0]].parent.parent.parent)
               else:
-                cor_set.add(state.switch_case_map[cor_str].parent.parent.parent.parent)
+                cor_set.add(state.switch_case_map[parsed[0]].parent.parent.parent.parent)
             if selected[max_index] in cor_set:
               state.msv_logger.debug(f'Correct guide: {selected[max_index]}')
             else:
@@ -449,10 +450,11 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
           if type(selected[max_index])==FuncInfo:
             cor_set=set()
             for cor_str in state.correct_patch_list:
-              if type(state.switch_case_map[cor_str])==TbarCaseInfo:
-                cor_set.add(state.switch_case_map[cor_str].parent.parent.parent)
+              parsed = cor_str.strip().split(":")
+              if type(state.switch_case_map[parsed[0]])==TbarCaseInfo:
+                cor_set.add(state.switch_case_map[parsed[0]].parent.parent.parent)
               else:
-                cor_set.add(state.switch_case_map[cor_str].parent.parent.parent.parent)
+                cor_set.add(state.switch_case_map[parsed[0]].parent.parent.parent.parent)
             if selected[max_index] in cor_set:
               state.msv_logger.debug(f'Correct guide: {selected[max_index]}')
             else:
