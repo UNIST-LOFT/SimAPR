@@ -506,6 +506,18 @@ class MSVTbar(MSV):
 
 
 class MSVRecoder(MSVTbar):
+  def is_alive(self) -> bool:
+    if len(self.state.file_info_map) == 0:
+      self.state.is_alive = False
+    if self.state.cycle_limit > 0 and self.state.iteration >= self.state.cycle_limit:
+      self.state.is_alive = False
+    elif self.state.time_limit > 0 and (time.time() - self.state.start_time) > self.state.time_limit:
+      self.state.is_alive = False
+    elif len(self.state.patch_ranking) == 0:
+      self.state.is_alive = False
+    elif self.state.finish_at_correct_patch and self.patch_str in self.state.correct_patch_str:
+      self.state.is_alive = False
+    return self.state.is_alive
   def run_test(self, patch: RecoderPatchInfo, test: int) -> Tuple[int, bool, float]:
     start_time=int(time.time())
     compilable, run_result, is_timeout = run_test.run_fail_test_d4j(self.state, MSVEnvVar.get_new_env_recoder(self.state, patch, test))
@@ -555,6 +567,7 @@ class MSVRecoder(MSVTbar):
       patch = select_patch.select_patch_recoder_mode(self.state)
       self.state.msv_logger.info(f"Patch: {patch.recoder_case_info.location}")
       self.state.msv_logger.info(f"{patch.file_info.file_name}${patch.func_info.id}${patch.line_info.line_number}")
+      self.patch_str = patch.to_str_sw_cs()
       pass_exists = False
       result = True
       pass_result = False
@@ -587,6 +600,7 @@ class MSVRecoder(MSVTbar):
       patch = select_patch.select_patch_recoder_mode(self.state)
       self.state.msv_logger.info(f"Patch: {patch.recoder_case_info.location}")
       self.state.msv_logger.info(f"{patch.file_info.file_name}${patch.func_info.id}${patch.line_info.line_number}")
+      self.patch_str = patch.to_str_sw_cs()
       pass_exists = False
       result = True
       pass_result = False
