@@ -1081,6 +1081,12 @@ def main(argv: list):
   state.msv_logger.info('MSV is started')
   try:
     msv.run()
+    with open(os.path.join(state.out_dir, "msv-finished"), "w") as f:
+      f.write(' '.join(state.original_args))
+      f.write("\n")
+      f.write(state.msv_version)
+      f.write("\n")
+      f.write("MSV is finished\n")
   except:
     state.msv_logger.error('MSV is crashed!!!!!!!!!!!!!!!!')
     state.msv_logger.exception("Got exception in msv.run()")
@@ -1088,12 +1094,6 @@ def main(argv: list):
   state.msv_logger.info('MSV is finished')
   state.msv_logger.info(f'Running time: {(time.time()-state.start_time)+state.test_time}')
   msv.save_result()
-  with open(os.path.join(state.out_dir, "msv-finished"), "w") as f:
-    f.write(' '.join(state.original_args))
-    f.write("\n")
-    f.write(state.msv_version)
-    f.write("\n")
-    f.write("MSV is finished\n")
 
 
 if __name__ == "__main__":
