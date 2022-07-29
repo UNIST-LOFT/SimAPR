@@ -260,6 +260,7 @@ def read_info_recoder(state: MSVState) -> None:
     info = json.load(f)
     state.d4j_negative_test = info['failing_test_cases']
     state.d4j_positive_test = info['passing_test_cases']
+    state.d4j_failed_passing_tests = set(info['failed_passing_tests'])
     file_map = state.file_info_map
     ff_map: Dict[str, Dict[str, Tuple[int, int]]] = dict()
     check_func: Set[FuncInfo] = set()
