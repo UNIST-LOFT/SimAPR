@@ -304,7 +304,7 @@ class LineInfo:
     self.has_init_patch=False
     self.case_update_count: int = 0
     self.tbar_type_info_map: Dict[str, TbarTypeInfo] = dict()
-    self.recoder_type_info_map: Dict[str, RecoderTypeInfo] = dict()
+    # self.recoder_type_info_map: Dict[str, RecoderTypeInfo] = dict()
     self.line_id = -1
     self.recoder_case_info_map: Dict[int, RecoderCaseInfo] = dict()
     self.score_list: List[float] = list()
@@ -404,7 +404,7 @@ class RecoderTypeInfo:
     return self.act == other.act
 
 class RecoderCaseInfo:
-  def __init__(self, parent: RecoderTypeInfo, location: str, case_id: int) -> None:
+  def __init__(self, parent: LineInfo, location: str, case_id: int) -> None:
     self.parent = parent
     self.location = location
     self.case_id = case_id
@@ -419,12 +419,13 @@ class RecoderCaseInfo:
     self.out_dist_map: Dict[int, float] = dict()
     self.same_seapr_pf = PassFail(1, 1)
     self.diff_seapr_pf = PassFail(1, 1)
+    self.patch_rank: int = -1
   def __hash__(self) -> int:
     return hash(self.location)
   def __eq__(self, other) -> bool:
     return self.location == other.location
   def to_str(self) -> str:
-    return f"{self.parent.parent.line_id}-{self.case_id}"
+    return f"{self.parent.line_id}-{self.case_id}"
 
 class SwitchInfo:
   def __init__(self, parent: LineInfo, switch_number: int) -> None:
@@ -939,6 +940,7 @@ class MSVEnvVar:
     new_env["MSV_BUGGY_PROJECT"] = state.d4j_buggy_project
     new_env["MSV_OUTPUT_DISTANCE_FILE"] = f"/tmp/{uuid.uuid4()}.out"
     new_env["MSV_TIMEOUT"] = str(state.timeout)
+    new_env["MSV_RECODER"] = "-"
     return new_env
   @staticmethod
   def get_new_env_d4j_positive_tests(state: 'MSVState', tests: List[str], new_env: Dict[str, str]) -> Dict[str, str]:
@@ -1382,17 +1384,17 @@ class TbarPatchInfo:
 class RecoderPatchInfo:
   def __init__(self, recoder_case_info: RecoderCaseInfo) -> None:
     self.recoder_case_info = recoder_case_info
-    self.recoder_type_info = recoder_case_info.parent # leaf node
-    self.recoder_type_info_list = self.recoder_type_info.get_path()
-    self.line_info = self.recoder_type_info.parent
+    # self.recoder_type_info = recoder_case_info.parent # leaf node
+    # self.recoder_type_info_list = self.recoder_type_info.get_path()
+    self.line_info = self.recoder_case_info.parent
     self.func_info = self.line_info.parent
     self.file_info = self.func_info.parent
     self.out_dist = -1.0
     self.out_diff = False
   def update_result(self, result: bool, n: float, b_n:float,exp_alpha: bool, fixed_beta: bool) -> None:
     self.recoder_case_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
-    for rti in self.recoder_type_info_list:
-      rti.pf.update(result, n,b_n, exp_alpha, fixed_beta)
+    # for rti in self.recoder_type_info_list:
+    #   rti.pf.update(result, n,b_n, exp_alpha, fixed_beta)
     # self.recoder_type_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.line_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.func_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
@@ -1406,10 +1408,10 @@ class RecoderPatchInfo:
     self.recoder_case_info.out_dist = (tmp + dist) / (self.recoder_case_info.update_count + 1)
     self.recoder_case_info.update_count += 1
     self.recoder_case_info.output_pf.update(is_diff, 1.0)
-    tmp = self.recoder_type_info.update_count * self.recoder_type_info.out_dist
-    self.recoder_type_info.out_dist = (tmp + dist) / (self.recoder_type_info.update_count + 1)
-    self.recoder_type_info.update_count += 1
-    self.recoder_type_info.output_pf.update(is_diff, 1.0)
+    # tmp = self.recoder_type_info.update_count * self.recoder_type_info.out_dist
+    # self.recoder_type_info.out_dist = (tmp + dist) / (self.recoder_type_info.update_count + 1)
+    # self.recoder_type_info.update_count += 1
+    # self.recoder_type_info.output_pf.update(is_diff, 1.0)
     tmp = self.line_info.update_count * self.line_info.out_dist
     self.line_info.out_dist = (tmp + dist) / (self.line_info.update_count + 1)
     self.line_info.update_count += 1
@@ -1425,24 +1427,24 @@ class RecoderPatchInfo:
   def update_result_positive(self, result: bool, n: float, b_n:float,exp_alpha: bool, fixed_beta: bool) -> None:
     self.recoder_case_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
     # self.recoder_type_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
-    for rti in self.recoder_type_info_list:
-      rti.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
+    # for rti in self.recoder_type_info_list:
+    #   rti.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.line_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.func_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.file_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
   def remove_patch(self, state: 'MSVState') -> None:
-    if self.recoder_case_info.case_id not in self.recoder_type_info.recoder_case_info_map:
-      state.msv_logger.critical(f"{self.recoder_case_info.case_id} not in {self.recoder_type_info.recoder_case_info_map}")
-    del self.recoder_type_info.recoder_case_info_map[self.recoder_case_info.case_id]
+    if self.recoder_case_info.case_id not in self.line_info.recoder_case_info_map:
+      state.msv_logger.critical(f"{self.recoder_case_info.case_id} not in {self.line_info.recoder_case_info_map}")
+    del self.line_info.recoder_case_info_map[self.recoder_case_info.case_id]
     # if len(self.recoder_type_info.recoder_case_info_map) == 0:
     #   del self.line_info.recoder_type_info_map[self.recoder_type_info.mode]
-    for rti in self.recoder_type_info_list:
-      if len(rti.next) == 0 and len(rti.recoder_case_info_map) == 0:
-        if rti.prev is not None:
-          del rti.prev.next[rti.act]
-        else:
-          del self.line_info.recoder_type_info_map[rti.act]
-    if len(self.line_info.recoder_type_info_map) == 0:
+    # for rti in self.recoder_type_info_list:
+    #   if len(rti.next) == 0 and len(rti.recoder_case_info_map) == 0:
+    #     if rti.prev is not None:
+    #       del rti.prev.next[rti.act]
+    #     else:
+    #       del self.line_info.recoder_type_info_map[rti.act]
+    if len(self.line_info.recoder_case_info_map) == 0:
       score = self.line_info.fl_score
       self.func_info.fl_score_list.remove(score)
       self.file_info.fl_score_list.remove(score)
@@ -1459,12 +1461,18 @@ class RecoderPatchInfo:
     self.file_info.score_list.remove(prob)
     self.recoder_case_info.case_update_count += 1
     # self.recoder_type_info.case_update_count += 1
-    for rti in self.recoder_type_info_list:
-      rti.case_update_count += 1
-      rti.score_list.remove(prob)
+    # for rti in self.recoder_type_info_list:
+    #   rti.case_update_count += 1
+    #   rti.score_list.remove(prob)
     self.line_info.case_update_count += 1
+    fl_score = self.line_info.fl_score
+    self.line_info.remain_patches_by_score[fl_score].remove(self.recoder_case_info)
     self.func_info.case_update_count += 1
+    self.func_info.remain_patches_by_score[fl_score].remove(self.recoder_case_info)
     self.file_info.case_update_count += 1
+    self.file_info.remain_patches_by_score[fl_score].remove(self.recoder_case_info)
+    state.java_remain_patch_ranking[fl_score].remove(self.recoder_case_info)
+    self.func_info.searched_patches_by_score[fl_score] += 1
   def to_json_object(self) -> dict:
     conf = dict()
     conf["location"] = self.recoder_case_info.location
@@ -1725,7 +1733,7 @@ def record_to_int(record: List[bool]) -> List[int]:
   return result
 
 def append_java_cache_result(state:MSVState,case:TbarCaseInfo,fail_result:bool,pass_result:bool,pass_all_fail:bool,compilable:bool,
-      fail_time:int,pass_time:int):
+      fail_time:float, pass_time:float):
   """
     Append result to cache file, if not exist. Otherwise, do nothing.
     

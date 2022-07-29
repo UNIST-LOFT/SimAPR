@@ -260,6 +260,7 @@ def read_info_recoder(state: MSVState) -> None:
     info = json.load(f)
     state.d4j_negative_test = info['failing_test_cases']
     state.d4j_positive_test = info['passing_test_cases']
+    state.d4j_failed_passing_tests = set(info['failed_passing_tests'])
     file_map = state.file_info_map
     ff_map: Dict[str, Dict[str, Tuple[int, int]]] = dict()
     check_func: Set[FuncInfo] = set()
@@ -322,17 +323,17 @@ def read_info_recoder(state: MSVState) -> None:
           actlist = cs["actlist"]
           location = cs["location"]
           prob = cs["prob"]
-          type_map = line_info.recoder_type_info_map
-          prev = None
-          for act in actlist:
-            if act not in type_map:
-              type_map[act] = RecoderTypeInfo(line_info, act, prev)
-            prev = type_map[act]
-            prev.score_list.append(prob)
-            type_map = prev.next
-          recoder_type_info = prev
-          recoder_case_info = RecoderCaseInfo(recoder_type_info, location, case_id)
-          recoder_type_info.recoder_case_info_map[case_id] = recoder_case_info
+          # type_map = line_info.recoder_type_info_map
+          # prev = None
+          # for act in actlist:
+          #   if act not in type_map:
+          #     type_map[act] = RecoderTypeInfo(line_info, act, prev)
+          #   prev = type_map[act]
+          #   prev.score_list.append(prob)
+          #   type_map = prev.next
+          # recoder_type_info = prev
+          recoder_case_info = RecoderCaseInfo(line_info, location, case_id)
+          line_info.recoder_case_info_map[case_id] = recoder_case_info
           state.switch_case_map[f"{line_info.line_id}-{case_id}"] = recoder_case_info
           state.patch_location_map[location] = recoder_case_info
           recoder_case_info.prob = prob
@@ -340,12 +341,16 @@ def read_info_recoder(state: MSVState) -> None:
           line_info.score_list.append(prob)
           func_info.score_list.append(prob)
           file_info.score_list.append(prob)
-          for ti in recoder_type_info.get_path():
-            ti.total_case_info += 1
+          # for ti in recoder_type_info.get_path():
+          #   ti.total_case_info += 1
           line_info.total_case_info += 1
           func_info.total_case_info += 1
           file_info.total_case_info += 1
-        if len(line_info.recoder_type_info_map)==0:
+          if line_info.fl_score not in func_info.total_patches_by_score:
+            func_info.total_patches_by_score[line_info.fl_score] = 0
+            func_info.searched_patches_by_score[line_info.fl_score] = 0
+          func_info.total_patches_by_score[line_info.fl_score] += 1
+        if len(line_info.recoder_case_info_map)==0:
           del func_info.line_info_map[line_info.uuid]
       for func in file_info.func_info_map.copy().values():
         if len(func.line_info_map)==0:
@@ -354,17 +359,51 @@ def read_info_recoder(state: MSVState) -> None:
         del state.file_info_map[file_info.file_name]
   state.d4j_buggy_project = info["project_name"]
   state.patch_ranking = info["ranking"]
+  func_rank_checker: Set[FuncInfo] = set()
+  rank_num = 0
+  func_rank = 0
   for rank in state.patch_ranking:
     case_info: RecoderCaseInfo = state.switch_case_map[rank]
-    case_info.parent.parent.parent.case_rank_list.append(rank)
+    line_info = case_info.parent
+    func_info = line_info.parent
+    file_info = func_info.parent
+    func_info.case_rank_list.append(rank)
+    case_info.patch_rank = rank_num
+    rank_num += 1
+    if func_info not in func_rank_checker:
+      func_rank_checker.add(func_info)
+      func_info.func_rank = func_rank
+      func_rank += 1
+    fl_score = line_info.fl_score
+    if fl_score not in state.java_patch_ranking:
+      state.java_patch_ranking[fl_score] = []
+      state.java_remain_patch_ranking[fl_score] = []
+    state.java_patch_ranking[fl_score].append(case_info)
+    state.java_remain_patch_ranking[fl_score].append(case_info)
+    if fl_score not in file_info.patches_by_score:
+      file_info.patches_by_score[fl_score] = []
+      file_info.remain_patches_by_score[fl_score] = []
+    file_info.patches_by_score[fl_score].append(case_info)
+    file_info.remain_patches_by_score[fl_score].append(case_info)
+    if fl_score not in func_info.patches_by_score:
+      func_info.patches_by_score[fl_score] = []
+      func_info.remain_patches_by_score[fl_score] = []
+    func_info.patches_by_score[fl_score].append(case_info)
+    func_info.remain_patches_by_score[fl_score].append(case_info)
+    if fl_score not in line_info.patches_by_score:
+      line_info.patches_by_score[fl_score] = []
+      line_info.remain_patches_by_score[fl_score] = []
+    line_info.patches_by_score[fl_score].append(case_info)
+    line_info.remain_patches_by_score[fl_score].append(case_info)
+
   #Add original to switch_case_map
   temp_file: FileInfo = FileInfo('original')
   temp_func = FuncInfo(temp_file, "original_fn", 0, 0)
   temp_file.func_info_map["original_fn:0-0"] = temp_func
   temp_line: LineInfo = LineInfo(temp_func, 0)
   # temp_file.line_info_list.append(temp_line)
-  temp_recoder_type = RecoderTypeInfo(temp_line, 0, None)
-  temp_recoder_case = RecoderCaseInfo(temp_recoder_type, "original", 0)
+  # temp_recoder_type = RecoderTypeInfo(temp_line, 0, None)
+  temp_recoder_case = RecoderCaseInfo(temp_line, "original", 0)
   state.switch_case_map["0-0"] = temp_recoder_case
   state.patch_location_map["original"] = temp_recoder_case
   if state.use_simulation_mode:
@@ -1013,6 +1052,8 @@ def copy_previous_results(state: MSVState) -> None:
     if os.path.exists(os.path.join(state.out_dir, result_file)):
       shutil.copy(os.path.join(state.out_dir, result_file), os.path.join(state.out_dir, f"bak{prefix}-{result_file}"))
       os.remove(os.path.join(state.out_dir, result_file))
+  if os.path.exists(os.path.join(state.out_dir, "msv-finished")):
+    os.remove(os.path.join(state.out_dir, "msv-finished"))
 
 def main(argv: list):
   sys.setrecursionlimit(2002) # Reset recursion limit, for preventing RecursionError
@@ -1041,6 +1082,12 @@ def main(argv: list):
   state.msv_logger.info('MSV is started')
   try:
     msv.run()
+    with open(os.path.join(state.out_dir, "msv-finished"), "w") as f:
+      f.write(' '.join(state.original_args))
+      f.write("\n")
+      f.write(state.msv_version)
+      f.write("\n")
+      f.write("MSV is finished\n")
   except:
     state.msv_logger.error('MSV is crashed!!!!!!!!!!!!!!!!')
     state.msv_logger.exception("Got exception in msv.run()")
