@@ -8,6 +8,7 @@ from typing import List, Dict, Set, Union, Tuple
 from pathlib import Path
 
 from psutil import Popen
+import psutil
 
 def get_paths(project):
   sep = "_"
@@ -80,6 +81,14 @@ def compile_project_updated(work_dir, buggy_project):
     try:
       so, se = compile_proc.communicate(timeout=timeout/1000)
     except:
+      pid=compile_proc.pid
+      children=[]
+      for child in psutil.Process(pid).children(False):
+        if psutil.pid_exists(child.pid):
+          children.append(child)
+
+      for child in children:
+        child.kill()
       compile_proc.kill()
       result = False
   else:
@@ -105,6 +114,14 @@ def run_single_test(work_dir: str, buggy_project: str, test: str = "") -> Tuple[
     try:
       so, se = test_proc.communicate(timeout=timeout/1000)
     except:
+      pid=test_proc.pid
+      children=[]
+      for child in psutil.Process(pid).children(False):
+        if psutil.pid_exists(child.pid):
+          children.append(child)
+
+      for child in children:
+        child.kill()
       test_proc.kill()
   else:
     so, se = test_proc.communicate()

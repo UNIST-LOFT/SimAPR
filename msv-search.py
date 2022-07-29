@@ -1051,6 +1051,8 @@ def copy_previous_results(state: MSVState) -> None:
     if os.path.exists(os.path.join(state.out_dir, result_file)):
       shutil.copy(os.path.join(state.out_dir, result_file), os.path.join(state.out_dir, f"bak{prefix}-{result_file}"))
       os.remove(os.path.join(state.out_dir, result_file))
+  if os.path.exists(os.path.join(state.out_dir, "msv-finished")):
+    os.remove(os.path.join(state.out_dir, "msv-finished"))
 
 def main(argv: list):
   sys.setrecursionlimit(2002) # Reset recursion limit, for preventing RecursionError
@@ -1086,6 +1088,12 @@ def main(argv: list):
   state.msv_logger.info('MSV is finished')
   state.msv_logger.info(f'Running time: {(time.time()-state.start_time)+state.test_time}')
   msv.save_result()
+  with open(os.path.join(state.out_dir, "msv-finished"), "w") as f:
+    f.write(' '.join(state.original_args))
+    f.write("\n")
+    f.write(state.msv_version)
+    f.write("\n")
+    f.write("MSV is finished\n")
 
 
 if __name__ == "__main__":
