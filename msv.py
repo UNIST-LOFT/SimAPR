@@ -184,6 +184,8 @@ class MSV:
                 if key==patch[0].case_info.to_str():
                   # Failed generating condition
                   self.run_test(patch)
+                  if self.state.finish_at_correct_patch and self.state.correct_patch_str==patch[0].to_str():
+                    self.state.is_alive = False
                 elif key[:len(patch[0].case_info.to_str())]==patch[0].case_info.to_str() and key[len(patch[0].case_info.to_str())]==':':
                   # Generated condition, create temp patch
                   conditions=key.split(':')[1].split('|')
@@ -219,6 +221,8 @@ class MSV:
             for temp_patch in temp_patches:
               self.run_test([temp_patch])
               self.state.iteration+=1
+              if self.state.finish_at_correct_patch and self.state.correct_patch_str==temp_patch.to_str():
+                self.state.is_alive = False
             
             if len(temp_patches)>0:
               self.state.iteration-=1
@@ -263,6 +267,8 @@ class MSV:
               if self.state.cycle_limit > 0 and self.state.iteration >= self.state.cycle_limit:
                 self.state.is_alive = False
               elif self.state.time_limit > 0 and (time.time() - self.state.start_time) > self.state.time_limit:
+                self.state.is_alive = False
+              elif self.state.finish_at_correct_patch and self.state.correct_patch_str==cur_patch.to_str():
                 self.state.is_alive = False
               if not self.state.is_alive:
                 break
@@ -329,6 +335,8 @@ class MSV:
                 self.state.is_alive = False
               elif self.state.time_limit > 0 and (time.time() - self.state.start_time) > self.state.time_limit:
                 self.state.is_alive = False
+              elif self.state.finish_at_correct_patch and self.state.correct_patch_str==cur_patch.to_str():
+                self.state.is_alive = False
               if not self.state.is_alive:
                 break
               
@@ -343,6 +351,8 @@ class MSV:
 
       else:
         run_result = self.run_test(patch)
+        if self.state.finish_at_correct_patch and self.state.correct_patch_str==patch[0].to_str():
+          self.state.is_alive = False
       # self.update_result(patch, run_result, 1, neg)
       # self.append_result(patch, run_result)
       # self.remove_patch(patch)
