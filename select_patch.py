@@ -475,7 +475,9 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
             cor_set=set()
             for cor_str in state.correct_patch_list:
               parsed = cor_str.strip().split(":")
-              if type(state.switch_case_map[parsed[0]])==TbarCaseInfo:
+              if state.recoder_mode:
+                cor_set.add(state.switch_case_map[parsed[0]].parent.parent)
+              elif type(state.switch_case_map[parsed[0]])==TbarCaseInfo:
                 cor_set.add(state.switch_case_map[parsed[0]].parent.parent.parent)
               else:
                 cor_set.add(state.switch_case_map[parsed[0]].parent.parent.parent.parent)
