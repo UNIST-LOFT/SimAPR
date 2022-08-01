@@ -515,7 +515,7 @@ class MSVRecoder(MSVTbar):
       self.state.is_alive = False
     elif len(self.state.patch_ranking) == 0:
       self.state.is_alive = False
-    elif self.state.finish_at_correct_patch and self.patch_str in self.state.correct_patch_str:
+    elif self.state.finish_at_correct_patch and (self.patch_str == self.state.correct_patch_str):
       self.state.is_alive = False
     return self.state.is_alive
   def run_test(self, patch: RecoderPatchInfo, test: int) -> Tuple[int, bool, float]:
