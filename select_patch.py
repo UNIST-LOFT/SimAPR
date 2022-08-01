@@ -269,7 +269,7 @@ def epsilon_select(state:MSVState,source=None):
   total_patches=len(top_all_patches)
   total_searched=len(top_all_patches)-len(top_fl_patches)
   epsilon=epsilon_greedy(total_patches,total_searched)
-  is_epsilon_greedy=np.random.random()<epsilon and state.use_epsilon
+  is_epsilon_greedy=np.random.random()<epsilon and state.use_epsilon and not state.not_use_epsilon_search
 
   if is_epsilon_greedy:
     # Perform random search in epsilon probability

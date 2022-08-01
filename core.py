@@ -920,7 +920,7 @@ class MSVEnvVar:
     new_env["MSV_UUID"] = str(state.uuid)
     new_env["MSV_TEST"] = str(test)
     new_env["MSV_LOCATION"] = str(patch.tbar_case_info.location)
-    new_env["MSV_WORKDIR"] = state.work_dir
+    new_env["MSV_WORKDIR"] = state.work_dir if not state.fixminer_mode else state.work_dir[:-2]
     new_env["MSV_BUGGY_LOCATION"] = patch.file_info.file_name
     new_env["MSV_BUGGY_PROJECT"] = state.d4j_buggy_project
     new_env["MSV_OUTPUT_DISTANCE_FILE"] = f"/tmp/{uuid.uuid4()}.out"
@@ -1684,6 +1684,7 @@ class MSVState:
     self.finish_at_correct_patch=False
     self.func_list: List[FuncInfo] = list()
     self.count_compile_fail=True
+    self.fixminer_mode=False  # fixminer-mode: Fixminer patch space is seperated to 2 groups
 
     self.seapr_remain_cases:List[CaseInfo]=[]
     self.seapr_layer:SeAPRMode=SeAPRMode.FUNCTION
@@ -1704,6 +1705,30 @@ class MSVState:
     self.total_methods=0  # Total methods
 
     self.correct_patch_list:List[str]=[]  # List of correct patch ids
+
+    # Under here is for fixminer sub-template patches.
+    # We will swap both primary- and sub-template data when every primary-patches are tried.
+    self.sub_file_info_map = dict()
+    self.sub_total_methods = 0
+    self.sub_line_list = list()
+    self.sub_func_list = list()
+    self.sub_priority_map = dict()
+    self.sub_patch_ranking = list()
+    self.sub_java_patch_ranking = dict()
+    self.sub_java_remain_patch_ranking = dict()
+    self.fixminer_swapped=False
+
+  def fixminer_swap_info(self):
+    if not self.fixminer_swapped:
+      self.sub_file_info_map,self.file_info_map=self.file_info_map,self.sub_file_info_map
+      self.sub_total_methods,self.total_methods=self.total_methods,self.sub_total_methods
+      self.sub_line_list,self.line_list=self.line_list,self.sub_line_list
+      self.sub_func_list,self.func_list=self.func_list,self.sub_func_list
+      self.sub_priority_map,self.priority_map=self.priority_map,self.sub_priority_map
+      self.sub_patch_ranking,self.patch_ranking=self.patch_ranking,self.sub_patch_ranking
+      self.sub_java_patch_ranking,self.java_patch_ranking=self.java_patch_ranking,self.sub_java_patch_ranking
+      self.sub_java_remain_patch_ranking,self.java_remain_patch_ranking=self.java_remain_patch_ranking,self.sub_java_remain_patch_ranking
+      self.fixminer_swapped=True
 
 def remove_file_or_pass(file:str):
   try:
