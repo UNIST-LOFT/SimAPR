@@ -242,6 +242,8 @@ class MSV:
             new_patch.case_info.operator_info_list=opers
 
             # for cond in patch[0].case_info.condition_list.copy():
+            if len(patch[0].case_info.condition_list)>0:
+              self.state.iteration-=1
             while len(patch[0].case_info.condition_list)>0:
               cond=patch[0].case_info.condition_list[0]
               self.state.iteration+=1
