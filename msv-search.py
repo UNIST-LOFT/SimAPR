@@ -1209,13 +1209,16 @@ def copy_previous_results(state: MSVState) -> None:
       prefix += 1
     shutil.copy(result_log, os.path.join(state.out_dir, f"bak{prefix}-msv-search.log"))
     os.remove(result_log)
-  result_files = ["msv-result.json", "msv-result.csv", "critical-info.csv", "msv-sim-data.csv"]
+  result_files = ["msv-result.json", "msv-result.csv", "critical-info.csv", "msv-sim-data.csv", "msv-original-sim-data.json"]
   for result_file in result_files:
     if os.path.exists(os.path.join(state.out_dir, result_file)):
       shutil.copy(os.path.join(state.out_dir, result_file), os.path.join(state.out_dir, f"bak{prefix}-{result_file}"))
       os.remove(os.path.join(state.out_dir, result_file))
   if os.path.exists(os.path.join(state.out_dir, "msv-finished")):
     os.remove(os.path.join(state.out_dir, "msv-finished"))
+  if state.use_simulation_mode:
+    if os.path.exists(state.prev_data):
+      shutil.copy(state.prev_data, os.path.join(state.out_dir, "msv-original-sim-data.json"))
 
 def main(argv: list):
   sys.setrecursionlimit(2002) # Reset recursion limit, for preventing RecursionError

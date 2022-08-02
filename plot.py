@@ -1250,29 +1250,18 @@ def read_info_recoder(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, Rec
           actlist = cs["actlist"]
           location = cs["location"]
           prob = cs["prob"]
-          type_map = line_info.recoder_type_info_map
-          prev = None
-          for act in actlist:
-            if act not in type_map:
-              type_map[act] = RecoderTypeInfo(line_info, act, prev)
-            prev = type_map[act]
-            prev.score_list.append(prob)
-            type_map = prev.next
-          recoder_type_info = prev
-          recoder_case_info = RecoderCaseInfo(recoder_type_info, location, case_id)
-          recoder_type_info.recoder_case_info_map[case_id] = recoder_case_info
+          recoder_case_info = RecoderCaseInfo(line_info, location, case_id)
+          line_info.recoder_case_info_map[case_id] = recoder_case_info
           switch_case_map[f"{line_info.line_id}-{case_id}"] = recoder_case_info
           recoder_case_info.prob = prob
           # recoder_type_info.score_list.append(prob)
           line_info.score_list.append(prob)
           func_info.score_list.append(prob)
           file_info.score_list.append(prob)
-          for ti in recoder_type_info.get_path():
-            ti.total_case_info += 1
           line_info.total_case_info += 1
           func_info.total_case_info += 1
           file_info.total_case_info += 1
-        if len(line_info.recoder_type_info_map)==0:
+        if len(line_info.recoder_case_info_map)==0:
           del func_info.line_info_map[line_info.uuid]
       for func in file_info.func_info_map.copy().values():
         if len(func.line_info_map)==0:
@@ -1333,9 +1322,7 @@ def recoder_plot_correct(msv_result_file: str, title: str, correct_patch: str, f
   if not os.path.exists(msv_result_file):
     return 0,0,0,0
   correct_recoder_case = switch_case_map[correct_patch]
-  correct_recoder_type = correct_recoder_case.parent
-  correct_recoder_type_list = correct_recoder_type.get_path()[::-1]
-  correct_line_info = correct_recoder_type.parent
+  correct_line_info = correct_recoder_case.parent
   correct_func_info = correct_line_info.parent
   correct_file_info = correct_func_info.parent
   x = list()
@@ -1359,36 +1346,24 @@ def recoder_plot_correct(msv_result_file: str, title: str, correct_patch: str, f
       config = data["config"][0]
       key = f"{config['id']}-{config['case_id']}"
       recoder_case = switch_case_map[key]
-      recoder_type = recoder_case.parent
-      recoder_type_list = recoder_type.get_path()[::-1]
-      line_info = recoder_type.parent
+      line_info = recoder_case.parent
       func_info = line_info.parent
       file_info = func_info.parent
       if pass_result and not found_plausible:
         plausible_iter = iter
         plausible_time = tm
         found_plausible = True
-      dist = 5
+      dist = 4
       if file_info == correct_file_info:
         dist -= 1
         if func_info == correct_func_info:
           dist -= 1
           if line_info == correct_line_info:
             dist -= 1
-            correct_type = 0
-            for i in range(len(correct_recoder_type_list)):
-              if i >= len(recoder_type_list):
-                break
-              if correct_recoder_type_list[i] == recoder_type_list[i]:
-                correct_type += 1
-            for cti in correct_recoder_type_list:
-              if cti == recoder_type:
-                correct_type += 1
-              dist -= (correct_type / len(correct_recoder_type_list))
-              if recoder_case == correct_recoder_case:
-                correct_iter = iter
-                correct_tm = tm
-                dist -= 1
+            if recoder_case == correct_recoder_case:
+              correct_iter = iter
+              correct_tm = tm
+              dist -= 1
       x.append(iter)
       y.append(dist)
       if result:
@@ -1399,8 +1374,8 @@ def recoder_plot_correct(msv_result_file: str, title: str, correct_patch: str, f
         y_p.append(dist)
   if len(x) == 0:
     return 0,0,0,0
-  y_tick = np.arange(0, 6)
-  y_label = ["case", "type", "line", "func", "file", "diff"]
+  y_tick = np.arange(0, 5)
+  y_label = ["case", "line", "func", "file", "diff"]
   plt.clf()
   plt.figure(figsize=(max(24, max(x) // 80), 14))
   fig, ax1 = plt.subplots(1, 1, figsize=(max(24, max(x) // 80), 14))
@@ -1423,8 +1398,7 @@ def recoder_table_correct(msv_result_file: str, title: str, correct_patch: str, 
   if not os.path.exists(msv_result_file):
     return 0, 0, 0, 0
   correct_recoder_case = switch_case_map[correct_patch]
-  correct_recoder_type = correct_recoder_case.parent
-  correct_line_info = correct_recoder_type.parent
+  correct_line_info = correct_recoder_case.parent
   correct_func_info = correct_line_info.parent
   correct_file_info = correct_func_info.parent
   x = list()
@@ -1449,31 +1423,28 @@ def recoder_table_correct(msv_result_file: str, title: str, correct_patch: str, 
       config = data["config"][0]
       key = f"{config['id']}-{config['case_id']}"
       recoder_case = switch_case_map[key]
-      recoder_type = recoder_case.parent
-      line_info = recoder_type.parent
+      line_info = recoder_case.parent
       func_info = line_info.parent
       file_info = func_info.parent
       if pass_result and not found_plausible:
         plausible_iter = iter
         plausible_time = tm
         found_plausible = True
-      dist = 5
+      dist = 4
       if file_info == correct_file_info:
         dist -= 1
         if func_info == correct_func_info:
           dist -= 1
           if line_info == correct_line_info:
             dist -= 1
-            if recoder_type == correct_recoder_type:
+            if not found_correct:
+              found_correct = True
+              correct_iter = iter
+              correct_tm = tm
+            if recoder_case == correct_recoder_case:
+              # correct_iter = iter
+              # correct_tm = tm
               dist -= 1
-              if not found_correct:
-                found_correct = True
-                correct_iter = iter
-                correct_tm = tm
-              if recoder_case == correct_recoder_case:
-                # correct_iter = iter
-                # correct_tm = tm
-                dist -= 1
       x.append(iter)
       y.append(dist)
       if result:
@@ -1484,8 +1455,8 @@ def recoder_table_correct(msv_result_file: str, title: str, correct_patch: str, 
         y_p.append(dist)
   if len(x) == 0:
     return 0, 0, 0, 0
-  y_tick = np.arange(0, 6)
-  y_label = ["case", "type", "line", "func", "file", "diff"]
+  y_tick = np.arange(0, 5)
+  y_label = ["case", "line", "func", "file", "diff"]
   plt.clf()
   plt.figure(figsize=(max(24, max(x) // 80), 14))
   fig, ax1 = plt.subplots(1, 1, figsize=(max(24, max(x) // 80), 14))
@@ -1504,48 +1475,57 @@ def recoder_table_correct(msv_result_file: str, title: str, correct_patch: str, 
   return correct_iter, correct_tm, plausible_iter, plausible_time
 
 
-def recoder_batch_plot(correct_patch_csv: str, in_dir: str) -> None:
+def sort_bugids(bugids: List[str]) -> List[str]:
+  proj_dict = dict()
+  for bugid in bugids:
+    proj, id = bugid.split("-")
+    if proj not in proj_dict:
+      proj_dict[proj] = list()
+    proj_dict[proj].append(int(id))
+  projs = sorted(list(proj_dict.keys()))
+  result = list()
+  for proj in projs:
+    ids = proj_dict[proj]
+    ids.sort()
+    for id in ids:
+      result.append(f"{proj}-{id}")
+  return result
+
+def recoder_batch_plot(correct_patch_csv: str, in_dir: str, id: str) -> None:
   csv = ""
-  all: Dict[str, str] = dict()
+  all: Dict[str, List[str]] = dict()
   with open(correct_patch_csv, "r") as f:
     for line in f.readlines():
-      token = line.strip().split(",")
+      ln = line.strip()
+      if ln.startswith("#") or ln == "":
+        continue
+      token = ln.split(",")
       if len(token) < 2:
         continue
-      all[token[0]] = token[1]
+      all[token[0]] = token[1:]
+  bugids = list(all.keys())
+  bugids = sort_bugids(bugids)
   info = dict()
-  for dir in sorted(os.listdir(in_dir)):
-    if not os.path.isdir(os.path.join(in_dir, dir)):
-      continue
-    print(dir)
-    tokens = dir.split("-")
-    proj = tokens[0]
-    bid = tokens[1]
-    bugid = f"{proj}-{bid}"
-    if bugid not in all:
-      continue
-
-    result_file = os.path.join(in_dir, dir, "msv-result.json")
-    print(result_file)
-    if os.path.exists(result_file):
-      cp = all[bugid]
-      print(f"{dir} : {cp}")
-      workdir = "/root/project/Recoder/d4j/" + bugid 
-      if not os.path.exists(workdir):
-        print(f"{workdir} not exists!!!!!!!")
-        continue
-      if workdir not in info:
-        info[workdir] = read_info_recoder(workdir)
-      switch_info, switch_case_map = info[workdir]
-      iter, tm, pi, pt = recoder_plot_correct(result_file, dir, cp, switch_info, switch_case_map)
-      csv += f"{dir},{cp},{iter},{tm},{pi},{pt}\n"
-      # tbar_barchart(result_file, dir, workdir, cp, switch_info, switch_case_map)
-  print(csv)
-  with open("result.csv", "w") as f:
-    f.write(csv)  
+  for bugid in bugids:
+    print(bugid)
+    correct_patches = all[bugid]
+    workdir = "/root/project/Recoder/d4j/" + bugid
+    if workdir not in info:
+      info[workdir] = read_info_recoder(workdir)
+    switch_info, switch_case_map = info[workdir]
+    recoder_dir = os.path.join(in_dir, f"{bugid}-recoder-{id}")
+    result_file = os.path.join(recoder_dir, "msv-result.json")
+    recoder_plot_correct(result_file, f"{bugid}-recoder-{id}", correct_patches[0], switch_info, switch_case_map)
+    seapr_dir =  os.path.join(in_dir, f"{bugid}-seapr-{id}")
+    result_file = os.path.join(seapr_dir, "msv-result.json")
+    recoder_plot_correct(result_file, f"{bugid}-seapr-{id}", correct_patches[0], switch_info, switch_case_map)
+    for i in range(10):
+      guided_dir = os.path.join(in_dir, f"{bugid}-guided-{id}-{i}")
+      result_file = os.path.join(guided_dir, "msv-result.json")
+      recoder_plot_correct(result_file, f"{bugid}-guided-{id}-{i}", correct_patches[0], switch_info, switch_case_map)
 
 def main(argv):
-  opts, args = getopt.getopt(argv[1:], "hi:o:t:nm:c:w")
+  opts, args = getopt.getopt(argv[1:], "hi:o:t:nm:c:wd:")
   result_file = ""
   output_file = ""
   title = ""
@@ -1554,6 +1534,7 @@ def main(argv):
   work_dir = ""
   correct_patch = list()
   is_tbar = False
+  rid = ""
   for o, a in opts:
     if o == "-i":
       result_file = a
@@ -1569,6 +1550,8 @@ def main(argv):
       mode = a
     elif o == "-c":
       correct_patch = a
+    elif o == "-d":
+      rid = a
     else:
       print("afl_plot.py -i input_dir -t title -o output.png -m auto -c correctpatch")
       print("ex) afl_plot.py -i . -o out.png -t php-2adf58 -m auto -c 54-36:0-2-12")
@@ -1592,7 +1575,7 @@ def main(argv):
   elif mode == "find":
     batch_find(correct_patch, result_file)
   elif mode == "recoder":
-    recoder_batch_plot(correct_patch, result_file)
+    recoder_batch_plot(correct_patch, result_file, rid)
   else:
     msv_plot_correct(result_file, title, work_dir, correct_patch)
   return 0
