@@ -1082,7 +1082,7 @@ def select_patch_seapr(state: MSVState, test: int) -> PatchInfo:
     state.func_list.sort(key=lambda x: max(x.prophet_score), reverse=True)
     max_score = 0.0
     case_info = state.seapr_remain_cases[0]
-    has_hq_patch = False
+    has_high_qual_patch = False
     for func in state.func_list:
       if func.func_rank > 30:
         continue
@@ -1090,7 +1090,7 @@ def select_patch_seapr(state: MSVState, test: int) -> PatchInfo:
       if cur_score > max_score:
         max_score = cur_score
         case_info = get_first_case_info(func)
-        has_hq_patch = True
+      has_high_qual_patch = True
   else:
     case_info=state.seapr_remain_cases[0]
     max_score=0.
