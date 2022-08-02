@@ -1041,6 +1041,7 @@ def select_patch_seapr(state: MSVState, test: int) -> PatchInfo:
   def get_first_case_info(func: FuncInfo) -> CaseInfo:
     selected_line = None
     init = True
+    max_score=-1000
     for line_uuid in func.line_info_map:
       line = func.line_info_map[line_uuid]
       if max(line.prophet_score) > max_score or init:
