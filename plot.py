@@ -1330,6 +1330,14 @@ def recoder_plot_correct(msv_result_file: str, title: str, correct_patch: str, f
   y_b = list()
   x_p = list()
   y_p = list()
+  fl_x = list()
+  fl_y = list()
+  fl_b_x = list()
+  fl_b_y = list()
+  fl_p_x = list()
+  fl_p_y = list()
+  fl_c_x = list()
+  fl_c_y = list()
   correct_iter = 0
   correct_tm = 0
   found_plausible = False
@@ -1360,17 +1368,25 @@ def recoder_plot_correct(msv_result_file: str, title: str, correct_patch: str, f
           if line_info == correct_line_info:
             dist -= 1
             if recoder_case == correct_recoder_case:
+              fl_c_x.append(iter)
+              fl_c_y.append(line_info.fl_score)
               correct_iter = iter
               correct_tm = tm
               dist -= 1
       x.append(iter)
       y.append(dist)
+      fl_x.append(iter)
+      fl_y.append(line_info.fl_score)
       if result:
         x_b.append(iter)
         y_b.append(dist)
+        fl_b_x.append(iter)
+        fl_b_y.append(line_info.fl_score)
       if pass_result:
         x_p.append(iter)
         y_p.append(dist)
+        fl_p_x.append(iter)
+        fl_p_y.append(line_info.fl_score)
   if len(x) == 0:
     return 0,0,0,0
   y_tick = np.arange(0, 5)
@@ -1388,6 +1404,20 @@ def recoder_plot_correct(msv_result_file: str, title: str, correct_patch: str, f
   ax1.set_xlabel("iteration", fontsize=16)
   ax1.set_ylabel("distance from correct patch", fontsize=20)
   out_file = os.path.join(os.path.dirname(msv_result_file), "out.png")
+  plt.grid()
+  plt.savefig(out_file)
+  plt.clf()
+  plt.figure(figsize=(max(24, max(fl_x) // 80), 14))
+  fig, ax1 = plt.subplots(1, 1, figsize=(max(24, max(fl_x) // 80), 14))
+  x_len = max(24, max(fl_x) // 80)
+  ax1.scatter(fl_x, fl_y, s=1, color='k', marker=",")
+  ax1.scatter(fl_b_x, fl_b_y, color='r', marker=".")
+  ax1.scatter(fl_p_x, fl_p_y, color='c', marker="*")
+  ax1.scatter(fl_c_x, fl_c_y, color='g', marker="*")
+  ax1.set_title(title + "fl scores - basic(r),plausible(c),correct(g)", fontsize=20)
+  ax1.set_xlabel("iteration", fontsize=16)
+  ax1.set_ylabel("FL score", fontsize=20)
+  out_file = os.path.join(os.path.dirname(msv_result_file), "fl_out.png")
   plt.grid()
   plt.savefig(out_file)
   return correct_iter, correct_tm, plausible_iter, plausible_time
