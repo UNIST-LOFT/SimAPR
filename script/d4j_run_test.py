@@ -232,7 +232,7 @@ def main(argv: List[str]) -> None:
   if "MSV_RECODER" in os.environ:
     sep = os.environ["MSV_RECODER"]
   proj, pid = buggy_project.split(sep)
-  buggy_dir = os.path.join(root_path, "buggy", buggy_project)
+  buggy_dir = os.path.join(root_path, buggy_project)
   patch_location = os.environ["MSV_LOCATION"]
   d4j_dir = os.environ["MSV_WORKDIR"]
   run_original = patch_location == "original"
