@@ -734,6 +734,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
 
   is_correct_guide=False
   for cor in state.correct_patch_list:
+    cor=cor.split(':')[0]
     cor_patch=state.switch_case_map[cor]
     if cor_patch.parent.parent.parent.parent.parent==selected_file_info:
       state.msv_logger.debug(f'Correct guide at file')
@@ -764,6 +765,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
 
   is_correct_guide=False
   for cor in state.correct_patch_list:
+    cor=cor.split(':')[0]
     cor_patch=state.switch_case_map[cor]
     if cor_patch.parent.parent.parent.parent==selected_func_info:
       state.msv_logger.debug(f'Correct guide at func')
@@ -794,6 +796,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
 
   is_correct_guide=False
   for cor in state.correct_patch_list:
+    cor=cor.split(':')[0]
     cor_patch=state.switch_case_map[cor]
     if cor_patch.parent.parent.parent==selected_line_info:
       state.msv_logger.debug(f'Correct guide at line')
@@ -826,6 +829,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
 
   is_correct_guide=False
   for cor in state.correct_patch_list:
+    cor=cor.split(':')[0]
     cor_patch=state.switch_case_map[cor]
     if cor_patch.parent.parent==selected_switch_info:
       state.msv_logger.debug(f'Correct guide at switch')
@@ -856,6 +860,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
 
   is_correct_guide=False
   for cor in state.correct_patch_list:
+    cor=cor.split(':')[0]
     cor_patch=state.switch_case_map[cor]
     if cor_patch.parent==selected_type_info:
       state.msv_logger.debug(f'Correct guide at type')
