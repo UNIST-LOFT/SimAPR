@@ -2,6 +2,8 @@ from operator import ne
 from core import *
 import numpy as np
 
+SPR_TYPE_PRIORITY=(PatchType.TightenConditionKind,PatchType.LoosenConditionKind,PatchType.IfExitKind,PatchType.GuardKind,PatchType.SpecialGuardKind,
+        PatchType.AddInitKind,PatchType.ReplaceFunctionKind,PatchType.AddStmtKind,PatchType.AddStmtAndReplaceAtomKind,PatchType.AddIfStmtKind,PatchType.ReplaceKind,PatchType.ReplaceStringKind)
 def epsilon_greedy(total:int,x:int):
   """
     Compute epsilin value of Epsilon-greedy algorithm
@@ -27,6 +29,18 @@ def get_static_score(state:MSVState,element):
       return element.parent.fl_score
     elif type(element)==TbarCaseInfo:
       return element.parent.parent.fl_score
+    else: raise ValueError(f'Unknown element type {type(element)}')
+  elif state.spr_mode:
+    if type(element)==FileInfo or type(element)==FuncInfo:
+      return max(element.fl_score_list)
+    elif type(element)==LineInfo:
+      return element.fl_score
+    elif type(element)==SwitchInfo:
+      return element.parent.fl_score
+    elif type(element)==TypeInfo:
+      return element.parent.parent.fl_score
+    elif type(element)==CaseInfo:
+      return element.parent.parent.parent.fl_score
     else: raise ValueError(f'Unknown element type {type(element)}')
   else:
     return max(element.prophet_score)
@@ -118,6 +132,7 @@ def select_by_probability_original(state: MSVState, p_map: Dict[PT, List[float]]
   return PassFail.argmax(result)
 
 EPSILON_THRESHOLD=0.1
+SPR_EPSILON_THRESHOLD=1
 
 def epsilon_search(state:MSVState):
   """
@@ -131,33 +146,25 @@ def epsilon_search(state:MSVState):
   cur_score=-100.
   # Get all top fl patches
   if state.tbar_mode or state.recoder_mode:
-    for score in state.java_remain_patch_ranking:
-      if len(state.java_remain_patch_ranking[score])>0 and cur_score==-100.:
-        cur_score=score
-        top_fl_patches+=state.java_remain_patch_ranking[score]
-        top_all_patches+=state.java_patch_ranking[score]
-      elif cur_score>-100. and score>cur_score-EPSILON_THRESHOLD:
-        top_fl_patches+=state.java_remain_patch_ranking[score]
-        top_all_patches+=state.java_patch_ranking[score]
-        
-  else: # prophet
-    sorted_scores=sorted(state.c_patch_ranking.keys(),reverse=True)
-    is_first=True
-    for e in sorted_scores:
-      if cur_score!=-100. and e<cur_score-EPSILON_THRESHOLD:
-        break
-      for case in state.c_patch_ranking[e]:
-        top_all_patches.append(case)
-        if case in case.parent.case_info_map.values():
-          # Not searched yet
-          top_fl_patches.append(case)
-          if is_first:
-            is_first=False
-            cur_score=e
-            
-      if len(top_fl_patches)==0 and is_first:
-        top_all_patches.clear()
-        top_fl_patches.clear()
+    cur_list=state.java_patch_ranking
+    cur_remain_list=state.java_remain_patch_ranking
+  else:
+    cur_list=state.c_patch_ranking
+    cur_remain_list=state.c_remain_patch_ranking
+  cur_remain_list_sorted=sorted(cur_remain_list.keys(),reverse=True)
+  for score in cur_remain_list_sorted:
+    if len(cur_remain_list[score])>0 and cur_score==-100.:
+      cur_score=score
+      top_fl_patches+=cur_remain_list[score]
+      top_all_patches+=cur_list[score]
+    elif state.spr_mode:
+      if cur_score>-100. and score>cur_score-SPR_EPSILON_THRESHOLD:
+        top_fl_patches+=cur_remain_list[score]
+        top_all_patches+=cur_list[score]
+    else:
+      if cur_score>-100. and score>cur_score-EPSILON_THRESHOLD:
+        top_fl_patches+=cur_remain_list[score]
+        top_all_patches+=cur_list[score]
 
   # Get total patches and total searched patches, for epsilon greedy method
   if cur_score not in state.same_consecutive_score:
@@ -182,7 +189,16 @@ def epsilon_search(state:MSVState):
       return top_fl_patches[index]
     else:
       state.msv_logger.debug(f'Use original order, epsilon: {epsilon}')
-      return top_fl_patches[0]
+      if state.spr_mode:
+        cur_type=PatchType.MSVExtRemoveStmtKind
+        final_case=top_fl_patches[0]
+        for patch in top_fl_patches:
+          if patch.parent.patch_type.value<cur_type.value:
+            cur_type=patch.parent.patch_type
+            final_case=patch
+        return final_case
+      else:
+        return top_fl_patches[0]
   
   else:
     state.msv_logger.debug(f'Use secondary order, score: {cur_score}')
@@ -212,64 +228,36 @@ def epsilon_select(state:MSVState,source=None):
   top_all_patches=[] # All top scored patches, include searched or not searched
   cur_score=-100.
   # Get all top fl patches
-  if state.tbar_mode or state.recoder_mode:
-    if source is None:
-      for score in state.java_remain_patch_ranking:
-        if len(state.java_remain_patch_ranking[score])>0 and cur_score==-100.:
-          cur_score=score
-          top_fl_patches+=state.java_remain_patch_ranking[score]
-          top_all_patches+=state.java_patch_ranking[score]
-        elif cur_score>-100. and score>cur_score-EPSILON_THRESHOLD:
-          top_fl_patches+=state.java_remain_patch_ranking[score]
-          top_all_patches+=state.java_patch_ranking[score]
+  if source is None:
+    if state.tbar_mode or state.recoder_mode:
+      cur_list=state.java_patch_ranking
+      cur_remain_list=state.java_remain_patch_ranking
     else:
-      for score in source.remain_patches_by_score:
-        if len(source.remain_patches_by_score[score])>0 and cur_score==-100.:
-          cur_score=score
-          top_fl_patches+=source.remain_patches_by_score[score]
-          top_all_patches+=source.patches_by_score[score]
-        elif cur_score>-100. and score>cur_score-EPSILON_THRESHOLD:
-          top_fl_patches+=source.remain_patches_by_score[score]
-          top_all_patches+=source.patches_by_score[score]
-
+      cur_list=state.c_patch_ranking
+      cur_remain_list=state.c_remain_patch_ranking
+    cur_remain_list_sorted=sorted(cur_remain_list.keys(),reverse=True)
+    for score in cur_remain_list_sorted:
+      if len(cur_remain_list[score])>0 and cur_score==-100.:
+        cur_score=score
+        top_fl_patches+=cur_remain_list[score]
+        top_all_patches+=cur_list[score]
+      elif state.spr_mode:
+        if cur_score>-100. and score>cur_score-SPR_EPSILON_THRESHOLD:
+          top_fl_patches+=cur_remain_list[score]
+          top_all_patches+=cur_list[score]
+      else:
+        if cur_score>-100. and score>cur_score-EPSILON_THRESHOLD:
+          top_fl_patches+=cur_remain_list[score]
+          top_all_patches+=cur_list[score]
   else:
-    sorted_scores=sorted(state.c_patch_ranking.keys(),reverse=True)
-    is_first=True
-    for e in sorted_scores:
-      if cur_score!=-100. and e<cur_score-EPSILON_THRESHOLD:
-        break
-      for case in state.c_patch_ranking[e]:
-        source_has=False
-        if source is None:
-          source_has=True
-        elif type(source)==FileInfo:
-          if case.parent.parent.parent.parent.parent==source:
-            source_has=True
-        elif type(source)==FuncInfo:
-          if case.parent.parent.parent.parent==source:
-            source_has=True
-        elif type(source)==LineInfo:
-          if case.parent.parent.parent==source:
-            source_has=True
-        elif type(source)==SwitchInfo:
-          if case.parent.parent==source:
-            source_has=True
-        elif type(source)==TypeInfo:
-          if case.parent==source:
-            source_has=True
-        
-        if source_has:
-          top_all_patches.append(case)
-          if case in case.parent.case_info_map.values():
-            # Not searched yet
-            top_fl_patches.append(case)
-            if is_first:
-              cur_score=e
-              is_first=False
-      
-      if len(top_fl_patches)==0 and is_first:
-        top_all_patches.clear()
-        top_fl_patches.clear()
+    for score in source.remain_patches_by_score:
+      if len(source.remain_patches_by_score[score])>0 and cur_score==-100.:
+        cur_score=score
+        top_fl_patches+=source.remain_patches_by_score[score]
+        top_all_patches+=source.patches_by_score[score]
+      elif cur_score>-100. and score>cur_score-EPSILON_THRESHOLD:
+        top_fl_patches+=source.remain_patches_by_score[score]
+        top_all_patches+=source.patches_by_score[score]
 
   # Get total patches and total searched patches, for epsilon greedy method
   total_patches=len(top_all_patches)
@@ -383,7 +371,16 @@ def epsilon_select(state:MSVState,source=None):
       elif type(source) == LineInfo:
         return cur_fl_patches[0].parent.parent
       elif type(source) == SwitchInfo:
-        return cur_fl_patches[0].parent
+        if state.spr_mode:
+          cur_type=PatchType.MSVExtRemoveStmtKind
+          final_case=None
+          for template in source.type_info_map:
+            if template.value<cur_type.value:
+              cur_type=template
+              final_case=source.type_info_map[template]
+          return final_case
+        else:
+          return cur_fl_patches[0].parent
       elif type(source) == TypeInfo:
         return cur_fl_patches[0]
       else:
@@ -428,8 +425,8 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
       if max_index>=0:
         freq=selected[max_index].children_plausible_patches/state.total_plausible_patch if state.total_plausible_patch > 0 else 0.
         bp_freq=selected[max_index].consecutive_fail_plausible_count
-        cur_score=get_static_score(state,selected[max_index]) if state.tbar_mode or state.recoder_mode else normalize_one(get_static_score(state,selected[max_index]))
-        prev_score=state.previous_score if state.tbar_mode or state.recoder_mode else normalize_one(state.previous_score)
+        cur_score=get_static_score(state,selected[max_index]) if state.tbar_mode or state.recoder_mode or state.spr_mode else normalize_one(get_static_score(state,selected[max_index]))
+        prev_score=state.previous_score if state.tbar_mode or state.recoder_mode or state.spr_mode else normalize_one(state.previous_score)
         score_rate=min(cur_score/prev_score,1.) if prev_score!=0. else 0.
         if random.random()< (weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq))*score_rate):
           state.msv_logger.debug(f'Use guidance with plausible patch: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}, {cur_score}/{prev_score}')
@@ -472,8 +469,8 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
       if max_index>=0:
         freq=selected[max_index].children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0.
         bp_freq=selected[max_index].consecutive_fail_count
-        cur_score=get_static_score(state,selected[max_index]) if state.tbar_mode or state.recoder_mode else normalize_one(get_static_score(state,selected[max_index]))
-        prev_score=state.previous_score if state.tbar_mode or state.recoder_mode else normalize_one(state.previous_score)
+        cur_score=get_static_score(state,selected[max_index]) if state.tbar_mode or state.recoder_mode or state.spr_mode else normalize_one(get_static_score(state,selected[max_index]))
+        prev_score=state.previous_score if state.tbar_mode or state.recoder_mode or state.spr_mode else normalize_one(state.previous_score)
         score_rate=min(cur_score/prev_score,1.) if prev_score!=0. else 0.
         if random.random()< (weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq))*score_rate):
           state.msv_logger.debug(f'Use guidance with basic patch: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}, {cur_score}/{prev_score}')
@@ -512,12 +509,9 @@ def select_patch_SPR(state: MSVState) -> PatchInfo:
       line_info=line
       break
   
-  # select case
-  type_priority=(PatchType.TightenConditionKind,PatchType.LoosenConditionKind,PatchType.IfExitKind,PatchType.GuardKind,PatchType.SpecialGuardKind,
-        PatchType.AddInitKind,PatchType.ReplaceFunctionKind,PatchType.AddStmtKind,PatchType.AddStmtAndReplaceAtomKind,PatchType.AddIfStmtKind,PatchType.ReplaceKind,PatchType.ReplaceStringKind)
-  
+  # select case  
   case_info:CaseInfo=None
-  for type_ in type_priority:
+  for type_ in SPR_TYPE_PRIORITY:
     if type_ in line_info.type_priority:
       case_info=line_info.type_priority[type_][0]
   assert case_info is not None
