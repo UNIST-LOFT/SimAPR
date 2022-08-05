@@ -428,8 +428,8 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
       if max_index>=0:
         freq=selected[max_index].children_plausible_patches/state.total_plausible_patch if state.total_plausible_patch > 0 else 0.
         bp_freq=selected[max_index].consecutive_fail_plausible_count
-        cur_score=get_static_score(state,selected[max_index]) if state.tbar_mode else normalize_one(get_static_score(state,selected[max_index]))
-        prev_score=state.previous_score if state.tbar_mode else normalize_one(state.previous_score)
+        cur_score=get_static_score(state,selected[max_index]) if state.tbar_mode or state.recoder_mode else normalize_one(get_static_score(state,selected[max_index]))
+        prev_score=state.previous_score if state.tbar_mode or state.recoder_mode else normalize_one(state.previous_score)
         score_rate=min(cur_score/prev_score,1.) if prev_score!=0. else 0.
         if random.random()< (weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq))*score_rate):
           state.msv_logger.debug(f'Use guidance with plausible patch: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}, {cur_score}/{prev_score}')
@@ -472,8 +472,8 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
       if max_index>=0:
         freq=selected[max_index].children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0.
         bp_freq=selected[max_index].consecutive_fail_count
-        cur_score=get_static_score(state,selected[max_index]) if state.tbar_mode else normalize_one(get_static_score(state,selected[max_index]))
-        prev_score=state.previous_score if state.tbar_mode else normalize_one(state.previous_score)
+        cur_score=get_static_score(state,selected[max_index]) if state.tbar_mode or state.recoder_mode else normalize_one(get_static_score(state,selected[max_index]))
+        prev_score=state.previous_score if state.tbar_mode or state.recoder_mode else normalize_one(state.previous_score)
         score_rate=min(cur_score/prev_score,1.) if prev_score!=0. else 0.
         if random.random()< (weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq))*score_rate):
           state.msv_logger.debug(f'Use guidance with basic patch: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}, {cur_score}/{prev_score}')
