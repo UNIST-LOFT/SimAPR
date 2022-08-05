@@ -1521,6 +1521,38 @@ def sort_bugids(bugids: List[str]) -> List[str]:
       result.append(f"{proj}-{id}")
   return result
 
+def get_recoder_scores(bugid: str, info: Dict[str, RecoderCaseInfo], correct_str: str):
+  scores = list()
+  correct_info = info[correct_str]
+  correct_score = correct_info.prob
+  for cs in correct_info.parent.recoder_case_info_map:
+    case_info = correct_info.parent.recoder_case_info_map[cs]
+    scores.append(case_info.prob)
+  os.makedirs(os.path.join("/root/project/Recoder/out-score", bugid), exist_ok=True)
+  plt.clf()
+  plt.figure(figsize=(max(24, max(scores) // 80), 14))
+  plt.scatter(range(len(scores)), scores, s=1, color='k', marker=",")
+  plt.title(f"{correct_str} - recoder scores", fontsize=20)
+  plt.scatter([scores.index(correct_score)], [correct_score], color='r', marker="*")
+  plt.xlabel("case", fontsize=16)
+  plt.ylabel("likelihood", fontsize=20)
+  plt.savefig(os.path.join("/root/project/Recoder/out-score", bugid, "recoder_scores.png"))
+
+  bak = scores
+  scores = list()
+  for cs in info:
+    case_info = info[cs]
+    scores.append(case_info.prob)
+  plt.clf()
+  plt.figure(figsize=(max(24, max(scores) // 80), 14))
+  plt.scatter(range(len(scores)), scores, s=1, color='k', marker=",")
+  plt.title(f"{correct_str} - recoder scores", fontsize=20)
+  plt.scatter([scores.index(correct_score)], [correct_score], color='r', marker="*")
+  plt.xlabel("case", fontsize=16)
+  plt.ylabel("likelihood", fontsize=20)
+  plt.savefig(os.path.join("/root/project/Recoder/out-score", bugid, "total_recoder_scores.png"))
+  return bak, correct_score
+
 def recoder_batch_plot(correct_patch_csv: str, in_dir: str, id: str) -> None:
   csv = ""
   all: Dict[str, List[str]] = dict()
@@ -1542,6 +1574,12 @@ def recoder_batch_plot(correct_patch_csv: str, in_dir: str, id: str) -> None:
     workdir = "/root/project/Recoder/d4j/" + bugid
     if workdir not in info:
       info[workdir] = read_info_recoder(workdir)
+      switch_info, switch_case_map = info[workdir]
+      scores, corr_score = get_recoder_scores(bugid, switch_case_map, correct_patches[0])
+      with open("/root/project/Recoder/out-score/score.csv", "a") as ff:
+        ratio =(corr_score - min(scores)) / (max(scores) - min(scores))
+        ff.write(f"{bugid},{corr_score},{min(scores)},{max(scores)},{ratio}\n")
+      continue
     switch_info, switch_case_map = info[workdir]
     recoder_dir = os.path.join(in_dir, f"{bugid}-recoder-{id}")
     result_file = os.path.join(recoder_dir, "msv-result.json")
