@@ -873,6 +873,7 @@ def read_info_tbar(work_dir: str,mode:str) -> Tuple[Dict[str, FileInfo], Dict[st
           file_info.func_info_map[func_info.id] = func_info
           ff_map[file_name][func_info.id] = (int(line['line']), int(line['line']))
           line_info = LineInfo(func_info, int(line['line']))
+          line_info.fl_score=line['fl_score']
           func_info.line_info_map[line_info.uuid] = line_info
         if mode=='tbar' or mode=='kpar':
           for sw in line["switches"]:
@@ -1281,17 +1282,17 @@ def tbar_batch_plot(correct_patch_csv: str, in_dir: str,mode:str='TBar') -> None
     if not os.path.isdir(os.path.join(in_dir, dir)):
       continue
     print(dir)
-    proj=[]
-    for patch in dir.split(','):
+    proj=''
+    for patch in dir.split('-'):
       if patch not in all:
         continue
-      proj.append(patch)
+      proj=patch
+      print(proj)
     result_file = os.path.join(in_dir, dir, "msv-result.json")
     print(result_file)
     cp=[]
     if os.path.exists(result_file):
-      for p in proj:
-        cp.append(all[p])
+      cp.append(all[proj])
       print(f"{dir} : {cp}")
       if mode=='kpar':
         workdir = "/root/project/kPar/d4j/" + proj
