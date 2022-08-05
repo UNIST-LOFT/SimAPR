@@ -117,6 +117,8 @@ def select_by_probability_original(state: MSVState, p_map: Dict[PT, List[float]]
         result[i] += c * prob[i]
   return PassFail.argmax(result)
 
+EPSILON_THRESHOLD=0.1
+
 def epsilon_search(state:MSVState):
   """
     Do epsilon search if there's no basic patch.
@@ -130,49 +132,41 @@ def epsilon_search(state:MSVState):
   # Get all top fl patches
   if state.tbar_mode or state.recoder_mode:
     for score in state.java_remain_patch_ranking:
-      if len(state.java_remain_patch_ranking[score])>0:
-        if len(top_fl_patches)>0:
-          next_top_fl_patches=state.java_remain_patch_ranking[score]
-          next_top_all_patches=state.java_remain_patch_ranking[score]
-          break
-        else:
-          top_fl_patches=state.java_remain_patch_ranking[score]
-          top_all_patches=state.java_patch_ranking[score]
-          cur_score=score
+      if len(state.java_remain_patch_ranking[score])>0 and cur_score==-100.:
+        cur_score=score
+        top_fl_patches+=state.java_remain_patch_ranking[score]
+        top_all_patches+=state.java_patch_ranking[score]
+      elif cur_score>-100. and score>cur_score-EPSILON_THRESHOLD:
+        top_fl_patches+=state.java_remain_patch_ranking[score]
+        top_all_patches+=state.java_patch_ranking[score]
+        
   else: # prophet
     sorted_scores=sorted(state.c_patch_ranking.keys(),reverse=True)
-    is_next=False
+    is_first=True
     for e in sorted_scores:
-      for case in state.c_patch_ranking[e]:
-        if is_next:
-          next_top_all_patches.append(case)
-          if case in case.parent.case_info_map.values():
-            # Not searched yet
-            next_top_fl_patches.append(case)
-        else:
-          top_all_patches.append(case)
-          if case in case.parent.case_info_map.values():
-            # Not searched yet
-            top_fl_patches.append(case)
-          cur_score=e
-            
-      if len(next_top_fl_patches)>0:
+      if cur_score!=-100. and e<cur_score-EPSILON_THRESHOLD:
         break
-      elif len(top_fl_patches)==0:
+      for case in state.c_patch_ranking[e]:
+        top_all_patches.append(case)
+        if case in case.parent.case_info_map.values():
+          # Not searched yet
+          top_fl_patches.append(case)
+          if is_first:
+            is_first=False
+            cur_score=e
+            
+      if len(top_fl_patches)==0 and is_first:
         top_all_patches.clear()
         top_fl_patches.clear()
-      elif len(next_top_fl_patches)==0 and len(top_fl_patches)>0:
-        is_next=True
-        next_top_fl_patches.clear()
-        next_top_all_patches.clear()
 
   # Get total patches and total searched patches, for epsilon greedy method
   if cur_score not in state.same_consecutive_score:
     state.same_consecutive_score[cur_score]=1
-  is_secondary=state.same_consecutive_score[cur_score]%state.MAX_CONSECUTIVE_SAME_SCORE==0
+  # is_secondary=state.same_consecutive_score[cur_score]%state.MAX_CONSECUTIVE_SAME_SCORE==0
+  is_secondary=False
   state.same_consecutive_score[cur_score]+=1
   if not is_secondary or len(next_top_fl_patches)==0:
-    state.msv_logger.debug(f'Use original order, secondary: {state.same_consecutive_score[cur_score]}, score: {cur_score}')
+    state.msv_logger.debug(f'Use original order, score: {cur_score}')
     total_patches=len(top_all_patches)
     total_searched=len(top_all_patches)-len(top_fl_patches)
     epsilon=epsilon_greedy(total_patches,total_searched)
@@ -191,7 +185,7 @@ def epsilon_search(state:MSVState):
       return top_fl_patches[0]
   
   else:
-    state.msv_logger.debug(f'Use secondary order, secondary: {state.same_consecutive_score[cur_score]}, score: {cur_score}')
+    state.msv_logger.debug(f'Use secondary order, score: {cur_score}')
     total_patches=len(next_top_all_patches)
     total_searched=len(next_top_all_patches)-len(next_top_fl_patches)
     epsilon=epsilon_greedy(total_patches,total_searched)
@@ -216,24 +210,34 @@ def epsilon_select(state:MSVState,source=None):
   """
   top_fl_patches:List[TbarCaseInfo]=[] # All 'not searched' top scored patches
   top_all_patches=[] # All top scored patches, include searched or not searched
+  cur_score=-100.
   # Get all top fl patches
   if state.tbar_mode or state.recoder_mode:
     if source is None:
       for score in state.java_remain_patch_ranking:
-        if len(state.java_remain_patch_ranking[score])>0:
-          top_fl_patches=state.java_remain_patch_ranking[score]
-          top_all_patches=state.java_patch_ranking[score]
-          break
+        if len(state.java_remain_patch_ranking[score])>0 and cur_score==-100.:
+          cur_score=score
+          top_fl_patches+=state.java_remain_patch_ranking[score]
+          top_all_patches+=state.java_patch_ranking[score]
+        elif cur_score>-100. and score>cur_score-EPSILON_THRESHOLD:
+          top_fl_patches+=state.java_remain_patch_ranking[score]
+          top_all_patches+=state.java_patch_ranking[score]
     else:
       for score in source.remain_patches_by_score:
-        if len(source.remain_patches_by_score[score])>0:
-          top_fl_patches=source.remain_patches_by_score[score]
-          top_all_patches=source.patches_by_score[score]
-          break
+        if len(source.remain_patches_by_score[score])>0 and cur_score==-100.:
+          cur_score=score
+          top_fl_patches+=source.remain_patches_by_score[score]
+          top_all_patches+=source.patches_by_score[score]
+        elif cur_score>-100. and score>cur_score-EPSILON_THRESHOLD:
+          top_fl_patches+=source.remain_patches_by_score[score]
+          top_all_patches+=source.patches_by_score[score]
 
   else:
     sorted_scores=sorted(state.c_patch_ranking.keys(),reverse=True)
+    is_first=True
     for e in sorted_scores:
+      if cur_score!=-100. and e<cur_score-EPSILON_THRESHOLD:
+        break
       for case in state.c_patch_ranking[e]:
         source_has=False
         if source is None:
@@ -259,10 +263,11 @@ def epsilon_select(state:MSVState,source=None):
           if case in case.parent.case_info_map.values():
             # Not searched yet
             top_fl_patches.append(case)
+            if is_first:
+              cur_score=e
+              is_first=False
       
-      if len(top_fl_patches)>0:
-        break
-      elif len(top_fl_patches)==0:
+      if len(top_fl_patches)==0 and is_first:
         top_all_patches.clear()
         top_fl_patches.clear()
 
