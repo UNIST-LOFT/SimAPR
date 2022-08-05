@@ -224,13 +224,13 @@ def epsilon_select(state:MSVState,source=None):
           top_all_patches+=state.java_patch_ranking[score]
     else:
       for score in source.remain_patches_by_score:
-        if len(state.remain_patches_by_score[score])>0 and cur_score==-100.:
+        if len(source.remain_patches_by_score[score])>0 and cur_score==-100.:
           cur_score=score
-          top_fl_patches+=state.remain_patches_by_score[score]
-          top_all_patches+=state.patches_by_score[score]
+          top_fl_patches+=source.remain_patches_by_score[score]
+          top_all_patches+=source.patches_by_score[score]
         elif cur_score>-100. and score>cur_score-EPSILON_THRESHOLD:
-          top_fl_patches+=state.remain_patches_by_score[score]
-          top_all_patches+=state.patches_by_score[score]
+          top_fl_patches+=source.remain_patches_by_score[score]
+          top_all_patches+=source.patches_by_score[score]
 
   else:
     sorted_scores=sorted(state.c_patch_ranking.keys(),reverse=True)
