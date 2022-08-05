@@ -136,15 +136,12 @@ def epsilon_search(state:MSVState):
         cur_score=score
         top_fl_patches+=state.java_remain_patch_ranking[score]
         top_all_patches+=state.java_patch_ranking[score]
-      elif cur_score>-100. and score>cur_score-EPSILON_THRESHOLD:
-        top_fl_patches+=state.java_remain_patch_ranking[score]
-        top_all_patches+=state.java_patch_ranking[score]
-        
+        break
   else: # prophet
     sorted_scores=sorted(state.c_patch_ranking.keys(),reverse=True)
     is_first=True
     for e in sorted_scores:
-      if cur_score!=-100. and e<cur_score-EPSILON_THRESHOLD:
+      if cur_score!=-100.:
         break
       for case in state.c_patch_ranking[e]:
         top_all_patches.append(case)
@@ -219,16 +216,14 @@ def epsilon_select(state:MSVState,source=None):
           cur_score=score
           top_fl_patches+=state.java_remain_patch_ranking[score]
           top_all_patches+=state.java_patch_ranking[score]
-        elif cur_score>-100. and score>cur_score-EPSILON_THRESHOLD:
-          top_fl_patches+=state.java_remain_patch_ranking[score]
-          top_all_patches+=state.java_patch_ranking[score]
+          break
     else:
       for score in source.remain_patches_by_score:
         if len(source.remain_patches_by_score[score])>0 and cur_score==-100.:
           cur_score=score
           top_fl_patches+=source.remain_patches_by_score[score]
           top_all_patches+=source.patches_by_score[score]
-        elif cur_score>-100. and score>cur_score-EPSILON_THRESHOLD:
+        elif cur_score>-100.:
           top_fl_patches+=source.remain_patches_by_score[score]
           top_all_patches+=source.patches_by_score[score]
 
@@ -236,7 +231,7 @@ def epsilon_select(state:MSVState,source=None):
     sorted_scores=sorted(state.c_patch_ranking.keys(),reverse=True)
     is_first=True
     for e in sorted_scores:
-      if cur_score!=-100. and e<cur_score-EPSILON_THRESHOLD:
+      if cur_score!=-100.:
         break
       for case in state.c_patch_ranking[e]:
         source_has=False
