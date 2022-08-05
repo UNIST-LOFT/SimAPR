@@ -1125,6 +1125,11 @@ class PatchInfo:
         self.constant_info.positive_pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
   
   def remove_patch(self, state: 'MSVState') -> None:
+    cur_fl_score=self.line_info.fl_score
+    if state.spr_mode:
+      cur_score=cur_fl_score
+    else:
+      cur_score=self.case_info.prophet_score[0]
     if self.is_condition and self.operator_info is not None and self.case_info.operator_info_list is not None:
       if self.operator_info.operator_type == OperatorType.ALL_1:
         self.case_info.operator_info_list.remove(self.operator_info)
@@ -1192,7 +1197,13 @@ class PatchInfo:
       if len(self.case_info.operator_info_list) == 0:
         del self.type_info.case_info_map[self.case_info.case_number]
         state.seapr_remain_cases.remove(self.case_info)
+        state.c_remain_patch_ranking[cur_score].remove(self.case_info)
         self.line_info.type_priority[self.type_info.patch_type].remove(self.case_info)
+        self.type_info.remain_patches_by_score[cur_score].remove(self.case_info)
+        self.switch_info.remain_patches_by_score[cur_score].remove(self.case_info)
+        self.line_info.remain_patches_by_score[cur_score].remove(self.case_info)
+        self.func_info.remain_patches_by_score[cur_score].remove(self.case_info)
+        self.file_info.remain_patches_by_score[cur_score].remove(self.case_info)
         for score in self.case_info.prophet_score:
           self.type_info.prophet_score.remove(score)
           self.switch_info.prophet_score.remove(score)
@@ -1212,7 +1223,14 @@ class PatchInfo:
       #self.type_info.case_info_list.remove(self.case_info)
       del self.type_info.case_info_map[self.case_info.case_number]
       state.seapr_remain_cases.remove(self.case_info)
+      state.c_remain_patch_ranking[cur_score].remove(self.case_info)
       self.line_info.type_priority[self.type_info.patch_type].remove(self.case_info)
+      self.type_info.remain_patches_by_score[cur_score].remove(self.case_info)
+      self.switch_info.remain_patches_by_score[cur_score].remove(self.case_info)
+      self.line_info.remain_patches_by_score[cur_score].remove(self.case_info)
+      self.func_info.remain_patches_by_score[cur_score].remove(self.case_info)
+      self.file_info.remain_patches_by_score[cur_score].remove(self.case_info)
+
       for score in self.case_info.prophet_score:
         self.type_info.prophet_score.remove(score)
         self.switch_info.prophet_score.remove(score)
@@ -1245,12 +1263,14 @@ class PatchInfo:
 
     if len(self.line_info.switch_info_map) == 0:
       del self.func_info.line_info_map[self.line_info.uuid]
+      self.func_info.fl_score_list.remove(cur_fl_score)
       state.line_list.remove(self.line_info)
       temp_loc=LocationScore(self.file_info.file_name,self.line_info.line_number,0,0)
       if not has_patch(self.file_info.file_name,self.line_info.line_number) and temp_loc in state.fl_score:
         state.fl_score.remove(LocationScore(self.file_info.file_name,self.line_info.line_number,0,0))
     if len(self.func_info.line_info_map) == 0:
       del self.file_info.func_info_map[self.func_info.id]
+      self.file_info.fl_score_list.remove(cur_fl_score)
       state.func_list.remove(self.func_info)
     if len(self.file_info.func_info_map) == 0:
       del state.file_info_map[self.file_info.file_name]
@@ -1693,11 +1713,13 @@ class MSVState:
     self.func_list: List[FuncInfo] = list()
     self.count_compile_fail=True
     self.fixminer_mode=False  # fixminer-mode: Fixminer patch space is seperated to 2 groups
+    self.spr_mode=False  # SPR mode: SPR uses FL+template instead of prophet score
 
     self.seapr_remain_cases:List[CaseInfo]=[]
     self.seapr_layer:SeAPRMode=SeAPRMode.FUNCTION
 
     self.c_patch_ranking:Dict[float,List[CaseInfo]]=dict()
+    self.c_remain_patch_ranking:Dict[float,List[CaseInfo]]=dict()
     self.java_patch_ranking:Dict[float,List[TbarCaseInfo]]=dict()
     self.java_remain_patch_ranking:Dict[float,List[TbarCaseInfo]]=dict()
 
