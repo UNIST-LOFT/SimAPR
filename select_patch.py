@@ -380,6 +380,10 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
   selected=[]
   p_p=[]
   p_b=[]
+  if state.tbar_mode or state.recoder_mode:
+    min_score=min(state.java_remain_patch_ranking.keys())
+  else:
+    min_score=min(state.c_remain_patch_ranking.keys())
   if element_type==FileInfo:
     total_basic_patch=state.total_basic_patch
     total_plausible_patch=state.total_plausible_patch
