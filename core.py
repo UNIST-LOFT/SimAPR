@@ -205,9 +205,9 @@ class PassFail:
   def log_func(x: float, half: float = 50) -> float:
     a = half + math.pow(half, 0.5)
     if a-x<0:
-      return 0.03
+      return 0.06
     else:
-      return max(np.log(a - x) / np.log(a), 0.03)
+      return max(np.log(a - x) / np.log(a), 0.06)
 
 
 class FileInfo:
