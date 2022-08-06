@@ -9,7 +9,7 @@ def epsilon_greedy(total:int,x:int):
     Compute epsilin value of Epsilon-greedy algorithm
     x: larger epsilon for larger x
   """
-  return 1 / (1 + np.e ** (-1 / (total / 10) * (x - total / 3)))
+  return 1 / (1 + np.e ** (-1 / (total / 10) * (x - total / 2)))
 
 def weighted_mean(a:float, b:float, weight_a:float=1., weight_b:float=1.):
   """
