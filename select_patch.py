@@ -372,7 +372,7 @@ def epsilon_select(state:MSVState,source=None):
         raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
 
 def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
-  FL_CONST=0.25
+  FL_CONST=1.0
   def normalize_one(score:float):
     return (score-state.min_prophet_score)/(state.max_prophet_score-state.min_prophet_score)
 
