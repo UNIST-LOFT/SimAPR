@@ -413,7 +413,8 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
       for element_name in elements:
         info = elements[element_name]
         selected.append(info)
-        p_p.append(0.)
+        state.msv_logger.debug(f'Plausible: a: {info.positive_pf.pass_count}, b: {info.positive_pf.fail_count}')
+        p_p.append(info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
 
       max_score=0.
       max_index=-1
@@ -455,7 +456,8 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
       for element_name in elements:
         info = elements[element_name]
         selected.append(info)
-        p_b.append(0.)
+        p_b.append(info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+        state.msv_logger.debug(f'Basic: a: {info.pf.pass_count}, b: {info.pf.fail_count}')
 
       max_score=0.
       max_index=-1
