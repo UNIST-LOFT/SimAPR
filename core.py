@@ -103,11 +103,8 @@ class SeAPRMode(Enum):
   First increase of alpha value in beta dist.
 """
 ALPHA_INCREASE={
-  0: 100., # file
-  1: 20.,
-  2: 5., # line
-  3: 4., # switch
-  4: 3. # type
+  0: 220., # file, func
+  1: 20., # line, type, switch
 }
 
 class PassFail:
@@ -123,10 +120,10 @@ class PassFail:
   def __exp_alpha(self, layer: int) -> float:
     if layer ==-1:
       return 1.
-    if self.pass_count==5.0:
+    if self.pass_count==80.0: # first patch
       return ALPHA_INCREASE[layer]
-    else:
-      return 3.
+    else: # More than once
+      return self.pass_count-80.0-ALPHA_INCREASE[layer]
   def beta_mode(self, alpha: float, beta: float) -> float:
     if alpha+beta==2.0:
       return 1.0
@@ -986,10 +983,10 @@ class PatchInfo:
       self.func_info.children_basic_patches+=1
       self.file_info.children_basic_patches+=1
 
-    self.type_info.pf.update(result, n,b_n, 4, use_fixed_beta)
-    self.switch_info.pf.update(result, n,b_n, 3, use_fixed_beta)
-    self.line_info.pf.update(result, n,b_n, 2, use_fixed_beta)
-    self.func_info.pf.update(result, n,b_n, 1, use_fixed_beta)
+    self.type_info.pf.update(result, n,b_n, 1, use_fixed_beta)
+    self.switch_info.pf.update(result, n,b_n, 1, use_fixed_beta)
+    self.line_info.pf.update(result, n,b_n, 1, use_fixed_beta)
+    self.func_info.pf.update(result, n,b_n, 0, use_fixed_beta)
     self.file_info.pf.update(result, n,b_n, 0, use_fixed_beta)
 
     if result:
@@ -1122,10 +1119,10 @@ class PatchInfo:
   
   def update_result_positive(self, result: bool, n: float, b_n:float,use_exp_alpha: bool, use_fixed_beta:bool) -> None:
     self.case_info.positive_pf.update(result, n,b_n, -1, use_fixed_beta)
-    self.type_info.positive_pf.update(result, n,b_n, 4, use_fixed_beta)
-    self.switch_info.positive_pf.update(result, n,b_n, 3, use_fixed_beta)
-    self.line_info.positive_pf.update(result, n,b_n, 2, use_fixed_beta)
-    self.func_info.positive_pf.update(result, n,b_n, 1, use_fixed_beta)
+    self.type_info.positive_pf.update(result, n,b_n, 1, use_fixed_beta)
+    self.switch_info.positive_pf.update(result, n,b_n, 1, use_fixed_beta)
+    self.line_info.positive_pf.update(result, n,b_n, 1, use_fixed_beta)
+    self.func_info.positive_pf.update(result, n,b_n, 0, use_fixed_beta)
     self.file_info.positive_pf.update(result, n,b_n, 0, use_fixed_beta)
     if self.is_condition and self.operator_info is not None:
       self.operator_info.positive_pf.update(result, n,b_n, -1, use_fixed_beta)
@@ -1330,9 +1327,9 @@ class TbarPatchInfo:
     self.out_diff = False
   def update_result(self, result: bool, n: float, b_n:float,exp_alpha: bool, fixed_beta: bool) -> None:
     self.tbar_case_info.pf.update(result, n,b_n, -1, fixed_beta)
-    self.tbar_type_info.pf.update(result, n,b_n, 4, fixed_beta)
-    self.line_info.pf.update(result, n,b_n, 2, fixed_beta)
-    self.func_info.pf.update(result, n,b_n, 1, fixed_beta)
+    self.tbar_type_info.pf.update(result, n,b_n, 1, fixed_beta)
+    self.line_info.pf.update(result, n,b_n, 1, fixed_beta)
+    self.func_info.pf.update(result, n,b_n, 0, fixed_beta)
     self.file_info.pf.update(result, n,b_n, 0, fixed_beta)
   def update_result_out_dist(self, state: 'MSVState', result: bool, dist: float, test: int) -> None:
     self.out_dist = dist
@@ -1361,9 +1358,9 @@ class TbarPatchInfo:
     self.file_info.output_pf.update(is_diff, 1.0)    
   def update_result_positive(self, result: bool, n: float, b_n:float,exp_alpha: bool, fixed_beta: bool) -> None:
     self.tbar_case_info.positive_pf.update(result, n,b_n, -1, fixed_beta)
-    self.tbar_type_info.positive_pf.update(result, n,b_n, 4, fixed_beta)
-    self.line_info.positive_pf.update(result, n,b_n, 2, fixed_beta)
-    self.func_info.positive_pf.update(result, n,b_n, 1, fixed_beta)
+    self.tbar_type_info.positive_pf.update(result, n,b_n, 1, fixed_beta)
+    self.line_info.positive_pf.update(result, n,b_n, 1, fixed_beta)
+    self.func_info.positive_pf.update(result, n,b_n, 0, fixed_beta)
     self.file_info.positive_pf.update(result, n,b_n, 0, fixed_beta)
   def remove_patch(self, state: 'MSVState') -> None:
     if self.tbar_case_info.location not in self.tbar_type_info.tbar_case_info_map:
@@ -1425,8 +1422,8 @@ class RecoderPatchInfo:
     # for rti in self.recoder_type_info_list:
     #   rti.pf.update(result, n,b_n, exp_alpha, fixed_beta)
     # self.recoder_type_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
-    self.line_info.pf.update(result, n,b_n, 2, fixed_beta)
-    self.func_info.pf.update(result, n,b_n, 1, fixed_beta)
+    self.line_info.pf.update(result, n,b_n, 1, fixed_beta)
+    self.func_info.pf.update(result, n,b_n, 0, fixed_beta)
     self.file_info.pf.update(result, n,b_n, 0, fixed_beta)
   def update_result_out_dist(self, state: 'MSVState', result: bool, dist: float, test: int) -> None:
     self.out_dist = dist
@@ -1458,8 +1455,8 @@ class RecoderPatchInfo:
     # self.recoder_type_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
     # for rti in self.recoder_type_info_list:
     #   rti.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
-    self.line_info.positive_pf.update(result, n,b_n, 2, fixed_beta)
-    self.func_info.positive_pf.update(result, n,b_n, 1, fixed_beta)
+    self.line_info.positive_pf.update(result, n,b_n, 1, fixed_beta)
+    self.func_info.positive_pf.update(result, n,b_n, 0, fixed_beta)
     self.file_info.positive_pf.update(result, n,b_n, 0, fixed_beta)
   def remove_patch(self, state: 'MSVState') -> None:
     if self.recoder_case_info.case_id not in self.line_info.recoder_case_info_map:
@@ -1701,7 +1698,7 @@ class MSVState:
     self.use_partial_validation = True
     self.max_initial_trial = 0
     self.c_map = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.0}
-    self.params = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.0, PT.cov: 2.0, PT.sigma: 0.0, PT.halflife: 1.0, PT.epsilon: 0.0,PT.b_dec:0.0,PT.a_init:5.0,PT.b_init:100.0}
+    self.params = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.0, PT.cov: 2.0, PT.sigma: 0.0, PT.halflife: 1.0, PT.epsilon: 0.0,PT.b_dec:0.0,PT.a_init:80.0,PT.b_init:100.0}
     self.params_decay = {PT.fl:1.0,PT.basic:1.0,PT.plau:1.0}
     self.original_output_distance_map = dict()
     self.use_msv_ext=False
