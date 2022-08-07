@@ -22,7 +22,7 @@ def weighted_harmonic_mean(a: float, b: float, weight_a: int=1, weight_b: int=10
   """
     Compute weighted harmonic mean, for guided decision
   """
-  return ((weight_a*a+weight_b*b)/(weight_a+weight_b))**-1
+  return ((weight_a*(a**-1)+weight_b*(b**-1))/(weight_a+weight_b))**-1
 
 def get_static_score(state:MSVState,element):
   if state.tbar_mode or state.recoder_mode:
