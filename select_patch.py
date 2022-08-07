@@ -18,6 +18,12 @@ def weighted_mean(a:float, b:float, weight_a:float=1., weight_b:float=1.):
   """
   return (a * weight_a + b * weight_b) / (weight_a + weight_b)
 
+def weighted_harmonic_mean(a: float, b: float, weight_a: int=1, weight_b: int=10):
+  """
+    Compute weighted harmonic mean, for guided decision
+  """
+  return ((weight_a*a+weight_b*b)/(weight_a+weight_b))**-1
+
 def get_static_score(state:MSVState,element):
   if state.tbar_mode or state.recoder_mode:
     if type(element)==FileInfo or type(element)==FuncInfo:
@@ -372,7 +378,7 @@ def epsilon_select(state:MSVState,source=None):
         raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
 
 def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
-  FL_CONST=1.0
+  FL_CONST=0.25
   def normalize_one(score:float):
     return (score-state.min_prophet_score)/(state.max_prophet_score-state.min_prophet_score)
 
@@ -418,7 +424,7 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
         cur_score=get_static_score(state,selected[max_index]) if state.tbar_mode or state.recoder_mode or state.spr_mode else normalize_one(get_static_score(state,selected[max_index]))
         prev_score=state.previous_score if state.tbar_mode or state.recoder_mode or state.spr_mode else normalize_one(state.previous_score)
         score_rate=min(cur_score/prev_score,1.) if prev_score!=0. else 0.
-        if random.random()< (harmonic_mean([PassFail.concave_up(freq),PassFail.log_func(bp_freq)])*(FL_CONST*score_rate)):
+        if random.random()< (weighted_harmonic_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq))*(FL_CONST*score_rate)):
           state.msv_logger.debug(f'Use guidance with plausible patch: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}, {cur_score}/{prev_score}')
 
           if type(selected[max_index])==FuncInfo:
@@ -462,7 +468,7 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
         cur_score=get_static_score(state,selected[max_index]) if state.tbar_mode or state.recoder_mode or state.spr_mode else normalize_one(get_static_score(state,selected[max_index]))
         prev_score=state.previous_score if state.tbar_mode or state.recoder_mode or state.spr_mode else normalize_one(state.previous_score)
         score_rate=min(cur_score/prev_score,1.) if prev_score!=0. else 0.
-        if random.random()< (harmonic_mean([PassFail.concave_up(freq),PassFail.log_func(bp_freq)])*(FL_CONST*score_rate)):
+        if random.random()< (weighted_harmonic_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq))*(FL_CONST*score_rate)):
           state.msv_logger.debug(f'Use guidance with basic patch: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}, {cur_score}/{prev_score}')
 
           if type(selected[max_index])==FuncInfo:
