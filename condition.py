@@ -967,7 +967,7 @@ class GuidedPathCondition:
         else:
           # We failed, but we can try more
           self.patch.case_info.current_record=record
-          result_handler.update_result_out_dist(self.state,[self.patch],False,self.state.negative_test[0],self.new_env)
+          # result_handler.update_result_out_dist(self.state,[self.patch],False,self.state.negative_test[0],self.new_env)
           if current_try==3:
             # We tried 3 times, but still fail, try at next!
             return None

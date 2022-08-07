@@ -54,7 +54,7 @@ class MSV:
         start_time=time.time()
         run_result, is_timeout = run_test.run_fail_test(self.state, selected_patch, test, new_env)
         fail_time+=time.time()-start_time
-        result_handler.update_result_out_dist(self.state, selected_patch, run_result, test, new_env)
+        # result_handler.update_result_out_dist(self.state, selected_patch, run_result, test, new_env)
         if not run_result:
           final_result=False
           if self.state.use_partial_validation:
@@ -72,8 +72,8 @@ class MSV:
       final_result=run_result
       pass_exist=run_result
       if is_init:
-        out_dist = result_handler.update_result_out_dist(self.state, selected_patch, run_result, selected_test, new_env)
-        self.state.original_output_distance_map[selected_test] = out_dist
+        # out_dist = result_handler.update_result_out_dist(self.state, selected_patch, run_result, selected_test, new_env)
+        # self.state.original_output_distance_map[selected_test] = out_dist
         return run_result
 
     if self.state.use_pass_test and final_result:

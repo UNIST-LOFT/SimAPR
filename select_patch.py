@@ -413,10 +413,7 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
       for element_name in elements:
         info = elements[element_name]
         selected.append(info)
-        if info.children_plausible_patches>0:
-          p_p.append(info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-        else:
-          p_p.append(0.)
+        p_p.append(0.)
 
       max_score=0.
       max_index=-1
@@ -457,10 +454,7 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
       for element_name in elements:
         info = elements[element_name]
         selected.append(info)
-        if info.children_basic_patches>0:
-          p_b.append(info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-        else:
-          p_b.append(0.)
+        p_b.append(0.)
 
       max_score=0.
       max_index=-1
