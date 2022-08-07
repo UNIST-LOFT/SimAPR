@@ -108,7 +108,7 @@ ALPHA_INCREASE={
 }
 
 class PassFail:
-  def __init__(self, p: float = 0, f: float = 0) -> None:
+  def __init__(self, p: float = 0., f: float = 0.) -> None:
     self.pass_count = p
     self.fail_count = f
   def __fixed_beta__(self,use_fixed_beta,alpha,beta):
@@ -120,15 +120,15 @@ class PassFail:
   def __exp_alpha(self, layer: int) -> float:
     if layer ==-1:
       return 1.
-    if self.pass_count==80.0: # first patch
+    if self.pass_count==0.: # first patch
       return ALPHA_INCREASE[layer]
     else: # More than once
-      return self.pass_count-80.0-ALPHA_INCREASE[layer]
+      return self.pass_count
   def beta_mode(self, alpha: float, beta: float) -> float:
     if alpha+beta==2.0:
       return 1.0
     return (alpha - 1.0) / (alpha + beta - 2.0)
-  def update(self, result: bool, n: float,b_n:float=0.0, layer: int = -1, use_fixed_beta:bool=False) -> None:
+  def update(self, result: bool, n: float,b_n:float=1.0, layer: int = -1, use_fixed_beta:bool=False) -> None:
     if result:
       self.pass_count += n * self.__exp_alpha(layer)
     else:
