@@ -617,6 +617,9 @@ def read_info_tbar(state: MSVState) -> None:
           state.simulation_data[key] = data
 
 def read_info_fixminer(state: MSVState) -> None:
+  if '1' not in os.listdir(f'{state.work_dir}/..'):
+    state.sub_file_info_map=dict()
+    return
   with open(os.path.join(state.work_dir,'..','1', 'switch-info.json'), 'r') as f:
     info = json.load(f)
     # Read test informations (which tests to run, which of them are failing test or passing test)
