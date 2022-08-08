@@ -22,7 +22,7 @@ def parse_args(argv: list) -> MSVState:
               "use-condition-synthesis", "use-hierarchical-selection=", "use-pass-test", "use-partial-validation", "use-full-validation",'seed=',
               "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern", "use-simulation-mode=",'remove-cached-file',
               "use-prophet-score", "use-fl", "use-fl-prophet-score", "watch-level=",'use-msv-ext','seapr-mode=','top-fl=','use-fixed-halflife','ignore-compile-error',
-              "func-dist-mean=",'lang-model-path=','use-init-trial=','regression-mode=','finish-correct-patch','count-compile-fail','not-use-guide','not-use-epsilon','fixminer-mode']
+              "func-dist-mean=",'lang-model-path=','use-init-trial=','regression-mode=','finish-correct-patch','count-compile-fail','not-use-guide','not-use-epsilon','fixminer-mode','spr-mode']
   opts, args = getopt.getopt(argv[1:], "ho:w:p:t:m:c:j:T:E:M:S:", longopts)
   state = MSVState()
   state.original_args = argv
@@ -173,6 +173,8 @@ def parse_args(argv: list) -> MSVState:
     elif o in ['--fixminer-mode']:
       state.fixminer_mode=True
       state.tbar_mode=True
+    elif o in ['--spr-mode']:
+      state.spr_mode=True
 
   if sub_dir != "":
     state.out_dir = os.path.join(state.out_dir, sub_dir)
@@ -938,8 +940,10 @@ def read_info(state: MSVState) -> None:
         line_info.fl_score = score
         if file_info.fl_score<line_info.fl_score:
           file_info.fl_score=line_info.fl_score
+        file_info.fl_score_list.append(score)
         if func_info.fl_score < line_info.fl_score:
           func_info.fl_score = line_info.fl_score
+        func_info.fl_score_list.append(score)
         file_line = FileLine(file_info, line_info, score)
         state.priority_map[f"{file_info.file_name}:{line_info.line_number}"] = file_line
 
@@ -1029,9 +1033,42 @@ def read_info(state: MSVState) -> None:
                       file_line.case_map[sw_cs_key] = case_info
                       
                       case_info.prophet_score.append(current_score)
-                      if case_info.prophet_score[0] not in state.c_patch_ranking:
-                        state.c_patch_ranking[case_info.prophet_score[0]]=[]
-                      state.c_patch_ranking[case_info.prophet_score[0]].append(case_info)
+                      if state.spr_mode:
+                        fl_score=case_info.parent.parent.parent.fl_score
+                      else:
+                        fl_score=case_info.prophet_score[0]
+                      if fl_score not in state.c_patch_ranking:
+                        state.c_patch_ranking[fl_score]=[]
+                        state.c_remain_patch_ranking[fl_score]=[]
+                      state.c_patch_ranking[fl_score].append(case_info)
+                      state.c_remain_patch_ranking[fl_score].append(case_info)
+
+                      if fl_score not in file_info.patches_by_score:
+                        file_info.patches_by_score[fl_score] = []
+                        file_info.remain_patches_by_score[fl_score] = []
+                      file_info.patches_by_score[fl_score].append(case_info)
+                      file_info.remain_patches_by_score[fl_score].append(case_info)
+                      if fl_score not in func_info.patches_by_score:
+                        func_info.patches_by_score[fl_score] = []
+                        func_info.remain_patches_by_score[fl_score] = []
+                      func_info.patches_by_score[fl_score].append(case_info)
+                      func_info.remain_patches_by_score[fl_score].append(case_info)
+                      if fl_score not in line_info.patches_by_score:
+                        line_info.patches_by_score[fl_score] = []
+                        line_info.remain_patches_by_score[fl_score] = []
+                      line_info.patches_by_score[fl_score].append(case_info)
+                      line_info.remain_patches_by_score[fl_score].append(case_info)
+                      if fl_score not in switch_info.patches_by_score:
+                        switch_info.patches_by_score[fl_score] = []
+                        switch_info.remain_patches_by_score[fl_score] = []
+                      switch_info.patches_by_score[fl_score].append(case_info)
+                      switch_info.remain_patches_by_score[fl_score].append(case_info)
+                      if fl_score not in type_info.patches_by_score:
+                        type_info.patches_by_score[fl_score] = []
+                        type_info.remain_patches_by_score[fl_score] = []
+                      type_info.patches_by_score[fl_score].append(case_info)
+                      type_info.remain_patches_by_score[fl_score].append(case_info)
+
                       type_info.prophet_score.append(current_score)
                       switch_info.prophet_score.append(current_score)
                       line_info.prophet_score.append(current_score)

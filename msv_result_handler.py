@@ -9,12 +9,12 @@ def get_ochiai(s_h: float, s_l: float, d_h: float, d_l: float) -> float:
 
 def update_result(state: MSVState, selected_patch: List[PatchInfo], run_result: bool, n: float, test: int, new_env: Dict[str, str], update_out_dist: bool = True) -> None:
   #if state.use_hierarchical_selection >= 2:
-  if test >= 0:
-    if update_out_dist:
-      update_result_out_dist(state, selected_patch, run_result, test, new_env)
-    else:
-      for patch in selected_patch:
-        patch.update_result_out_dist(state, run_result, 0.0, test)
+  # if test >= 0:
+  #   if update_out_dist:
+  #     update_result_out_dist(state, selected_patch, run_result, test, new_env)
+  #   else:
+  #     for patch in selected_patch:
+  #       patch.update_result_out_dist(state, run_result, 0.0, test)
   # else:
   #   state.msv_logger.info(f"Test {test} is not a valid test number")
   # update_result_critical(state, selected_patch, run_result, test)
@@ -52,6 +52,10 @@ def update_result(state: MSVState, selected_patch: List[PatchInfo], run_result: 
     if is_break:
       break
   assert is_break
+
+  # Comment this: for use top score instead of previous score
+  for patch in selected_patch:
+    state.previous_score=max(patch.case_info.prophet_score)
 
   if state.mode == MSVMode.seapr:
     update_result_seapr(state, selected_patch, run_result, test)
@@ -389,6 +393,9 @@ def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: b
       state.previous_score=score
       break
 
+  # Comment this: for use top score instead of previous score
+  state.previous_score=selected_patch.line_info.fl_score
+
   if state.mode == MSVMode.seapr:
     # Optimization: for default SeAPR, we use cluster to update the result
     if not state.use_pattern and state.seapr_layer == SeAPRMode.FUNCTION:
@@ -491,6 +498,9 @@ def update_result_recoder(state: MSVState, selected_patch: RecoderPatchInfo, res
     if len(state.java_remain_patch_ranking[score]) != 0:
       state.previous_score=score
       break
+
+  # Comment this: for use top score instead of previous score
+  state.previous_score=selected_patch.line_info.fl_score
 
   if state.mode == MSVMode.seapr:
     # Optimization: for default SeAPR, we use cluster to update the result
