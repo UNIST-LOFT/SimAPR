@@ -193,7 +193,12 @@ def epsilon_search(state:MSVState):
       # Perform random search in epsilon probability
       state.msv_logger.debug(f'Use epsilon greedy method, epsilon: {epsilon}')
       index=random.randint(0,len(top_fl_patches)-1)
-      return top_fl_patches[index]
+      if state.recoder_mode:
+        likelihood = list()
+        for case_info in top_fl_patches:
+          likelihood.append(case_info.prob)
+        index = PassFail.select_by_probability(PassFail.softmax(likelihood))
+        return top_fl_patches[index]
     else:
       state.msv_logger.debug(f'Use original order, epsilon: {epsilon}')
       if state.spr_mode:
@@ -330,6 +335,14 @@ def epsilon_select(state:MSVState,source=None):
     # Choose random element in candidates
     result=list(result)
     index=random.randint(0,len(result)-1)
+    if state.recoder_mode and type(source) == LineInfo:
+      likelihood = list()
+      for case_info in result:
+        likelihood.append(case_info.prob)
+      # lh_min = min(likelihood) * 1.1
+      # for lh in range(len(likelihood)):
+      #   likelihood[lh] -= lh_min
+      index = PassFail.select_by_probability(PassFail.softmax(likelihood))
     return result[index]
   else:
     # Return top scored layer in original
