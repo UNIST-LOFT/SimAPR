@@ -805,7 +805,7 @@ def batch_plot(correct_patch_csv: str, in_dir: str) -> None:
       switch_info, switch_case_map = info[workdir]
       iter, tm = msv_plot_correct(result_file, dir, workdir, cp, switch_info, switch_case_map)
       csv += f"{ty},{ver},{cp},{iter},{tm}\n"
-      afl_barchart(result_file, dir, workdir, cp, switch_info, switch_case_map)
+      # afl_barchart(result_file, dir, workdir, cp, switch_info, switch_case_map)
   print(csv)
   with open("result.csv", "w") as f:
     f.write(csv)  
