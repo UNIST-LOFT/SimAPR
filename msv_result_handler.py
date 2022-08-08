@@ -53,6 +53,10 @@ def update_result(state: MSVState, selected_patch: List[PatchInfo], run_result: 
       break
   assert is_break
 
+  # Comment this: for use top score instead of previous score
+  for patch in selected_patch:
+    state.previous_score=max(patch.case_info.prophet_score)
+
   if state.mode == MSVMode.seapr:
     update_result_seapr(state, selected_patch, run_result, test)
   for patch in selected_patch:
@@ -389,6 +393,9 @@ def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: b
       state.previous_score=score
       break
 
+  # Comment this: for use top score instead of previous score
+  state.previous_score=selected_patch.line_info.fl_score
+
   if state.mode == MSVMode.seapr:
     # Optimization: for default SeAPR, we use cluster to update the result
     if not state.use_pattern and state.seapr_layer == SeAPRMode.FUNCTION:
@@ -491,6 +498,9 @@ def update_result_recoder(state: MSVState, selected_patch: RecoderPatchInfo, res
     if len(state.java_remain_patch_ranking[score]) != 0:
       state.previous_score=score
       break
+
+  # Comment this: for use top score instead of previous score
+  state.previous_score=selected_patch.line_info.fl_score
 
   if state.mode == MSVMode.seapr:
     # Optimization: for default SeAPR, we use cluster to update the result

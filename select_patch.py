@@ -385,7 +385,7 @@ def epsilon_select(state:MSVState,source=None):
         raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
 
 def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
-  FL_CONST=0.25
+  FL_CONST=1.0 # Change this to 0.25 for use weight in FL score
   def normalize_one(score:float):
     return (score-state.min_prophet_score)/(state.max_prophet_score-state.min_prophet_score)
 
@@ -414,7 +414,10 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
         info = elements[element_name]
         selected.append(info)
         state.msv_logger.debug(f'Plausible: a: {info.positive_pf.pass_count}, b: {info.positive_pf.fail_count}')
-        p_p.append(info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+        if info.children_plausible_patches>0:
+          p_p.append(info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+        else:
+          p_p.append(0.)
 
       max_score=0.
       max_index=-1
@@ -430,7 +433,7 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
         cur_score=get_static_score(state,selected[max_index]) if state.tbar_mode or state.recoder_mode or state.spr_mode else normalize_one(get_static_score(state,selected[max_index]))
         prev_score=state.previous_score if state.tbar_mode or state.recoder_mode or state.spr_mode else normalize_one(state.previous_score)
         score_rate=min(cur_score/prev_score,1.) if prev_score!=0. else 0.
-        if random.random()< (weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq),weight_b=10)*(score_rate*FL_CONST if score_rate!=1.0 else 1.0)):
+        if random.random()< (weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq))*(score_rate*FL_CONST if score_rate!=1.0 else 1.0)):
           state.msv_logger.debug(f'Use guidance with plausible patch: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}, {cur_score}/{prev_score}')
 
           if type(selected[max_index])==FuncInfo:
@@ -456,7 +459,10 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
       for element_name in elements:
         info = elements[element_name]
         selected.append(info)
-        p_b.append(info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+        if info.children_basic_patches>0:
+          p_b.append(info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+        else:
+          p_b.append(0.)
         state.msv_logger.debug(f'Basic: a: {info.pf.pass_count}, b: {info.pf.fail_count}')
 
       max_score=0.
@@ -473,7 +479,7 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
         cur_score=get_static_score(state,selected[max_index]) if state.tbar_mode or state.recoder_mode or state.spr_mode else normalize_one(get_static_score(state,selected[max_index]))
         prev_score=state.previous_score if state.tbar_mode or state.recoder_mode or state.spr_mode else normalize_one(state.previous_score)
         score_rate=min(cur_score/prev_score,1.) if prev_score!=0. else 0.
-        if random.random()< (weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq),weight_b=10)*(score_rate*FL_CONST if score_rate!=1.0 else 1.0)):
+        if random.random()< (weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq))*(score_rate*FL_CONST if score_rate!=1.0 else 1.0)):
           state.msv_logger.debug(f'Use guidance with basic patch: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}, {cur_score}/{prev_score}')
 
           if type(selected[max_index])==FuncInfo:
