@@ -1104,6 +1104,61 @@ def select_patch_seapr(state: MSVState, test: int) -> PatchInfo:
   #     break
   #   case_info = target.case_map[cs]
 
+  # In SPR mode, use SPR algorithm for select candidate
+  if state.spr_mode:
+    max_score = 0.0
+    selected_func_info=state.func_list[0]
+    has_high_qual_patch = False
+    for func in state.func_list:
+      if func.func_rank > 30:
+        continue
+      cur_score = get_ochiai(func.same_seapr_pf.pass_count, func.same_seapr_pf.fail_count, func.diff_seapr_pf.pass_count, func.diff_seapr_pf.fail_count)
+      if cur_score > max_score:
+        max_score = cur_score
+        selected_func_info = func
+      has_high_qual_patch = True
+
+    selected_line_info=None
+    max_score=0.
+    for line_id in selected_func_info.line_info_map:
+      info=selected_func_info.line_info_map[line_id]
+      if info.fl_score > max_score:
+        max_score=info.fl_score
+        selected_line_info=info
+    
+    # select case  
+    case_info:CaseInfo=None
+    for type_ in SPR_TYPE_PRIORITY:
+      if type_ in selected_line_info.type_priority:
+        case_info=selected_line_info.type_priority[type_][0]
+    assert case_info is not None
+
+    if case_info.is_condition and case_info.processed:
+      current_condition=case_info.condition_list[0]
+      for oper in case_info.operator_info_list:
+        if oper.operator_type==current_condition[0]:
+          current_oper=oper
+          break
+      
+      if current_oper.operator_type==OperatorType.ALL_1:
+        return PatchInfo(case_info,current_oper,None,None)
+      else:
+        for var in current_oper.variable_info_list:
+          if var.variable==current_condition[1]:
+            current_var=var
+            break
+        
+        for const in current_var.constant_info_list:
+          if const.constant_value==current_condition[2]:
+            current_const=const
+            break
+        
+        return PatchInfo(case_info,current_oper,current_var,current_const)
+        
+    patch = PatchInfo(case_info, None, None, None)
+    return patch
+
+
   def get_first_case_info(func: FuncInfo) -> CaseInfo:
     selected_line = None
     init = True
@@ -1146,7 +1201,7 @@ def select_patch_seapr(state: MSVState, test: int) -> PatchInfo:
   # Sort function by prophet score
   if not state.use_pattern and state.seapr_layer == SeAPRMode.FUNCTION:
     state.func_list.sort(key=lambda x: max(x.prophet_score), reverse=True)
-    max_score = 0.0
+    max_score = -100.
     case_info = state.seapr_remain_cases[0]
     has_high_qual_patch = False
     for func in state.func_list:
@@ -1159,7 +1214,7 @@ def select_patch_seapr(state: MSVState, test: int) -> PatchInfo:
       has_high_qual_patch = True
   else:
     case_info=state.seapr_remain_cases[0]
-    max_score=0.
+    max_score=-100.
     has_high_qual_patch=False
     top_patches:List[CaseInfo]=[]
     for case in state.seapr_remain_cases:
