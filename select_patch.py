@@ -258,7 +258,8 @@ def epsilon_select(state:MSVState,source=None):
         top_all_patches+=cur_list[score]
         break
   else:
-    for score in source.remain_patches_by_score:
+    cur_remain_list_sorted=sorted(source.remain_patches_by_score.keys(),reverse=True)
+    for score in cur_remain_list_sorted:
       if len(source.remain_patches_by_score[score])>0 and cur_score==-100.:
         cur_score=score
         top_fl_patches+=source.remain_patches_by_score[score]
