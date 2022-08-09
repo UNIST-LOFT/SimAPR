@@ -892,31 +892,12 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
 
   clear_list(state, p_map)
 
-  if explore:
-    c_map = rand_cmap
   # Select case
   use_language_model = False
   if selected_type_info.patch_type==PatchType.ReplaceFunctionKind or selected_type_info.patch_type==PatchType.MSVExtFunctionReplaceKind or selected_type_info.patch_type==PatchType.MSVExtReplaceFunctionInConditionKind:
     use_language_model = True
     c_map[PT.fl] = state.params[PT.fl]
-  for case_num in selected_type_info.case_info_map:
-    case_info = selected_type_info.case_info_map[case_num]
-    if not state.use_condition_synthesis and len(selected_patch)>0 and not case_info.processed: # do not select multi-line patch if patch is not processed at prophet cond syn
-      continue
-    selected.append(case_info)
-    p_rand.append(pf_rand.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    if state.use_prophet_score:
-      p_fl.append(max(case_info.prophet_score))
-    p_b.append(case_info.pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_p.append(case_info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_o.append(case_info.output_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
-    p_frequency.append(0)
-    p_bp_frequency.append(0)
-    if use_language_model:
-      p_fl.append(1.0 - case_info.func_distance)
-
-  selected_case = select_by_probability(state, p_map, c_map, normalize)
-  selected_case_info: CaseInfo = selected[selected_case]
+  selected_case_info: CaseInfo = epsilon_select(state,selected_type_info)
   clear_list(state, p_map)
     # state.msv_logger.debug(f"{selected_file_info.file_name}({len(selected_file_info.line_info_list)}):" +
     #         f"{selected_line_info.line_number}({len(selected_line_info.switch_info_list)}):" +
