@@ -160,6 +160,8 @@ def epsilon_search(state:MSVState):
   next_top_fl_patches:List[TbarCaseInfo]=[] # All 'not searched' top scored patches
   next_top_all_patches=[] # All top scored patches, include searched or not searched
   cur_score=-100.
+
+  start_time=time.time()
   # Get all top fl patches
   if state.tbar_mode or state.recoder_mode:
     cur_list=state.java_patch_ranking
@@ -201,6 +203,8 @@ def epsilon_search(state:MSVState):
           likelihood.append(case_info.prob)
         index = PassFail.select_by_probability(PassFail.softmax(PassFail.normalize(likelihood)))
         return top_fl_patches[index]
+      state.select_time+=time.time()-start_time
+      return top_fl_patches[index]
     else:
       state.msv_logger.debug(f'Use original order, epsilon: {epsilon}')
       if state.spr_mode:
@@ -210,8 +214,10 @@ def epsilon_search(state:MSVState):
           if patch.parent.patch_type.value<cur_type.value:
             cur_type=patch.parent.patch_type
             final_case=patch
+        state.select_time+=time.time()-start_time
         return final_case
       else:
+        state.select_time+=time.time()-start_time
         return top_fl_patches[0]
   
   else:
@@ -228,9 +234,11 @@ def epsilon_search(state:MSVState):
       # Perform random search in epsilon probability
       state.msv_logger.debug(f'Use epsilon greedy method, epsilon: {epsilon}')
       index=random.randint(0,len(next_top_fl_patches)-1)
+      state.select_time+=time.time()-start_time
       return next_top_fl_patches[index]
     else:
       state.msv_logger.debug(f'Use secondary order, epsilon: {epsilon}')
+      state.select_time+=time.time()-start_time
       return next_top_fl_patches[0]
 
 def epsilon_select(state:MSVState,source=None):
@@ -241,6 +249,7 @@ def epsilon_select(state:MSVState,source=None):
   top_fl_patches:List[TbarCaseInfo]=[] # All 'not searched' top scored patches
   top_all_patches=[] # All top scored patches, include searched or not searched
   cur_score=-100.
+  start_time=time.time()
   # Get all top fl patches
   if source is None:
     if state.tbar_mode or state.recoder_mode:
@@ -345,11 +354,13 @@ def epsilon_select(state:MSVState,source=None):
       # for lh in range(len(likelihood)):
       #   likelihood[lh] -= lh_min
       index = PassFail.select_by_probability(PassFail.softmax(PassFail.normalize(likelihood)))
+    state.select_time+=time.time()-start_time
     return result[index]
   else:
     # Return top scored layer in original
     state.msv_logger.debug(f'Use original order, epsilon: {epsilon}')
     cur_fl_patches=top_fl_patches
+    state.select_time+=time.time()-start_time
     if state.tbar_mode:
       # For java
       if source is None:
@@ -400,7 +411,8 @@ def epsilon_select(state:MSVState,source=None):
         raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
 
 def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
-  FL_CONST=0.25 # Change this to 0.25 for use weight in FL score
+  FL_CONST=0.25
+  start_time=time.time()
   def normalize_one(score:float):
     return (score-state.min_prophet_score)/(state.max_prophet_score-state.min_prophet_score)
 
@@ -466,6 +478,7 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
             else:
               state.msv_logger.debug(f'Incorrect guide: {selected[max_index]}')
 
+          state.select_time+=time.time()-start_time
           return selected[max_index]
     
     if not is_decided:
@@ -512,14 +525,16 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
             else:
               state.msv_logger.debug(f'Incorrect guide: {selected[max_index]}')
 
+          state.select_time+=time.time()-start_time
           return selected[max_index]
       
       if not is_decided:
         state.msv_logger.debug(f'Do not use guide, use original order!')   
+        state.select_time+=time.time()-start_time
         return epsilon_select(state,parent)       
   else:
     # No guide in this layer, use top ranked patch
-    state.msv_logger.debug(f'No guided found in this layer, use original order!')  
+    state.msv_logger.debug(f'No guided found in this layer, use original order!')
     return epsilon_select(state,parent)        
 
 def select_patch_SPR(state: MSVState) -> PatchInfo:
@@ -1119,6 +1134,65 @@ def select_patch_seapr(state: MSVState, test: int) -> PatchInfo:
   #     break
   #   case_info = target.case_map[cs]
 
+  # In SPR mode, use SPR algorithm for select candidate
+  start_time=time.time()
+  if state.spr_mode:
+    max_score = 0.0
+    selected_func_info=state.func_list[0]
+    has_high_qual_patch = False
+    for func in state.func_list:
+      if func.func_rank > 30:
+        continue
+      cur_score = get_ochiai(func.same_seapr_pf.pass_count, func.same_seapr_pf.fail_count, func.diff_seapr_pf.pass_count, func.diff_seapr_pf.fail_count)
+      if cur_score > max_score:
+        max_score = cur_score
+        selected_func_info = func
+      has_high_qual_patch = True
+
+    selected_line_info=None
+    max_score=0.
+    for line_id in selected_func_info.line_info_map:
+      info=selected_func_info.line_info_map[line_id]
+      if info.fl_score > max_score:
+        max_score=info.fl_score
+        selected_line_info=info
+    
+    # select case  
+    case_info:CaseInfo=None
+    for type_ in SPR_TYPE_PRIORITY:
+      if type_ in selected_line_info.type_priority:
+        case_info=selected_line_info.type_priority[type_][0]
+    assert case_info is not None
+
+    if case_info.is_condition and case_info.processed:
+      current_condition=case_info.condition_list[0]
+      for oper in case_info.operator_info_list:
+        if oper.operator_type==current_condition[0]:
+          current_oper=oper
+          break
+      
+      if current_oper.operator_type==OperatorType.ALL_1:
+        state.select_time+=time.time()-start_time
+        return PatchInfo(case_info,current_oper,None,None)
+      else:
+        for var in current_oper.variable_info_list:
+          if var.variable==current_condition[1]:
+            current_var=var
+            break
+        
+        for const in current_var.constant_info_list:
+          if const.constant_value==current_condition[2]:
+            current_const=const
+            break
+        
+        state.select_time+=time.time()-start_time
+        return PatchInfo(case_info,current_oper,current_var,current_const)
+        
+    patch = PatchInfo(case_info, None, None, None)
+    state.select_time+=time.time()-start_time
+    return patch
+
+
   def get_first_case_info(func: FuncInfo) -> CaseInfo:
     selected_line = None
     init = True
@@ -1161,7 +1235,7 @@ def select_patch_seapr(state: MSVState, test: int) -> PatchInfo:
   # Sort function by prophet score
   if not state.use_pattern and state.seapr_layer == SeAPRMode.FUNCTION:
     state.func_list.sort(key=lambda x: max(x.prophet_score), reverse=True)
-    max_score = 0.0
+    max_score = -100.
     case_info = state.seapr_remain_cases[0]
     has_high_qual_patch = False
     for func in state.func_list:
@@ -1174,7 +1248,7 @@ def select_patch_seapr(state: MSVState, test: int) -> PatchInfo:
       has_high_qual_patch = True
   else:
     case_info=state.seapr_remain_cases[0]
-    max_score=0.
+    max_score=-100.
     has_high_qual_patch=False
     top_patches:List[CaseInfo]=[]
     for case in state.seapr_remain_cases:
@@ -1204,6 +1278,7 @@ def select_patch_seapr(state: MSVState, test: int) -> PatchInfo:
     state.msv_logger.debug(f'SeAPR score: {max_score}')
 
   if not case_info.is_condition:
+    state.select_time+=time.time()-start_time
     return PatchInfo(case_info, None, None, None)
   if not case_info.processed:
     if state.use_condition_synthesis:
@@ -1259,14 +1334,17 @@ def select_patch_seapr(state: MSVState, test: int) -> PatchInfo:
           case_info.operator_info_list.append(operator)
 
     else:
+      state.select_time+=time.time()-start_time
       return PatchInfo(case_info, None, None, None)
   for op_info in case_info.operator_info_list:
     if op_info.operator_type == OperatorType.ALL_1:
+      state.select_time+=time.time()-start_time
       return PatchInfo(case_info, op_info, None, None)
     for var_info in op_info.variable_info_list:
       if len(var_info.constant_info_list) == 0:
         continue
       for const_info in var_info.constant_info_list:
+        state.select_time+=time.time()-start_time
         return PatchInfo(case_info, op_info, var_info, const_info)
 
 def select_patch(state: MSVState, mode: MSVMode, test: int) -> List[PatchInfo]:
@@ -1492,6 +1570,7 @@ def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
     return case_info
 
   # Optimization for default SeAPR
+  start_time = time.time()
   if not state.use_pattern and state.seapr_layer == SeAPRMode.FUNCTION:
     state.func_list.sort(key=lambda x: max(x.fl_score_list), reverse=True)
     min_patch_rank = len(state.switch_case_map) + 1
@@ -1524,9 +1603,11 @@ def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
         selected_patch = tbar_case_info
         has_high_qual_patch = True
   if not has_high_qual_patch:
+    state.select_time+=time.time()-start_time
     return select_patch_tbar(state)
   
   selected_patch.parent.parent.parent.case_rank_list.pop(0)
+  state.select_time+=time.time()-start_time
   state.msv_logger.debug(f'SeAPR score: {max_score}')
   state.patch_ranking.remove(selected_patch.location)
   return TbarPatchInfo(selected_patch)
@@ -1797,6 +1878,7 @@ def select_patch_recoder_seapr(state: MSVState) -> RecoderPatchInfo:
     case_info: RecoderCaseInfo = state.switch_case_map[loc]
     return case_info
 
+  start_time = time.time()
   if not state.use_pattern and state.seapr_layer == SeAPRMode.FUNCTION:
     state.func_list.sort(key=lambda x: max(x.fl_score_list), reverse=True)
     min_patch_rank = len(state.switch_case_map) + 1
@@ -1828,9 +1910,11 @@ def select_patch_recoder_seapr(state: MSVState) -> RecoderPatchInfo:
         selected_patch = recoder_case_info
         has_high_qual_patch = True
   if not has_high_qual_patch:
+    state.select_time+=time.time()-start_time
     return select_patch_recoder(state)
   state.patch_ranking.remove(selected_patch.to_str())
   state.msv_logger.debug(f"Selected patch: {selected_patch.to_str()}, seapr score: {max_score}")
   if not state.use_pattern and state.seapr_layer == SeAPRMode.FUNCTION:
     selected_patch.parent.parent.case_rank_list.pop(0)
+  state.select_time+=time.time()-start_time
   return RecoderPatchInfo(selected_patch)

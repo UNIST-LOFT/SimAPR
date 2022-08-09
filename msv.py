@@ -603,8 +603,9 @@ class MSVRecoder(MSVTbar):
           result = False
           if self.state.use_partial_validation:
             break
-      if is_compilable or self.state.ignore_compile_error:
+      if is_compilable or self.state.count_compile_fail:
         self.state.iteration += 1
+      if is_compilable or self.state.ignore_compile_error:
         result_handler.update_result_recoder(self.state, patch, pass_exists)
         if result and self.state.use_pass_test:
           pass_result,pass_time = self.run_test_positive(patch)
@@ -655,7 +656,7 @@ class MSVRecoder(MSVTbar):
           result_handler.update_result_recoder(self.state, patch, pass_exists)
           if run_result:
             result_handler.update_positive_result_recoder(self.state, patch, pass_result)
-      if is_compilable or self.state.ignore_compile_error:
+      if is_compilable or self.state.count_compile_fail:
         self.state.iteration += 1
       result_handler.append_result(self.state, [patch], pass_exists, pass_result, result, is_compilable,fail_time,pass_time)
       result_handler.remove_patch_recoder(self.state, patch)

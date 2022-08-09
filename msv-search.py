@@ -617,6 +617,9 @@ def read_info_tbar(state: MSVState) -> None:
           state.simulation_data[key] = data
 
 def read_info_fixminer(state: MSVState) -> None:
+  if '1' not in os.listdir(f'{state.work_dir}/..'):
+    state.sub_file_info_map=dict()
+    return
   with open(os.path.join(state.work_dir,'..','1', 'switch-info.json'), 'r') as f:
     info = json.load(f)
     # Read test informations (which tests to run, which of them are failing test or passing test)
@@ -1304,7 +1307,9 @@ def main(argv: list):
     state.msv_logger.exception("Got exception in msv.run()")
     raise
   state.msv_logger.info('MSV is finished')
-  state.msv_logger.info(f'Running time: {(time.time()-state.start_time)+state.test_time}')
+  state.msv_logger.info(f'Running time: {state.select_time+state.test_time}')
+  state.msv_logger.info(f'Select time: {state.select_time}')
+  state.msv_logger.info(f'Test time: {state.test_time}')
   msv.save_result()
 
 
