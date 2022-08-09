@@ -105,7 +105,7 @@ def run_single_test(work_dir: str, buggy_project: str, test: str = "") -> Tuple[
   if test != "":
     cmd = ["defects4j", "test", "-w", work_dir, "-t", test]
   so = "".encode()
-  se = "".encode()  
+  se = "".encode()
   test_proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   if "MSV_TIMEOUT" in os.environ:
     timeout = int(os.environ["MSV_TIMEOUT"])

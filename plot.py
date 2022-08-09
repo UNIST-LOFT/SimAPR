@@ -1576,10 +1576,10 @@ def recoder_batch_plot(correct_patch_csv: str, in_dir: str, id: str) -> None:
       info[workdir] = read_info_recoder(workdir)
       switch_info, switch_case_map = info[workdir]
       scores, corr_score = get_recoder_scores(bugid, switch_case_map, correct_patches[0])
-      with open("/root/project/Recoder/out-score/score.csv", "a") as ff:
-        ratio =(corr_score - min(scores)) / (max(scores) - min(scores))
-        ff.write(f"{bugid},{corr_score},{min(scores)},{max(scores)},{ratio}\n")
-      continue
+      # with open("/root/project/Recoder/out-score/score.csv", "a") as ff:
+      #   ratio =(corr_score - min(scores)) / (max(scores) - min(scores))
+      #   ff.write(f"{bugid},{corr_score},{min(scores)},{max(scores)},{ratio}\n")
+      # continue
     switch_info, switch_case_map = info[workdir]
     recoder_dir = os.path.join(in_dir, f"{bugid}-recoder-{id}")
     result_file = os.path.join(recoder_dir, "msv-result.json")

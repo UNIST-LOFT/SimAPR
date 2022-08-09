@@ -43,6 +43,8 @@ def get_static_score(state:MSVState,element):
       return element.parent.fl_score
     elif type(element)==TbarCaseInfo:
       return element.parent.parent.fl_score
+    elif type(element) == RecoderCaseInfo:
+      return element.prob
     else: raise ValueError(f'Unknown element type {type(element)}')
   elif state.spr_mode:
     if type(element)==FileInfo or type(element)==FuncInfo:
@@ -197,7 +199,7 @@ def epsilon_search(state:MSVState):
         likelihood = list()
         for case_info in top_fl_patches:
           likelihood.append(case_info.prob)
-        index = PassFail.select_by_probability(PassFail.softmax(likelihood))
+        index = PassFail.select_by_probability(PassFail.softmax(PassFail.normalize(likelihood)))
         return top_fl_patches[index]
     else:
       state.msv_logger.debug(f'Use original order, epsilon: {epsilon}')
@@ -342,7 +344,7 @@ def epsilon_select(state:MSVState,source=None):
       # lh_min = min(likelihood) * 1.1
       # for lh in range(len(likelihood)):
       #   likelihood[lh] -= lh_min
-      index = PassFail.select_by_probability(PassFail.softmax(likelihood))
+      index = PassFail.select_by_probability(PassFail.softmax(PassFail.normalize(likelihood)))
     return result[index]
   else:
     # Return top scored layer in original
@@ -398,7 +400,7 @@ def epsilon_select(state:MSVState,source=None):
         raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
 
 def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
-  FL_CONST=1.0 # Change this to 0.25 for use weight in FL score
+  FL_CONST=0.25 # Change this to 0.25 for use weight in FL score
   def normalize_one(score:float):
     return (score-state.min_prophet_score)/(state.max_prophet_score-state.min_prophet_score)
 
