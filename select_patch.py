@@ -147,7 +147,7 @@ def select_by_probability_original(state: MSVState, p_map: Dict[PT, List[float]]
         result[i] += c * prob[i]
   return PassFail.argmax(result)
 
-EPSILON_THRESHOLD=0.1
+EPSILON_THRESHOLD=0.05
 SPR_EPSILON_THRESHOLD=1
 
 def epsilon_search(state:MSVState):
@@ -175,7 +175,9 @@ def epsilon_search(state:MSVState):
       cur_score=score
       top_fl_patches+=cur_remain_list[score]
       top_all_patches+=cur_list[score]
-      break
+    elif (cur_score > -100.0) and ((cur_score - score) < (cur_score * EPSILON_THRESHOLD)):
+      top_fl_patches+=cur_remain_list[score]
+      top_all_patches+=cur_list[score]
 
   # Get total patches and total searched patches, for epsilon greedy method
   if cur_score not in state.same_consecutive_score:
@@ -273,14 +275,19 @@ def epsilon_select(state:MSVState,source=None):
         cur_score=score
         top_fl_patches+=cur_remain_list[score]
         top_all_patches+=cur_list[score]
-        break
+      elif (cur_score > -100.0) and ((cur_score - score) < (cur_score * EPSILON_THRESHOLD)):
+        top_fl_patches += cur_remain_list[score]
+        top_all_patches += cur_list[score]
   else:
     for score in source.remain_patches_by_score:
       if len(source.remain_patches_by_score[score])>0 and cur_score==-100.:
         cur_score=score
         top_fl_patches+=source.remain_patches_by_score[score]
         top_all_patches+=source.patches_by_score[score]
-        break
+      elif (cur_score > -100.0) and ((cur_score - score) < (cur_score * EPSILON_THRESHOLD)):
+        top_fl_patches += source.remain_patches_by_score[score]
+        top_all_patches += source.patches_by_score[score]
+  
 
   # Get total patches and total searched patches, for epsilon greedy method
   total_patches=len(top_all_patches)
