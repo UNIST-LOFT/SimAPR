@@ -197,14 +197,23 @@ def epsilon_search(state:MSVState):
       # Perform random search in epsilon probability
       state.msv_logger.debug(f'Use epsilon greedy method, epsilon: {epsilon}')
       index=random.randint(0,len(top_fl_patches)-1)
+      selected_case_info = top_fl_patches[index]
       if state.recoder_mode:
-        likelihood = list()
+        lines = set()
         for case_info in top_fl_patches:
+          if case_info.parent not in lines:
+            lines.add(case_info.parent)
+        line_list = list(lines)
+        index = random.randint(0, len(line_list)-1)
+        line_info: LineInfo = line_list[index]
+        likelihood = list()
+        case_info_list = list(line_info.recoder_case_info_map.values())
+        for case_info in case_info_list:
           likelihood.append(case_info.prob)
         index = PassFail.select_by_probability(PassFail.softmax(PassFail.normalize(likelihood)))
-        return top_fl_patches[index]
+        selected_case_info = case_info_list[index]
       state.select_time+=time.time()-start_time
-      return top_fl_patches[index]
+      return selected_case_info
     else:
       state.msv_logger.debug(f'Use original order, epsilon: {epsilon}')
       if state.spr_mode:
