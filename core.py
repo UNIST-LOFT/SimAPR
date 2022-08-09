@@ -1731,6 +1731,7 @@ class MSVState:
     self.not_use_guided_search=False  # Use only epsilon-greedy search
     self.not_use_epsilon_search=False  # Use only guided search and original
     self.test_time=0.  # Total compile and test time
+    self.select_time=0.  # Total select time
     self.total_methods=0  # Total methods
 
     self.correct_patch_list:List[str]=[]  # List of correct patch ids
