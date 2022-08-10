@@ -40,19 +40,22 @@ def update_result(state: MSVState, selected_patch: List[PatchInfo], run_result: 
       patch.func_info.consecutive_fail_plausible_count+=1
       patch.file_info.consecutive_fail_plausible_count+=1
   
-  sorted_scores=sorted(state.c_patch_ranking.keys(),reverse=True)
-  for score in sorted_scores:
-    is_break=False
-    for patch in state.c_patch_ranking[score]:
-      if patch in patch.parent.case_info_map.values():
-        state.previous_score=score
-        is_break=True
-        break
+  # sorted_scores=sorted(state.c_patch_ranking.keys(),reverse=True)
+  # for score in sorted_scores:
+  #   is_break=False
+  #   for patch in state.c_patch_ranking[score]:
+  #     if patch in patch.parent.case_info_map.values():
+  #       state.previous_score=score
+  #       is_break=True
+  #       break
     
-    if is_break:
-      break
-  assert is_break
+  #   if is_break:
+  #     break
+  # assert is_break
 
+  for patch in selected_patch:
+    state.previous_score=max(patch.case_info.prophet_score)
+  
   if state.mode == MSVMode.seapr:
     update_result_seapr(state, selected_patch, run_result, test)
   for patch in selected_patch:
@@ -384,10 +387,11 @@ def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: b
     selected_patch.func_info.consecutive_fail_plausible_count+=1
     selected_patch.file_info.consecutive_fail_plausible_count+=1
 
-  for score in state.java_remain_patch_ranking:
-    if len(state.java_remain_patch_ranking[score]) != 0:
-      state.previous_score=score
-      break
+  # for score in state.java_remain_patch_ranking:
+  #   if len(state.java_remain_patch_ranking[score]) != 0:
+  #     state.previous_score=score
+  #     break
+  state.previous_score=selected_patch.line_info.fl_score
 
   if state.mode == MSVMode.seapr:
     # Optimization: for default SeAPR, we use cluster to update the result
@@ -487,10 +491,11 @@ def update_result_recoder(state: MSVState, selected_patch: RecoderPatchInfo, res
     selected_patch.func_info.consecutive_fail_plausible_count += 1
     selected_patch.file_info.consecutive_fail_plausible_count += 1
 
-  for score in state.java_remain_patch_ranking:
-    if len(state.java_remain_patch_ranking[score]) != 0:
-      state.previous_score=score
-      break
+  # for score in state.java_remain_patch_ranking:
+  #   if len(state.java_remain_patch_ranking[score]) != 0:
+  #     state.previous_score=score
+  #     break
+  state.previous_score=selected_patch.line_info.fl_score
 
   if state.mode == MSVMode.seapr:
     # Optimization: for default SeAPR, we use cluster to update the result
