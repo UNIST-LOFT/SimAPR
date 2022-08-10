@@ -432,7 +432,7 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
   start_time=time.time()
   def normalize_one(score:float):
     # return (score-state.min_prophet_score)/(state.max_prophet_score-state.min_prophet_score)
-    return abs(state.min_prophet_score)+score
+    return abs(state.min_prophet_score)+score+0.0001
 
   for element in elements:
     element_type=type(elements[element])
