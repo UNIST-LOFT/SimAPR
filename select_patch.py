@@ -1170,7 +1170,7 @@ def select_patch_seapr(state: MSVState, test: int) -> PatchInfo:
       has_high_qual_patch = True
 
     selected_line_info=None
-    max_score=0.
+    max_score=-1000.
     for line_id in selected_func_info.line_info_map:
       info=selected_func_info.line_info_map[line_id]
       if info.fl_score > max_score:
