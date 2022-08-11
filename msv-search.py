@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os
+from statistics import mean
 import sys
 import subprocess
 import json
@@ -400,6 +401,12 @@ def read_info_recoder(state: MSVState) -> None:
       line_info.remain_patches_by_score[fl_score] = []
     line_info.patches_by_score[fl_score].append(case_info)
     line_info.remain_patches_by_score[fl_score].append(case_info)
+  
+  patch_ranking_list=[]
+  for fl_score in state.java_patch_ranking:
+    if len(state.java_patch_ranking[fl_score])>0:
+      patch_ranking_list.append(len(state.java_patch_ranking[fl_score]))
+  state.max_epsilon_group_size=mean(patch_ranking_list)*2
 
   #Add original to switch_case_map
   temp_file: FileInfo = FileInfo('original')
@@ -598,6 +605,13 @@ def read_info_tbar(state: MSVState) -> None:
     if func_info.func_rank == -1:
       func_info.func_rank = func_rank
       func_rank += 1
+
+  patch_ranking_list=[]
+  for fl_score in state.java_patch_ranking:
+    if len(state.java_patch_ranking[fl_score])>0:
+      patch_ranking_list.append(len(state.java_patch_ranking[fl_score]))
+  state.max_epsilon_group_size=mean(patch_ranking_list)*2
+
   #Add original to switch_case_map
   temp_file: FileInfo = FileInfo('original')
   temp_func = FuncInfo(temp_file, "original_fn", 0, 0)
@@ -768,6 +782,12 @@ def read_info_fixminer(state: MSVState) -> None:
     if func_info.func_rank == -1:
       func_info.func_rank = func_rank
       func_rank += 1
+
+  patch_ranking_list=[]
+  for fl_score in state.sub_java_patch_ranking:
+    if len(state.sub_java_patch_ranking[fl_score])>0:
+      patch_ranking_list.append(len(state.sub_java_patch_ranking[fl_score]))
+  state.sub_max_epsilon_group_size=mean(patch_ranking_list)*2
   # #Add original to switch_case_map
   # temp_file: FileInfo = FileInfo('original')
   # temp_func = FuncInfo(temp_file, "original_fn", 0, 0)
@@ -1115,6 +1135,11 @@ def read_info(state: MSVState) -> None:
     func_info: FuncInfo = temp_func_list[func_index]
     func_info.func_rank = rank
   
+  patch_ranking_list=[]
+  for fl_score in state.c_patch_ranking:
+    if len(state.c_patch_ranking[fl_score])>0:
+      patch_ranking_list.append(len(state.c_patch_ranking[fl_score]))
+  state.max_epsilon_group_size=mean(patch_ranking_list)*2
   # Set halflife
   # TODO: Fix halflife
   # if not state.use_fixed_halflife:

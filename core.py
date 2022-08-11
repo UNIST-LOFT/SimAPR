@@ -1727,6 +1727,7 @@ class MSVState:
     self.MAX_CONSECUTIVE_SAME_SCORE=50
     self.max_prophet_score=-1000.
     self.min_prophet_score=1000.
+    self.max_epsilon_group_size=0  # Maximum size of group for epsilon-greedy
 
     self.not_use_guided_search=False  # Use only epsilon-greedy search
     self.not_use_epsilon_search=False  # Use only guided search and original
@@ -1746,6 +1747,7 @@ class MSVState:
     self.sub_patch_ranking = list()
     self.sub_java_patch_ranking = dict()
     self.sub_java_remain_patch_ranking = dict()
+    self.sub_max_epsilon_group_size = 0
     self.fixminer_swapped=False
 
   def fixminer_swap_info(self):
@@ -1758,6 +1760,7 @@ class MSVState:
       self.sub_patch_ranking,self.patch_ranking=self.patch_ranking,self.sub_patch_ranking
       self.sub_java_patch_ranking,self.java_patch_ranking=self.java_patch_ranking,self.sub_java_patch_ranking
       self.sub_java_remain_patch_ranking,self.java_remain_patch_ranking=self.java_remain_patch_ranking,self.sub_java_remain_patch_ranking
+      self.sub_max_epsilon_group_size,self.max_epsilon_group_size=self.max_epsilon_group_size,self.sub_max_epsilon_group_size
       self.fixminer_swapped=True
 
 def remove_file_or_pass(file:str):

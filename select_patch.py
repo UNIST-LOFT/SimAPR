@@ -149,7 +149,6 @@ def select_by_probability_original(state: MSVState, p_map: Dict[PT, List[float]]
 
 EPSILON_THRESHOLD=0.05
 SPR_EPSILON_THRESHOLD=1
-MAX_PATCH_LEN=200
 
 def epsilon_search(state:MSVState):
   """
@@ -184,7 +183,7 @@ def epsilon_search(state:MSVState):
       top_all_patches+=cur_list[score]
       init_len=len(top_all_patches)
     elif (cur_score > -100.0) and ((cur_score - (score if state.tbar_mode or state.recoder_mode else normalized)) < (cur_score * EPSILON_THRESHOLD)):
-      if len(top_all_patches)+len(cur_list[score])-init_len>MAX_PATCH_LEN:
+      if len(top_all_patches)+len(cur_list[score])-init_len>state.max_epsilon_group_size:
         # If the number of all patches is too large, finish grouping
         break
       top_fl_patches+=cur_remain_list[score]
@@ -294,7 +293,7 @@ def epsilon_select(state:MSVState,source=None):
         top_all_patches+=cur_list[score]
         init_len=len(top_all_patches)
       elif (cur_score > -100.0) and ((cur_score - (score if state.tbar_mode or state.recoder_mode else normalized)) < (cur_score * EPSILON_THRESHOLD)):
-        if len(top_all_patches)+len(cur_list[score])-init_len>MAX_PATCH_LEN:
+        if len(top_all_patches)+len(cur_list[score])-init_len>state.max_epsilon_group_size:
           # If the number of all patches is too large, finish grouping
           break
         top_fl_patches += cur_remain_list[score]
@@ -314,7 +313,7 @@ def epsilon_select(state:MSVState,source=None):
         top_all_patches+=source.patches_by_score[score]
         init_len=len(top_all_patches)
       elif (cur_score > -100.0) and ((cur_score - (score if state.tbar_mode or state.recoder_mode else normalized)) < (cur_score * EPSILON_THRESHOLD)):
-        if len(top_all_patches)+len(source.patches_by_score[score])-init_len>MAX_PATCH_LEN:
+        if len(top_all_patches)+len(source.patches_by_score[score])-init_len>state.max_epsilon_group_size:
           # If the number of all patches is too large, finish grouping
           break
         top_fl_patches += source.remain_patches_by_score[score]
