@@ -1297,7 +1297,7 @@ def tbar_batch_plot(correct_patch_csv: str, in_dir: str,mode:str='TBar') -> None
       if mode=='kpar':
         workdir = "/root/project/kPar/d4j/" + proj
       elif mode=='fixminer':
-        workdir = "/root/FixMiner-APR/d4j/" + proj
+        workdir = "/root/project/FixMiner-APR/d4j/" + proj
       elif mode=='avatar':
         workdir = "/root/project/AVATAR/d4j/" + proj
       else:
