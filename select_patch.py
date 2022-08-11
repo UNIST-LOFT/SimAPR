@@ -149,6 +149,7 @@ def select_by_probability_original(state: MSVState, p_map: Dict[PT, List[float]]
 
 EPSILON_THRESHOLD=0.05
 SPR_EPSILON_THRESHOLD=1
+MAX_PATCH_LEN=200
 
 def epsilon_search(state:MSVState):
   """
@@ -171,6 +172,7 @@ def epsilon_search(state:MSVState):
     cur_remain_list=state.c_remain_patch_ranking
   cur_remain_list_sorted=sorted(cur_remain_list.keys(),reverse=True)
   normalized_score=PassFail.normalize(cur_remain_list_sorted)
+  init_len=0
   for i,score in enumerate(cur_remain_list_sorted):
     normalized=normalized_score[i]
     if len(cur_remain_list[score])>0 and cur_score==-100.:
@@ -180,7 +182,11 @@ def epsilon_search(state:MSVState):
         cur_score=normalized
       top_fl_patches+=cur_remain_list[score]
       top_all_patches+=cur_list[score]
+      init_len=len(top_all_patches)
     elif (cur_score > -100.0) and ((cur_score - (score if state.tbar_mode or state.recoder_mode else normalized)) < (cur_score * EPSILON_THRESHOLD)):
+      if len(top_all_patches)+len(cur_list[score])-init_len>MAX_PATCH_LEN:
+        # If the number of all patches is too large, finish grouping
+        break
       top_fl_patches+=cur_remain_list[score]
       top_all_patches+=cur_list[score]
 
@@ -276,6 +282,7 @@ def epsilon_select(state:MSVState,source=None):
       cur_remain_list=state.c_remain_patch_ranking
     cur_remain_list_sorted=sorted(cur_remain_list.keys(),reverse=True)
     normalized_score=PassFail.normalize(cur_remain_list_sorted)
+    init_len=0
     for i,score in enumerate(cur_remain_list_sorted):
       normalized=normalized_score[i]
       if len(cur_remain_list[score])>0 and cur_score==-100.:
@@ -285,12 +292,17 @@ def epsilon_select(state:MSVState,source=None):
           cur_score=normalized
         top_fl_patches+=cur_remain_list[score]
         top_all_patches+=cur_list[score]
+        init_len=len(top_all_patches)
       elif (cur_score > -100.0) and ((cur_score - (score if state.tbar_mode or state.recoder_mode else normalized)) < (cur_score * EPSILON_THRESHOLD)):
+        if len(top_all_patches)+len(cur_list[score])-init_len>MAX_PATCH_LEN:
+          # If the number of all patches is too large, finish grouping
+          break
         top_fl_patches += cur_remain_list[score]
         top_all_patches += cur_list[score]
   else:
     cur_remain_list_sorted=sorted(source.remain_patches_by_score.keys(),reverse=True)
     normalized_score=PassFail.normalize(cur_remain_list_sorted)
+    init_len=0
     for i,score in enumerate(cur_remain_list_sorted):
       normalized=normalized_score[i]
       if len(source.remain_patches_by_score[score])>0 and cur_score==-100.:
@@ -300,7 +312,11 @@ def epsilon_select(state:MSVState,source=None):
           cur_score=normalized
         top_fl_patches+=source.remain_patches_by_score[score]
         top_all_patches+=source.patches_by_score[score]
+        init_len=len(top_all_patches)
       elif (cur_score > -100.0) and ((cur_score - (score if state.tbar_mode or state.recoder_mode else normalized)) < (cur_score * EPSILON_THRESHOLD)):
+        if len(top_all_patches)+len(source.patches_by_score[score])-init_len>MAX_PATCH_LEN:
+          # If the number of all patches is too large, finish grouping
+          break
         top_fl_patches += source.remain_patches_by_score[score]
         top_all_patches += source.patches_by_score[score]
   
