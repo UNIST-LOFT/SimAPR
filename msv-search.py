@@ -407,6 +407,7 @@ def read_info_recoder(state: MSVState) -> None:
     if len(state.java_patch_ranking[fl_score])>0:
       patch_ranking_list.append(len(state.java_patch_ranking[fl_score]))
   state.max_epsilon_group_size=mean(patch_ranking_list)*2
+  state.msv_logger.debug(f'Set maximum epsilon group size to {state.max_epsilon_group_size}')
 
   #Add original to switch_case_map
   temp_file: FileInfo = FileInfo('original')
@@ -611,6 +612,7 @@ def read_info_tbar(state: MSVState) -> None:
     if len(state.java_patch_ranking[fl_score])>0:
       patch_ranking_list.append(len(state.java_patch_ranking[fl_score]))
   state.max_epsilon_group_size=mean(patch_ranking_list)*2
+  state.msv_logger.debug(f'Set maximum epsilon group size to {state.max_epsilon_group_size}')
 
   #Add original to switch_case_map
   temp_file: FileInfo = FileInfo('original')
@@ -788,6 +790,7 @@ def read_info_fixminer(state: MSVState) -> None:
     if len(state.sub_java_patch_ranking[fl_score])>0:
       patch_ranking_list.append(len(state.sub_java_patch_ranking[fl_score]))
   state.sub_max_epsilon_group_size=mean(patch_ranking_list)*2
+  state.msv_logger.debug(f'Set maximum sub-epsilon group size to {state.sub_max_epsilon_group_size}')
   # #Add original to switch_case_map
   # temp_file: FileInfo = FileInfo('original')
   # temp_func = FuncInfo(temp_file, "original_fn", 0, 0)
@@ -1140,6 +1143,7 @@ def read_info(state: MSVState) -> None:
     if len(state.c_patch_ranking[fl_score])>0:
       patch_ranking_list.append(len(state.c_patch_ranking[fl_score]))
   state.max_epsilon_group_size=mean(patch_ranking_list)*2
+  state.msv_logger.debug(f'Set maximum epsilon group size to {state.max_epsilon_group_size}')
   # Set halflife
   # TODO: Fix halflife
   # if not state.use_fixed_halflife:
