@@ -1307,6 +1307,7 @@ def main(argv: list):
     state.msv_logger.exception("Got exception in msv.run()")
     raise
   state.msv_logger.info('MSV is finished')
+  state.select_time/=1000000
   state.msv_logger.info(f'Running time: {state.select_time+state.test_time}')
   state.msv_logger.info(f'Select time: {state.select_time}')
   state.msv_logger.info(f'Test time: {state.test_time}')
