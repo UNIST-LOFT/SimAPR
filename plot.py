@@ -812,6 +812,7 @@ def batch_plot(correct_patch_csv: str, in_dir: str) -> None:
 
 
 def read_info_tbar(work_dir: str,mode:str) -> Tuple[Dict[str, FileInfo], Dict[str, TbarCaseInfo],List[dict]]:
+  if mode=='fixminer': work_dir=work_dir+'/0'
   with open(os.path.join(work_dir, 'switch-info.json'), 'r') as f:
     info = json.load(f)
     # Read test informations (which tests to run, which of them are failing test or passing test)
