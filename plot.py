@@ -919,6 +919,7 @@ def read_info_tbar(work_dir: str,mode:str) -> Tuple[Dict[str, FileInfo], Dict[st
   return file_map, switch_case_map,fl_list
 
 def tbar_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_patch: List[str], file_map: Dict[str, FileInfo], switch_case_map: Dict[str, TbarCaseInfo],fl_list:List[dict],mode:str) -> None:
+  if mode=='fixminer' and ('Chart_24' in msv_result_file or 'Math_33' in msv_result_file): return 0,0
   if switch_case_map is None:
     file_map, switch_case_map,fl_list = read_info_tbar(work_dir,mode)
   correct_tbar_case=[]
@@ -928,6 +929,7 @@ def tbar_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_p
   correct_file=[]
 
   for correct in correct_patch:
+    if mode=='fixminer' and correct[0]=='1': continue
     correct_tbar_case.append(switch_case_map[correct])
     correct_tbar_type.append(correct_tbar_case[-1].parent)
     correct_line.append(correct_tbar_type[-1].parent)
