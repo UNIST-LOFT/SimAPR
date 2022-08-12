@@ -1328,15 +1328,17 @@ def main(argv: list):
     with open(os.path.join(state.out_dir, "msv-finished"), "w") as f:
       f.write(' '.join(state.original_args))
       f.write("\n")
-      f.write(state.msv_version)
-      f.write("\n")
+      f.write(state.msv_version + "\n")
       f.write("MSV is finished\n")
+      f.write(f'Running time: {state.select_time+state.test_time}\n')
+      f.write(f'Select time: {state.select_time}\n')
+      f.write(f'Test time: {state.test_time}\n')
   except:
     state.msv_logger.error('MSV is crashed!!!!!!!!!!!!!!!!')
     state.msv_logger.exception("Got exception in msv.run()")
     raise
   state.msv_logger.info('MSV is finished')
-  state.select_time/=1000000
+  # state.select_time/=1000000
   state.msv_logger.info(f'Running time: {state.select_time+state.test_time}')
   state.msv_logger.info(f'Select time: {state.select_time}')
   state.msv_logger.info(f'Test time: {state.test_time}')
