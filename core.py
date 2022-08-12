@@ -1624,7 +1624,7 @@ class MSVState:
   patch_ranking: List[str]
   total_basic_patch: int
   def __init__(self) -> None:
-    self.msv_version = "0.1.3"
+    self.msv_version = "1.0.0"
     self.mode = MSVMode.guided
     self.msv_path = ""
     self.msv_uuid = str(uuid.uuid4())
