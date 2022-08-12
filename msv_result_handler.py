@@ -403,6 +403,7 @@ def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: b
           func_info.diff_seapr_pf.update(result, 1)
     else:
       seapr_list_for_sort=[]
+      counter=0
       for loc in state.patch_ranking:
         ts: TbarCaseInfo = state.switch_case_map[loc]
         tbar_type_info = ts.parent
@@ -432,6 +433,9 @@ def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: b
 
         seapr_list_for_sort.append((1.-get_ochiai(ts.same_seapr_pf.pass_count, ts.same_seapr_pf.fail_count,
             ts.diff_seapr_pf.pass_count, ts.diff_seapr_pf.fail_count),ts.patch_rank,ts.location))
+        counter+=1
+        if ts.location in state.correct_patch_list:
+          state.msv_logger.debug(f'Correct patch {ts.location} rank is {counter}')
 
     # Sort seapr list, for debugging
     cor_set=set()
