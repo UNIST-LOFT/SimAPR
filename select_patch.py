@@ -500,23 +500,8 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
         if random.random()< (weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq))*(score_rate*FL_CONST if score_rate!=1.0 else 1.0)):
           state.msv_logger.debug(f'Use guidance with plausible patch: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}, {cur_score}/{prev_score}')
 
-          if type(selected[max_index])==FuncInfo:
-            cor_set=set()
-            for cor_str in state.correct_patch_list:
-              parsed = cor_str.strip().split(":")
-              if state.recoder_mode:
-                cor_set.add(state.switch_case_map[parsed[0]].parent.parent)
-              elif type(state.switch_case_map[parsed[0]])==TbarCaseInfo:
-                cor_set.add(state.switch_case_map[parsed[0]].parent.parent.parent)
-              else:
-                cor_set.add(state.switch_case_map[parsed[0]].parent.parent.parent.parent)
-            if selected[max_index] in cor_set:
-              state.msv_logger.debug(f'Correct guide: {selected[max_index]}')
-            else:
-              state.msv_logger.debug(f'Incorrect guide: {selected[max_index]}')
-
           state.select_time+=time.time()-start_time
-          return selected[max_index]
+          return selected[max_index],True
     
     if not is_decided:
       # Select with basic patch
@@ -550,32 +535,17 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
         if random.random()< (weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq))*(score_rate*FL_CONST if score_rate!=1.0 else 1.0)):
           state.msv_logger.debug(f'Use guidance with basic patch: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}, {cur_score}/{prev_score}')
 
-          if type(selected[max_index])==FuncInfo:
-            cor_set=set()
-            for cor_str in state.correct_patch_list:
-              parsed = cor_str.strip().split(":")
-              if state.recoder_mode:
-                cor_set.add(state.switch_case_map[parsed[0]].parent.parent)
-              elif type(state.switch_case_map[parsed[0]])==TbarCaseInfo:
-                cor_set.add(state.switch_case_map[parsed[0]].parent.parent.parent)
-              else:
-                cor_set.add(state.switch_case_map[parsed[0]].parent.parent.parent.parent)
-            if selected[max_index] in cor_set:
-              state.msv_logger.debug(f'Correct guide: {selected[max_index]}')
-            else:
-              state.msv_logger.debug(f'Incorrect guide: {selected[max_index]}')
-
           state.select_time+=time.time()-start_time
-          return selected[max_index]
+          return selected[max_index],True
       
       if not is_decided:
         state.msv_logger.debug(f'Do not use guide, use original order!')   
         state.select_time+=time.time()-start_time
-        return epsilon_select(state,parent)       
+        return epsilon_select(state,parent),False  
   else:
     # No guide in this layer, use top ranked patch
     state.msv_logger.debug(f'No guided found in this layer, use original order!')
-    return epsilon_select(state,parent)        
+    return epsilon_select(state,parent),False   
 
 def select_patch_SPR(state: MSVState) -> PatchInfo:
   # Select file and line by priority
@@ -792,7 +762,7 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
     selected_case_info= epsilon_search(state)
     return PatchInfo(selected_case_info,None,None,None)
 
-  selected_file_info: FileInfo = select_patch_guide_algorithm(state,state.file_info_map,None)
+  selected_file_info,is_guided = select_patch_guide_algorithm(state,state.file_info_map,None)
   for file_name in state.file_info_map:
     file_info=state.file_info_map[file_name]
     p_fl.append(max(file_info.prophet_score))
@@ -808,21 +778,22 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
                   f'Plausible: {selected_file_info.positive_pf.beta_mode(selected_file_info.positive_pf.pass_count,selected_file_info.positive_pf.fail_count)}, '+
                   f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_file])}/{p_frequency[selected_file]}, BPFreq: {PassFail.log_func(p_bp_frequency[selected_file])}')
 
-  is_correct_guide=False
-  for cor in state.correct_patch_list:
-    cor=cor.split(':')[0]
-    cor_patch=state.switch_case_map[cor]
-    if cor_patch.parent.parent.parent.parent.parent==selected_file_info:
-      state.msv_logger.debug(f'Correct guide at file')
-      is_correct_guide=True
-      break
-  if not is_correct_guide:
-    state.msv_logger.debug(f'Misguide at file')
+  if is_guided:
+    is_correct_guide=False
+    for cor in state.correct_patch_list:
+      cor=cor.split(':')[0]
+      cor_patch=state.switch_case_map[cor]
+      if cor_patch.parent.parent.parent.parent.parent==selected_file_info:
+        state.msv_logger.debug(f'Correct guide at file')
+        is_correct_guide=True
+        break
+    if not is_correct_guide:
+      state.msv_logger.debug(f'Misguide at file')
 
   clear_list(state, p_map)
 
   # Select function
-  selected_func_info: FuncInfo = select_patch_guide_algorithm(state,selected_file_info.func_info_map,selected_file_info)
+  selected_func_info,is_guided = select_patch_guide_algorithm(state,selected_file_info.func_info_map,selected_file_info)
   for func_name in selected_file_info.func_info_map:
     func_info=selected_file_info.func_info_map[func_name]
     p_fl.append(max(func_info.prophet_score))
@@ -839,21 +810,22 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
                   f'Plausible: {selected_func_info.positive_pf.beta_mode(selected_func_info.positive_pf.pass_count,selected_func_info.positive_pf.fail_count)}, '+
                   f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_func])}/{p_frequency[selected_func]}, BPFreq: {PassFail.log_func(p_bp_frequency[selected_func])}')
 
-  is_correct_guide=False
-  for cor in state.correct_patch_list:
-    cor=cor.split(':')[0]
-    cor_patch=state.switch_case_map[cor]
-    if cor_patch.parent.parent.parent.parent==selected_func_info:
-      state.msv_logger.debug(f'Correct guide at func')
-      is_correct_guide=True
-      break
-  if not is_correct_guide:
-    state.msv_logger.debug(f'Misguide at func')
+  if is_guided:
+    is_correct_guide=False
+    for cor in state.correct_patch_list:
+      cor=cor.split(':')[0]
+      cor_patch=state.switch_case_map[cor]
+      if cor_patch.parent.parent.parent.parent==selected_func_info:
+        state.msv_logger.debug(f'Correct guide at func')
+        is_correct_guide=True
+        break
+    if not is_correct_guide:
+      state.msv_logger.debug(f'Misguide at func')
 
   clear_list(state, p_map)
 
   # Select line
-  selected_line_info: LineInfo = select_patch_guide_algorithm(state,selected_func_info.line_info_map,selected_func_info)
+  selected_line_info,is_guided= select_patch_guide_algorithm(state,selected_func_info.line_info_map,selected_func_info)
   for line_name in selected_func_info.line_info_map:
     line_info=selected_func_info.line_info_map[line_name]
     p_fl.append(max(line_info.prophet_score))
@@ -870,23 +842,24 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
                   f'Plausible: {selected_line_info.positive_pf.beta_mode(selected_line_info.positive_pf.pass_count,selected_line_info.positive_pf.fail_count)}, '+
                   f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_line])}/{p_frequency[selected_line]}, BPFreq: {PassFail.log_func(p_bp_frequency[selected_line])}')
 
-  is_correct_guide=False
-  for cor in state.correct_patch_list:
-    cor=cor.split(':')[0]
-    cor_patch=state.switch_case_map[cor]
-    if cor_patch.parent.parent.parent==selected_line_info:
-      state.msv_logger.debug(f'Correct guide at line')
-      is_correct_guide=True
-      break
-  if not is_correct_guide:
-    state.msv_logger.debug(f'Misguide at line')
+  if is_guided:
+    is_correct_guide=False
+    for cor in state.correct_patch_list:
+      cor=cor.split(':')[0]
+      cor_patch=state.switch_case_map[cor]
+      if cor_patch.parent.parent.parent==selected_line_info:
+        state.msv_logger.debug(f'Correct guide at line')
+        is_correct_guide=True
+        break
+    if not is_correct_guide:
+      state.msv_logger.debug(f'Misguide at line')
 
   clear_list(state, p_map)
   if not state.use_prophet_score:
     del c_map[PT.fl] # No fl below line
 
   # Select switch
-  selected_switch_info: SwitchInfo = select_patch_guide_algorithm(state,selected_line_info.switch_info_map,selected_line_info)
+  selected_switch_info,is_guided = select_patch_guide_algorithm(state,selected_line_info.switch_info_map,selected_line_info)
   for switch_name in selected_line_info.switch_info_map:
     switch_info=selected_line_info.switch_info_map[switch_name]
     p_fl.append(max(switch_info.prophet_score))
@@ -903,21 +876,22 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
                   f'Plausible: {selected_switch_info.positive_pf.beta_mode(selected_switch_info.positive_pf.pass_count,selected_switch_info.positive_pf.fail_count)}, '+
                   f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_switch])}/{p_frequency[selected_switch]}, BPFreq: {PassFail.log_func(p_bp_frequency[selected_switch])}')
 
-  is_correct_guide=False
-  for cor in state.correct_patch_list:
-    cor=cor.split(':')[0]
-    cor_patch=state.switch_case_map[cor]
-    if cor_patch.parent.parent==selected_switch_info:
-      state.msv_logger.debug(f'Correct guide at switch')
-      is_correct_guide=True
-      break
-  if not is_correct_guide:
-    state.msv_logger.debug(f'Misguide at switch')
+  if is_guided:
+    is_correct_guide=False
+    for cor in state.correct_patch_list:
+      cor=cor.split(':')[0]
+      cor_patch=state.switch_case_map[cor]
+      if cor_patch.parent.parent==selected_switch_info:
+        state.msv_logger.debug(f'Correct guide at switch')
+        is_correct_guide=True
+        break
+    if not is_correct_guide:
+      state.msv_logger.debug(f'Misguide at switch')
 
   clear_list(state, p_map)
 
   # Select type
-  selected_type_info: TypeInfo = select_patch_guide_algorithm(state,selected_switch_info.type_info_map,selected_switch_info)
+  selected_type_info,is_guided = select_patch_guide_algorithm(state,selected_switch_info.type_info_map,selected_switch_info)
   for type_name in selected_switch_info.type_info_map:
     type_info=selected_switch_info.type_info_map[type_name]
     p_fl.append(max(type_info.prophet_score))
@@ -934,16 +908,17 @@ def select_patch_guided(state: MSVState, mode: MSVMode,selected_patch:List[Patch
                   f'Plausible: {selected_type_info.positive_pf.beta_mode(selected_type_info.positive_pf.pass_count,selected_type_info.positive_pf.fail_count)}, '+
                   f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_type])}/{p_frequency[selected_type]}, BPFreq: {PassFail.log_func(p_bp_frequency[selected_type])}')
 
-  is_correct_guide=False
-  for cor in state.correct_patch_list:
-    cor=cor.split(':')[0]
-    cor_patch=state.switch_case_map[cor]
-    if cor_patch.parent==selected_type_info:
-      state.msv_logger.debug(f'Correct guide at type')
-      is_correct_guide=True
-      break
-  if not is_correct_guide:
-    state.msv_logger.debug(f'Misguide at type')
+  if is_guided:
+    is_correct_guide=False
+    for cor in state.correct_patch_list:
+      cor=cor.split(':')[0]
+      cor_patch=state.switch_case_map[cor]
+      if cor_patch.parent==selected_type_info:
+        state.msv_logger.debug(f'Correct guide at type')
+        is_correct_guide=True
+        break
+    if not is_correct_guide:
+      state.msv_logger.debug(f'Misguide at type')
 
   clear_list(state, p_map)
 
@@ -1458,7 +1433,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
     result = TbarPatchInfo(selected_switch_info)
     return result
 
-  selected_file_info: FileInfo = select_patch_guide_algorithm(state,state.file_info_map,None)
+  selected_file_info,is_guided = select_patch_guide_algorithm(state,state.file_info_map,None)
   for file_name in state.file_info_map:
     file_info=state.file_info_map[file_name]
     p_fl.append(max(file_info.fl_score_list))
@@ -1474,20 +1449,21 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
                   f'Plausible: {selected_file_info.positive_pf.beta_mode(selected_file_info.positive_pf.pass_count,selected_file_info.positive_pf.fail_count)}, '+
                   f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_file])}/{p_frequency[selected_file]}, BPFreq: {PassFail.log_func(p_bp_frequency[selected_file])}')
 
-  is_correct_guide=False
-  for cor in state.correct_patch_list:
-    cor_patch=state.switch_case_map[cor]
-    if cor_patch.parent.parent.parent.parent==selected_file_info:
-      state.msv_logger.debug(f'Correct guide at file')
-      is_correct_guide=True
-      break
-  if not is_correct_guide:
-    state.msv_logger.debug(f'Misguide at file')
+  if is_guided:
+    is_correct_guide=False
+    for cor in state.correct_patch_list:
+      cor_patch=state.switch_case_map[cor]
+      if cor_patch.parent.parent.parent.parent==selected_file_info:
+        state.msv_logger.debug(f'Correct guide at file')
+        is_correct_guide=True
+        break
+    if not is_correct_guide:
+      state.msv_logger.debug(f'Misguide at file')
     
   clear_list(state, p_map)
 
   # Select function
-  selected_func_info: FuncInfo = select_patch_guide_algorithm(state,selected_file_info.func_info_map,selected_file_info)
+  selected_func_info,is_guided = select_patch_guide_algorithm(state,selected_file_info.func_info_map,selected_file_info)
   for func_name in selected_file_info.func_info_map:
     func_info=selected_file_info.func_info_map[func_name]
     p_fl.append(max(func_info.fl_score_list))
@@ -1504,20 +1480,21 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
                   f'Plausible: {selected_func_info.positive_pf.beta_mode(selected_func_info.positive_pf.pass_count,selected_func_info.positive_pf.fail_count)}, '+
                   f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_func])}/{p_frequency[selected_func]}, BPFreq: {PassFail.log_func(p_bp_frequency[selected_func])}')
 
-  is_correct_guide=False
-  for cor in state.correct_patch_list:
-    cor_patch=state.switch_case_map[cor]
-    if cor_patch.parent.parent.parent==selected_func_info:
-      state.msv_logger.debug(f'Correct guide at func')
-      is_correct_guide=True
-      break
-  if not is_correct_guide:
-    state.msv_logger.debug(f'Misguide at func')
+  if is_guided:
+    is_correct_guide=False
+    for cor in state.correct_patch_list:
+      cor_patch=state.switch_case_map[cor]
+      if cor_patch.parent.parent.parent==selected_func_info:
+        state.msv_logger.debug(f'Correct guide at func')
+        is_correct_guide=True
+        break
+    if not is_correct_guide:
+      state.msv_logger.debug(f'Misguide at func')
     
   clear_list(state, p_map)
 
   # Select line
-  selected_line_info: LineInfo = select_patch_guide_algorithm(state,selected_func_info.line_info_map,selected_func_info)
+  selected_line_info,is_guided = select_patch_guide_algorithm(state,selected_func_info.line_info_map,selected_func_info)
   for line in selected_func_info.line_info_map:
     line_info=selected_func_info.line_info_map[line]
     p_fl.append(line_info.fl_score)
@@ -1534,21 +1511,22 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
                   f'Plausible: {selected_line_info.positive_pf.beta_mode(selected_line_info.positive_pf.pass_count,selected_line_info.positive_pf.fail_count)}, '+
                   f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_line])}/{p_frequency[selected_line]}, BPFreq: {PassFail.log_func(p_bp_frequency[selected_line])}')
   
-  is_correct_guide=False
-  for cor in state.correct_patch_list:
-    cor_patch=state.switch_case_map[cor]
-    if cor_patch.parent.parent==selected_line_info:
-      state.msv_logger.debug(f'Correct guide at line')
-      is_correct_guide=True
-      break
-  if not is_correct_guide:
-    state.msv_logger.debug(f'Misguide at line')
+  if is_guided:
+    is_correct_guide=False
+    for cor in state.correct_patch_list:
+      cor_patch=state.switch_case_map[cor]
+      if cor_patch.parent.parent==selected_line_info:
+        state.msv_logger.debug(f'Correct guide at line')
+        is_correct_guide=True
+        break
+    if not is_correct_guide:
+      state.msv_logger.debug(f'Misguide at line')
 
   clear_list(state, p_map)
   del c_map[PT.fl] # No fl below line
 
   # Select type
-  selected_type_info: TbarTypeInfo = select_patch_guide_algorithm(state,selected_line_info.tbar_type_info_map,selected_line_info)
+  selected_type_info,is_guided = select_patch_guide_algorithm(state,selected_line_info.tbar_type_info_map,selected_line_info)
   for tbar_type in selected_line_info.tbar_type_info_map:
     type_info=selected_line_info.tbar_type_info_map[tbar_type]
     p_frequency.append(type_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
@@ -1562,15 +1540,16 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
                   f'Plausible: {selected_type_info.positive_pf.beta_mode(selected_type_info.positive_pf.pass_count,selected_type_info.positive_pf.fail_count)}, '+
                   f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_type])}/{p_frequency[selected_type]}, BPFreq: {PassFail.log_func(p_bp_frequency[selected_type])}')
 
-  is_correct_guide=False
-  for cor in state.correct_patch_list:
-    cor_patch=state.switch_case_map[cor]
-    if cor_patch.parent==selected_type_info:
-      state.msv_logger.debug(f'Correct guide at type')
-      is_correct_guide=True
-      break
-  if not is_correct_guide:
-    state.msv_logger.debug(f'Misguide at type')
+  if is_guided:
+    is_correct_guide=False
+    for cor in state.correct_patch_list:
+      cor_patch=state.switch_case_map[cor]
+      if cor_patch.parent==selected_type_info:
+        state.msv_logger.debug(f'Correct guide at type')
+        is_correct_guide=True
+        break
+    if not is_correct_guide:
+      state.msv_logger.debug(f'Misguide at type')
 
   clear_list(state, p_map)
 
@@ -1696,7 +1675,7 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
     result = RecoderPatchInfo(selected_switch_info)
     return result
   
-  selected_file_info: FileInfo = select_patch_guide_algorithm(state,state.file_info_map,None)
+  selected_file_info,is_guided = select_patch_guide_algorithm(state,state.file_info_map,None)
   for file_name in state.file_info_map:
     file_info=state.file_info_map[file_name]
     p_fl.append(max(file_info.fl_score_list))
@@ -1712,19 +1691,20 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
                   f'Plausible: {selected_file_info.positive_pf.beta_mode(selected_file_info.positive_pf.pass_count,selected_file_info.positive_pf.fail_count)}, '+
                   f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_file])}/{p_frequency[selected_file]}, BPFreq: {PassFail.log_func(p_bp_frequency[selected_file])}')
 
-  is_correct_guide=False
-  for cor in state.correct_patch_list:
-    cor_patch=state.switch_case_map[cor]
-    if cor_patch.parent.parent.parent==selected_file_info:
-      state.msv_logger.debug(f'Correct guide at file')
-      is_correct_guide=True
-      break
-  if not is_correct_guide:
-    state.msv_logger.debug(f'Misguide at file')
+  if is_guided:
+    is_correct_guide=False
+    for cor in state.correct_patch_list:
+      cor_patch=state.switch_case_map[cor]
+      if cor_patch.parent.parent.parent==selected_file_info:
+        state.msv_logger.debug(f'Correct guide at file')
+        is_correct_guide=True
+        break
+    if not is_correct_guide:
+      state.msv_logger.debug(f'Misguide at file')
 
   clear_list(state, p_map)
 
-  selected_func_info: FuncInfo = select_patch_guide_algorithm(state,selected_file_info.func_info_map,selected_file_info)
+  selected_func_info,is_guided = select_patch_guide_algorithm(state,selected_file_info.func_info_map,selected_file_info)
   for func_name in selected_file_info.func_info_map:
     func_info=selected_file_info.func_info_map[func_name]
     p_fl.append(max(func_info.fl_score_list))
@@ -1741,19 +1721,20 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
                   f'Plausible: {selected_func_info.positive_pf.beta_mode(selected_func_info.positive_pf.pass_count,selected_func_info.positive_pf.fail_count)}, '+
                   f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_func])}/{p_frequency[selected_func]}, BPFreq: {PassFail.log_func(p_bp_frequency[selected_func])}')
 
-  is_correct_guide=False
-  for cor in state.correct_patch_list:
-    cor_patch=state.switch_case_map[cor]
-    if cor_patch.parent.parent==selected_func_info:
-      state.msv_logger.debug(f'Correct guide at func')
-      is_correct_guide=True
-      break
-  if not is_correct_guide:
-    state.msv_logger.debug(f'Misguide at func')
+  if is_guided:
+    is_correct_guide=False
+    for cor in state.correct_patch_list:
+      cor_patch=state.switch_case_map[cor]
+      if cor_patch.parent.parent==selected_func_info:
+        state.msv_logger.debug(f'Correct guide at func')
+        is_correct_guide=True
+        break
+    if not is_correct_guide:
+      state.msv_logger.debug(f'Misguide at func')
 
   clear_list(state, p_map)
   
-  selected_line_info: LineInfo = select_patch_guide_algorithm(state,selected_func_info.line_info_map,selected_func_info)
+  selected_line_info,is_guided = select_patch_guide_algorithm(state,selected_func_info.line_info_map,selected_func_info)
   for line in selected_func_info.line_info_map:
     line_info=selected_func_info.line_info_map[line]
     p_fl.append(line_info.fl_score)
@@ -1770,15 +1751,16 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
                   f'Plausible: {selected_line_info.positive_pf.beta_mode(selected_line_info.positive_pf.pass_count,selected_line_info.positive_pf.fail_count)}, '+
                   f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_line])}/{p_frequency[selected_line]}, BPFreq: {PassFail.log_func(p_bp_frequency[selected_line])}')
 
-  is_correct_guide=False
-  for cor in state.correct_patch_list:
-    cor_patch=state.switch_case_map[cor]
-    if cor_patch.parent==selected_line_info:
-      state.msv_logger.debug(f'Correct guide at line')
-      is_correct_guide=True
-      break
-  if not is_correct_guide:
-    state.msv_logger.debug(f'Misguide at line')
+  if is_guided:
+    is_correct_guide=False
+    for cor in state.correct_patch_list:
+      cor_patch=state.switch_case_map[cor]
+      if cor_patch.parent==selected_line_info:
+        state.msv_logger.debug(f'Correct guide at line')
+        is_correct_guide=True
+        break
+    if not is_correct_guide:
+      state.msv_logger.debug(f'Misguide at line')
 
   clear_list(state, p_map)
   del c_map[PT.fl] # No fl below line
