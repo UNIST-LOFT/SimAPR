@@ -66,9 +66,9 @@ class MSV:
       self.state.msv_logger.info('Run normal patch')
       new_env = MSVEnvVar.get_new_env(self.state, selected_patch, selected_test,False)
       # run test
-      start_time=int(time.time())
+      start_time=time.time()
       run_result, is_timeout = run_test.run_fail_test(self.state, selected_patch, selected_test, new_env)
-      fail_time=int(time.time())-start_time
+      fail_time=time.time()-start_time
       final_result=run_result
       pass_exist=run_result
       if is_init:
@@ -79,9 +79,9 @@ class MSV:
     if self.state.use_pass_test and final_result:
       result_handler.update_result(self.state, selected_patch, True, 1, selected_test, new_env)
       self.state.msv_logger.info("Run pass test!")
-      start_time=int(time.time())
+      start_time=time.time()
       (pass_result, fail_tests) = run_test.run_pass_test(self.state, selected_patch, False)
-      pass_time=int(time.time())-start_time
+      pass_time=time.time()-start_time
       if self.state.mode==MSVMode.guided and not self.state.use_condition_synthesis and not self.state.use_simulation_mode:
         if pass_result:
           result_handler.update_result_positive(self.state, selected_patch, pass_result, fail_tests)
@@ -389,9 +389,9 @@ class MSVTbar(MSV):
     run_time=time.time()-start_time
     return compilable, run_result, run_time
   def run_test_positive(self, patch: TbarPatchInfo) -> Tuple[bool,float]:
-    start_time=int(time.time())
+    start_time=time.time()
     run_result = run_test.run_pass_test_d4j(self.state, MSVEnvVar.get_new_env_tbar(self.state, patch, ""))
-    run_time=int(time.time())-start_time
+    run_time=time.time()-start_time
     return run_result,run_time
   def initialize(self) -> None:
     self.state.msv_logger.info("Initializing...")
@@ -543,14 +543,14 @@ class MSVRecoder(MSVTbar):
       self.state.is_alive = False
     return self.state.is_alive
   def run_test(self, patch: RecoderPatchInfo, test: int) -> Tuple[int, bool, float]:
-    start_time=int(time.time())
+    start_time=time.time()
     compilable, run_result, is_timeout = run_test.run_fail_test_d4j(self.state, MSVEnvVar.get_new_env_recoder(self.state, patch, test))
     run_time=time.time() - start_time
     return compilable, run_result,run_time
   def run_test_positive(self, patch: RecoderPatchInfo) -> Tuple[bool,float]:
-    start_time=int(time.time())
+    start_time=time.time()
     run_result = run_test.run_pass_test_d4j(self.state, MSVEnvVar.get_new_env_recoder(self.state, patch, ""))
-    run_time=int(time.time())-start_time
+    run_time=time.time()-start_time
     return run_result,run_time
   def initialize(self) -> None:
     self.state.msv_logger.info("Initializing...")
