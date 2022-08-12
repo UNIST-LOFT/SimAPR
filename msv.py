@@ -383,12 +383,12 @@ class MSVTbar(MSV):
   def save_result(self) -> None:
     # TODO change
     result_handler.save_result(self.state)
-  def run_test(self, patch: TbarPatchInfo, test: int) -> Tuple[int, bool,int]:
+  def run_test(self, patch: TbarPatchInfo, test: int) -> Tuple[int, bool,float]:
     start_time=time.time()
     compilable, run_result, is_timeout = run_test.run_fail_test_d4j(self.state, MSVEnvVar.get_new_env_tbar(self.state, patch, test))
     run_time=time.time()-start_time
     return compilable, run_result, run_time
-  def run_test_positive(self, patch: TbarPatchInfo) -> Tuple[bool,int]:
+  def run_test_positive(self, patch: TbarPatchInfo) -> Tuple[bool,float]:
     start_time=int(time.time())
     run_result = run_test.run_pass_test_d4j(self.state, MSVEnvVar.get_new_env_tbar(self.state, patch, ""))
     run_time=int(time.time())-start_time
@@ -459,10 +459,12 @@ class MSVTbar(MSV):
           result = False
           if self.state.use_partial_validation and self.state.mode==MSVMode.seapr:
             break
+        self.state.test_time+=fail_time
       if is_compilable or self.state.ignore_compile_error:
         result_handler.update_result_tbar(self.state, patch, pass_exists)
         if result and self.state.use_pass_test:
           pass_result,pass_time = self.run_test_positive(patch)
+          self.state.test_time+=pass_time
           result_handler.update_positive_result_tbar(self.state, patch, pass_result)
 
       if is_compilable or self.state.count_compile_fail:
@@ -489,6 +491,7 @@ class MSVTbar(MSV):
       if key not in self.state.simulation_data:
         for neg in self.state.d4j_negative_test:
           compilable, run_result,fail_time = self.run_test(patch, neg)
+          self.state.test_time+=fail_time
           if not compilable:
             is_compilable = False
           if run_result:
@@ -501,6 +504,7 @@ class MSVTbar(MSV):
           result_handler.update_result_tbar(self.state, patch, pass_exists)
           if result and self.state.use_pass_test:
             pass_result,pass_time = self.run_test_positive(patch)
+            self.state.test_time+=pass_time
             result_handler.update_positive_result_tbar(self.state, patch, pass_result)
         if is_compilable or self.state.count_compile_fail:
           self.state.iteration += 1
@@ -511,10 +515,10 @@ class MSVTbar(MSV):
         result = msv_result['pass_all_fail']
         pass_result = msv_result['plausible']
         fail_time=msv_result['fail_time']
-        pass_time=msv_result['pass_time']
-        is_compilable=msv_result['compilable']
         self.state.test_time+=fail_time
         self.state.test_time+=pass_time
+        pass_time=msv_result['pass_time']
+        is_compilable=msv_result['compilable']
         if is_compilable or self.state.ignore_compile_error:
           result_handler.update_result_tbar(self.state, patch, pass_exists)
           if result:
@@ -543,7 +547,7 @@ class MSVRecoder(MSVTbar):
     compilable, run_result, is_timeout = run_test.run_fail_test_d4j(self.state, MSVEnvVar.get_new_env_recoder(self.state, patch, test))
     run_time=time.time() - start_time
     return compilable, run_result,run_time
-  def run_test_positive(self, patch: RecoderPatchInfo) -> Tuple[bool,int]:
+  def run_test_positive(self, patch: RecoderPatchInfo) -> Tuple[bool,float]:
     start_time=int(time.time())
     run_result = run_test.run_pass_test_d4j(self.state, MSVEnvVar.get_new_env_recoder(self.state, patch, ""))
     run_time=int(time.time())-start_time
@@ -595,6 +599,7 @@ class MSVRecoder(MSVTbar):
       pass_time=0
       for neg in self.state.d4j_negative_test:
         compilable, run_result,fail_time = self.run_test(patch, neg)
+        self.state.test_time+=fail_time
         if not compilable:
           is_compilable = False
         if run_result:
@@ -609,6 +614,7 @@ class MSVRecoder(MSVTbar):
         result_handler.update_result_recoder(self.state, patch, pass_exists)
         if result and self.state.use_pass_test:
           pass_result,pass_time = self.run_test_positive(patch)
+          self.state.test_time+=pass_time
           result_handler.update_positive_result_recoder(self.state, patch, pass_result)
       result_handler.append_result(self.state, [patch], pass_exists, pass_result, result, is_compilable,fail_time,pass_time)
       result_handler.remove_patch_recoder(self.state, patch)
@@ -631,6 +637,7 @@ class MSVRecoder(MSVTbar):
       if key not in self.state.simulation_data:
         for neg in self.state.d4j_negative_test:
           compilable, run_result,fail_time = self.run_test(patch, neg)
+          self.state.test_time+=fail_time
           if not compilable:
             is_compilable = False
           if run_result:
@@ -643,6 +650,7 @@ class MSVRecoder(MSVTbar):
           result_handler.update_result_recoder(self.state, patch, pass_exists)
           if result and self.state.use_pass_test:
             pass_result,pass_time = self.run_test_positive(patch)
+            self.state.test_time+=pass_time
             result_handler.update_positive_result_recoder(self.state, patch, pass_result)
       else:
         msv_result = self.state.simulation_data[key]
@@ -651,6 +659,8 @@ class MSVRecoder(MSVTbar):
         pass_result = msv_result['plausible']
         fail_time=msv_result['fail_time']
         pass_time=msv_result['pass_time']
+        self.state.test_time+=fail_time
+        self.state.test_time+=pass_time
         is_compilable=msv_result['compilable']
         if is_compilable or self.state.ignore_compile_error:
           result_handler.update_result_recoder(self.state, patch, pass_exists)

@@ -19,6 +19,7 @@ def run_fail_test(state: MSVState, selected_patch: List[PatchInfo], selected_tes
       state.test_time+=msv_result['fail_time']
       return msv_result['basic'], False
   # Otherwise, run the test
+  start_time=time.time()
   test_proc = subprocess.Popen(
         args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
   so: bytes
@@ -38,6 +39,8 @@ def run_fail_test(state: MSVState, selected_patch: List[PatchInfo], selected_tes
       child.kill()
     test_proc.kill()
     return False,True
+  end_time=time.time()
+  state.test_time+=end_time-start_time
   result_str = so.decode('utf-8').strip()
   if result_str == "":
     state.msv_logger.info("Result: FAIL")
@@ -116,13 +119,15 @@ def run_pass_test(state: MSVState, patch: List[PatchInfo], is_initialize: bool =
     current_args = args + tests
     state.msv_logger.debug(' '.join(current_args))
 
+    start_time=time.time()
     # run test
     test_proc = subprocess.Popen(
         current_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
     so: bytes
     se: bytes
     so, se = test_proc.communicate()
-
+    end_time=time.time()
+    state.test_time+=end_time-start_time
     result_str = so.decode('utf-8').strip()
     if result_str == "":
       return_tests = set()
