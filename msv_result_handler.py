@@ -403,7 +403,6 @@ def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: b
           func_info.diff_seapr_pf.update(result, 1)
     else:
       seapr_list_for_sort=[]
-      counter=0
       for loc in state.patch_ranking:
         ts: TbarCaseInfo = state.switch_case_map[loc]
         tbar_type_info = ts.parent
@@ -433,9 +432,37 @@ def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: b
 
         seapr_list_for_sort.append((1.-get_ochiai(ts.same_seapr_pf.pass_count, ts.same_seapr_pf.fail_count,
             ts.diff_seapr_pf.pass_count, ts.diff_seapr_pf.fail_count),ts.patch_rank,ts.location))
-        counter+=1
-        if ts.location in state.correct_patch_list:
-          state.msv_logger.debug(f'Correct patch {ts.location} rank is {counter}')
+
+    state.func_list.sort(key=lambda x: max(x.fl_score_list), reverse=True)
+    seapr_ranks=dict()
+    for func in state.func_list:
+      if func.func_rank > 30:
+        continue
+      cur_score = get_ochiai(func.same_seapr_pf.pass_count, func.same_seapr_pf.fail_count, func.diff_seapr_pf.pass_count, func.diff_seapr_pf.fail_count)
+      if cur_score not in seapr_ranks:
+        seapr_ranks[cur_score]=[]
+      seapr_ranks[cur_score].append(func)
+    seapr_ranks_sorted=sorted(seapr_ranks.keys(), reverse=True)
+
+    for cor_patch in state.correct_patch_list:
+      counter=0
+      is_finish=False
+      for score in seapr_ranks_sorted:
+        for func in seapr_ranks[score]:
+          if state.switch_case_map[cor_patch] not in func.case_rank_list:
+            counter+=len(func.case_rank_list)
+          else:
+            for patch in func.case_rank_list:
+              if patch.location!=cor_patch:
+                counter+=1
+              else:
+                is_finish=True
+                state.msv_logger.debug(f'Correct patch {cor_patch} is ranked {counter+1}')
+                break
+          if is_finish:
+            break
+        if is_finish:
+          break
 
     # Sort seapr list, for debugging
     cor_set=set()
