@@ -1573,6 +1573,37 @@ def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
     case_info: TbarCaseInfo = state.switch_case_map[loc]
     return case_info
 
+  state.func_list.sort(key=lambda x: max(x.fl_score_list), reverse=True)
+  seapr_ranks=dict()
+  for func in state.func_list:
+    if func.func_rank > 30:
+      continue
+    cur_score = get_ochiai(func.same_seapr_pf.pass_count, func.same_seapr_pf.fail_count, func.diff_seapr_pf.pass_count, func.diff_seapr_pf.fail_count)
+    if cur_score not in seapr_ranks:
+      seapr_ranks[cur_score]=[]
+    seapr_ranks[cur_score].append(func)
+  seapr_ranks_sorted=sorted(seapr_ranks.keys(), reverse=True)
+
+  for cor_patch in state.correct_patch_list:
+    counter=0
+    is_finish=False
+    for score in seapr_ranks_sorted:
+      for func in seapr_ranks[score]:
+        if cor_patch not in func.case_rank_list:
+          counter+=len(func.case_rank_list)
+        else:
+          for patch in func.case_rank_list:
+            if patch!=cor_patch:
+              counter+=1
+            else:
+              is_finish=True
+              state.msv_logger.debug(f'Correct patch {cor_patch} is ranked {counter+1}')
+              break
+        if is_finish:
+          break
+      if is_finish:
+        break
+
   # Optimization for default SeAPR
   start_time = time.time()
   if not state.use_pattern and state.seapr_layer == SeAPRMode.FUNCTION:
