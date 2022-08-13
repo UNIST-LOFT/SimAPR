@@ -449,11 +449,11 @@ def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: b
       is_finish=False
       for score in seapr_ranks_sorted:
         for func in seapr_ranks[score]:
-          if state.switch_case_map[cor_patch] not in func.case_rank_list:
+          if cor_patch not in func.case_rank_list:
             counter+=len(func.case_rank_list)
           else:
             for patch in func.case_rank_list:
-              if patch.location!=cor_patch:
+              if patch!=cor_patch:
                 counter+=1
               else:
                 is_finish=True
