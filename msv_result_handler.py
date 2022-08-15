@@ -275,10 +275,15 @@ def save_result(state: MSVState) -> None:
   #     obj[cs]["file"] = fi
   #   json.dump(obj, f, indent=2)
 
-  if state.use_simulation_mode:
+  if state.use_simulation_mode: # Do not add more caches if we are in multi-tool mode
     # Save cached result to file
-    with open(state.prev_data,'w') as f:
-      json.dump(state.simulation_data,f,indent=2)
+    if state.tbar_mode:
+      for i,workdir in enumerate(state.work_dir_list):
+        with open(state.prev_data_list[i],'w') as f:
+          json.dump(state.simulation_data_list[workdir], f, indent=2)
+    else:
+      with open(state.prev_data,'w') as f:
+        json.dump(state.simulation_data,f,indent=2)
 
     if state.remove_cached_file:
       for key in state.simulation_data:

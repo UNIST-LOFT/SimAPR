@@ -488,7 +488,7 @@ class MSVTbar(MSV):
       is_compilable = True
       pass_time=0
       key = patch.tbar_case_info.location
-      if key not in self.state.simulation_data:
+      if key not in self.state.simulation_data_list[patch.file_info.work_dir]:
         for neg in self.state.d4j_negative_test:
           compilable, run_result,fail_time = self.run_test(patch, neg)
           self.state.test_time+=fail_time
@@ -510,7 +510,7 @@ class MSVTbar(MSV):
           self.state.iteration += 1
 
       else:
-        msv_result = self.state.simulation_data[key]
+        msv_result = self.state.simulation_data_list[patch.file_info.work_dir][key]
         pass_exists = msv_result['basic']
         result = msv_result['pass_all_fail']
         pass_result = msv_result['plausible']

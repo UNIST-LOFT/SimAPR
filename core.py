@@ -237,10 +237,11 @@ class FileInfo:
     self.consecutive_fail_plausible_count:int=0
     self.patches_by_score:Dict[float,List[CaseInfo]]=dict()
     self.remain_patches_by_score:Dict[float,List[CaseInfo]]=dict()
+    self.work_dir:str=""
   def __hash__(self) -> int:
     return hash(self.file_name)
   def __eq__(self, other) -> bool:
-    return self.file_name == other.file_name
+    return self.file_name == other.file_name and self.work_dir==self.work_dir
 
 class FuncInfo:
   def __init__(self, parent: FileInfo, func_name: str, begin: int, end: int) -> None:
@@ -280,7 +281,7 @@ class FuncInfo:
   def __hash__(self) -> int:
     return hash(self.id)
   def __eq__(self, other) -> bool:
-    return self.id == other.id and self.parent.file_name == other.parent.file_name
+    return self.id == other.id and self.parent.file_name == other.parent.file_name and self.parent.work_dir==other.parent.work_dir
 
 class LineInfo:
   def __init__(self, parent: FuncInfo, line_number: int) -> None:
@@ -363,7 +364,7 @@ class TbarCaseInfo:
   def __hash__(self) -> int:
     return hash(self.location)
   def __eq__(self, other) -> bool:
-    return self.location == other.location
+    return self.location == other.location and self.parent.parent.uuid==other.parent.parent.uuid
 
 class RecoderTypeInfo:
   def __init__(self, parent: LineInfo, act: str, prev: 'RecoderTypeInfo') -> None:
@@ -921,7 +922,7 @@ class MSVEnvVar:
     new_env["MSV_UUID"] = str(state.uuid)
     new_env["MSV_TEST"] = str(test)
     new_env["MSV_LOCATION"] = str(patch.tbar_case_info.location)
-    new_env["MSV_WORKDIR"] = state.work_dir if not state.fixminer_mode else state.work_dir[:-2]
+    new_env["MSV_WORKDIR"] = patch.file_info.work_dir if not state.fixminer_mode else patch.file_info.work_dir[:-2]
     new_env["MSV_BUGGY_LOCATION"] = patch.file_info.file_name
     new_env["MSV_BUGGY_PROJECT"] = state.d4j_buggy_project
     new_env["MSV_OUTPUT_DISTANCE_FILE"] = f"/tmp/{uuid.uuid4()}.out"
@@ -1679,8 +1680,10 @@ class MSVState:
     self.use_pattern = False
     self.use_simulation_mode = False
     self.prev_data = ""
+    self.prev_data_list: List[str] = list()
     self.ignore_compile_error = True
     self.simulation_data = dict()
+    self.simulation_data_list=dict()
     self.correct_patch_str: str = ""
     self.correct_case_info: CaseInfo = None
     self.watch_level: str = ""
@@ -1713,6 +1716,10 @@ class MSVState:
     self.count_compile_fail=True
     self.fixminer_mode=False  # fixminer-mode: Fixminer patch space is seperated to 2 groups
     self.spr_mode=False  # SPR mode: SPR uses FL+template instead of prophet score
+    self.work_dir_list=list()
+    self.switch_case_map_list:dict=dict()
+    self.patch_ranking_list=dict()
+    self.file_info_map_list=dict()
 
     self.seapr_remain_cases:List[CaseInfo]=[]
     self.seapr_layer:SeAPRMode=SeAPRMode.FUNCTION
@@ -1721,6 +1728,8 @@ class MSVState:
     self.c_remain_patch_ranking:Dict[float,List[CaseInfo]]=dict()
     self.java_patch_ranking:Dict[float,List[TbarCaseInfo]]=dict()
     self.java_remain_patch_ranking:Dict[float,List[TbarCaseInfo]]=dict()
+    self.java_patch_ranking_list:Dict[str,Dict[float,List[TbarCaseInfo]]]=dict()
+    self.java_remain_patch_ranking_list:Dict[str,Dict[float,List[TbarCaseInfo]]]=dict()
 
     self.previous_score:float=0.0
     self.same_consecutive_score:Dict[float,int]=dict()
@@ -1728,6 +1737,7 @@ class MSVState:
     self.max_prophet_score=-1000.
     self.min_prophet_score=1000.
     self.max_epsilon_group_size=0  # Maximum size of group for epsilon-greedy
+    self.current_work_dir_index=0
 
     self.not_use_guided_search=False  # Use only epsilon-greedy search
     self.not_use_epsilon_search=False  # Use only guided search and original
@@ -1795,16 +1805,29 @@ def append_java_cache_result(state:MSVState,case:TbarCaseInfo,fail_result:bool,p
     pass_time: pass time (second)
   """
   id=case.location
-  if id not in state.simulation_data:
-    current=dict()
-    current['basic']=fail_result
-    current['plausible']=pass_result
-    current['pass_all_fail']=pass_all_fail
-    current['compilable']=compilable
-    current['fail_time']=fail_time
-    current['pass_time']=pass_time
+  if state.tbar_mode:
+    file=state.simulation_data_list[case.parent.parent.parent.parent.work_dir]
+    if id not in file:
+      current=dict()
+      current['basic']=fail_result
+      current['plausible']=pass_result
+      current['pass_all_fail']=pass_all_fail
+      current['compilable']=compilable
+      current['fail_time']=fail_time
+      current['pass_time']=pass_time
 
-    state.simulation_data[id]=current
+      file[id]=current
+  else:
+    if id not in state.simulation_data:
+      current=dict()
+      current['basic']=fail_result
+      current['plausible']=pass_result
+      current['pass_all_fail']=pass_all_fail
+      current['compilable']=compilable
+      current['fail_time']=fail_time
+      current['pass_time']=pass_time
+
+      state.simulation_data[id]=current
 
 def append_c_cache_result(state:MSVState,case:CaseInfo,fail_result:bool,pass_result:bool,pass_all_fail:bool,compilable:bool,
       fail_time:float,pass_time:float,operator:OperatorInfo=None,variable:VariableInfo=None,constant:ConstantInfo=None):

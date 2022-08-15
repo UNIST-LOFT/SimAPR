@@ -39,6 +39,8 @@ def parse_args(argv: list) -> MSVState:
       state.timeout = int(a)
     elif o in ['-w', '--workdir']:
       state.work_dir = a
+      for dir in a.split(':'):
+        state.work_dir_list.append(dir)
     elif o in ['-p', '--msv-path']:
       state.msv_path = a
     elif o in ['-c', '--correct-patch']:
@@ -124,6 +126,8 @@ def parse_args(argv: list) -> MSVState:
     elif o in ['--use-simulation-mode']:
       state.use_simulation_mode = True
       state.prev_data = a
+      for data in a.split(':'):
+        state.prev_data_list.append(data)
     elif o in ['--remove-cached-file']:
       state.msv_logger.warn('Removing cached files, be careful!')
       state.remove_cached_file=True
@@ -435,184 +439,202 @@ def read_info_recoder(state: MSVState) -> None:
   state.msv_logger.debug(f'Correct patch rank in group: {same_groups.index(correct_patch)}')
 
 def read_info_tbar(state: MSVState) -> None:
-  with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
-    info = json.load(f)
-    # Read test informations (which tests to run, which of them are failing test or passing test)
-    state.d4j_negative_test = info["failing_test_cases"]
-    state.d4j_positive_test = info["passing_test_cases"]
-    state.d4j_failed_passing_tests = set(info["failed_passing_tests"])
-    # Read priority (for FL score)
-    # n = len(info['priority'])
-    # for priority in info['priority']:
-    #   temp_file: str = priority["file"]
-    #   temp_line: int = priority["line"]
-    #   score: float = priority["score"]
-    #   store = (temp_file, temp_line, score)
-    #   state.priority_list.append(store)
-    # Read rules to build patch tree structure
-    file_map = state.file_info_map
-    ff_map: Dict[str, Dict[str, Tuple[int, int]]] = dict()
-    check_func: Set[FuncInfo] = set()
-    for file in info["func_locations"]:
-      file_name = file["file"]
-      ff_map[file_name] = dict()
-      for func in file["functions"]:
-        func_name = func["function"]
-        begin = func["begin"]
-        end = func["end"]
-        func_id = f"{func_name}:{begin}-{end}"
-        ff_map[file_name][func_id] = (begin, end)
-        state.function_to_location_map[func_name] = (file_name, begin, end)
-    for file in info['rules']:
-      if len(file['lines']) == 0:
-        continue
-      file_info = FileInfo(file['file_name'])
-      file_name = file['file_name']
-      if "class_name" in file:
-        file_info.class_name = file["class_name"]
-      file_map[file['file_name']] = file_info
-      case_key = 'switches'
-      for line in file['lines']:
-        func_info = None
-        line_info = None
-        if case_key not in line:
-          case_key = 'cases'
-        if len(line[case_key]) == 0:
+  for work_dir in state.work_dir_list:
+    with open(os.path.join(work_dir, 'switch-info.json'), 'r') as f:
+      info = json.load(f)
+      # Read test informations (which tests to run, which of them are failing test or passing test)
+      state.d4j_negative_test = info["failing_test_cases"]
+      state.d4j_positive_test = info["passing_test_cases"]
+      state.d4j_failed_passing_tests = set(info["failed_passing_tests"])
+      # Read priority (for FL score)
+      # n = len(info['priority'])
+      # for priority in info['priority']:
+      #   temp_file: str = priority["file"]
+      #   temp_line: int = priority["line"]
+      #   score: float = priority["score"]
+      #   store = (temp_file, temp_line, score)
+      #   state.priority_list.append(store)
+      # Read rules to build patch tree structure
+      state.file_info_map_list[work_dir]=dict()
+      file_map = state.file_info_map_list[work_dir]
+      ff_map: Dict[str, Dict[str, Tuple[int, int]]] = dict()
+      check_func: Set[FuncInfo] = set()
+      for file in info["func_locations"]:
+        file_name = file["file"]
+        ff_map[file_name] = dict()
+        for func in file["functions"]:
+          func_name = func["function"]
+          begin = func["begin"]
+          end = func["end"]
+          func_id = f"{func_name}:{begin}-{end}"
+          ff_map[file_name][func_id] = (begin, end)
+          state.function_to_location_map[func_name] = (file_name, begin, end)
+      for file in info['rules']:
+        if len(file['lines']) == 0:
           continue
-        if file_name in ff_map:
-          for func_id in ff_map[file_name]:
-            fn_range = ff_map[file_name][func_id]
-            line_num = int(line['line'])
-            if fn_range[0] <= line_num <= fn_range[1]:
-              if func_id not in file_info.func_info_map:
-                func_info = FuncInfo(file_info, func_id.split(":")[0], fn_range[0], fn_range[1])
-                file_info.func_info_map[func_info.id] = func_info
-                state.total_methods+=1
-              else:
-                func_info = file_info.func_info_map[func_id]
-              line_info = LineInfo(func_info, int(line['line']))
-              func_info.line_info_map[line_info.uuid] = line_info
-              break
-        else:
-          ff_map[file_name] = dict()
-        #line_info = LineInfo(file_info, int(line['line']))
-        if line_info is None:
-          # No function found for this line!!!
-          # Use default...
-          state.msv_logger.info(f"No function found {file_info.file_name}:{line['line']}")
-          func_info = FuncInfo(file_info, "no_function_found", int(line['line']), int(line['line']))
-          file_info.func_info_map[func_info.id] = func_info
-          state.total_methods+=1
-          ff_map[file_name][func_info.id] = (int(line['line']), int(line['line']))
-          line_info = LineInfo(func_info, int(line['line']))
-          func_info.line_info_map[line_info.uuid] = line_info
-        state.line_list.append(line_info)
-        if func_info not in check_func:
-          check_func.add(func_info)
-          state.func_list.append(func_info)
-        line_info.fl_score = float(line['fl_score'])
-        func_info.fl_score_list.append(line_info.fl_score)
-        file_info.fl_score_list.append(line_info.fl_score)
-        file_line = FileLine(file_info, line_info, 0)
-        state.priority_map[f"{file_info.file_name}:{line_info.line_number}"] = file_line
-        cses = None
-        if "cases" in line:
-          cses = line['cases']
-        else:
-          cses = line['switches']
-        for sw in cses:
-          mut = sw["mutation"]
-          if "start_position" in sw:
-            start = sw["start_position"]
-            end = sw["end_position"]
+        file_info = FileInfo(file['file_name'])
+        file_name = file['file_name']
+        file_info.work_dir=work_dir
+        if "class_name" in file:
+          file_info.class_name = file["class_name"]
+        file_map[file['file_name']] = file_info
+        case_key = 'switches'
+        for line in file['lines']:
+          func_info = None
+          line_info = None
+          if case_key not in line:
+            case_key = 'cases'
+          if len(line[case_key]) == 0:
+            continue
+          if file_name in ff_map:
+            for func_id in ff_map[file_name]:
+              fn_range = ff_map[file_name][func_id]
+              line_num = int(line['line'])
+              if fn_range[0] <= line_num <= fn_range[1]:
+                if func_id not in file_info.func_info_map:
+                  func_info = FuncInfo(file_info, func_id.split(":")[0], fn_range[0], fn_range[1])
+                  file_info.func_info_map[func_info.id] = func_info
+                  state.total_methods+=1
+                else:
+                  func_info = file_info.func_info_map[func_id]
+                line_info = LineInfo(func_info, int(line['line']))
+                func_info.line_info_map[line_info.uuid] = line_info
+                break
           else:
-            start = 0
-            end = 0
-          location = sw["location"]
-          # fl_score = sw["score"]
-          if mut not in line_info.tbar_type_info_map:
-            line_info.tbar_type_info_map[mut] = TbarTypeInfo(line_info, mut)
-          tbar_type_info = line_info.tbar_type_info_map[mut]
-          tbar_case_info = TbarCaseInfo(tbar_type_info, location, start, end)
-          tbar_type_info.tbar_case_info_map[location] = tbar_case_info
-          state.switch_case_map[location] = tbar_case_info
-          state.patch_location_map[location] = tbar_case_info
-          tbar_case_info.total_case_info+=1
-          tbar_type_info.total_case_info += 1
-          line_info.total_case_info += 1
-          func_info.total_case_info += 1
-          file_info.total_case_info += 1
-          if line_info.fl_score not in func_info.total_patches_by_score:
-            func_info.total_patches_by_score[line_info.fl_score]=0
-            func_info.searched_patches_by_score[line_info.fl_score]=0
-          func_info.total_patches_by_score[line_info.fl_score]+=1
-        if len(line_info.tbar_type_info_map)==0:
-          del func_info.line_info_map[line_info.uuid]
-      for func in file_info.func_info_map.copy().values():
-        if len(func.line_info_map)==0:
-          del file_info.func_info_map[func.id]
-          state.total_methods-=1
-      if len(file_info.func_info_map)==0:
-        del state.file_info_map[file_info.file_name]
-  state.d4j_buggy_project = info["project_name"]
-  # Read ranking
-  rank_num = 0
-  ranking = info['ranking']
-  func_rank = 0
-  for rank in ranking:
-    rank_num += 1
-    loc = ""
-    if isinstance(rank, str):
-      loc = rank  
-    else:
-      loc = rank['location']
+            ff_map[file_name] = dict()
+          #line_info = LineInfo(file_info, int(line['line']))
+          if line_info is None:
+            # No function found for this line!!!
+            # Use default...
+            state.msv_logger.info(f"No function found {file_info.file_name}:{line['line']}")
+            func_info = FuncInfo(file_info, "no_function_found", int(line['line']), int(line['line']))
+            file_info.func_info_map[func_info.id] = func_info
+            state.total_methods+=1
+            ff_map[file_name][func_info.id] = (int(line['line']), int(line['line']))
+            line_info = LineInfo(func_info, int(line['line']))
+            func_info.line_info_map[line_info.uuid] = line_info
+          state.line_list.append(line_info)
+          if func_info not in check_func:
+            check_func.add(func_info)
+            state.func_list.append(func_info)
+          line_info.fl_score = float(line['fl_score'])
+          func_info.fl_score_list.append(line_info.fl_score)
+          file_info.fl_score_list.append(line_info.fl_score)
+          file_line = FileLine(file_info, line_info, 0)
+          state.priority_map[f"{file_info.file_name}:{line_info.line_number}"] = file_line
+          cses = None
+          if "cases" in line:
+            cses = line['cases']
+          else:
+            cses = line['switches']
+          for sw in cses:
+            mut = sw["mutation"]
+            if "start_position" in sw:
+              start = sw["start_position"]
+              end = sw["end_position"]
+            else:
+              start = 0
+              end = 0
+            location = sw["location"]
+            # fl_score = sw["score"]
+            if mut not in line_info.tbar_type_info_map:
+              line_info.tbar_type_info_map[mut] = TbarTypeInfo(line_info, mut)
+            tbar_type_info = line_info.tbar_type_info_map[mut]
+            tbar_case_info = TbarCaseInfo(tbar_type_info, location, start, end)
+            tbar_type_info.tbar_case_info_map[location] = tbar_case_info
+            if work_dir not in state.switch_case_map_list:
+              state.switch_case_map_list[work_dir] = dict()
+            state.switch_case_map_list[work_dir][location] = tbar_case_info
+            state.patch_location_map[location] = tbar_case_info
+            tbar_case_info.total_case_info+=1
+            tbar_type_info.total_case_info += 1
+            line_info.total_case_info += 1
+            func_info.total_case_info += 1
+            file_info.total_case_info += 1
+            if line_info.fl_score not in func_info.total_patches_by_score:
+              func_info.total_patches_by_score[line_info.fl_score]=0
+              func_info.searched_patches_by_score[line_info.fl_score]=0
+            func_info.total_patches_by_score[line_info.fl_score]+=1
+          if len(line_info.tbar_type_info_map)==0:
+            del func_info.line_info_map[line_info.uuid]
+        for func in file_info.func_info_map.copy().values():
+          if len(func.line_info_map)==0:
+            del file_info.func_info_map[func.id]
+            state.total_methods-=1
+        if len(file_info.func_info_map)==0:
+          del state.file_info_map[file_info.file_name]
+      state.d4j_buggy_project = info["project_name"]
+      # Read ranking
+      rank_num = 0
+      ranking = info['ranking']
+      func_rank = 0
+      for rank in ranking:
+        rank_num += 1
+        loc = ""
+        if isinstance(rank, str):
+          loc = rank  
+        else:
+          loc = rank['location']
 
-    state.patch_ranking.append(loc)
-    case_info: TbarCaseInfo = state.switch_case_map[loc]
-    case_info.parent.parent.parent.case_rank_list.append(loc)
-    fl_score=case_info.parent.parent.fl_score
-    if fl_score not in state.java_patch_ranking:
-      state.java_patch_ranking[fl_score] = []
-      state.java_remain_patch_ranking[fl_score] = []
-    state.java_patch_ranking[fl_score].append(case_info)
-    state.java_remain_patch_ranking[fl_score].append(case_info)
-    
-    if fl_score not in case_info.parent.patches_by_score:
-      case_info.parent.patches_by_score[fl_score] = []
-      case_info.parent.remain_patches_by_score[fl_score]=[]
-    case_info.parent.patches_by_score[fl_score].append(case_info)
-    case_info.parent.remain_patches_by_score[fl_score].append(case_info)
+        if work_dir not in state.patch_ranking_list: state.patch_ranking_list[work_dir] = []
+        state.patch_ranking_list[work_dir].append(loc)
+        case_info: TbarCaseInfo = state.switch_case_map_list[work_dir][loc]
+        case_info.parent.parent.parent.case_rank_list.append(loc)
+        fl_score=case_info.parent.parent.fl_score
+        if work_dir not in state.java_patch_ranking_list:
+          state.java_patch_ranking_list[work_dir] = dict()
+          state.java_remain_patch_ranking_list[work_dir] = dict()
+        if fl_score not in state.java_patch_ranking_list[work_dir]:
+          state.java_patch_ranking_list[work_dir][fl_score] = []
+          state.java_remain_patch_ranking_list[work_dir][fl_score] = []
+        state.java_patch_ranking_list[work_dir][fl_score].append(case_info)
+        state.java_remain_patch_ranking_list[work_dir][fl_score].append(case_info)
+        
+        if fl_score not in case_info.parent.patches_by_score:
+          case_info.parent.patches_by_score[fl_score] = []
+          case_info.parent.remain_patches_by_score[fl_score]=[]
+        case_info.parent.patches_by_score[fl_score].append(case_info)
+        case_info.parent.remain_patches_by_score[fl_score].append(case_info)
 
-    if fl_score not in case_info.parent.parent.patches_by_score:
-      case_info.parent.parent.patches_by_score[fl_score] = []
-      case_info.parent.parent.remain_patches_by_score[fl_score]=[]
-    case_info.parent.parent.patches_by_score[fl_score].append(case_info)
-    case_info.parent.parent.remain_patches_by_score[fl_score].append(case_info)
+        if fl_score not in case_info.parent.parent.patches_by_score:
+          case_info.parent.parent.patches_by_score[fl_score] = []
+          case_info.parent.parent.remain_patches_by_score[fl_score]=[]
+        case_info.parent.parent.patches_by_score[fl_score].append(case_info)
+        case_info.parent.parent.remain_patches_by_score[fl_score].append(case_info)
 
-    if fl_score not in case_info.parent.parent.parent.patches_by_score:
-      case_info.parent.parent.parent.patches_by_score[fl_score] = []
-      case_info.parent.parent.parent.remain_patches_by_score[fl_score]=[]
-    case_info.parent.parent.parent.patches_by_score[fl_score].append(case_info)
-    case_info.parent.parent.parent.remain_patches_by_score[fl_score].append(case_info)
+        if fl_score not in case_info.parent.parent.parent.patches_by_score:
+          case_info.parent.parent.parent.patches_by_score[fl_score] = []
+          case_info.parent.parent.parent.remain_patches_by_score[fl_score]=[]
+        case_info.parent.parent.parent.patches_by_score[fl_score].append(case_info)
+        case_info.parent.parent.parent.remain_patches_by_score[fl_score].append(case_info)
 
-    if fl_score not in case_info.parent.parent.parent.parent.patches_by_score:
-      case_info.parent.parent.parent.parent.patches_by_score[fl_score] = []
-      case_info.parent.parent.parent.parent.remain_patches_by_score[fl_score]=[]
-    case_info.parent.parent.parent.parent.patches_by_score[fl_score].append(case_info)
-    case_info.parent.parent.parent.parent.remain_patches_by_score[fl_score].append(case_info)
+        if fl_score not in case_info.parent.parent.parent.parent.patches_by_score:
+          case_info.parent.parent.parent.parent.patches_by_score[fl_score] = []
+          case_info.parent.parent.parent.parent.remain_patches_by_score[fl_score]=[]
+        case_info.parent.parent.parent.parent.patches_by_score[fl_score].append(case_info)
+        case_info.parent.parent.parent.parent.remain_patches_by_score[fl_score].append(case_info)
 
-    case_info.patch_rank = rank_num
-    func_info = case_info.parent.parent.parent
-    if func_info.func_rank == -1:
-      func_info.func_rank = func_rank
-      func_rank += 1
+        case_info.patch_rank = rank_num
+        func_info = case_info.parent.parent.parent
+        if func_info.func_rank == -1:
+          func_info.func_rank = func_rank
+          func_rank += 1
 
-  patch_ranking_list=[]
-  for fl_score in state.java_patch_ranking:
-    if len(state.java_patch_ranking[fl_score])>0:
-      patch_ranking_list.append(len(state.java_patch_ranking[fl_score]))
-  state.max_epsilon_group_size=mean(patch_ranking_list)*2
-  state.msv_logger.debug(f'Set maximum epsilon group size to {state.max_epsilon_group_size}')
+      patch_ranking_list=[]
+      for fl_score in state.java_patch_ranking_list[work_dir]:
+        if len(state.java_patch_ranking_list[work_dir][fl_score])>0:
+          patch_ranking_list.append(len(state.java_patch_ranking_list[work_dir][fl_score]))
+      state.max_epsilon_group_size=mean(patch_ranking_list)*2
+      state.msv_logger.debug(f'Set maximum epsilon group size to {state.max_epsilon_group_size}')
+
+      if state.use_simulation_mode:
+        prev_data=state.prev_data_list[state.work_dir_list.index(work_dir)]
+        if os.path.exists(prev_data):
+          with open(prev_data, "r") as f:
+            prev_info = json.load(f)
+            for key in prev_info:
+              data=prev_info[key]
+              state.simulation_data_list[work_dir][key] = data
 
   #Add original to switch_case_map
   temp_file: FileInfo = FileInfo('original')
@@ -622,15 +644,8 @@ def read_info_tbar(state: MSVState) -> None:
   # temp_file.line_info_list.append(temp_line)
   temp_tbar_type = TbarTypeInfo(temp_line, "original_mut")
   temp_tbar_case = TbarCaseInfo(temp_tbar_type, "original", 0, 0)
-  state.switch_case_map["original"] = temp_tbar_case
+  state.switch_case_map_list["original"] = temp_tbar_case
   state.patch_location_map["original"] = temp_tbar_case
-  if state.use_simulation_mode:
-    if os.path.exists(state.prev_data):
-      with open(state.prev_data, "r") as f:
-        prev_info = json.load(f)
-        for key in prev_info:
-          data=prev_info[key]
-          state.simulation_data[key] = data
 
 def read_info_fixminer(state: MSVState) -> None:
   if '1' not in os.listdir(f'{state.work_dir}/..'):
