@@ -580,6 +580,14 @@ def read_info_tbar(state: MSVState) -> None:
         state.patch_ranking_list[work_dir].append(loc)
         case_info: TbarCaseInfo = state.switch_case_map_list[work_dir][loc]
         case_info.parent.parent.parent.case_rank_list.append(loc)
+
+        line_id=f"{case_info.parent.parent.parent.parent.file_name}:{case_info.parent.parent.line_number}"
+        if line_id not in state.java_line_workdir_patches_map:
+          state.java_line_workdir_patches_map[line_id] = dict()
+        if work_dir not in state.java_line_workdir_patches_map[line_id]:
+          state.java_line_workdir_patches_map[line_id][work_dir] = []
+        state.java_line_workdir_patches_map[line_id][work_dir].append(case_info)
+
         fl_score=case_info.parent.parent.fl_score
         if work_dir not in state.java_patch_ranking_list:
           state.java_patch_ranking_list[work_dir] = dict()
@@ -629,6 +637,8 @@ def read_info_tbar(state: MSVState) -> None:
 
       if state.use_simulation_mode:
         prev_data=state.prev_data_list[state.work_dir_list.index(work_dir)]
+        if work_dir not in state.simulation_data_list:
+          state.simulation_data_list[work_dir] = dict()
         if os.path.exists(prev_data):
           with open(prev_data, "r") as f:
             prev_info = json.load(f)

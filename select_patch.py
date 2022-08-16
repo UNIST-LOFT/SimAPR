@@ -167,8 +167,27 @@ def epsilon_search(state:MSVState):
     cur_list=state.java_patch_ranking
     cur_remain_list=state.java_remain_patch_ranking
   elif state.tbar_mode:
-    cur_list=state.java_patch_ranking_list[state.work_dir_list[state.current_work_dir_index]]
-    cur_list=state.java_remain_patch_ranking_list[state.work_dir_list[state.current_work_dir_index]]
+    is_finished=False
+    while True:
+      for id in state.java_line_workdir_patches_map:
+        for workdir in state.java_line_workdir_patches_map[id]:
+          if len(state.java_line_workdir_patches_map[id][workdir])>0:
+            state.current_fl_id=id
+            is_finished=True
+            break
+        if is_finished: break
+      if is_finished: break
+
+    while True:
+      cur_list=state.java_patch_ranking_list[state.work_dir_list[state.current_work_dir_index]]
+      cur_remain_list=state.java_remain_patch_ranking_list[state.work_dir_list[state.current_work_dir_index]]
+      if len(cur_remain_list)>0:
+        break
+
+      state.current_work_dir_index+=1
+      if state.current_work_dir_index>=len(state.work_dir_list):
+        state.current_work_dir_index=0
+
   else:
     cur_list=state.c_patch_ranking
     cur_remain_list=state.c_remain_patch_ranking
@@ -291,8 +310,26 @@ def epsilon_select(state:MSVState,source=None):
   # Get all top fl patches
   if source is None:
     if state.tbar_mode:
-      cur_list=state.java_patch_ranking_list[state.work_dir_list[state.current_work_dir_index]]
-      cur_remain_list=state.java_remain_patch_ranking_list[state.work_dir_list[state.current_work_dir_index]]
+      is_finished=False
+      while True:
+        for id in state.java_line_workdir_patches_map:
+          for workdir in state.java_line_workdir_patches_map[id]:
+            if len(state.java_line_workdir_patches_map[id][workdir])>0:
+              state.current_fl_id=id
+              is_finished=True
+              break
+          if is_finished: break
+        if is_finished: break
+
+      while True:
+        cur_list=state.java_patch_ranking_list[state.work_dir_list[state.current_work_dir_index]]
+        cur_remain_list=state.java_remain_patch_ranking_list[state.work_dir_list[state.current_work_dir_index]]
+        if len(cur_remain_list)>0:
+          break
+
+        state.current_work_dir_index+=1
+        if state.current_work_dir_index>=len(state.work_dir_list):
+          state.current_work_dir_index=0
     elif state.recoder_mode:
       cur_list=state.java_patch_ranking
       cur_remain_list=state.java_remain_patch_ranking
@@ -1402,11 +1439,37 @@ def select_patch_tbar_mode(state: MSVState) -> TbarPatchInfo:
     return select_patch_tbar_guided(state)
 
 def select_patch_tbar(state: MSVState) -> TbarPatchInfo:
-  loc = state.patch_ranking_list[state.work_dir_list[state.current_work_dir_index]].pop(0)
-  caseinfo = state.switch_case_map_list[state.work_dir_list[state.current_work_dir_index]][loc]
-  state.current_work_dir_index+=1
-  if state.current_work_dir_index>=len(state.work_dir_list):
-    state.current_work_dir_index=0
+  # loc = state.patch_ranking_list[state.work_dir_list[state.current_work_dir_index]].pop(0)
+  # caseinfo = state.switch_case_map_list[state.work_dir_list[state.current_work_dir_index]][loc]
+  if state.current_fl_id=='':
+    for id in state.java_line_workdir_patches_map:
+      state.current_fl_id=id
+      break
+  
+  caseinfo=None
+  current_index=state.current_work_dir_index
+  while caseinfo is None:
+    if len(state.java_line_workdir_patches_map[state.current_fl_id][state.work_dir_list[current_index]])>0:
+      caseinfo=state.java_line_workdir_patches_map[state.current_fl_id][state.work_dir_list[current_index]][0]
+      state.current_work_dir_index=current_index+1
+      if state.current_work_dir_index>=len(state.work_dir_list):
+        state.current_work_dir_index=0
+    else:
+      current_index+=1
+      if current_index>=len(state.work_dir_list):
+        current_index=0
+      if current_index==state.current_work_dir_index-1 or (current_index==len(state.work_dir_list) and state.current_work_dir_index==0):
+        is_current=False
+        for id in state.java_line_workdir_patches_map:
+          if is_current:
+            state.current_fl_id=id
+            break
+          if id==state.current_fl_id:
+            is_current=True
+  # caseinfo=state.java_line_workdir_patches_map[f"{case_info.parent.parent.parent.parent.file_name}:{case_info.parent.parent.line_number}"]
+  # state.current_work_dir_index+=1
+  # if state.current_work_dir_index>=len(state.work_dir_list):
+  #   state.current_work_dir_index=0
   return TbarPatchInfo(caseinfo)
 
 def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:

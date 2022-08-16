@@ -1360,6 +1360,7 @@ class TbarPatchInfo:
     if self.tbar_case_info.location not in self.tbar_type_info.tbar_case_info_map:
       state.msv_logger.critical(f"{self.tbar_case_info.location} not in {self.tbar_type_info.tbar_case_info_map}")
     del self.tbar_type_info.tbar_case_info_map[self.tbar_case_info.location]
+    state.java_line_workdir_patches_map[f"{self.file_info.file_name}:{self.line_info.line_number}"][self.file_info.work_dir].remove(self.tbar_case_info)
     if len(self.tbar_type_info.tbar_case_info_map) == 0:
       del self.line_info.tbar_type_info_map[self.tbar_type_info.mutation]
     if len(self.line_info.tbar_type_info_map) == 0:
@@ -1371,7 +1372,7 @@ class TbarPatchInfo:
       del self.file_info.func_info_map[self.func_info.id]
       state.func_list.remove(self.func_info)
     if len(self.file_info.func_info_map) == 0:
-      del state.file_info_map[self.file_info.file_name]
+      del state.file_info_map_list[self.file_info.work_dir][self.file_info.file_name]
     self.tbar_case_info.case_update_count += 1
     self.tbar_type_info.case_update_count += 1
     self.tbar_type_info.remain_patches_by_score[self.line_info.fl_score].remove(self.tbar_case_info)
@@ -1381,7 +1382,7 @@ class TbarPatchInfo:
     self.func_info.remain_patches_by_score[self.line_info.fl_score].remove(self.tbar_case_info)
     self.file_info.case_update_count += 1
     self.file_info.remain_patches_by_score[self.line_info.fl_score].remove(self.tbar_case_info)
-    state.java_remain_patch_ranking[self.line_info.fl_score].remove(self.tbar_case_info)
+    state.java_remain_patch_ranking_list[self.file_info.work_dir][self.line_info.fl_score].remove(self.tbar_case_info)
     self.func_info.searched_patches_by_score[self.line_info.fl_score]+=1
 
   def to_json_object(self) -> dict:
@@ -1730,6 +1731,7 @@ class MSVState:
     self.java_remain_patch_ranking:Dict[float,List[TbarCaseInfo]]=dict()
     self.java_patch_ranking_list:Dict[str,Dict[float,List[TbarCaseInfo]]]=dict()
     self.java_remain_patch_ranking_list:Dict[str,Dict[float,List[TbarCaseInfo]]]=dict()
+    self.java_line_workdir_patches_map:Dict[str,Dict[str,List[TbarCaseInfo]]]=dict()  # {fl_id: {work_dir: [patches, ...]}}
 
     self.previous_score:float=0.0
     self.same_consecutive_score:Dict[float,int]=dict()
@@ -1738,6 +1740,7 @@ class MSVState:
     self.min_prophet_score=1000.
     self.max_epsilon_group_size=0  # Maximum size of group for epsilon-greedy
     self.current_work_dir_index=0
+    self.current_fl_id=''
 
     self.not_use_guided_search=False  # Use only epsilon-greedy search
     self.not_use_epsilon_search=False  # Use only guided search and original
