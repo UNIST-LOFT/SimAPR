@@ -922,7 +922,7 @@ class MSVEnvVar:
     new_env["MSV_UUID"] = str(state.uuid)
     new_env["MSV_TEST"] = str(test)
     new_env["MSV_LOCATION"] = str(patch.tbar_case_info.location)
-    new_env["MSV_WORKDIR"] = patch.file_info.work_dir if not state.fixminer_mode else patch.file_info.work_dir[:-2]
+    new_env["MSV_WORKDIR"] = patch.file_info.work_dir[:-2] if state.fixminer_mode and 'FixMiner' in patch.file_info.work_dir else patch.file_info.work_dir
     new_env["MSV_BUGGY_LOCATION"] = patch.file_info.file_name
     new_env["MSV_BUGGY_PROJECT"] = state.d4j_buggy_project
     new_env["MSV_OUTPUT_DISTANCE_FILE"] = f"/tmp/{uuid.uuid4()}.out"
@@ -1599,9 +1599,6 @@ class MSVState:
   critical_map: Dict[int, Dict[ProfileElement, List[int]]]
   negative_test: List[int]        # Negative test case
   positive_test: List[int]        # Positive test case
-  d4j_negative_test: List[str]
-  d4j_positive_test: List[str]
-  d4j_failed_passing_tests: Set[str]
   d4j_test_fail_num_map: Dict[str, int]
   profile_map: Dict[int, Profile] # test case number -> Profile (of original program)
   priority_list: List[Tuple[str, int, float]]  # (file_name, line_number, score)
@@ -1721,6 +1718,10 @@ class MSVState:
     self.switch_case_map_list:dict=dict()
     self.patch_ranking_list=dict()
     self.file_info_map_list=dict()
+    self.d4j_negative_test: List[str]=[]
+    self.d4j_positive_test: List[str]=[]
+    self.d4j_failed_passing_tests: Set[str]=set()
+    self.total_basic_patch_list:Dict[str,int]=dict()
 
     self.seapr_remain_cases:List[CaseInfo]=[]
     self.seapr_layer:SeAPRMode=SeAPRMode.FUNCTION

@@ -443,9 +443,11 @@ def read_info_tbar(state: MSVState) -> None:
     with open(os.path.join(work_dir, 'switch-info.json'), 'r') as f:
       info = json.load(f)
       # Read test informations (which tests to run, which of them are failing test or passing test)
-      state.d4j_negative_test = info["failing_test_cases"]
+      state.d4j_negative_test =info["failing_test_cases"]
       state.d4j_positive_test = info["passing_test_cases"]
-      state.d4j_failed_passing_tests = set(info["failed_passing_tests"])
+      for test in info["failed_passing_tests"]:
+        state.d4j_failed_passing_tests.add(test)
+      state.total_basic_patch_list[work_dir]=0
       # Read priority (for FL score)
       # n = len(info['priority'])
       # for priority in info['priority']:
@@ -1328,8 +1330,8 @@ def main(argv: list):
   state.msv_logger = set_logger(state)
   if state.tbar_mode:
     read_info_tbar(state)
-    if state.fixminer_mode:
-      read_info_fixminer(state)
+    # if state.fixminer_mode:
+    #   read_info_fixminer(state)
     state.msv_logger.info(f'Total methods: {state.total_methods}')
     state.msv_logger.info('TBar mode: Initialized!')
     msv = MSVTbar(state)

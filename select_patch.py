@@ -310,26 +310,8 @@ def epsilon_select(state:MSVState,source=None):
   # Get all top fl patches
   if source is None:
     if state.tbar_mode:
-      is_finished=False
-      while True:
-        for id in state.java_line_workdir_patches_map:
-          for workdir in state.java_line_workdir_patches_map[id]:
-            if len(state.java_line_workdir_patches_map[id][workdir])>0:
-              state.current_fl_id=id
-              is_finished=True
-              break
-          if is_finished: break
-        if is_finished: break
-
-      while True:
-        cur_list=state.java_patch_ranking_list[state.work_dir_list[state.current_work_dir_index]]
-        cur_remain_list=state.java_remain_patch_ranking_list[state.work_dir_list[state.current_work_dir_index]]
-        if len(cur_remain_list)>0:
-          break
-
-        state.current_work_dir_index+=1
-        if state.current_work_dir_index>=len(state.work_dir_list):
-          state.current_work_dir_index=0
+      cur_list=state.java_patch_ranking_list[state.work_dir_list[state.current_work_dir_index]]
+      cur_remain_list=state.java_remain_patch_ranking_list[state.work_dir_list[state.current_work_dir_index]]
     elif state.recoder_mode:
       cur_list=state.java_patch_ranking
       cur_remain_list=state.java_remain_patch_ranking
@@ -386,7 +368,7 @@ def epsilon_select(state:MSVState,source=None):
       if state.tbar_mode:
         # For java
         if source is None:
-          if case_info.parent.parent.parent.parent in state.file_info_map.values():
+          if case_info.parent.parent.parent.parent in state.file_info_map_list[state.work_dir_list[state.current_work_dir_index]].values():
             result.add(case_info.parent.parent.parent.parent)
         elif type(source) == FileInfo:
           if case_info.parent.parent.parent in source.func_info_map.values():
@@ -443,18 +425,12 @@ def epsilon_select(state:MSVState,source=None):
     result=list(result)
     index=random.randint(0,len(result)-1)
     state.select_time+=time.time()-start_time
-    state.current_work_dir_index+=1
-    if state.current_work_dir_index>=len(state.work_dir_list):
-      state.current_work_dir_index=0
     return result[index]
   else:
     # Return top scored layer in original
     state.msv_logger.debug(f'Use original order, epsilon: {epsilon}')
     cur_fl_patches=top_fl_patches
     state.select_time+=time.time()-start_time
-    state.current_work_dir_index+=1
-    if state.current_work_dir_index>=len(state.work_dir_list):
-      state.current_work_dir_index=0
     if state.tbar_mode:
       # For java
       if source is None:
@@ -519,7 +495,7 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
   if state.recoder_mode:
     min_score=min(state.java_remain_patch_ranking.keys())
   elif state.tbar_mode:
-    min_score=min(state.java_remain_patch_ranking_list[state.current_work_dir_index].keys())
+    min_score=min(state.java_remain_patch_ranking_list[state.work_dir_list[state.current_work_dir_index]].keys())
   else:
     min_score=min(state.c_remain_patch_ranking.keys())
   if element_type==FileInfo:
@@ -1458,7 +1434,7 @@ def select_patch_tbar(state: MSVState) -> TbarPatchInfo:
       current_index+=1
       if current_index>=len(state.work_dir_list):
         current_index=0
-      if current_index==state.current_work_dir_index-1 or (current_index==len(state.work_dir_list) and state.current_work_dir_index==0):
+      if current_index==state.current_work_dir_index:
         is_current=False
         for id in state.java_line_workdir_patches_map:
           if is_current:
@@ -1520,21 +1496,25 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
     state.msv_logger.info("Exploit!")
 
   # Select file
-  if state.total_basic_patch==0 or state.not_use_guided_search:
+  if state.total_basic_patch_list[state.work_dir_list[state.current_work_dir_index]]==0 or state.not_use_guided_search:
     selected_switch_info=epsilon_search(state)
     result = TbarPatchInfo(selected_switch_info)
     return result
 
+  # state.current_work_dir_index+=1
+  # if state.current_work_dir_index>=len(state.work_dir_list):
+  #   state.current_work_dir_index=0
+
   selected_file_info,is_guided = select_patch_guide_algorithm(state,state.file_info_map_list[state.work_dir_list[state.current_work_dir_index]],None)
-  for file_name in state.file_info_map:
-    file_info=state.file_info_map[file_name]
+  for file_name in state.file_info_map_list[selected_file_info.work_dir]:
+    file_info=state.file_info_map_list[selected_file_info.work_dir][file_name]
     p_fl.append(max(file_info.fl_score_list))
     p_frequency.append(file_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
     p_bp_frequency.append(file_info.consecutive_fail_count)
   norm=PassFail.normalize(p_fl)
   selected_file=0
-  for i,file in enumerate(state.file_info_map):
-    if state.file_info_map[file]==selected_file_info:
+  for i,file in enumerate(state.file_info_map_list[selected_file_info.work_dir]):
+    if state.file_info_map_list[selected_file_info.work_dir][file]==selected_file_info:
       selected_file=i
       break
   state.msv_logger.debug(f'Selected file: FL: {norm[selected_file]}/{p_fl[selected_file]}, Basic: {selected_file_info.pf.beta_mode(selected_file_info.pf.pass_count,selected_file_info.pf.fail_count)}, '+
@@ -1544,11 +1524,12 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   if is_guided:
     is_correct_guide=False
     for cor in state.correct_patch_list:
-      cor_patch=state.switch_case_map_list[state.work_dir_list[state.current_work_dir_index]][cor]
-      if cor_patch.parent.parent.parent.parent==selected_file_info:
-        state.msv_logger.debug(f'Correct guide at file')
-        is_correct_guide=True
-        break
+      if cor in state.switch_case_map_list[state.work_dir_list[state.current_work_dir_index]]:
+        cor_patch=state.switch_case_map_list[state.work_dir_list[state.current_work_dir_index]][cor]
+        if cor_patch.parent.parent.parent.parent==selected_file_info:
+          state.msv_logger.debug(f'Correct guide at func')
+          is_correct_guide=True
+          break
     if not is_correct_guide:
       state.msv_logger.debug(f'Misguide at file')
     
@@ -1575,11 +1556,12 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   if is_guided:
     is_correct_guide=False
     for cor in state.correct_patch_list:
-      cor_patch=state.switch_case_map_list[state.work_dir_list[state.current_work_dir_index]][cor]
-      if cor_patch.parent.parent.parent==selected_func_info:
-        state.msv_logger.debug(f'Correct guide at func')
-        is_correct_guide=True
-        break
+      if cor in state.switch_case_map_list[state.work_dir_list[state.current_work_dir_index]]:
+        cor_patch=state.switch_case_map_list[state.work_dir_list[state.current_work_dir_index]][cor]
+        if cor_patch.parent.parent.parent==selected_func_info:
+          state.msv_logger.debug(f'Correct guide at func')
+          is_correct_guide=True
+          break
     if not is_correct_guide:
       state.msv_logger.debug(f'Misguide at func')
     
@@ -1606,11 +1588,12 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   if is_guided:
     is_correct_guide=False
     for cor in state.correct_patch_list:
-      cor_patch=state.switch_case_map_list[state.work_dir_list[state.current_work_dir_index]][cor]
-      if cor_patch.parent.parent==selected_line_info:
-        state.msv_logger.debug(f'Correct guide at line')
-        is_correct_guide=True
-        break
+      if cor in state.switch_case_map_list[state.work_dir_list[state.current_work_dir_index]]:
+        cor_patch=state.switch_case_map_list[state.work_dir_list[state.current_work_dir_index]][cor]
+        if cor_patch.parent.parent==selected_line_info:
+          state.msv_logger.debug(f'Correct guide at line')
+          is_correct_guide=True
+          break
     if not is_correct_guide:
       state.msv_logger.debug(f'Misguide at line')
 
@@ -1635,11 +1618,12 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   if is_guided:
     is_correct_guide=False
     for cor in state.correct_patch_list:
-      cor_patch=state.switch_case_map_list[state.work_dir_list[state.current_work_dir_index]][cor]
-      if cor_patch.parent==selected_type_info:
-        state.msv_logger.debug(f'Correct guide at type')
-        is_correct_guide=True
-        break
+      if cor in state.switch_case_map_list[state.work_dir_list[state.current_work_dir_index]]:
+        cor_patch=state.switch_case_map_list[state.work_dir_list[state.current_work_dir_index]][cor]
+        if cor_patch.parent==selected_type_info:
+          state.msv_logger.debug(f'Correct guide at type')
+          is_correct_guide=True
+          break
     if not is_correct_guide:
       state.msv_logger.debug(f'Misguide at type')
 

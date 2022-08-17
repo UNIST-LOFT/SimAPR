@@ -371,6 +371,7 @@ class MSVTbar(MSV):
       if self.state.fixminer_mode and not self.state.fixminer_swapped:
         self.state.msv_logger.info('First group searched, swap to second group')
         self.state.fixminer_swap_info()
+        self.state.is_alive=False
       else:
         self.state.is_alive = False
     if self.state.cycle_limit > 0 and self.state.iteration >= self.state.cycle_limit:
@@ -381,6 +382,7 @@ class MSVTbar(MSV):
       if self.state.fixminer_mode and not self.state.fixminer_swapped:
         self.state.msv_logger.info('First group searched, swap to second group')
         self.state.fixminer_swap_info()
+        self.state.is_alive=False
       else:
         self.state.is_alive = False
     elif self.state.finish_at_correct_patch and self.patch_str in self.state.correct_patch_str:
