@@ -159,6 +159,8 @@ def epsilon_search(state:MSVState):
   top_all_patches=[] # All top scored patches, include searched or not searched
   next_top_fl_patches:List[TbarCaseInfo]=[] # All 'not searched' top scored patches
   next_top_all_patches=[] # All top scored patches, include searched or not searched
+  total_patches=0
+  total_searched=0
   cur_score=-100.
 
   start_time=time.time()
@@ -178,10 +180,25 @@ def epsilon_search(state:MSVState):
         if is_finished: break
       if is_finished: break
 
+    temp_score=0
+    cur_index=0
     while True:
-      cur_list=state.java_patch_ranking_list[state.work_dir_list[state.current_work_dir_index]]
-      cur_remain_list=state.java_remain_patch_ranking_list[state.work_dir_list[state.current_work_dir_index]]
-      if len(cur_remain_list)>0:
+      temp_list=state.java_patch_ranking_list[state.work_dir_list[state.current_work_dir_index]]
+      temp_remain_list=state.java_remain_patch_ranking_list[state.work_dir_list[state.current_work_dir_index]]
+
+      if len(temp_remain_list)>0 and total_patches==0:
+        cur_list=temp_list
+        cur_remain_list=temp_remain_list
+        total_patches=len(cur_list[max(list(cur_list.keys()))])
+        total_searched=total_patches-len(cur_remain_list[max(list(cur_remain_list.keys()))])
+        temp_score=round(max(list(cur_list.keys())),5)
+        cur_index+=1
+      elif total_patches>0:
+        if temp_score in temp_list:
+          total_patches+=len(temp_list[temp_score])
+          total_searched+=(len(temp_list[temp_score])-len(temp_remain_list[temp_score]))
+        cur_index+=1
+      if cur_index==len(state.work_dir_list):
         break
 
       state.current_work_dir_index+=1
@@ -215,8 +232,9 @@ def epsilon_search(state:MSVState):
   state.same_consecutive_score[cur_score]+=1
   if not is_secondary or len(next_top_fl_patches)==0:
     state.msv_logger.debug(f'Use original order, score: {cur_score}')
-    total_patches=len(top_all_patches)
-    total_searched=len(top_all_patches)-len(top_fl_patches)
+    if not state.tbar_mode:
+      total_patches=len(top_all_patches)
+      total_searched=len(top_all_patches)-len(top_fl_patches)
     epsilon=epsilon_greedy(total_patches,total_searched)
     if state.not_use_epsilon_search:
       is_epsilon_greedy=False
@@ -228,6 +246,15 @@ def epsilon_search(state:MSVState):
       state.msv_logger.debug(f'Use epsilon greedy method, epsilon: {epsilon}')
       # index=random.randint(0,len(top_fl_patches)-1)
       # selected_case_info = top_fl_patches[index]
+      if state.tbar_mode:
+        while True:
+          work_dir_index=random.randint(0,len(state.work_dir_list)-1)
+          if len(state.java_remain_patch_ranking_list[state.work_dir_list[work_dir_index]][cur_score])>0:
+            state.msv_logger.debug(f'Select patch in {state.work_dir_list[work_dir_index]}')
+            top_fl_patches=state.java_remain_patch_ranking_list[state.work_dir_list[work_dir_index]][cur_score]
+            top_all_patches=state.java_patch_ranking_list[state.work_dir_list[work_dir_index]][cur_score]
+
+            break
       lines = set()
       for case_info in top_fl_patches:
         if case_info.parent not in lines:
@@ -256,7 +283,7 @@ def epsilon_search(state:MSVState):
       selected_case_info = case_info_list[index]
       state.select_time+=time.time()-start_time
       state.current_work_dir_index+=1
-      if state.current_work_dir_index>=len(state.work_dir_list):
+      if state.current_work_dir_index>=len(state.file_info_map_list):
         state.current_work_dir_index=0
       return selected_case_info
     else:
@@ -273,7 +300,7 @@ def epsilon_search(state:MSVState):
       else:
         state.select_time+=time.time()-start_time
         state.current_work_dir_index+=1
-        if state.current_work_dir_index>=len(state.work_dir_list):
+        if state.current_work_dir_index>=len(state.file_info_map_list):
           state.current_work_dir_index=0
         return top_fl_patches[0]
   
@@ -1425,10 +1452,10 @@ def select_patch_tbar(state: MSVState) -> TbarPatchInfo:
   caseinfo=None
   current_index=state.current_work_dir_index
   while caseinfo is None:
-    if len(state.java_line_workdir_patches_map[state.current_fl_id][state.work_dir_list[current_index]])>0:
+    if state.work_dir_list[current_index] in state.java_line_workdir_patches_map[state.current_fl_id] and len(state.java_line_workdir_patches_map[state.current_fl_id][state.work_dir_list[current_index]])>0:
       caseinfo=state.java_line_workdir_patches_map[state.current_fl_id][state.work_dir_list[current_index]][0]
-      state.current_work_dir_index=current_index+1
-      if state.current_work_dir_index>=len(state.work_dir_list):
+      state.current_work_dir_index+=1
+      if state.current_work_dir_index>=len(state.file_info_map_list):
         state.current_work_dir_index=0
     else:
       current_index+=1
@@ -1633,8 +1660,9 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   selected_switch_info:TbarCaseInfo=epsilon_select(state,selected_type_info)
   clear_list(state, p_map)
   result = TbarPatchInfo(selected_switch_info)
+
   state.current_work_dir_index+=1
-  if state.current_work_dir_index>=len(state.work_dir_list):
+  if state.current_work_dir_index>=len(state.file_info_map_list):
     state.current_work_dir_index=0
   return result
 

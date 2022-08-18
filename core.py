@@ -1373,6 +1373,8 @@ class TbarPatchInfo:
       state.func_list.remove(self.func_info)
     if len(self.file_info.func_info_map) == 0:
       del state.file_info_map_list[self.file_info.work_dir][self.file_info.file_name]
+    if len(state.file_info_map_list[self.file_info.work_dir])==0:
+      del state.file_info_map_list[self.file_info.work_dir]
     self.tbar_case_info.case_update_count += 1
     self.tbar_type_info.case_update_count += 1
     self.tbar_type_info.remain_patches_by_score[self.line_info.fl_score].remove(self.tbar_case_info)

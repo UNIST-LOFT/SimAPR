@@ -519,7 +519,7 @@ def read_info_tbar(state: MSVState) -> None:
           if func_info not in check_func:
             check_func.add(func_info)
             state.func_list.append(func_info)
-          line_info.fl_score = float(line['fl_score'])
+          line_info.fl_score = round(float(line['fl_score']),5)
           func_info.fl_score_list.append(line_info.fl_score)
           file_info.fl_score_list.append(line_info.fl_score)
           file_line = FileLine(file_info, line_info, 0)
