@@ -537,8 +537,8 @@ def read_info_tbar(state: MSVState) -> None:
 
             has_line=False
             cur_uuid=None
-            for line_id,line in func_info.line_info_map.items():
-              if line.line_number==int(line['line']):
+            for line_id,line_info in func_info.line_info_map.items():
+              if line_info.line_number==int(line['line']):
                 has_line=True
                 cur_uuid=line_id
                 break

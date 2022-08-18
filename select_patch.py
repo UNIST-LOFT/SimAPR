@@ -254,7 +254,7 @@ def epsilon_search(state:MSVState):
       if state.tbar_mode:
         while True:
           work_dir_index=random.randint(0,len(state.work_dir_list)-1)
-          if len(state.java_remain_patch_ranking_list[state.work_dir_list[work_dir_index]][cur_score])>0:
+          if cur_score in state.java_remain_patch_ranking_list[state.work_dir_list[work_dir_index]] and len(state.java_remain_patch_ranking_list[state.work_dir_list[work_dir_index]][cur_score])>0:
             state.msv_logger.debug(f'Select patch in {state.work_dir_list[work_dir_index]}')
             top_fl_patches=state.java_remain_patch_ranking_list[state.work_dir_list[work_dir_index]][cur_score]
             top_all_patches=state.java_patch_ranking_list[state.work_dir_list[work_dir_index]][cur_score]
