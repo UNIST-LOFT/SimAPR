@@ -1590,7 +1590,7 @@ def recoder_batch_plot(correct_patch_csv: str, in_dir: str, id: str) -> None:
     seapr_dir =  os.path.join(in_dir, f"{bugid}-seapr-{id}")
     result_file = os.path.join(seapr_dir, "msv-result.json")
     recoder_plot_correct(result_file, f"{bugid}-seapr-{id}", correct_patches[0], switch_info, switch_case_map)
-    for i in range(10):
+    for i in range(20):
       guided_dir = os.path.join(in_dir, f"{bugid}-guided-{id}-{i}")
       result_file = os.path.join(guided_dir, "msv-result.json")
       recoder_plot_correct(result_file, f"{bugid}-guided-{id}-{i}", correct_patches[0], switch_info, switch_case_map)

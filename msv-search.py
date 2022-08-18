@@ -326,7 +326,7 @@ def read_info_recoder(state: MSVState) -> None:
         for cs in line["cases"]:
           case_id = cs["case"]
           # mode = cs["mode"]
-          actlist = cs["actlist"]
+          # actlist = cs["actlist"]
           location = cs["location"]
           prob = cs["prob"]
           # type_map = line_info.recoder_type_info_map
