@@ -237,11 +237,10 @@ class FileInfo:
     self.consecutive_fail_plausible_count:int=0
     self.patches_by_score:Dict[float,List[CaseInfo]]=dict()
     self.remain_patches_by_score:Dict[float,List[CaseInfo]]=dict()
-    self.work_dir:str=""
   def __hash__(self) -> int:
     return hash(self.file_name)
   def __eq__(self, other) -> bool:
-    return self.file_name == other.file_name and self.work_dir==self.work_dir
+    return self.file_name == other.file_name
 
 class FuncInfo:
   def __init__(self, parent: FileInfo, func_name: str, begin: int, end: int) -> None:
@@ -281,7 +280,7 @@ class FuncInfo:
   def __hash__(self) -> int:
     return hash(self.id)
   def __eq__(self, other) -> bool:
-    return self.id == other.id and self.parent.file_name == other.parent.file_name and self.parent.work_dir==other.parent.work_dir
+    return self.id == other.id and self.parent.file_name == other.parent.file_name
 
 class LineInfo:
   def __init__(self, parent: FuncInfo, line_number: int) -> None:
@@ -339,10 +338,11 @@ class TbarTypeInfo:
     self.consecutive_fail_plausible_count:int=0
     self.patches_by_score:Dict[float,List[CaseInfo]]=dict()
     self.remain_patches_by_score:Dict[float,List[CaseInfo]]=dict()
+    self.work_dir=''
   def __hash__(self) -> int:
     return hash(self.mutation)
   def __eq__(self, other) -> bool:
-    return self.mutation == other.mutation and self.parent==other.parent
+    return self.mutation == other.mutation and self.parent==other.parent and self.work_dir==other.work_dir
 
 class TbarCaseInfo:
   def __init__(self, parent: TbarTypeInfo, location: str, start: int, end: int) -> None:
@@ -364,7 +364,7 @@ class TbarCaseInfo:
   def __hash__(self) -> int:
     return hash(self.location)
   def __eq__(self, other) -> bool:
-    return self.location == other.location and self.parent.parent.uuid==other.parent.parent.uuid
+    return self.location == other.location and self.parent.parent.uuid==other.parent.parent.uuid and self.parent==other.parent
 
 class RecoderTypeInfo:
   def __init__(self, parent: LineInfo, act: str, prev: 'RecoderTypeInfo') -> None:
@@ -922,7 +922,7 @@ class MSVEnvVar:
     new_env["MSV_UUID"] = str(state.uuid)
     new_env["MSV_TEST"] = str(test)
     new_env["MSV_LOCATION"] = str(patch.tbar_case_info.location)
-    new_env["MSV_WORKDIR"] = patch.file_info.work_dir[:-2] if state.fixminer_mode and 'FixMiner' in patch.file_info.work_dir else patch.file_info.work_dir
+    new_env["MSV_WORKDIR"] = patch.tbar_type_info.work_dir[:-2] if state.fixminer_mode and 'FixMiner' in patch.tbar_type_info.work_dir else patch.tbar_type_info.work_dir
     new_env["MSV_BUGGY_LOCATION"] = patch.file_info.file_name
     new_env["MSV_BUGGY_PROJECT"] = state.d4j_buggy_project
     new_env["MSV_OUTPUT_DISTANCE_FILE"] = f"/tmp/{uuid.uuid4()}.out"
@@ -1360,7 +1360,7 @@ class TbarPatchInfo:
     if self.tbar_case_info.location not in self.tbar_type_info.tbar_case_info_map:
       state.msv_logger.critical(f"{self.tbar_case_info.location} not in {self.tbar_type_info.tbar_case_info_map}")
     del self.tbar_type_info.tbar_case_info_map[self.tbar_case_info.location]
-    state.java_line_workdir_patches_map[f"{self.file_info.file_name}:{self.line_info.line_number}"][self.file_info.work_dir].remove(self.tbar_case_info)
+    state.java_line_workdir_patches_map[f"{self.file_info.file_name}:{self.line_info.line_number}"][self.tbar_type_info.work_dir].remove(self.tbar_case_info)
     if len(self.tbar_type_info.tbar_case_info_map) == 0:
       del self.line_info.tbar_type_info_map[self.tbar_type_info.mutation]
     if len(self.line_info.tbar_type_info_map) == 0:
@@ -1372,9 +1372,7 @@ class TbarPatchInfo:
       del self.file_info.func_info_map[self.func_info.id]
       state.func_list.remove(self.func_info)
     if len(self.file_info.func_info_map) == 0:
-      del state.file_info_map_list[self.file_info.work_dir][self.file_info.file_name]
-    if len(state.file_info_map_list[self.file_info.work_dir])==0:
-      del state.file_info_map_list[self.file_info.work_dir]
+      del state.file_info_map[self.file_info.file_name]
     self.tbar_case_info.case_update_count += 1
     self.tbar_type_info.case_update_count += 1
     self.tbar_type_info.remain_patches_by_score[self.line_info.fl_score].remove(self.tbar_case_info)
@@ -1384,7 +1382,7 @@ class TbarPatchInfo:
     self.func_info.remain_patches_by_score[self.line_info.fl_score].remove(self.tbar_case_info)
     self.file_info.case_update_count += 1
     self.file_info.remain_patches_by_score[self.line_info.fl_score].remove(self.tbar_case_info)
-    state.java_remain_patch_ranking_list[self.file_info.work_dir][self.line_info.fl_score].remove(self.tbar_case_info)
+    state.java_remain_patch_ranking_list[self.tbar_type_info.work_dir][self.line_info.fl_score].remove(self.tbar_case_info)
     self.func_info.searched_patches_by_score[self.line_info.fl_score]+=1
 
   def to_json_object(self) -> dict:
@@ -1812,7 +1810,7 @@ def append_java_cache_result(state:MSVState,case:TbarCaseInfo,fail_result:bool,p
   """
   id=case.location
   if state.tbar_mode:
-    file=state.simulation_data_list[case.parent.parent.parent.parent.work_dir]
+    file=state.simulation_data_list[case.parent.work_dir]
     if id not in file:
       current=dict()
       current['basic']=fail_result

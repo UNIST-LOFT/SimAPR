@@ -180,24 +180,29 @@ def epsilon_search(state:MSVState):
         if is_finished: break
       if is_finished: break
 
-    temp_score=0
     cur_index=0
     while True:
+      temp_score=0
       temp_list=state.java_patch_ranking_list[state.work_dir_list[state.current_work_dir_index]]
       temp_remain_list=state.java_remain_patch_ranking_list[state.work_dir_list[state.current_work_dir_index]]
+      temp_remain_list_sorted=sorted(temp_remain_list.keys(),reverse=True)
+      for score in temp_remain_list_sorted:
+        if len(temp_remain_list[score])>0:
+          temp_score=score
+          break
 
-      if len(temp_remain_list)>0 and total_patches==0:
+      if cur_score<temp_score:
+        cur_score=temp_score
+        cur_index=0
         cur_list=temp_list
         cur_remain_list=temp_remain_list
-        total_patches=len(cur_list[max(list(cur_list.keys()))])
-        total_searched=total_patches-len(cur_remain_list[max(list(cur_remain_list.keys()))])
-        temp_score=round(max(list(cur_list.keys())),5)
-        cur_index+=1
-      elif total_patches>0:
-        if temp_score in temp_list:
-          total_patches+=len(temp_list[temp_score])
-          total_searched+=(len(temp_list[temp_score])-len(temp_remain_list[temp_score]))
-        cur_index+=1
+        total_patches=len(temp_list[temp_score])
+        total_searched=total_patches-len(temp_remain_list[temp_score])
+      elif cur_score==temp_score:
+        total_patches+=len(temp_list[temp_score])
+        total_searched+=(len(temp_list[temp_score])-len(temp_remain_list[temp_score]))
+      cur_index+=1
+
       if cur_index==len(state.work_dir_list):
         break
 
@@ -282,9 +287,6 @@ def epsilon_search(state:MSVState):
       index = random.randint(0, len(case_info_list)-1)
       selected_case_info = case_info_list[index]
       state.select_time+=time.time()-start_time
-      state.current_work_dir_index+=1
-      if state.current_work_dir_index>=len(state.file_info_map_list):
-        state.current_work_dir_index=0
       return selected_case_info
     else:
       state.msv_logger.debug(f'Use original order, epsilon: {epsilon}')
@@ -299,9 +301,6 @@ def epsilon_search(state:MSVState):
         return final_case
       else:
         state.select_time+=time.time()-start_time
-        state.current_work_dir_index+=1
-        if state.current_work_dir_index>=len(state.file_info_map_list):
-          state.current_work_dir_index=0
         return top_fl_patches[0]
   
   else:
@@ -337,8 +336,35 @@ def epsilon_select(state:MSVState,source=None):
   # Get all top fl patches
   if source is None:
     if state.tbar_mode:
-      cur_list=state.java_patch_ranking_list[state.work_dir_list[state.current_work_dir_index]]
-      cur_remain_list=state.java_remain_patch_ranking_list[state.work_dir_list[state.current_work_dir_index]]
+      cur_index=0
+      while True:
+        temp_score=0
+        temp_list=state.java_patch_ranking_list[state.work_dir_list[state.current_work_dir_index]]
+        temp_remain_list=state.java_remain_patch_ranking_list[state.work_dir_list[state.current_work_dir_index]]
+        temp_remain_list_sorted=sorted(temp_remain_list.keys(),reverse=True)
+        for score in temp_remain_list_sorted:
+          if len(temp_remain_list[score])>0:
+            temp_score=score
+            break
+
+        if cur_score<temp_score:
+          cur_score=temp_score
+          cur_index=0
+          cur_list=temp_list
+          cur_remain_list=temp_remain_list
+          total_patches=len(temp_list[temp_score])
+          total_searched=total_patches-len(temp_remain_list[temp_score])
+        elif cur_score==temp_score:
+          total_patches+=len(temp_list[temp_score])
+          total_searched+=(len(temp_list[temp_score])-len(temp_remain_list[temp_score]))
+        cur_index+=1
+
+        if cur_index==len(state.work_dir_list):
+          break
+
+        state.current_work_dir_index+=1
+        if state.current_work_dir_index>=len(state.work_dir_list):
+          state.current_work_dir_index=0
     elif state.recoder_mode:
       cur_list=state.java_patch_ranking
       cur_remain_list=state.java_remain_patch_ranking
@@ -395,7 +421,7 @@ def epsilon_select(state:MSVState,source=None):
       if state.tbar_mode:
         # For java
         if source is None:
-          if case_info.parent.parent.parent.parent in state.file_info_map_list[state.work_dir_list[state.current_work_dir_index]].values():
+          if case_info.parent.parent.parent.parent in state.file_info_map.values():
             result.add(case_info.parent.parent.parent.parent)
         elif type(source) == FileInfo:
           if case_info.parent.parent.parent in source.func_info_map.values():
@@ -1452,10 +1478,10 @@ def select_patch_tbar(state: MSVState) -> TbarPatchInfo:
   caseinfo=None
   current_index=state.current_work_dir_index
   while caseinfo is None:
-    if state.work_dir_list[current_index] in state.java_line_workdir_patches_map[state.current_fl_id] and len(state.java_line_workdir_patches_map[state.current_fl_id][state.work_dir_list[current_index]])>0:
+    if state.work_dir_list[current_index] in state.java_line_workdir_patches_map[state.current_fl_id] and state.work_dir_list[current_index] in state.java_line_workdir_patches_map[state.current_fl_id] and len(state.java_line_workdir_patches_map[state.current_fl_id][state.work_dir_list[current_index]])>0:
       caseinfo=state.java_line_workdir_patches_map[state.current_fl_id][state.work_dir_list[current_index]][0]
       state.current_work_dir_index+=1
-      if state.current_work_dir_index>=len(state.file_info_map_list):
+      if state.current_work_dir_index>=len(state.work_dir_list):
         state.current_work_dir_index=0
     else:
       current_index+=1
@@ -1523,7 +1549,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
     state.msv_logger.info("Exploit!")
 
   # Select file
-  if state.total_basic_patch_list[state.work_dir_list[state.current_work_dir_index]]==0 or state.not_use_guided_search:
+  if state.total_basic_patch==0 or state.not_use_guided_search:
     selected_switch_info=epsilon_search(state)
     result = TbarPatchInfo(selected_switch_info)
     return result
@@ -1532,16 +1558,16 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   # if state.current_work_dir_index>=len(state.work_dir_list):
   #   state.current_work_dir_index=0
 
-  selected_file_info,is_guided = select_patch_guide_algorithm(state,state.file_info_map_list[state.work_dir_list[state.current_work_dir_index]],None)
-  for file_name in state.file_info_map_list[selected_file_info.work_dir]:
-    file_info=state.file_info_map_list[selected_file_info.work_dir][file_name]
+  selected_file_info,is_guided = select_patch_guide_algorithm(state,state.file_info_map,None)
+  for file_name in state.file_info_map:
+    file_info=state.file_info_map[file_name]
     p_fl.append(max(file_info.fl_score_list))
     p_frequency.append(file_info.children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0)
     p_bp_frequency.append(file_info.consecutive_fail_count)
   norm=PassFail.normalize(p_fl)
   selected_file=0
-  for i,file in enumerate(state.file_info_map_list[selected_file_info.work_dir]):
-    if state.file_info_map_list[selected_file_info.work_dir][file]==selected_file_info:
+  for i,file in enumerate(state.file_info_map):
+    if state.file_info_map[file]==selected_file_info:
       selected_file=i
       break
   state.msv_logger.debug(f'Selected file: FL: {norm[selected_file]}/{p_fl[selected_file]}, Basic: {selected_file_info.pf.beta_mode(selected_file_info.pf.pass_count,selected_file_info.pf.fail_count)}, '+
@@ -1662,7 +1688,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   result = TbarPatchInfo(selected_switch_info)
 
   state.current_work_dir_index+=1
-  if state.current_work_dir_index>=len(state.file_info_map_list):
+  if state.current_work_dir_index>=len(state.work_dir_list):
     state.current_work_dir_index=0
   return result
 

@@ -361,13 +361,10 @@ class MSV:
 
 class MSVTbar(MSV):
   def is_alive(self) -> bool:
-    total=0
-    for workdir in self.state.file_info_map_list:
-      total+=len(self.state.file_info_map_list[workdir])
     total_ranking=0
     for workdir in self.state.patch_ranking_list:
       total_ranking+=len(self.state.patch_ranking_list[workdir])
-    if total == 0:
+    if len(self.state.file_info_map) == 0:
       if self.state.fixminer_mode and not self.state.fixminer_swapped:
         self.state.msv_logger.info('First group searched, swap to second group')
         self.state.fixminer_swap_info()
@@ -496,7 +493,7 @@ class MSVTbar(MSV):
       is_compilable = True
       pass_time=0
       key = patch.tbar_case_info.location
-      if key not in self.state.simulation_data_list[patch.file_info.work_dir]:
+      if key not in self.state.simulation_data_list[patch.tbar_type_info.work_dir]:
         for neg in self.state.d4j_negative_test:
           compilable, run_result,fail_time = self.run_test(patch, neg)
           self.state.test_time+=fail_time
@@ -518,7 +515,7 @@ class MSVTbar(MSV):
           self.state.iteration += 1
 
       else:
-        msv_result = self.state.simulation_data_list[patch.file_info.work_dir][key]
+        msv_result = self.state.simulation_data_list[patch.tbar_type_info.work_dir][key]
         pass_exists = msv_result['basic']
         result = msv_result['pass_all_fail']
         pass_result = msv_result['plausible']

@@ -457,15 +457,13 @@ def read_info_tbar(state: MSVState) -> None:
       #   store = (temp_file, temp_line, score)
       #   state.priority_list.append(store)
       # Read rules to build patch tree structure
-      state.file_info_map_list[work_dir]=dict()
-      file_map = state.file_info_map_list[work_dir]
       ff_map: Dict[str, Dict[str, Tuple[int, int]]] = dict()
       check_func: Set[FuncInfo] = set()
       for file in info["func_locations"]:
         file_name = file["file"]
         ff_map[file_name] = dict()
         for func in file["functions"]:
-          func_name = func["function"]
+          func_name = func["function"].split('[')[0]
           begin = func["begin"]
           end = func["end"]
           func_id = f"{func_name}:{begin}-{end}"
@@ -474,12 +472,15 @@ def read_info_tbar(state: MSVState) -> None:
       for file in info['rules']:
         if len(file['lines']) == 0:
           continue
-        file_info = FileInfo(file['file_name'])
+          
         file_name = file['file_name']
-        file_info.work_dir=work_dir
+        if file_name in state.file_info_map:
+          file_info=state.file_info_map[file_name]
+        else:
+          file_info = FileInfo(file_name)
+          state.file_info_map[file_name]=file_info
         if "class_name" in file:
           file_info.class_name = file["class_name"]
-        file_map[file['file_name']] = file_info
         case_key = 'switches'
         for line in file['lines']:
           func_info = None
@@ -499,8 +500,24 @@ def read_info_tbar(state: MSVState) -> None:
                   state.total_methods+=1
                 else:
                   func_info = file_info.func_info_map[func_id]
-                line_info = LineInfo(func_info, int(line['line']))
-                func_info.line_info_map[line_info.uuid] = line_info
+
+                has_line=False
+                cur_uuid=None
+                for line_id,line_info in func_info.line_info_map.items():
+                  if line_info.line_number==int(line['line']):
+                    has_line=True
+                    cur_uuid=line_id
+                    break
+                if has_line:
+                  line_info=func_info.line_info_map[cur_uuid]
+                else:
+                  line_info = LineInfo(func_info, int(line['line']))
+                  func_info.line_info_map[line_info.uuid] = line_info
+                  line_info.fl_score = round(float(line['fl_score']),5)
+                  func_info.fl_score_list.append(line_info.fl_score)
+                  file_info.fl_score_list.append(line_info.fl_score)
+                  file_line = FileLine(file_info, line_info, 0)
+                  state.priority_map[f"{file_info.file_name}:{line_info.line_number}"] = file_line
                 break
           else:
             ff_map[file_name] = dict()
@@ -509,21 +526,37 @@ def read_info_tbar(state: MSVState) -> None:
             # No function found for this line!!!
             # Use default...
             state.msv_logger.info(f"No function found {file_info.file_name}:{line['line']}")
-            func_info = FuncInfo(file_info, "no_function_found", int(line['line']), int(line['line']))
-            file_info.func_info_map[func_info.id] = func_info
+            func_id=f"no_function_found:{line['line']}-{line['line']}"
+            if func_id in file_info.func_info_map:
+              func_info=file_info.func_info_map[func_id]
+            else:
+              func_info = FuncInfo(file_info, "no_function_found", int(line['line']), int(line['line']))
+              file_info.func_info_map[func_info.id] = func_info
             state.total_methods+=1
             ff_map[file_name][func_info.id] = (int(line['line']), int(line['line']))
-            line_info = LineInfo(func_info, int(line['line']))
-            func_info.line_info_map[line_info.uuid] = line_info
+
+            has_line=False
+            cur_uuid=None
+            for line_id,line in func_info.line_info_map.items():
+              if line.line_number==int(line['line']):
+                has_line=True
+                cur_uuid=line_id
+                break
+            if has_line:
+              line_info=func_info.line_info_map[cur_uuid]
+            else:
+              line_info = LineInfo(func_info, int(line['line']))
+              line_info.fl_score = round(float(line['fl_score']),5)
+              func_info.fl_score_list.append(line_info.fl_score)
+              file_info.fl_score_list.append(line_info.fl_score)
+              file_line = FileLine(file_info, line_info, 0)
+              state.priority_map[f"{file_info.file_name}:{line_info.line_number}"] = file_line
+              func_info.line_info_map[line_info.uuid] = line_info
           state.line_list.append(line_info)
           if func_info not in check_func:
             check_func.add(func_info)
             state.func_list.append(func_info)
-          line_info.fl_score = round(float(line['fl_score']),5)
-          func_info.fl_score_list.append(line_info.fl_score)
-          file_info.fl_score_list.append(line_info.fl_score)
-          file_line = FileLine(file_info, line_info, 0)
-          state.priority_map[f"{file_info.file_name}:{line_info.line_number}"] = file_line
+
           cses = None
           if "cases" in line:
             cses = line['cases']
@@ -542,6 +575,7 @@ def read_info_tbar(state: MSVState) -> None:
             if mut not in line_info.tbar_type_info_map:
               line_info.tbar_type_info_map[mut] = TbarTypeInfo(line_info, mut)
             tbar_type_info = line_info.tbar_type_info_map[mut]
+            tbar_type_info.work_dir=work_dir
             tbar_case_info = TbarCaseInfo(tbar_type_info, location, start, end)
             tbar_type_info.tbar_case_info_map[location] = tbar_case_info
             if work_dir not in state.switch_case_map_list:
