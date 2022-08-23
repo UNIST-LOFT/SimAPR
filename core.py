@@ -204,6 +204,7 @@ class PassFail:
   # fail function
   def log_func(x: float, half: float = 50) -> float:
     a = half + math.pow(half, 0.5)
+    # a*=0.5
     if a-x<0:
       return 0.
     else:
