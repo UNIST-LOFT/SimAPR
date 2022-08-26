@@ -207,14 +207,14 @@ def seapr_misguide_rate(other_result: Dict[str,List[str]],mode='tbar',dir_postfi
     f.write('category,number,ratio_total,ratio_compilable,ratio_match\n')
     total=compilable[0]+compilable[1]
     f.write(f'compilable,{compilable[0]},{compilable[0]/total*100},,\n')
-    f.write(f'HQ_method_match,{hq_method[0]},{hq_method[0]/total*100},{hq_method[0]/compilable[0]*100},{hq_method[0]/(hq_method[0]+hq_method[1])*100}\n')
-    f.write(f'HQ_method_mismatch,{hq_method[1]},{hq_method[1]/total*100},{hq_method[1]/compilable[0]*100},{hq_method[1]/(hq_method[0]+hq_method[1])*100}\n')
-    f.write(f'HQ_template_match,{hq_type[0]},{hq_type[0]/total*100},{hq_type[0]/compilable[0]*100},{hq_type[0]/(hq_type[0]+hq_type[1])*100}\n')
-    f.write(f'HQ_template_mismatch,{hq_type[1]},{hq_type[1]/total*100},{hq_type[1]/compilable[0]*100},{hq_type[1]/(hq_type[0]+hq_type[1])*100}\n')
-    f.write(f'LQ_method_match,{lq_method[0]},{lq_method[0]/total*100},{lq_method[0]/compilable[0]*100},{lq_method[0]/(lq_method[0]+lq_method[1])*100}\n')
-    f.write(f'LQ_method_mismatch,{lq_method[1]},{lq_method[1]/total*100},{lq_method[1]/compilable[0]*100},{lq_method[1]/(lq_method[0]+lq_method[1])*100}\n')
-    f.write(f'LQ_template_match,{lq_type[0]},{lq_type[0]/total*100},{lq_type[0]/compilable[0]*100},{lq_type[0]/(lq_type[0]+lq_type[1])*100}\n')
-    f.write(f'LQ_template_mismatch,{lq_type[1]},{lq_type[1]/total*100},{lq_type[1]/compilable[0]*100},{lq_type[1]/(lq_type[0]+lq_type[1])*100}\n')
+    f.write(f'HQ_method_match,{hq_method[0]},{round(hq_method[0]/total*100,2)},{round(hq_method[0]/compilable[0]*100,2)},{round(hq_method[0]/(hq_method[0]+hq_method[1])*100,2)}\n')
+    f.write(f'HQ_method_mismatch,{hq_method[1]},{round(hq_method[1]/total*100,2)},{round(hq_method[1]/compilable[0]*100,2)},{round(hq_method[1]/(hq_method[0]+hq_method[1])*100,2)}\n')
+    f.write(f'HQ_template_match,{hq_type[0]},{round(hq_type[0]/total*100,2)},{round(hq_type[0]/compilable[0]*100,2)},{round(hq_type[0]/(hq_type[0]+hq_type[1])*100,2)}\n')
+    f.write(f'HQ_template_mismatch,{hq_type[1]},{round(hq_type[1]/total*100,2)},{round(hq_type[1]/compilable[0]*100,2)},{round(hq_type[1]/(hq_type[0]+hq_type[1])*100,2)}\n')
+    f.write(f'LQ_method_match,{lq_method[0]},{round(lq_method[0]/total*100,2)},{round(lq_method[0]/compilable[0]*100,2)},{round(lq_method[0]/(lq_method[0]+lq_method[1])*100,2)}\n')
+    f.write(f'LQ_method_mismatch,{lq_method[1]},{round(lq_method[1]/total*100,2)},{round(lq_method[1]/compilable[0]*100,2)},{round(lq_method[1]/(lq_method[0]+lq_method[1])*100,2)}\n')
+    f.write(f'LQ_template_match,{lq_type[0]},{round(lq_type[0]/total*100,2)},{round(lq_type[0]/compilable[0]*100,2)},{round(lq_type[0]/(lq_type[0]+lq_type[1])*100,2)}\n')
+    f.write(f'LQ_template_mismatch,{lq_type[1]},{round(lq_type[1]/total*100,2)},{round(lq_type[1]/compilable[0]*100,2)},{round(lq_type[1]/(lq_type[0]+lq_type[1])*100,2)}\n')
     
 import guided_datas
 seapr_misguide_rate(guided_datas.OTHER_CORRECT_TBAR,'tbar')
