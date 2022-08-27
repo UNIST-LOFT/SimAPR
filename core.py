@@ -204,6 +204,7 @@ class PassFail:
   # fail function
   def log_func(x: float, half: float = 50) -> float:
     a = half + math.pow(half, 0.5)
+    # a*=0.5
     if a-x<0:
       return 0.
     else:
@@ -1807,7 +1808,7 @@ def append_java_cache_result(state:MSVState,case:TbarCaseInfo,fail_result:bool,p
     state.simulation_data[id]=current
 
 def append_c_cache_result(state:MSVState,case:CaseInfo,fail_result:bool,pass_result:bool,pass_all_fail:bool,compilable:bool,
-      fail_time:int,pass_time:int,operator:OperatorInfo=None,variable:VariableInfo=None,constant:ConstantInfo=None):
+      fail_time:float,pass_time:float,operator:OperatorInfo=None,variable:VariableInfo=None,constant:ConstantInfo=None):
   """
     Append result to cache file, if not exist. Otherwise, do nothing.
     

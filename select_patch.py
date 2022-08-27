@@ -204,22 +204,34 @@ def epsilon_search(state:MSVState):
     if is_epsilon_greedy:
       # Perform random search in epsilon probability
       state.msv_logger.debug(f'Use epsilon greedy method, epsilon: {epsilon}')
-      index=random.randint(0,len(top_fl_patches)-1)
-      selected_case_info = top_fl_patches[index]
-      if state.recoder_mode:
-        lines = set()
-        for case_info in top_fl_patches:
-          if case_info.parent not in lines:
+      # index=random.randint(0,len(top_fl_patches)-1)
+      # selected_case_info = top_fl_patches[index]
+      lines = set()
+      for case_info in top_fl_patches:
+        if case_info.parent not in lines:
+          if state.recoder_mode:
             lines.add(case_info.parent)
-        line_list = list(lines)
-        index = random.randint(0, len(line_list)-1)
-        line_info: LineInfo = line_list[index]
-        likelihood = list()
+          elif state.tbar_mode:
+            lines.add(case_info.parent.parent)
+          else:
+            lines.add(case_info.parent.parent.parent)
+      line_list = list(lines)
+      index = random.randint(0, len(line_list)-1)
+      line_info: LineInfo = line_list[index]
+      case_info_list=[]
+      if state.recoder_mode:
         case_info_list = list(line_info.recoder_case_info_map.values())
-        for case_info in case_info_list:
-          likelihood.append(case_info.prob)
-        index = PassFail.select_by_probability(PassFail.softmax(PassFail.normalize(likelihood)))
-        selected_case_info = case_info_list[index]
+      elif state.tbar_mode:
+        for case_info in top_fl_patches:
+          if case_info.parent.parent==line_info:
+            case_info_list.append(case_info)
+      else:
+        for case_info in top_fl_patches:
+          if case_info.parent.parent.parent==line_info:
+            case_info_list.append(case_info)
+
+      index = random.randint(0, len(case_info_list)-1)
+      selected_case_info = case_info_list[index]
       state.select_time+=time.time()-start_time
       return selected_case_info
     else:
@@ -381,14 +393,6 @@ def epsilon_select(state:MSVState,source=None):
     # Choose random element in candidates
     result=list(result)
     index=random.randint(0,len(result)-1)
-    if state.recoder_mode and type(source) == LineInfo:
-      likelihood = list()
-      for case_info in result:
-        likelihood.append(case_info.prob)
-      # lh_min = min(likelihood) * 1.1
-      # for lh in range(len(likelihood)):
-      #   likelihood[lh] -= lh_min
-      index = PassFail.select_by_probability(PassFail.softmax(PassFail.normalize(likelihood)))
     state.select_time+=time.time()-start_time
     return result[index]
   else:
@@ -1570,6 +1574,37 @@ def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
     loc = func.case_rank_list[0]
     case_info: TbarCaseInfo = state.switch_case_map[loc]
     return case_info
+
+  state.func_list.sort(key=lambda x: max(x.fl_score_list), reverse=True)
+  seapr_ranks=dict()
+  for func in state.func_list:
+    if func.func_rank > 30:
+      continue
+    cur_score = get_ochiai(func.same_seapr_pf.pass_count, func.same_seapr_pf.fail_count, func.diff_seapr_pf.pass_count, func.diff_seapr_pf.fail_count)
+    if cur_score not in seapr_ranks:
+      seapr_ranks[cur_score]=[]
+    seapr_ranks[cur_score].append(func)
+  seapr_ranks_sorted=sorted(seapr_ranks.keys(), reverse=True)
+
+  for cor_patch in state.correct_patch_list:
+    counter=0
+    is_finish=False
+    for score in seapr_ranks_sorted:
+      for func in seapr_ranks[score]:
+        if cor_patch not in func.case_rank_list:
+          counter+=len(func.case_rank_list)
+        else:
+          for patch in func.case_rank_list:
+            if patch!=cor_patch:
+              counter+=1
+            else:
+              is_finish=True
+              state.msv_logger.debug(f'Correct patch {cor_patch} is ranked {counter+1}')
+              break
+        if is_finish:
+          break
+      if is_finish:
+        break
 
   # Optimization for default SeAPR
   start_time = time.time()

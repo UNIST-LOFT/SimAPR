@@ -28,7 +28,7 @@ class MSV:
       self.state.is_alive = False
     if self.state.cycle_limit > 0 and self.state.iteration >= self.state.cycle_limit:
       self.state.is_alive = False
-    elif self.state.time_limit > 0 and (time.time() - self.state.start_time) > self.state.time_limit:
+    elif self.state.time_limit > 0 and (self.state.select_time+self.state.test_time) > self.state.time_limit:
       self.state.is_alive = False
     elif len(self.state.priority_map) == 0 or len(self.state.priority_list) == 0:
       self.state.is_alive = False
@@ -369,7 +369,7 @@ class MSVTbar(MSV):
         self.state.is_alive = False
     if self.state.cycle_limit > 0 and self.state.iteration >= self.state.cycle_limit:
       self.state.is_alive = False
-    elif self.state.time_limit > 0 and (time.time() - self.state.start_time) > self.state.time_limit:
+    elif self.state.time_limit > 0 and (self.state.select_time+self.state.test_time) > self.state.time_limit:
       self.state.is_alive = False
     elif len(self.state.patch_ranking) == 0:
       if self.state.fixminer_mode and not self.state.fixminer_swapped:
@@ -535,7 +535,7 @@ class MSVRecoder(MSVTbar):
       self.state.is_alive = False
     if self.state.cycle_limit > 0 and self.state.iteration >= self.state.cycle_limit:
       self.state.is_alive = False
-    elif self.state.time_limit > 0 and (time.time() - self.state.start_time) > self.state.time_limit:
+    elif self.state.time_limit > 0 and (self.state.select_time+self.state.test_time) > self.state.time_limit:
       self.state.is_alive = False
     elif len(self.state.patch_ranking) == 0:
       self.state.is_alive = False
