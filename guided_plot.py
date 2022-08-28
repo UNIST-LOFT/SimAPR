@@ -1986,8 +1986,31 @@ def tbar_plot_hq(guided_result: Dict[str,List[str]],other_result: Dict[str,List[
   plt.xticks([0,1,2,3,4],labels=['Other','File','Method','Line','Template'],fontsize=12)
   plt.yticks(fontsize=12)
   plt.legend(fontsize=12)
-  plt.savefig(f'level-hq-ratio-{mode}.png',bbox_inches='tight')
   plt.savefig(f'level-hq-ratio-{mode}.pdf',bbox_inches='tight')
+  with open(f'level-hq-ratio-{mode}.csv','wt') as f:
+    f.write('size,obs,total,other,file,func,line,template\n')
+
+    guide_list=[]
+    other_list=[]
+    for name in pos_result:
+      guide_list.append(pos_result[name][0])
+      other_list.append(pos_result[name][1])
+    f.write(f'{len(pos_result)},{versions[0]},{len(pos_result_dist)},{pos_result_dist.count(5)},{pos_result_dist.count(4)},{pos_result_dist.count(3)},{pos_result_dist.count(2)},{pos_result_dist.count(1)}\n')
+
+    guide_list=[]
+    other_list=[]
+    for name in neut_result:
+      guide_list.append(neut_result[name][0])
+      other_list.append(neut_result[name][1])
+    f.write(f'{len(neut_result)},{versions[2]},{len(neut_result_dist)},{neut_result_dist.count(5)},{neut_result_dist.count(4)},{neut_result_dist.count(3)},{neut_result_dist.count(2)},{neut_result_dist.count(1)}\n')
+
+    guide_list=[]
+    other_list=[]
+    for name in neg_result:
+      guide_list.append(neg_result[name][0])
+      other_list.append(neg_result[name][1])
+    f.write(f'{len(neg_result)},{versions[1]},{len(neg_result_dist)},{neg_result_dist.count(5)},{neg_result_dist.count(4)},{neg_result_dist.count(3)},{neg_result_dist.count(2)},{neg_result_dist.count(1)}\n')
+
   with open(f'level-hq-ratio-{mode}.tex','wt') as f:
     f.write('\multirow{3}{*}{\\tbar}')
 
