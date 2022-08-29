@@ -163,7 +163,12 @@ def seapr_misguide_rate(other_result: Dict[str,List[str]],mode='tbar',dir_postfi
       correct_line.append(correct_tbar_type[-1].parent)
       correct_func.append(correct_line[-1].parent)
       correct_file.append(correct_func[-1].parent)
-    with open(f'/root/project/experiment/result-{mode}{dir_postfix}/'+result+f'/msv-result.json', "r") as f:
+
+    if result in os.listdir(f'/root/project/experiment/result-{mode}{dir_postfix}/'):
+      file=f'/root/project/experiment/result-{mode}{dir_postfix}/'+result+'/msv-result.json'
+    else:
+      file=f'/root/project/experiment/result-{mode}-plau{dir_postfix}/'+result+f'/msv-result.json'
+    with open(file, "r") as f:
       info = json.load(f)
       total = 0
       for data in info:
@@ -217,4 +222,4 @@ def seapr_misguide_rate(other_result: Dict[str,List[str]],mode='tbar',dir_postfi
     f.write(f'LQ_template_mismatch,{lq_type[1]},{round(lq_type[1]/total*100,2)},{round(lq_type[1]/compilable[0]*100,2)},{round(lq_type[1]/(lq_type[0]+lq_type[1])*100,2)}\n')
     
 import guided_datas
-seapr_misguide_rate(guided_datas.OTHER_CORRECT_TBAR,'tbar')
+seapr_misguide_rate(guided_datas.OTHER_CORRECT_TBAR,'tbar','-220823')

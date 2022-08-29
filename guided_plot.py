@@ -1838,7 +1838,11 @@ def tbar_plot_hq(guided_result: Dict[str,List[str]],other_result: Dict[str,List[
         correct_file.append(correct_func[-1].parent)
       total_result=[]
       for i in range(1,21):
-        with open(f'/root/project/experiment/result-{mode}{dir_postfix}/'+result+f'-{i}/msv-result.json', "r") as f:
+        if f'{result}-{i}' in os.listdir(f'/root/project/experiment/result-{mode}{dir_postfix}/'):
+          file=f'/root/project/experiment/result-{mode}{dir_postfix}/'+result+f'-{i}/msv-result.json'
+        else:
+          file=f'/root/project/experiment/result-{mode}-plau{dir_postfix}/'+result+f'-{i}/msv-result.json'
+        with open(file, "r") as f:
           info = json.load(f)
           total = 0
           for data in info:
@@ -1894,7 +1898,12 @@ def tbar_plot_hq(guided_result: Dict[str,List[str]],other_result: Dict[str,List[
         correct_line.append(correct_tbar_type[-1].parent)
         correct_func.append(correct_line[-1].parent)
         correct_file.append(correct_func[-1].parent)
-      with open(f'/root/project/experiment/result-{mode}{dir_postfix}/'+result+f'/msv-result.json', "r") as f:
+
+      if result in os.listdir(f'/root/project/experiment/result-{mode}{dir_postfix}/'):
+        file=f'/root/project/experiment/result-{mode}{dir_postfix}/'+result+'/msv-result.json'
+      else:
+        file=f'/root/project/experiment/result-{mode}-plau{dir_postfix}/'+result+f'/msv-result.json'
+      with open(file, "r") as f:
         info = json.load(f)
         total = 0
         for data in info:
@@ -2401,8 +2410,7 @@ def analyze_log(log_file: str):
 
 # tbar_plot_compare_guided()
 import guided_datas
-recoder_plot_hq(sys.argv[1], sys.argv[2], sys.argv[3])
-# tbar_plot_hq(guided_datas.GUIDED_CORRECT_TBAR,guided_datas.OTHER_CORRECT_TBAR_ONLY,'tbar')
+tbar_plot_hq(guided_datas.GUIDED_CORRECT_TBAR,guided_datas.OTHER_CORRECT_TBAR_ONLY,'tbar')
 # tbar_plot_hq(guided_datas.GUIDED_CORRECT_KPAR,guided_datas.OTHER_CORRECT_KPAR_ONLY,'kpar')
 # tbar_plot_hq(guided_datas.GUIDED_CORRECT_AVATAR,guided_datas.OTHER_CORRECT_AVATAR_ONLY,'avatar')
 # tbar_plot_hq(guided_datas.GUIDED_CORRECT_FIXMINER,guided_datas.OTHER_CORRECT_FIXMINER_ONLY,'fixminer')
