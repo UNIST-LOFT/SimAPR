@@ -158,6 +158,7 @@ def test_patched_project(patch_location: str, buggy_location: str, work_dir: str
     os.remove(class_file)
   else:
     deleteDirectory(get_classpath(work_dir, buggy_project))
+    deleteDirectory(get_test_classpath(work_dir, buggy_project))
   try:
     if not compile_project_updated(work_dir, buggy_project):
       print("FAIL")

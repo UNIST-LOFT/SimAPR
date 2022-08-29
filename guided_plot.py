@@ -1440,7 +1440,7 @@ def read_info_recoder(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, Rec
         for cs in line["cases"]:
           case_id = cs["case"]
           # mode = cs["mode"]
-          actlist = cs["actlist"]
+          # actlist = cs["actlist"]
           location = cs["location"]
           prob = cs["prob"]
           recoder_case_info = RecoderCaseInfo(line_info, location, case_id)
@@ -2050,6 +2050,282 @@ def tbar_plot_hq(guided_result: Dict[str,List[str]],other_result: Dict[str,List[
             f' & {round(neg_result_dist.count(4)/len(neg_result_dist)*100,1)}% & {round(neg_result_dist.count(3)/len(neg_result_dist)*100,1)}%'
             f' & {round(neg_result_dist.count(2)/len(neg_result_dist)*100,1)}% & {round(neg_result_dist.count(1)/len(neg_result_dist)*100,1)}% \\\\\n')
 
+def recoder_plot_hq(root_dir, id, mode='tbar',dir_postfix='') -> None:
+  info_list:Dict[str,tuple]=dict()
+  outdir = os.path.join(root_dir, f"out-{id}")
+  correct_patches = dict()
+  with open(os.path.join(root_dir, "data", "correct_patch.csv"), "r") as f:
+    for line in f.readlines():
+      ln = line.strip()
+      if len(ln) < 1 or ln.startswith("#"):
+          continue
+      tokens = ln.split(",")
+      bugid = tokens[0]
+      patches = tokens[1:]
+      correct_patches[bugid] = patches
+  guided_hq_count:Dict[str,List[int]]=dict()
+  seapr_hq_count: Dict[str, List[int]] = dict()
+  other_hq_count:Dict[str,List[int]]=dict()
+  seapr_hq_count = dict()
+  final_guided_result:Dict[str,int]={}
+  final_other_result:Dict[str,int]={}
+  final_seapr_result: Dict[str, int] = dict()
+  for bugid in correct_patches:
+    file_map, switch_case_map = read_info_recoder(os.path.join(root_dir, "d4j", bugid))
+    current_name = bugid
+    correct_recoder_case=[]
+    correct_line=[]
+    correct_func=[]
+    correct_file=[]
+
+    guided_hq_count[current_name]=[]
+    for correct_patch in correct_patches[bugid]:
+      print(bugid)
+      correct_recoder_case.append(switch_case_map[correct_patch])
+      correct_line.append(correct_recoder_case[-1].parent)
+      correct_func.append(correct_line[-1].parent)
+      correct_file.append(correct_func[-1].parent)
+    total_result=[]
+    for i in range(20):
+      total = 0
+      guided_dir = os.path.join(outdir, f"{bugid}-guided-{id}-{i}")
+      with open(f'{guided_dir}/msv-result.json', "r") as f:
+        info = json.load(f)
+        for data in info:
+          iter: int = data["iteration"]
+          tm: float = data["time"]
+          is_hq: bool = data["result"]
+          pass_result: bool = data["pass_result"]
+          config = data["config"][0]
+          key = f"{config['id']}-{config['case_id']}"
+          recoder_case = switch_case_map[key]
+          line_info = recoder_case.parent
+          func_info = line_info.parent
+          file_info = func_info.parent
+          # if pass_result and not found_plausible:
+          #   plausible_iter = iter
+          #   plausible_time = tm
+          #   found_plausible = True
+          dist = 4
+          if file_info in correct_file:
+            dist -= 1
+            if func_info in correct_func:
+              dist -= 1
+              if line_info in correct_line:
+                dist -= 1
+                # if not found_correct:
+                #   found_correct = True
+                #   correct_iter = iter
+                #   correct_tm = tm
+          pass_result: bool = data["pass_result"]
+          if is_hq:
+            total += 1
+          if is_hq and dist>0:
+            guided_hq_count[current_name].append(dist)
+          
+          if key in correct_patches[bugid]:
+            current_result=iter
+            break
+
+        total_result.append(current_result)
+    final_guided_result[current_name]=statistics.mean(total_result)
+
+    total = 0
+    seapr_dir = os.path.join(outdir, f"{bugid}-seapr-{id}")
+    seapr_hq_count[bugid] = list()
+    with open(f'{seapr_dir}/msv-result.json', "r") as f:
+      info = json.load(f)
+      for data in info:
+        iter: int = data["iteration"]
+        tm: float = data["time"]
+        is_hq: bool = data["result"]
+        pass_result: bool = data["pass_result"]
+        config = data["config"][0]
+        key = f"{config['id']}-{config['case_id']}"
+        recoder_case = switch_case_map[key]
+        line_info = recoder_case.parent
+        func_info = line_info.parent
+        file_info = func_info.parent
+        # if pass_result and not found_plausible:
+        #   plausible_iter = iter
+        #   plausible_time = tm
+        #   found_plausible = True
+        dist = 4
+        if file_info in correct_file:
+          dist -= 1
+          if func_info in correct_func:
+            dist -= 1
+            if line_info in correct_line:
+              dist -= 1
+              # if not found_correct:
+              #   found_correct = True
+              #   correct_iter = iter
+              #   correct_tm = tm
+        pass_result: bool = data["pass_result"]
+        if is_hq:
+          total += 1
+        if is_hq and dist>0:
+          seapr_hq_count[current_name].append(dist)
+        
+        if key in correct_patches[bugid]:
+          current_result=iter
+          final_seapr_result[bugid] = iter
+          break
+    recoder_dir = os.path.join(outdir, f"{bugid}-recoder-{id}")
+    with open(f'{recoder_dir}/msv-result.json', "r") as f:
+      info = json.load(f)
+      for data in info:
+        iter: int = data["iteration"]
+        tm: float = data["time"]
+        is_hq: bool = data["result"]
+        pass_result: bool = data["pass_result"]
+        config = data["config"][0]
+        key = f"{config['id']}-{config['case_id']}"
+        recoder_case = switch_case_map[key]
+        line_info = recoder_case.parent
+        func_info = line_info.parent
+        file_info = func_info.parent
+        # if pass_result and not found_plausible:
+        #   plausible_iter = iter
+        #   plausible_time = tm
+        #   found_plausible = True
+        dist = 4
+        if file_info in correct_file:
+          dist -= 1
+          if func_info in correct_func:
+            dist -= 1
+            if line_info in correct_line:
+              dist -= 1
+              # if not found_correct:
+              #   found_correct = True
+              #   correct_iter = iter
+              #   correct_tm = tm
+        pass_result: bool = data["pass_result"]
+        # if is_hq:
+        #   total += 1
+        # if is_hq and dist>0:
+        #   seapr_hq_count[current_name].append(dist)
+        
+        if key in correct_patches[bugid]:
+          current_result=iter
+          final_other_result[bugid] = iter
+          break
+  pos_result:Dict[str,tuple]={}
+  neg_result:Dict[str,tuple]={}
+  neut_result:Dict[str,tuple]={}
+  pos_result_dist:List[int]=[]
+  neg_result_dist:List[int]=[]
+  neut_result_dist:List[int]=[]
+  versions=[0,0,0]
+  for name in final_guided_result:
+    impv=(final_other_result[name]-final_guided_result[name])/final_other_result[name]
+    if impv>0.01:
+      pos_result[name]=(final_guided_result[name],final_other_result[name])
+      pos_result_dist+=guided_hq_count[name]
+      if len(guided_hq_count[name])>0:
+        versions[0]+=1
+    elif impv<-0.01:
+      neg_result[name]=(final_guided_result[name],final_other_result[name])
+      neg_result_dist+=guided_hq_count[name]
+      if len(guided_hq_count[name])>0:
+        versions[1]+=1
+    else:
+      neut_result[name]=(final_guided_result[name],final_other_result[name])
+      neut_result_dist+=guided_hq_count[name]
+      if len(guided_hq_count[name])>0:
+        versions[2]+=1
+
+  pos_data_dist=[]
+  neut_data_dist=[]
+  neg_data_dist=[]
+  for dist in pos_result_dist:
+    if dist==5: pos_data_dist.append({'Layer':0})
+    elif dist==4: pos_data_dist.append({'Layer':0})
+    elif dist==3: pos_data_dist.append({'Layer':1})
+    elif dist==2: pos_data_dist.append({'Layer':2})
+    elif dist==1: pos_data_dist.append({'Layer':3})
+    else: pos_data_dist.append({'Layer':4})
+  for dist in neut_result_dist:
+    if dist==5: neut_data_dist.append({'Layer':0})
+    elif dist==4: neut_data_dist.append({'Layer':0})
+    elif dist==3: neut_data_dist.append({'Layer':1})
+    elif dist==2: neut_data_dist.append({'Layer':2})
+    elif dist==1: neut_data_dist.append({'Layer':3})
+    else: neut_data_dist.append({'Layer':4})
+  for dist in neg_result_dist:
+    if dist==5: neg_data_dist.append({'Layer':0})
+    elif dist==4: neg_data_dist.append({'Layer':0})
+    elif dist==3: neg_data_dist.append({'Layer':1})
+    elif dist==2: neg_data_dist.append({'Layer':2})
+    elif dist==1: neg_data_dist.append({'Layer':3})
+    else: neg_data_dist.append({'Layer':4})
+  pos_dist_df=pd.DataFrame(pos_data_dist)
+  neut_dist_df=pd.DataFrame(neut_data_dist)
+  neg_dist_df=pd.DataFrame(neg_data_dist)
+  sns.kdeplot(x='Layer',data=pos_dist_df,label='Positive',color='r',fill=True)
+  # sns.kdeplot(x='Layer',data=neut_dist_df,label='Neutral',color='g',fill=True)
+  sns.kdeplot(x='Layer',data=neg_dist_df,label='Negative',color='b',fill=True)
+  plt.xticks([0,1,2,3],labels=['Other','File','Method','Line'],fontsize=12)
+  plt.yticks(fontsize=12)
+  plt.legend(fontsize=12)
+  plt.savefig(f'{outdir}/level-hq-ratio-{mode}.png',bbox_inches='tight')
+  plt.savefig(f'{outdir}/level-hq-ratio-{mode}.pdf',bbox_inches='tight')
+  with open(f'{outdir}/level-hq-ratio-{mode}.csv','wt') as f:
+    f.write('size,obs,total,other,file,func,line\n')
+
+    guide_list=[]
+    other_list=[]
+    for name in pos_result:
+      guide_list.append(pos_result[name][0])
+      other_list.append(pos_result[name][1])
+    f.write(f'{len(pos_result)},{versions[0]},{len(pos_result_dist)},{pos_result_dist.count(4)},{pos_result_dist.count(3)},{pos_result_dist.count(2)},{pos_result_dist.count(1)}\n')
+
+    guide_list=[]
+    other_list=[]
+    for name in neut_result:
+      guide_list.append(neut_result[name][0])
+      other_list.append(neut_result[name][1])
+    f.write(f'{len(neut_result)},{versions[2]},{len(neut_result_dist)},{neut_result_dist.count(4)},{neut_result_dist.count(3)},{neut_result_dist.count(2)},{neut_result_dist.count(1)}\n')
+
+    guide_list=[]
+    other_list=[]
+    for name in neg_result:
+      guide_list.append(neg_result[name][0])
+      other_list.append(neg_result[name][1])
+    f.write(f'{len(neg_result)},{versions[1]},{len(neg_result_dist)},{neg_result_dist.count(4)},{neg_result_dist.count(3)},{neg_result_dist.count(2)},{neg_result_dist.count(1)}\n')
+ 
+ 
+  with open(f'{outdir}/level-hq-ratio-{mode}.tex','wt') as f:
+    f.write('\multirow{3}{*}{\\tbar}')
+
+    guide_list=[]
+    other_list=[]
+    for name in pos_result:
+      guide_list.append(pos_result[name][0])
+      other_list.append(pos_result[name][1])
+    f.write(f' & Positive & {len(pos_result)} & {versions[0]} & {round(len(pos_result_dist)/20/versions[0],1)} & {round(pos_result_dist.count(5)/len(pos_result_dist)*100,1)}%'
+            f' & {round(pos_result_dist.count(4)/len(pos_result_dist)*100,1)}% & {round(pos_result_dist.count(3)/len(pos_result_dist)*100,1)}%'
+            f' & {round(pos_result_dist.count(2)/len(pos_result_dist)*100,1)}% & {round(pos_result_dist.count(1)/len(pos_result_dist)*100,1)}% \\\\\n')
+
+    guide_list=[]
+    other_list=[]
+    for name in neut_result:
+      guide_list.append(neut_result[name][0])
+      other_list.append(neut_result[name][1])
+    f.write(f' & Neutral & {len(neut_result)} & {versions[2]} & {round(len(neut_result_dist)/20/versions[2],1)} & {round(neut_result_dist.count(5)/len(neut_result_dist)*100,1)}%'
+            f' & {round(neut_result_dist.count(4)/len(neut_result_dist)*100,1)}% & {round(neut_result_dist.count(3)/len(neut_result_dist)*100,1)}%'
+            f' & {round(neut_result_dist.count(2)/len(neut_result_dist)*100,1)}% & {round(neut_result_dist.count(1)/len(neut_result_dist)*100,1)}% \\\\\n')
+
+    guide_list=[]
+    other_list=[]
+    for name in neg_result:
+      guide_list.append(neg_result[name][0])
+      other_list.append(neg_result[name][1])
+    f.write(f' & Negative & {len(neg_result)} & {versions[1]} & {round(len(neg_result_dist)/20/versions[1],1)} & {round(neg_result_dist.count(5)/len(neg_result_dist)*100,1)}%'
+            f' & {round(neg_result_dist.count(4)/len(neg_result_dist)*100,1)}% & {round(neg_result_dist.count(3)/len(neg_result_dist)*100,1)}%'
+            f' & {round(neg_result_dist.count(2)/len(neg_result_dist)*100,1)}% & {round(neg_result_dist.count(1)/len(neg_result_dist)*100,1)}% \\\\\n')
+
+
 def main(argv):
   opts, args = getopt.getopt(argv[1:], "hi:o:t:nm:c:wd:")
   result_file = ""
@@ -2132,7 +2408,7 @@ def analyze_log(log_file: str):
 
 # tbar_plot_compare_guided()
 import guided_datas
-tbar_plot_hq(guided_datas.GUIDED_CORRECT_TBAR,guided_datas.OTHER_CORRECT_TBAR_ONLY,'tbar','-220823')
+tbar_plot_hq(guided_datas.GUIDED_CORRECT_TBAR,guided_datas.OTHER_CORRECT_TBAR_ONLY,'tbar')
 # tbar_plot_hq(guided_datas.GUIDED_CORRECT_KPAR,guided_datas.OTHER_CORRECT_KPAR_ONLY,'kpar')
 # tbar_plot_hq(guided_datas.GUIDED_CORRECT_AVATAR,guided_datas.OTHER_CORRECT_AVATAR_ONLY,'avatar')
 # tbar_plot_hq(guided_datas.GUIDED_CORRECT_FIXMINER,guided_datas.OTHER_CORRECT_FIXMINER_ONLY,'fixminer')
