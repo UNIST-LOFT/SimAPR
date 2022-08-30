@@ -1837,7 +1837,7 @@ def tbar_plot_hq(guided_result: Dict[str,List[str]],other_result: Dict[str,List[
         correct_func.append(correct_line[-1].parent)
         correct_file.append(correct_func[-1].parent)
       total_result=[]
-      for i in range(1,21):
+      for i in range(1,51):
         if f'{result}-{i}' in os.listdir(f'/root/project/experiment/result-{mode}{dir_postfix}/'):
           file=f'/root/project/experiment/result-{mode}{dir_postfix}/'+result+f'-{i}/msv-result.json'
         else:
@@ -2028,27 +2028,27 @@ def tbar_plot_hq(guided_result: Dict[str,List[str]],other_result: Dict[str,List[
     for name in pos_result:
       guide_list.append(pos_result[name][0])
       other_list.append(pos_result[name][1])
-    f.write(f' & Positive & {len(pos_result)} & {versions[0]} & {round(len(pos_result_dist)/20/versions[0],1)} & {round(pos_result_dist.count(5)/len(pos_result_dist)*100,1)}%'
-            f' & {round(pos_result_dist.count(4)/len(pos_result_dist)*100,1)}% & {round(pos_result_dist.count(3)/len(pos_result_dist)*100,1)}%'
-            f' & {round(pos_result_dist.count(2)/len(pos_result_dist)*100,1)}% & {round(pos_result_dist.count(1)/len(pos_result_dist)*100,1)}% \\\\\n')
+    f.write(f' & Positive & {len(pos_result)} & {versions[0]} & {round(len(pos_result_dist)/20/versions[0],1)} & {round(pos_result_dist.count(5)/len(pos_result_dist)*100,1)}'
+            f' & {round(pos_result_dist.count(4)/len(pos_result_dist)*100,1)} & {round(pos_result_dist.count(3)/len(pos_result_dist)*100,1)}'
+            f' & {round(pos_result_dist.count(2)/len(pos_result_dist)*100,1)} & {round(pos_result_dist.count(1)/len(pos_result_dist)*100,1)} \\\\\n')
 
     guide_list=[]
     other_list=[]
     for name in neut_result:
       guide_list.append(neut_result[name][0])
       other_list.append(neut_result[name][1])
-    f.write(f' & Neutral & {len(neut_result)} & {versions[2]} & {round(len(neut_result_dist)/20/versions[2],1)} & {round(neut_result_dist.count(5)/len(neut_result_dist)*100,1)}%'
-            f' & {round(neut_result_dist.count(4)/len(neut_result_dist)*100,1)}% & {round(neut_result_dist.count(3)/len(neut_result_dist)*100,1)}%'
-            f' & {round(neut_result_dist.count(2)/len(neut_result_dist)*100,1)}% & {round(neut_result_dist.count(1)/len(neut_result_dist)*100,1)}% \\\\\n')
+    f.write(f' & Neutral & {len(neut_result)} & {versions[2]} & {round(len(neut_result_dist)/20/versions[2],1)} & {round(neut_result_dist.count(5)/len(neut_result_dist)*100,1)}'
+            f' & {round(neut_result_dist.count(4)/len(neut_result_dist)*100,1)} & {round(neut_result_dist.count(3)/len(neut_result_dist)*100,1)}'
+            f' & {round(neut_result_dist.count(2)/len(neut_result_dist)*100,1)} & {round(neut_result_dist.count(1)/len(neut_result_dist)*100,1)} \\\\\n')
 
     guide_list=[]
     other_list=[]
     for name in neg_result:
       guide_list.append(neg_result[name][0])
       other_list.append(neg_result[name][1])
-    f.write(f' & Negative & {len(neg_result)} & {versions[1]} & {round(len(neg_result_dist)/20/versions[1],1)} & {round(neg_result_dist.count(5)/len(neg_result_dist)*100,1)}%'
-            f' & {round(neg_result_dist.count(4)/len(neg_result_dist)*100,1)}% & {round(neg_result_dist.count(3)/len(neg_result_dist)*100,1)}%'
-            f' & {round(neg_result_dist.count(2)/len(neg_result_dist)*100,1)}% & {round(neg_result_dist.count(1)/len(neg_result_dist)*100,1)}% \\\\\n')
+    f.write(f' & Negative & {len(neg_result)} & {versions[1]} & {round(len(neg_result_dist)/20/versions[1],1)} & {round(neg_result_dist.count(5)/len(neg_result_dist)*100,1)}'
+            f' & {round(neg_result_dist.count(4)/len(neg_result_dist)*100,1)} & {round(neg_result_dist.count(3)/len(neg_result_dist)*100,1)}'
+            f' & {round(neg_result_dist.count(2)/len(neg_result_dist)*100,1)} & {round(neg_result_dist.count(1)/len(neg_result_dist)*100,1)} \\\\\n')
 
 def recoder_plot_hq(root_dir, id, mode='tbar',dir_postfix='') -> None:
   info_list:Dict[str,tuple]=dict()
