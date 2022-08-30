@@ -1250,7 +1250,7 @@ def read_info_recoder(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, Rec
         for cs in line["cases"]:
           case_id = cs["case"]
           # mode = cs["mode"]
-          actlist = cs["actlist"]
+          # actlist = cs["actlist"]
           location = cs["location"]
           prob = cs["prob"]
           recoder_case_info = RecoderCaseInfo(line_info, location, case_id)
@@ -1574,7 +1574,7 @@ def recoder_batch_plot(correct_patch_csv: str, in_dir: str, id: str) -> None:
   for bugid in bugids:
     print(bugid)
     correct_patches = all[bugid]
-    workdir = "/root/project/Recoder/d4j/" + bugid
+    workdir = "/root/project/alpha-repair/d4j/" + bugid
     if workdir not in info:
       info[workdir] = read_info_recoder(workdir)
       switch_info, switch_case_map = info[workdir]

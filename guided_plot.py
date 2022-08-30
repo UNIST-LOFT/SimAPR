@@ -2113,6 +2113,8 @@ def recoder_plot_hq(root_dir, id, mode='tbar',dir_postfix='') -> None:
               dist -= 1
               if line_info in correct_line:
                 dist -= 1
+                if recoder_case in correct_recoder_case:
+                  dist -= 1
                 # if not found_correct:
                 #   found_correct = True
                 #   correct_iter = iter
@@ -2303,7 +2305,7 @@ def recoder_plot_hq(root_dir, id, mode='tbar',dir_postfix='') -> None:
     for name in pos_result:
       guide_list.append(pos_result[name][0])
       other_list.append(pos_result[name][1])
-    f.write(f' & Positive & {len(pos_result)} & {versions[0]} & {round(len(pos_result_dist)/20/versions[0],1)} & {round(pos_result_dist.count(5)/len(pos_result_dist)*100,1)}%'
+    f.write(f' & Positive & {len(pos_result)} & {versions[0]} & {round(len(pos_result_dist)/20/versions[0],1)}'
             f' & {round(pos_result_dist.count(4)/len(pos_result_dist)*100,1)}% & {round(pos_result_dist.count(3)/len(pos_result_dist)*100,1)}%'
             f' & {round(pos_result_dist.count(2)/len(pos_result_dist)*100,1)}% & {round(pos_result_dist.count(1)/len(pos_result_dist)*100,1)}% \\\\\n')
 
@@ -2312,7 +2314,7 @@ def recoder_plot_hq(root_dir, id, mode='tbar',dir_postfix='') -> None:
     for name in neut_result:
       guide_list.append(neut_result[name][0])
       other_list.append(neut_result[name][1])
-    f.write(f' & Neutral & {len(neut_result)} & {versions[2]} & {round(len(neut_result_dist)/20/versions[2],1)} & {round(neut_result_dist.count(5)/len(neut_result_dist)*100,1)}%'
+    f.write(f' & Neutral & {len(neut_result)} & {versions[2]} & {round(len(neut_result_dist)/20/versions[2],1)}'
             f' & {round(neut_result_dist.count(4)/len(neut_result_dist)*100,1)}% & {round(neut_result_dist.count(3)/len(neut_result_dist)*100,1)}%'
             f' & {round(neut_result_dist.count(2)/len(neut_result_dist)*100,1)}% & {round(neut_result_dist.count(1)/len(neut_result_dist)*100,1)}% \\\\\n')
 
@@ -2321,7 +2323,7 @@ def recoder_plot_hq(root_dir, id, mode='tbar',dir_postfix='') -> None:
     for name in neg_result:
       guide_list.append(neg_result[name][0])
       other_list.append(neg_result[name][1])
-    f.write(f' & Negative & {len(neg_result)} & {versions[1]} & {round(len(neg_result_dist)/20/versions[1],1)} & {round(neg_result_dist.count(5)/len(neg_result_dist)*100,1)}%'
+    f.write(f' & Negative & {len(neg_result)} & {versions[1]} & {round(len(neg_result_dist)/20/versions[1],1)}'
             f' & {round(neg_result_dist.count(4)/len(neg_result_dist)*100,1)}% & {round(neg_result_dist.count(3)/len(neg_result_dist)*100,1)}%'
             f' & {round(neg_result_dist.count(2)/len(neg_result_dist)*100,1)}% & {round(neg_result_dist.count(1)/len(neg_result_dist)*100,1)}% \\\\\n')
 
