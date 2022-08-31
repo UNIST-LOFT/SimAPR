@@ -366,7 +366,10 @@ def remove_patch(state: MSVState, patches: List[PatchInfo]) -> None:
         del state.priority_map[loc_str]
 
 def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: bool) -> None:
-  selected_patch.update_result(result, 1, state.params[PT.b_dec],state.use_exp_alpha, state.use_fixed_beta)
+  if state.sampling_mode:
+    selected_patch.update_result(result, 1, 1,False, False)
+  else:
+    selected_patch.update_result(result, 1, state.params[PT.b_dec],state.use_exp_alpha, state.use_fixed_beta)
   if result:
     state.total_basic_patch += 1
     selected_patch.tbar_type_info.children_basic_patches+=1
@@ -468,7 +471,10 @@ def update_positive_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, 
     selected_patch.func_info.consecutive_fail_plausible_count+=1
     selected_patch.file_info.consecutive_fail_plausible_count+=1
     
-  selected_patch.update_result_positive(result, 1, state.params[PT.b_dec],state.use_exp_alpha, state.use_fixed_beta)
+  if state.sampling_mode:
+    selected_patch.update_result_positive(result, 1, 1,False, False)
+  else:  
+    selected_patch.update_result_positive(result, 1, state.params[PT.b_dec],state.use_exp_alpha, state.use_fixed_beta)
 
 def remove_patch_tbar(state: MSVState, selected_patch: TbarPatchInfo) -> None:
   selected_patch.remove_patch(state)
