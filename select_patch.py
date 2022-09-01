@@ -1957,4 +1957,25 @@ def select_patch_recoder_seapr(state: MSVState) -> RecoderPatchInfo:
   if not state.use_pattern and state.seapr_layer == SeAPRMode.FUNCTION:
     selected_patch.parent.parent.case_rank_list.pop(0)
   state.select_time+=time.time()-start_time
+
+  for cor_patch in state.correct_patch_list:
+    counter=0
+    is_finish=False
+    for score in seapr_ranks_sorted:
+      for func in seapr_ranks[score]:
+        if cor_patch not in func.case_rank_list:
+          counter+=len(func.case_rank_list)
+        else:
+          for patch in func.case_rank_list:
+            if patch!=cor_patch:
+              counter+=1
+            else:
+              is_finish=True
+              state.msv_logger.debug(f'Correct patch {cor_patch} is ranked {counter+1}')
+              break
+        if is_finish:
+          break
+      if is_finish:
+        break
+
   return RecoderPatchInfo(selected_patch)
