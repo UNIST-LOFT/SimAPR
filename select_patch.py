@@ -1586,27 +1586,63 @@ def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
     seapr_ranks[cur_score].append(func)
   seapr_ranks_sorted=sorted(seapr_ranks.keys(), reverse=True)
 
-  for cor_patch in state.correct_patch_list:
-    counter=0
-    is_finish=False
-    for score in seapr_ranks_sorted:
-      for func in seapr_ranks[score]:
-        if func.func_rank > 30:
-          continue
-        if cor_patch not in func.case_rank_list:
-          counter+=len(func.case_rank_list)
+  if not state.use_pattern and state.seapr_layer == SeAPRMode.FUNCTION:
+    for cor_patch in state.correct_patch_list:
+      counter=0
+      is_finish=False
+      for score in seapr_ranks_sorted:
+        for func in seapr_ranks[score]:
+          if func.func_rank > 30:
+            continue
+          if cor_patch not in func.case_rank_list:
+            counter+=len(func.case_rank_list)
+          else:
+            for patch in func.case_rank_list:
+              if patch!=cor_patch:
+                counter+=1
+              else:
+                is_finish=True
+                state.msv_logger.debug(f'Correct patch {cor_patch} is ranked {counter+1}')
+                break
+          if is_finish:
+            break
+        if is_finish:
+          break
+  else:
+    patch_ranking:Dict[float,List[str]]=dict()
+    for loc in state.patch_ranking:
+      tbar_case_info: TbarCaseInfo = state.switch_case_map[loc]
+      if tbar_case_info.parent.parent.parent.func_rank > 30:
+        continue
+      if loc not in tbar_case_info.parent.tbar_case_info_map:
+        # state.msv_logger.warning(f"No switch info  {tbar_case_info.location} in patch: {tbar_case_info.parent.tbar_case_info_map}")
+        continue
+      cur_score = get_ochiai(tbar_case_info.same_seapr_pf.pass_count, tbar_case_info.same_seapr_pf.fail_count,
+        tbar_case_info.diff_seapr_pf.pass_count, tbar_case_info.diff_seapr_pf.fail_count)
+      if cur_score not in patch_ranking:
+        patch_ranking[cur_score]=[]
+      patch_ranking[cur_score].append(loc)
+    
+    patch_ranking_sort=sorted(list(patch_ranking.keys()),reverse=True)
+    for cor_patch in state.correct_patch_list:
+      counter=0
+      is_finish=False
+      for score in patch_ranking_sort:
+        if cor_patch not in patch_ranking[score]:
+          counter+=len(patch_ranking[score])
         else:
-          for patch in func.case_rank_list:
+          for patch in patch_ranking[score]:
             if patch!=cor_patch:
               counter+=1
             else:
               is_finish=True
               state.msv_logger.debug(f'Correct patch {cor_patch} is ranked {counter+1}')
               break
+          if is_finish:
+            break
         if is_finish:
           break
-      if is_finish:
-        break
+
 
   # Optimization for default SeAPR
   start_time = time.time()
