@@ -1591,6 +1591,8 @@ def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
     is_finish=False
     for score in seapr_ranks_sorted:
       for func in seapr_ranks[score]:
+        if func.func_rank > 30:
+          continue
         if cor_patch not in func.case_rank_list:
           counter+=len(func.case_rank_list)
         else:
@@ -1640,6 +1642,7 @@ def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
         selected_patch = tbar_case_info
         has_high_qual_patch = True
   if not has_high_qual_patch:
+    assert False, 'No high quality patch'
     state.select_time+=time.time()-start_time
     return select_patch_tbar(state)
   
