@@ -1949,6 +1949,26 @@ def select_patch_recoder_seapr(state: MSVState) -> RecoderPatchInfo:
         max_score = cur_score
         selected_patch = recoder_case_info
         has_high_qual_patch = True
+  
+  seapr_rank = list()
+  for loc in state.patch_ranking:
+    recoder_case_info: RecoderCaseInfo = state.switch_case_map[loc]
+    if recoder_case_info.case_id not in recoder_case_info.parent.recoder_case_info_map:
+      # state.msv_logger.warning(f"No switch info  {recoder_case_info.location} in patch: {recoder_case_info.parent.recoder_case_info_map}")
+      continue
+    cur_score = get_ochiai(recoder_case_info.same_seapr_pf.pass_count, recoder_case_info.same_seapr_pf.fail_count,
+      recoder_case_info.diff_seapr_pf.pass_count, recoder_case_info.diff_seapr_pf.fail_count)
+    if recoder_case_info.parent.parent.func_rank > 30:
+      seapr_rank.append((loc, 0))
+    else:
+      seapr_rank.append(loc, cur_score)
+  seapr_rank.sort(key=lambda x: x[1])
+  seapr_rank_num = 0
+  for key, score in seapr_rank:
+    seapr_rank_num += 1
+    if key == state.correct_patch_str:
+      state.msv_logger.debug(f"Correct patch {key} is ranked {seapr_rank_num}")
+      break
   if not has_high_qual_patch:
     state.select_time+=time.time()-start_time
     return select_patch_recoder(state)
@@ -1957,25 +1977,5 @@ def select_patch_recoder_seapr(state: MSVState) -> RecoderPatchInfo:
   if not state.use_pattern and state.seapr_layer == SeAPRMode.FUNCTION:
     selected_patch.parent.parent.case_rank_list.pop(0)
   state.select_time+=time.time()-start_time
-
-  for cor_patch in state.correct_patch_list:
-    counter=0
-    is_finish=False
-    for score in seapr_ranks_sorted:
-      for func in seapr_ranks[score]:
-        if cor_patch not in func.case_rank_list:
-          counter+=len(func.case_rank_list)
-        else:
-          for patch in func.case_rank_list:
-            if patch!=cor_patch:
-              counter+=1
-            else:
-              is_finish=True
-              state.msv_logger.debug(f'Correct patch {cor_patch} is ranked {counter+1}')
-              break
-        if is_finish:
-          break
-      if is_finish:
-        break
 
   return RecoderPatchInfo(selected_patch)
