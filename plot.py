@@ -87,7 +87,7 @@ def read_info(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, CaseInfo]]:
           for t in PatchType: 
             if t == PatchType.Original or t.value >= len(types):
               continue
-            if t == PatchType.ConditionKind:
+            if PatchType.is_msv_ext(t):
               continue
             if t==PatchType.ReplaceStringKind:
               continue
@@ -98,8 +98,7 @@ def read_info(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, CaseInfo]]:
               case_map = type_info.case_info_map
               #case_list = type_info.case_info_list
               for c in types[t.value]:
-                is_condition = t.value == PatchType.TightenConditionKind.value or t.value==PatchType.LoosenConditionKind.value or t.value==PatchType.IfExitKind.value or \
-                            t.value==PatchType.GuardKind.value or t.value==PatchType.SpecialGuardKind.value or t.value==PatchType.ConditionKind.value
+                is_condition = PatchType.is_condition_syn(t)
                 case_info = CaseInfo(type_info, int(c), is_condition)
                 switch_case_map[case_info.to_str()] = case_info
                 if t not in line_info.type_priority:

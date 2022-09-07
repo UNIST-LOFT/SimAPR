@@ -957,7 +957,7 @@ def read_info(state: MSVState) -> None:
           if len(switches['types']) == 0:
             continue
           if state.use_cpr_space:
-            if len(switches['types'][PatchType.ConditionKind.value])==0:
+            if len(switches['types'][PatchType.MSVExtConditionKind.value])==0:
               continue
           switch_info = SwitchInfo(line_info, int(switches['switch']))
           switch_map[int(switches['switch'])] = switch_info
@@ -968,12 +968,12 @@ def read_info(state: MSVState) -> None:
           for t in PatchType: 
             if t == PatchType.Original or t.value >= len(types):
               continue
-            if t == PatchType.ConditionKind:
+            if t == PatchType.MSVExtConditionKind:
               if not state.use_cpr_space:
                 continue
             if t==PatchType.ReplaceStringKind:
               continue
-            if not state.use_msv_ext and (t==PatchType.MSVExtAddConditionKind or t==PatchType.MSVExtFunctionReplaceKind or t==PatchType.MSVExtReplaceFunctionInConditionKind or t==PatchType.MSVExtRemoveStmtKind):
+            if not state.use_msv_ext and PatchType.is_msv_ext(t):
               continue
             if len(types[t.value]) > 0:
               type_info = TypeInfo(switch_info, t)
@@ -982,8 +982,7 @@ def read_info(state: MSVState) -> None:
               case_map = type_info.case_info_map
               #case_list = type_info.case_info_list
               for c in types[t.value]:
-                is_condition = t.value == PatchType.TightenConditionKind.value or t.value==PatchType.LoosenConditionKind.value or t.value==PatchType.IfExitKind.value or \
-                            t.value==PatchType.GuardKind.value or t.value==PatchType.SpecialGuardKind.value or t.value==PatchType.ConditionKind.value or t.value==PatchType.MSVExtAddConditionKind.value
+                is_condition = PatchType.is_condition_syn(t)
                 case_info = CaseInfo(type_info, int(c), is_condition)
                 case_info.location = file_line
                 if t not in line_info.type_priority:
@@ -1004,7 +1003,7 @@ def read_info(state: MSVState) -> None:
                   previous_score=current_score
               
                 if state.use_cpr_space:
-                  if type_info.patch_type==PatchType.ConditionKind: # CPR only includes ConditionKind
+                  if PatchType.is_msv_ext(type_info.patch_type): # CPR only includes ConditionKind
                     if state.var_counts[f'{switch_info.switch_number}-{case_info.case_number}']>0:
                       #case_list.append(case_info)
                       case_map[int(c)] = case_info
@@ -1025,7 +1024,7 @@ def read_info(state: MSVState) -> None:
                       if current_score<state.min_prophet_score:
                         state.min_prophet_score=current_score
                 else:
-                  if type_info.patch_type!=PatchType.ConditionKind: # Original Prophet doesn't have ConditionKind
+                  # if PatchType.is_msv_ext(type_info.patch_type): # Original Prophet doesn't have ConditionKind
                     if f'{switch_info.switch_number}-{case_info.case_number}' not in state.var_counts or state.var_counts[f'{switch_info.switch_number}-{case_info.case_number}']>0:
                       #case_list.append(case_info)
                       case_map[int(c)] = case_info

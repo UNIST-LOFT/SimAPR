@@ -4,7 +4,7 @@ from core import *
 import numpy as np
 
 SPR_TYPE_PRIORITY=(PatchType.TightenConditionKind,PatchType.LoosenConditionKind,PatchType.IfExitKind,PatchType.GuardKind,PatchType.SpecialGuardKind,
-        PatchType.AddInitKind,PatchType.ReplaceFunctionKind,PatchType.AddStmtKind,PatchType.AddStmtAndReplaceAtomKind,PatchType.AddIfStmtKind,PatchType.ReplaceKind,PatchType.ReplaceStringKind)
+        PatchType.AddInitKind,PatchType.ReplaceFunctionKind,PatchType.AddStmtKind,PatchType.AddStmtAndReplaceAtomKind,PatchType.ReplaceKind,PatchType.ReplaceStringKind)
 def epsilon_greedy(total:int,x:int):
   """
     Compute epsilin value of Epsilon-greedy algorithm
@@ -224,7 +224,7 @@ def epsilon_search(state:MSVState):
     else:
       state.msv_logger.debug(f'Use original order, epsilon: {epsilon}')
       if state.spr_mode:
-        cur_type=PatchType.MSVExtRemoveStmtKind
+        cur_type=PatchType.Original
         final_case=top_fl_patches[0]
         for patch in top_fl_patches:
           if patch.parent.patch_type.value<cur_type.value:
@@ -428,7 +428,7 @@ def epsilon_select(state:MSVState,source=None):
         return cur_fl_patches[0].parent.parent
       elif type(source) == SwitchInfo:
         if state.spr_mode:
-          cur_type=PatchType.MSVExtRemoveStmtKind
+          cur_type=PatchType.Original
           final_case=None
           for template in source.type_info_map:
             if template.value<cur_type.value:

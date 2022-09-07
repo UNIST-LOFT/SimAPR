@@ -37,13 +37,35 @@ class PatchType(Enum):
   ReplaceFunctionKind = 8
   AddStmtKind=9
   AddStmtAndReplaceAtomKind=10
-  AddIfStmtKind=11
-  ConditionKind=12
+  MSVExtAddIfStmtKind=11
+  MSVExtConditionKind=12
   MSVExtFunctionReplaceKind=21
-  MSVExtAddConditionKind=22
-  MSVExtReplaceFunctionInConditionKind=23
-  MSVExtRemoveStmtKind=24
-  Original = 31
+  MSVExtReturnConditionKind=22
+  MSVExtAssignConditionKind=23
+  MSVExtReplaceFunctionInConditionKind=24
+  MSVExtRemoveStmtKind=25
+  MSVExtRemoveConditionKind=26
+  MSVExtRemoveAssignConditionKind=27
+  MSVExtReplaceAssignOperatorKind=28
+  MSVExtReplaceArrayIndexKind=29
+  MSVExtReplaceParenInConditionKind=30
+  MSVExtAddInitBackKind=31
+  MSVExtIfExitBackKind=32
+  MSVExtReplaceTrenaryOperatorKind=33
+  MSVExtMoveConditionKind=34
+  MSVExtLoopConditionKind=35
+  Original = 101
+
+  @staticmethod
+  def is_msv_ext(patch_type):
+    return patch_type.value >= 11 and patch_type.value <=35
+  
+  @staticmethod
+  def is_condition_syn(patch_type):
+    return patch_type==PatchType.TightenConditionKind or patch_type==PatchType.LoosenConditionKind or patch_type==PatchType.GuardKind or \
+            patch_type==PatchType.SpecialGuardKind or patch_type==PatchType.IfExitKind or patch_type==PatchType.MSVExtConditionKind or \
+            patch_type==PatchType.MSVExtReturnConditionKind or patch_type==PatchType.MSVExtAssignConditionKind or \
+            patch_type==PatchType.MSVExtLoopConditionKind
 
 class OperatorType(Enum):
   EQ = 0
