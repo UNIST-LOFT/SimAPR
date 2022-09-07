@@ -360,10 +360,11 @@ class TbarTypeInfo:
     self.consecutive_fail_plausible_count:int=0
     self.patches_by_score:Dict[float,List[CaseInfo]]=dict()
     self.remain_patches_by_score:Dict[float,List[CaseInfo]]=dict()
+    self.work_dir=''
   def __hash__(self) -> int:
     return hash(self.mutation)
   def __eq__(self, other) -> bool:
-    return self.mutation == other.mutation and self.parent==other.parent
+    return self.mutation == other.mutation and self.parent==other.parent and self.work_dir==other.work_dir
 
 class TbarCaseInfo:
   def __init__(self, parent: TbarTypeInfo, location: str, start: int, end: int) -> None:
@@ -385,7 +386,7 @@ class TbarCaseInfo:
   def __hash__(self) -> int:
     return hash(self.location)
   def __eq__(self, other) -> bool:
-    return self.location == other.location
+    return self.location == other.location and self.parent.parent.uuid==other.parent.parent.uuid and self.parent==other.parent
 
 class RecoderTypeInfo:
   def __init__(self, parent: LineInfo, act: str, prev: 'RecoderTypeInfo') -> None:
@@ -943,7 +944,7 @@ class MSVEnvVar:
     new_env["MSV_UUID"] = str(state.uuid)
     new_env["MSV_TEST"] = str(test)
     new_env["MSV_LOCATION"] = str(patch.tbar_case_info.location)
-    new_env["MSV_WORKDIR"] = state.work_dir if not state.fixminer_mode else state.work_dir[:-2]
+    new_env["MSV_WORKDIR"] = patch.tbar_type_info.work_dir[:-2] if state.fixminer_mode and 'FixMiner' in patch.tbar_type_info.work_dir else patch.tbar_type_info.work_dir
     new_env["MSV_BUGGY_LOCATION"] = patch.file_info.file_name
     new_env["MSV_BUGGY_PROJECT"] = state.d4j_buggy_project
     new_env["MSV_OUTPUT_DISTANCE_FILE"] = f"/tmp/{uuid.uuid4()}.out"
@@ -1381,6 +1382,7 @@ class TbarPatchInfo:
     if self.tbar_case_info.location not in self.tbar_type_info.tbar_case_info_map:
       state.msv_logger.critical(f"{self.tbar_case_info.location} not in {self.tbar_type_info.tbar_case_info_map}")
     del self.tbar_type_info.tbar_case_info_map[self.tbar_case_info.location]
+    state.java_line_workdir_patches_map[f"{self.file_info.file_name}:{self.line_info.line_number}"][self.tbar_type_info.work_dir].remove(self.tbar_case_info)
     if len(self.tbar_type_info.tbar_case_info_map) == 0:
       del self.line_info.tbar_type_info_map[self.tbar_type_info.mutation]
     if len(self.line_info.tbar_type_info_map) == 0:
@@ -1402,7 +1404,7 @@ class TbarPatchInfo:
     self.func_info.remain_patches_by_score[self.line_info.fl_score].remove(self.tbar_case_info)
     self.file_info.case_update_count += 1
     self.file_info.remain_patches_by_score[self.line_info.fl_score].remove(self.tbar_case_info)
-    state.java_remain_patch_ranking[self.line_info.fl_score].remove(self.tbar_case_info)
+    state.java_remain_patch_ranking_list[self.tbar_type_info.work_dir][self.line_info.fl_score].remove(self.tbar_case_info)
     self.func_info.searched_patches_by_score[self.line_info.fl_score]+=1
 
   def to_json_object(self) -> dict:
@@ -1619,9 +1621,6 @@ class MSVState:
   critical_map: Dict[int, Dict[ProfileElement, List[int]]]
   negative_test: List[int]        # Negative test case
   positive_test: List[int]        # Positive test case
-  d4j_negative_test: List[str]
-  d4j_positive_test: List[str]
-  d4j_failed_passing_tests: Set[str]
   d4j_test_fail_num_map: Dict[str, int]
   profile_map: Dict[int, Profile] # test case number -> Profile (of original program)
   priority_list: List[Tuple[str, int, float]]  # (file_name, line_number, score)
@@ -1646,7 +1645,7 @@ class MSVState:
   patch_ranking: List[str]
   total_basic_patch: int
   def __init__(self) -> None:
-    self.msv_version = "0.1.3"
+    self.msv_version = "1.0.0"
     self.mode = MSVMode.guided
     self.msv_path = ""
     self.msv_uuid = str(uuid.uuid4())
@@ -1701,8 +1700,10 @@ class MSVState:
     self.use_pattern = False
     self.use_simulation_mode = False
     self.prev_data = ""
+    self.prev_data_list: List[str] = list()
     self.ignore_compile_error = True
     self.simulation_data = dict()
+    self.simulation_data_list=dict()
     self.correct_patch_str: str = ""
     self.correct_case_info: CaseInfo = None
     self.watch_level: str = ""
@@ -1735,6 +1736,14 @@ class MSVState:
     self.count_compile_fail=True
     self.fixminer_mode=False  # fixminer-mode: Fixminer patch space is seperated to 2 groups
     self.spr_mode=False  # SPR mode: SPR uses FL+template instead of prophet score
+    self.work_dir_list=list()
+    self.switch_case_map_list:dict=dict()
+    self.patch_ranking_list=dict()
+    self.file_info_map_list=dict()
+    self.d4j_negative_test: List[str]=[]
+    self.d4j_positive_test: List[str]=[]
+    self.d4j_failed_passing_tests: Set[str]=set()
+    self.total_basic_patch_list:Dict[str,int]=dict()
 
     self.seapr_remain_cases:List[CaseInfo]=[]
     self.seapr_layer:SeAPRMode=SeAPRMode.FUNCTION
@@ -1743,12 +1752,18 @@ class MSVState:
     self.c_remain_patch_ranking:Dict[float,List[CaseInfo]]=dict()
     self.java_patch_ranking:Dict[float,List[TbarCaseInfo]]=dict()
     self.java_remain_patch_ranking:Dict[float,List[TbarCaseInfo]]=dict()
+    self.java_patch_ranking_list:Dict[str,Dict[float,List[TbarCaseInfo]]]=dict()
+    self.java_remain_patch_ranking_list:Dict[str,Dict[float,List[TbarCaseInfo]]]=dict()
+    self.java_line_workdir_patches_map:Dict[str,Dict[str,List[TbarCaseInfo]]]=dict()  # {fl_id: {work_dir: [patches, ...]}}
 
     self.previous_score:float=0.0
     self.same_consecutive_score:Dict[float,int]=dict()
     self.MAX_CONSECUTIVE_SAME_SCORE=50
     self.max_prophet_score=-1000.
     self.min_prophet_score=1000.
+    self.max_epsilon_group_size=0  # Maximum size of group for epsilon-greedy
+    self.current_work_dir_index=0
+    self.current_fl_id=''
 
     self.not_use_guided_search=False  # Use only epsilon-greedy search
     self.not_use_epsilon_search=False  # Use only guided search and original
@@ -1768,6 +1783,7 @@ class MSVState:
     self.sub_patch_ranking = list()
     self.sub_java_patch_ranking = dict()
     self.sub_java_remain_patch_ranking = dict()
+    self.sub_max_epsilon_group_size = 0
     self.fixminer_swapped=False
 
   def fixminer_swap_info(self):
@@ -1780,6 +1796,7 @@ class MSVState:
       self.sub_patch_ranking,self.patch_ranking=self.patch_ranking,self.sub_patch_ranking
       self.sub_java_patch_ranking,self.java_patch_ranking=self.java_patch_ranking,self.sub_java_patch_ranking
       self.sub_java_remain_patch_ranking,self.java_remain_patch_ranking=self.java_remain_patch_ranking,self.sub_java_remain_patch_ranking
+      self.sub_max_epsilon_group_size,self.max_epsilon_group_size=self.max_epsilon_group_size,self.sub_max_epsilon_group_size
       self.fixminer_swapped=True
 
 def remove_file_or_pass(file:str):
@@ -1814,19 +1831,32 @@ def append_java_cache_result(state:MSVState,case:TbarCaseInfo,fail_result:bool,p
     pass_time: pass time (second)
   """
   id=case.location
-  if id not in state.simulation_data:
-    current=dict()
-    current['basic']=fail_result
-    current['plausible']=pass_result
-    current['pass_all_fail']=pass_all_fail
-    current['compilable']=compilable
-    current['fail_time']=fail_time
-    current['pass_time']=pass_time
+  if state.tbar_mode:
+    file=state.simulation_data_list[case.parent.work_dir]
+    if id not in file:
+      current=dict()
+      current['basic']=fail_result
+      current['plausible']=pass_result
+      current['pass_all_fail']=pass_all_fail
+      current['compilable']=compilable
+      current['fail_time']=fail_time
+      current['pass_time']=pass_time
 
-    state.simulation_data[id]=current
+      file[id]=current
+  else:
+    if id not in state.simulation_data:
+      current=dict()
+      current['basic']=fail_result
+      current['plausible']=pass_result
+      current['pass_all_fail']=pass_all_fail
+      current['compilable']=compilable
+      current['fail_time']=fail_time
+      current['pass_time']=pass_time
+
+      state.simulation_data[id]=current
 
 def append_c_cache_result(state:MSVState,case:CaseInfo,fail_result:bool,pass_result:bool,pass_all_fail:bool,compilable:bool,
-      fail_time:int,pass_time:int,operator:OperatorInfo=None,variable:VariableInfo=None,constant:ConstantInfo=None):
+      fail_time:float,pass_time:float,operator:OperatorInfo=None,variable:VariableInfo=None,constant:ConstantInfo=None):
   """
     Append result to cache file, if not exist. Otherwise, do nothing.
     

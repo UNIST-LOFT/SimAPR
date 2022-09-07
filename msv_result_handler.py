@@ -275,10 +275,15 @@ def save_result(state: MSVState) -> None:
   #     obj[cs]["file"] = fi
   #   json.dump(obj, f, indent=2)
 
-  if state.use_simulation_mode:
+  if state.use_simulation_mode: # Do not add more caches if we are in multi-tool mode
     # Save cached result to file
-    with open(state.prev_data,'w') as f:
-      json.dump(state.simulation_data,f,indent=2)
+    if state.tbar_mode:
+      for i,workdir in enumerate(state.work_dir_list):
+        with open(state.prev_data_list[i],'w') as f:
+          json.dump(state.simulation_data_list[workdir], f, indent=2)
+    else:
+      with open(state.prev_data,'w') as f:
+        json.dump(state.simulation_data,f,indent=2)
 
     if state.remove_cached_file:
       for key in state.simulation_data:
@@ -369,6 +374,7 @@ def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: b
   selected_patch.update_result(result, 1, state.params[PT.b_dec],state.use_exp_alpha, state.use_fixed_beta)
   if result:
     state.total_basic_patch += 1
+    state.total_basic_patch_list[selected_patch.tbar_type_info.work_dir]+=1
     selected_patch.tbar_type_info.children_basic_patches+=1
     selected_patch.line_info.children_basic_patches+=1
     selected_patch.func_info.children_basic_patches+=1
