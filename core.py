@@ -54,18 +54,21 @@ class PatchType(Enum):
   MSVExtReplaceTrenaryOperatorKind=33
   MSVExtMoveConditionKind=34
   MSVExtLoopConditionKind=35
+  MSVExtParenTightenConditionKind=36
+  MSVExtParenLoosenConditionKind=37
   Original = 101
 
   @staticmethod
   def is_msv_ext(patch_type):
-    return patch_type.value >= 11 and patch_type.value <=35
+    return patch_type.value >= 11 and patch_type.value <=37
   
   @staticmethod
   def is_condition_syn(patch_type):
     return patch_type==PatchType.TightenConditionKind or patch_type==PatchType.LoosenConditionKind or patch_type==PatchType.GuardKind or \
             patch_type==PatchType.SpecialGuardKind or patch_type==PatchType.IfExitKind or patch_type==PatchType.MSVExtConditionKind or \
             patch_type==PatchType.MSVExtReturnConditionKind or patch_type==PatchType.MSVExtAssignConditionKind or \
-            patch_type==PatchType.MSVExtLoopConditionKind
+            patch_type==PatchType.MSVExtLoopConditionKind or patch_type==PatchType.MSVExtParenTightenConditionKind or \
+            patch_type==PatchType.MSVExtParenLoosenConditionKind
 
 class OperatorType(Enum):
   EQ = 0
