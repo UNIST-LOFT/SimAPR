@@ -12,3 +12,4 @@ six
 nltk
 gensim
 pyemd
+pyyaml

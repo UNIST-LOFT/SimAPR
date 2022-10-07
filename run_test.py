@@ -16,8 +16,10 @@ def run_fail_test(state: MSVState, selected_patch: List[PatchInfo], selected_tes
       return False, False
     if selected_patch[0].to_str() in state.simulation_data:
       msv_result = state.simulation_data[selected_patch[0].to_str()]
+      state.test_time+=msv_result['fail_time']
       return msv_result['basic'], False
   # Otherwise, run the test
+  start_time=time.time()
   test_proc = subprocess.Popen(
         args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
   so: bytes
@@ -37,6 +39,8 @@ def run_fail_test(state: MSVState, selected_patch: List[PatchInfo], selected_tes
       child.kill()
     test_proc.kill()
     return False,True
+  end_time=time.time()
+  state.test_time+=end_time-start_time
   result_str = so.decode('utf-8').strip()
   if result_str == "":
     state.msv_logger.info("Result: FAIL")
@@ -64,6 +68,7 @@ def run_pass_test(state: MSVState, patch: List[PatchInfo], is_initialize: bool =
       return False, {}
     if patch[0].to_str() in state.simulation_data:
       msv_result = state.simulation_data[patch[0].to_str()]
+      state.test_time+=msv_result['pass_time']
       return msv_result['plausible'], {}
 
   MAX_TEST_ONCE = 1000
@@ -114,13 +119,15 @@ def run_pass_test(state: MSVState, patch: List[PatchInfo], is_initialize: bool =
     current_args = args + tests
     state.msv_logger.debug(' '.join(current_args))
 
+    start_time=time.time()
     # run test
     test_proc = subprocess.Popen(
         current_args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
     so: bytes
     se: bytes
     so, se = test_proc.communicate()
-
+    end_time=time.time()
+    state.test_time+=end_time-start_time
     result_str = so.decode('utf-8').strip()
     if result_str == "":
       return_tests = set()
@@ -205,7 +212,7 @@ def run_fail_test_d4j(state: MSVState, new_env: Dict[str, str]) -> Tuple[bool, b
   error_str = se.decode('utf-8').strip()
   if result_str == "":
     state.msv_logger.info("Result: FAIL - output is empty")
-    state.msv_logger.debug("STDERR: " + error_str)
+    # state.msv_logger.debug("STDERR: " + error_str)
     return False, False, is_timeout
   state.msv_logger.debug(result_str.replace("\n", " "))
 
@@ -242,7 +249,7 @@ def run_fail_test_d4j(state: MSVState, new_env: Dict[str, str]) -> Tuple[bool, b
     state.msv_logger.info(f"Result: FAIL - compilable - {failed_tests}")
     return True, False, is_timeout
   state.msv_logger.info(f"Result: FAIL - not compilable")
-  state.msv_logger.debug(f"STDERR: {error_str}")
+  # state.msv_logger.debug(f"STDERR: {error_str}")
   return False, False, is_timeout
 
 def run_pass_test_d4j_exec(state: MSVState, new_env: Dict[str, str], tests: List[str]) -> Tuple[bool, Set[str]]:
@@ -271,7 +278,7 @@ def run_pass_test_d4j_exec(state: MSVState, new_env: Dict[str, str], tests: List
   result_str = so.decode('utf-8').strip()
   if result_str == "":
     state.msv_logger.info("Result: FAIL")
-    state.msv_logger.debug("STDERR: " + se.decode('utf-8').strip())
+    # state.msv_logger.debug("STDERR: " + se.decode('utf-8').strip())
     return False, failed_tests
   state.msv_logger.debug(" ".join(result_str.splitlines()))
   result = True

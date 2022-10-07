@@ -8,9 +8,15 @@ from typing import List, Dict, Set, Union, Tuple
 from pathlib import Path
 
 from psutil import Popen
+import psutil
 
 def get_paths(project):
-  project_name, bug_id = project.split("_")
+  sep = "_"
+  if "MSV_RECODER" in os.environ:
+    sep = os.environ["MSV_RECODER"]
+  project_name, bug_id = project.split(sep)
+  if len(bug_id)>=4:
+    bug_id=bug_id[:-3]
   bug_id = int(bug_id)
   if project_name == "Math":
     return "/target/classes/", "/target/test-classes/"
@@ -75,6 +81,14 @@ def compile_project_updated(work_dir, buggy_project):
     try:
       so, se = compile_proc.communicate(timeout=timeout/1000)
     except:
+      pid=compile_proc.pid
+      children=[]
+      for child in psutil.Process(pid).children(False):
+        if psutil.pid_exists(child.pid):
+          children.append(child)
+
+      for child in children:
+        child.kill()
       compile_proc.kill()
       result = False
   else:
@@ -91,7 +105,7 @@ def run_single_test(work_dir: str, buggy_project: str, test: str = "") -> Tuple[
   if test != "":
     cmd = ["defects4j", "test", "-w", work_dir, "-t", test]
   so = "".encode()
-  se = "".encode()  
+  se = "".encode()
   test_proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   if "MSV_TIMEOUT" in os.environ:
     timeout = int(os.environ["MSV_TIMEOUT"])
@@ -100,6 +114,14 @@ def run_single_test(work_dir: str, buggy_project: str, test: str = "") -> Tuple[
     try:
       so, se = test_proc.communicate(timeout=timeout/1000)
     except:
+      pid=test_proc.pid
+      children=[]
+      for child in psutil.Process(pid).children(False):
+        if psutil.pid_exists(child.pid):
+          children.append(child)
+
+      for child in children:
+        child.kill()
       test_proc.kill()
   else:
     so, se = test_proc.communicate()
@@ -206,21 +228,29 @@ def simple_test():
 def main(argv: List[str]) -> None:
   root_path = argv[1]
   buggy_project = os.environ["MSV_BUGGY_PROJECT"]
-  proj, pid = buggy_project.split("_")
+  sep = "_"
+  if "MSV_RECODER" in os.environ:
+    sep = os.environ["MSV_RECODER"]
+  proj, pid = buggy_project.split(sep)
   buggy_dir = os.path.join(root_path, buggy_project)
   patch_location = os.environ["MSV_LOCATION"]
   d4j_dir = os.environ["MSV_WORKDIR"]
   run_original = patch_location == "original"
   patch_location = d4j_dir + os.path.sep + patch_location #os.path.join(d4j_dir, patch_location)
   buggy_location = os.environ["MSV_BUGGY_LOCATION"]
-  buggy_location = os.path.join(buggy_dir, buggy_location)
+  if buggy_location.startswith("buggy"):
+    buggy_location = os.path.join(root_path, buggy_location)
+  else:
+    buggy_location = os.path.join(buggy_dir, buggy_location)
   class_file = ""
   if "MSV_CLASS_NAME" in os.environ:
     class_file = os.environ["MSV_CLASS_NAME"]
-  class_file = os.path.join(buggy_dir, class_file)
+    class_file = os.path.join(buggy_dir, class_file)
   if not os.path.exists(buggy_location): # when original
     os.system(f"rm -rf {buggy_dir}")
     os.makedirs(buggy_dir, exist_ok=True)
+    if len(pid)>=4:
+      pid=pid[:-3]
     subprocess.run(f"defects4j checkout -p {proj} -v {pid}b -w {buggy_dir}", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
   workdir = buggy_dir
   test = os.environ["MSV_TEST"]

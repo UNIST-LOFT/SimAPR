@@ -87,7 +87,7 @@ def read_info(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, CaseInfo]]:
           for t in PatchType: 
             if t == PatchType.Original or t.value >= len(types):
               continue
-            if t == PatchType.ConditionKind:
+            if PatchType.is_msv_ext(t):
               continue
             if t==PatchType.ReplaceStringKind:
               continue
@@ -98,8 +98,7 @@ def read_info(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, CaseInfo]]:
               case_map = type_info.case_info_map
               #case_list = type_info.case_info_list
               for c in types[t.value]:
-                is_condition = t.value == PatchType.TightenConditionKind.value or t.value==PatchType.LoosenConditionKind.value or t.value==PatchType.IfExitKind.value or \
-                            t.value==PatchType.GuardKind.value or t.value==PatchType.SpecialGuardKind.value or t.value==PatchType.ConditionKind.value
+                is_condition = PatchType.is_condition_syn(t)
                 case_info = CaseInfo(type_info, int(c), is_condition)
                 switch_case_map[case_info.to_str()] = case_info
                 if t not in line_info.type_priority:
@@ -113,21 +112,18 @@ def read_info(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, CaseInfo]]:
                     current_score=prophet_score['scores']
                     break
               
-                else:
-                  if type_info.patch_type!=PatchType.ConditionKind: # Original Prophet doesn't have ConditionKind
-                    if True:
-                      #case_list.append(case_info)
-                      case_map[int(c)] = case_info
-                      switch_case_map[f"{switch_info.switch_number}-{case_info.case_number}"] = case_info
-                      sw_cs_key = f'{switch_info.switch_number}-{case_info.case_number}'
-                      switch_case_map[sw_cs_key] = case_info
-                      for score in current_score:
-                        case_info.prophet_score.append(score)
-                        type_info.prophet_score.append(score)
-                        switch_info.prophet_score.append(score)
-                        line_info.prophet_score.append(score)
-                        func_info.prophet_score.append(score)
-                        file_info.prophet_score.append(score)
+                #case_list.append(case_info)
+                case_map[int(c)] = case_info
+                switch_case_map[f"{switch_info.switch_number}-{case_info.case_number}"] = case_info
+                sw_cs_key = f'{switch_info.switch_number}-{case_info.case_number}'
+                switch_case_map[sw_cs_key] = case_info
+                for score in current_score:
+                  case_info.prophet_score.append(score)
+                  type_info.prophet_score.append(score)
+                  switch_info.prophet_score.append(score)
+                  line_info.prophet_score.append(score)
+                  func_info.prophet_score.append(score)
+                  file_info.prophet_score.append(score)
                 
               if len(type_info.case_info_map)==0:
                 del switch_info.type_info_map[t]
@@ -542,6 +538,14 @@ def msv_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_pa
   x_o = list()
   y_o = list()
   y_od = list()
+  fl_x=list()
+  fl_y=list()
+  fl_b_x=list()
+  fl_b_y=list()
+  fl_p_x=list()
+  fl_p_y=list()
+  fl_c_x=list()
+  fl_c_y=list()
   correct_iter = 0
   correct_time = 0
   with open(msv_result_file, "r") as f:
@@ -599,16 +603,38 @@ def msv_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_pa
                   dist -= 1
       x.append(iter)
       y.append(dist)
+      fl_x.append(iter)
+      if len(case_info.prophet_score)>0:
+        fl_y.append(max(case_info.prophet_score))
+      else:
+        fl_y.append(-20)
       y_od.append(out_dist)
       if result:
         x_b.append(iter)
         y_b.append(dist)
+        fl_b_x.append(iter)
+        if len(case_info.prophet_score)>0:
+          fl_b_y.append(max(case_info.prophet_score))
+        else:
+          fl_b_y.append(-20)
       if pass_result:
         x_p.append(iter)
         y_p.append(dist)
+        fl_p_x.append(iter)
+        if len(case_info.prophet_score)>0:
+          fl_p_y.append(max(case_info.prophet_score))
+        else:
+          fl_p_y.append(-20)
       if out_diff:
         x_o.append(iter)
         y_o.append(dist)
+
+      if correct_case==case_info:
+        fl_c_x.append(iter)
+        if len(case_info.prophet_score)>0:
+          fl_c_y.append(max(case_info.prophet_score))
+        else:
+          fl_c_y.append(-20)
       # if found:
       #   break
   y_tick = np.arange(0, 7)
@@ -634,6 +660,22 @@ def msv_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_pa
   ax2.scatter(x, y_od, s=1, color='m', marker='.')
   ax2.set_ylabel("output distance (log scale)", fontsize=20)
   plt.savefig(out_diff_file)
+
+  plt.clf()
+  plt.figure(figsize=(max(24, max(fl_x) // 80), 14))
+  fig, ax1 = plt.subplots(1, 1, figsize=(max(24, max(fl_x) // 80), 14))
+  x_len = max(24, max(fl_x) // 80)
+  ax1.scatter(fl_x, fl_y, s=1, color='k', marker=",")
+  ax1.scatter(fl_b_x, fl_b_y, color='r', marker=".")
+  ax1.scatter(fl_p_x, fl_p_y, color='c', marker="*")
+  ax1.scatter(fl_c_x, fl_c_y, color='g', marker="*")
+  ax1.set_title(title + "fl scores - basic(r),plausible(c),correct(g)", fontsize=20)
+  ax1.set_xlabel("iteration", fontsize=16)
+  ax1.set_ylabel("FL score", fontsize=20)
+  out_file = os.path.join(os.path.dirname(msv_result_file), "fl_out.png")
+  plt.grid()
+  plt.savefig(out_file)
+
   return correct_iter, correct_time
 
 def msv_find_correct(msv_result_file: str, correct_patch: str) -> Tuple[int, float]:
@@ -762,18 +804,19 @@ def batch_plot(correct_patch_csv: str, in_dir: str) -> None:
       switch_info, switch_case_map = info[workdir]
       iter, tm = msv_plot_correct(result_file, dir, workdir, cp, switch_info, switch_case_map)
       csv += f"{ty},{ver},{cp},{iter},{tm}\n"
-      afl_barchart(result_file, dir, workdir, cp, switch_info, switch_case_map)
+      # afl_barchart(result_file, dir, workdir, cp, switch_info, switch_case_map)
   print(csv)
   with open("result.csv", "w") as f:
     f.write(csv)  
 
 
-def read_info_tbar(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, TbarCaseInfo],List[float]]:
+def read_info_tbar(work_dir: str,mode:str) -> Tuple[Dict[str, FileInfo], Dict[str, TbarCaseInfo],List[dict]]:
+  if mode=='fixminer': work_dir=work_dir+'/0'
   with open(os.path.join(work_dir, 'switch-info.json'), 'r') as f:
     info = json.load(f)
     # Read test informations (which tests to run, which of them are failing test or passing test)
     # Read priority (for FL score)
-    n = len(info['priority'])
+    # n = len(info['priority'])
     # score_map = dict()
     # Read rules to build patch tree structure
     file_map: Dict[str, FileInfo] = dict()
@@ -798,8 +841,12 @@ def read_info_tbar(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, TbarCa
       for line in file['lines']:
         func_info = None
         line_info = None
-        if len(line['switches']) == 0:
-          continue
+        if mode=='tbar' or mode=='kpar':
+          if len(line['switches']) == 0:
+            continue
+        else:
+          if len(line['cases']) == 0:
+            continue
 
         if file_name in ff_map:
           for func_id in ff_map[file_name]:
@@ -812,6 +859,7 @@ def read_info_tbar(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, TbarCa
               else:
                 func_info = file_info.func_info_map[func_id]
               line_info = LineInfo(func_info, int(line['line']))
+              line_info.fl_score=line['fl_score']
               func_info.line_info_map[line_info.uuid] = line_info
               break
         else:
@@ -825,22 +873,38 @@ def read_info_tbar(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, TbarCa
           file_info.func_info_map[func_info.id] = func_info
           ff_map[file_name][func_info.id] = (int(line['line']), int(line['line']))
           line_info = LineInfo(func_info, int(line['line']))
+          line_info.fl_score=line['fl_score']
           func_info.line_info_map[line_info.uuid] = line_info
-        for sw in line["switches"]:
-          mut = sw["mutation"]
-          start = sw["start_position"]
-          end = sw["end_position"]
-          location = sw["location"]
-          if mut not in line_info.tbar_type_info_map:
-            line_info.tbar_type_info_map[mut] = TbarTypeInfo(line_info, mut)
-          tbar_type_info = line_info.tbar_type_info_map[mut]
-          tbar_case_info = TbarCaseInfo(tbar_type_info, location, start, end)
-          tbar_type_info.tbar_case_info_map[location] = tbar_case_info
-          switch_case_map[location] = tbar_case_info
-          tbar_type_info.total_case_info += 1
-          line_info.total_case_info += 1
-          func_info.total_case_info += 1
-          file_info.total_case_info += 1
+        if mode=='tbar' or mode=='kpar':
+          for sw in line["switches"]:
+            mut = sw["mutation"]
+            start = sw["start_position"]
+            end = sw["end_position"]
+            location = sw["location"]
+            if mut not in line_info.tbar_type_info_map:
+              line_info.tbar_type_info_map[mut] = TbarTypeInfo(line_info, mut)
+            tbar_type_info = line_info.tbar_type_info_map[mut]
+            tbar_case_info = TbarCaseInfo(tbar_type_info, location, start, end)
+            tbar_type_info.tbar_case_info_map[location] = tbar_case_info
+            switch_case_map[location] = tbar_case_info
+            tbar_type_info.total_case_info += 1
+            line_info.total_case_info += 1
+            func_info.total_case_info += 1
+            file_info.total_case_info += 1
+        else:
+          for sw in line["cases"]:
+            mut = sw["mutation"]
+            location = sw["location"]
+            if mut not in line_info.tbar_type_info_map:
+              line_info.tbar_type_info_map[mut] = TbarTypeInfo(line_info, mut)
+            tbar_type_info = line_info.tbar_type_info_map[mut]
+            tbar_case_info = TbarCaseInfo(tbar_type_info, location, 0, 0)
+            tbar_type_info.tbar_case_info_map[location] = tbar_case_info
+            switch_case_map[location] = tbar_case_info
+            tbar_type_info.total_case_info += 1
+            line_info.total_case_info += 1
+            func_info.total_case_info += 1
+            file_info.total_case_info += 1
         if len(line_info.tbar_type_info_map)==0:
           del func_info.line_info_map[line_info.uuid]
       for func in file_info.func_info_map.copy().values():
@@ -849,19 +913,28 @@ def read_info_tbar(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, TbarCa
       if len(file_info.func_info_map)==0:
         del file_map[file_info.file_name]
 
-    for fl in info['priority']:
-      fl_list.append(fl['fl_score'])
+    # fl_list=info['priority']
+    fl_list=None
   buggy_project = info["project_name"]
   return file_map, switch_case_map,fl_list
 
-def tbar_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_patch: str, file_map: Dict[str, FileInfo], switch_case_map: Dict[str, TbarCaseInfo],fl_list:List[float]) -> None:
+def tbar_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_patch: List[str], file_map: Dict[str, FileInfo], switch_case_map: Dict[str, TbarCaseInfo],fl_list:List[dict],mode:str) -> None:
+  if mode=='fixminer' and ('Chart_24' in msv_result_file or 'Math_33' in msv_result_file): return 0,0
   if switch_case_map is None:
-    file_map, switch_case_map,fl_list = read_info_tbar(work_dir)
-  correct_tbar_case = switch_case_map[correct_patch]
-  correct_tbar_type = correct_tbar_case.parent
-  correct_line = correct_tbar_type.parent
-  correct_func = correct_line.parent
-  correct_file = correct_func.parent
+    file_map, switch_case_map,fl_list = read_info_tbar(work_dir,mode)
+  correct_tbar_case=[]
+  correct_tbar_type=[]
+  correct_line=[]
+  correct_func=[]
+  correct_file=[]
+
+  for correct in correct_patch:
+    if mode=='fixminer' and correct[0]=='1': continue
+    correct_tbar_case.append(switch_case_map[correct])
+    correct_tbar_type.append(correct_tbar_case[-1].parent)
+    correct_line.append(correct_tbar_type[-1].parent)
+    correct_func.append(correct_line[-1].parent)
+    correct_file.append(correct_func[-1].parent)
   x = list()
   y = list()
   x_b = list()
@@ -896,36 +969,35 @@ def tbar_plot_correct(msv_result_file: str, title: str, work_dir: str, correct_p
       func = line.parent
       file = func.parent
       dist = 5
-      if file == correct_file:
+      if file in correct_file:
         dist -= 1
-        if func == correct_func:
+        if func in correct_func:
           dist -= 1
-          if line == correct_line:
+          if line in correct_line:
             dist -= 1
-            if tbar_type == correct_tbar_type:
+            if tbar_type in correct_tbar_type:
               dist -= 1
-              if tbar_case == correct_tbar_case:
+              if tbar_case in correct_tbar_case:
                 dist -= 1
       x.append(iter)
       y.append(dist)
 
-      fl_rank=int(config['location'][1:].split('_')[0].strip()) # TODO: Add more tools
       fl_x.append(iter)
-      fl_y.append(fl_list[fl_rank])
+      fl_y.append(tbar_case.parent.parent.fl_score)
 
       if result:
         x_b.append(iter)
         y_b.append(dist)
         fl_b_x.append(iter)
-        fl_b_y.append(fl_list[fl_rank])
+        fl_b_y.append(tbar_case.parent.parent.fl_score)
       if pass_result:
         x_p.append(iter)
         y_p.append(dist)
         fl_p_x.append(iter)
-        fl_p_y.append(fl_list[fl_rank])
-      if config['location']==correct_patch:
+        fl_p_y.append(tbar_case.parent.parent.fl_score)
+      if config['location'] in correct_patch:
         fl_c_x.append(iter)
-        fl_c_y.append(fl_list[fl_rank])
+        fl_c_y.append(tbar_case.parent.parent.fl_score)
   
   if len(x)==0:
     return 0,0
@@ -1180,29 +1252,18 @@ def read_info_recoder(work_dir: str) -> Tuple[Dict[str, FileInfo], Dict[str, Rec
           actlist = cs["actlist"]
           location = cs["location"]
           prob = cs["prob"]
-          type_map = line_info.recoder_type_info_map
-          prev = None
-          for act in actlist:
-            if act not in type_map:
-              type_map[act] = RecoderTypeInfo(line_info, act, prev)
-            prev = type_map[act]
-            prev.score_list.append(prob)
-            type_map = prev.next
-          recoder_type_info = prev
-          recoder_case_info = RecoderCaseInfo(recoder_type_info, location, case_id)
-          recoder_type_info.recoder_case_info_map[case_id] = recoder_case_info
+          recoder_case_info = RecoderCaseInfo(line_info, location, case_id)
+          line_info.recoder_case_info_map[case_id] = recoder_case_info
           switch_case_map[f"{line_info.line_id}-{case_id}"] = recoder_case_info
           recoder_case_info.prob = prob
           # recoder_type_info.score_list.append(prob)
           line_info.score_list.append(prob)
           func_info.score_list.append(prob)
           file_info.score_list.append(prob)
-          for ti in recoder_type_info.get_path():
-            ti.total_case_info += 1
           line_info.total_case_info += 1
           func_info.total_case_info += 1
           file_info.total_case_info += 1
-        if len(line_info.recoder_type_info_map)==0:
+        if len(line_info.recoder_case_info_map)==0:
           del func_info.line_info_map[line_info.uuid]
       for func in file_info.func_info_map.copy().values():
         if len(func.line_info_map)==0:
@@ -1223,18 +1284,22 @@ def tbar_batch_plot(correct_patch_csv: str, in_dir: str,mode:str='TBar') -> None
     if not os.path.isdir(os.path.join(in_dir, dir)):
       continue
     print(dir)
-    proj = dir.split("-")[0]
-    if proj not in all:
-      continue
+    proj=''
+    for patch in dir.split('-'):
+      if patch not in all:
+        continue
+      proj=patch
+      print(proj)
     result_file = os.path.join(in_dir, dir, "msv-result.json")
     print(result_file)
+    cp=[]
     if os.path.exists(result_file):
-      cp = all[proj]
+      cp.append(all[proj])
       print(f"{dir} : {cp}")
       if mode=='kpar':
         workdir = "/root/project/kPar/d4j/" + proj
       elif mode=='fixminer':
-        workdir = "/root/FixMiner-APR/d4j/" + proj
+        workdir = "/root/project/FixMiner-APR/d4j/" + proj
       elif mode=='avatar':
         workdir = "/root/project/AVATAR/d4j/" + proj
       else:
@@ -1245,9 +1310,9 @@ def tbar_batch_plot(correct_patch_csv: str, in_dir: str,mode:str='TBar') -> None
         continue
       print(f"{result_file}, {workdir}")
       if workdir not in info:
-        info[workdir] = read_info_tbar(workdir)
+        info[workdir] = read_info_tbar(workdir,mode)
       switch_info, switch_case_map,fl_list = info[workdir]
-      iter, tm = tbar_plot_correct(result_file, dir, workdir, cp, switch_info, switch_case_map,fl_list)
+      iter, tm = tbar_plot_correct(result_file, dir, workdir, cp, switch_info, switch_case_map,fl_list,mode)
       csv += f"{proj},{cp},{iter},{tm}\n"
       # tbar_barchart(result_file, dir, workdir, cp, switch_info, switch_case_map)
   print(csv)
@@ -1259,9 +1324,7 @@ def recoder_plot_correct(msv_result_file: str, title: str, correct_patch: str, f
   if not os.path.exists(msv_result_file):
     return 0,0,0,0
   correct_recoder_case = switch_case_map[correct_patch]
-  correct_recoder_type = correct_recoder_case.parent
-  correct_recoder_type_list = correct_recoder_type.get_path()[::-1]
-  correct_line_info = correct_recoder_type.parent
+  correct_line_info = correct_recoder_case.parent
   correct_func_info = correct_line_info.parent
   correct_file_info = correct_func_info.parent
   x = list()
@@ -1270,6 +1333,14 @@ def recoder_plot_correct(msv_result_file: str, title: str, correct_patch: str, f
   y_b = list()
   x_p = list()
   y_p = list()
+  fl_x = list()
+  fl_y = list()
+  fl_b_x = list()
+  fl_b_y = list()
+  fl_p_x = list()
+  fl_p_y = list()
+  fl_c_x = list()
+  fl_c_y = list()
   correct_iter = 0
   correct_tm = 0
   found_plausible = False
@@ -1285,48 +1356,44 @@ def recoder_plot_correct(msv_result_file: str, title: str, correct_patch: str, f
       config = data["config"][0]
       key = f"{config['id']}-{config['case_id']}"
       recoder_case = switch_case_map[key]
-      recoder_type = recoder_case.parent
-      recoder_type_list = recoder_type.get_path()[::-1]
-      line_info = recoder_type.parent
+      line_info = recoder_case.parent
       func_info = line_info.parent
       file_info = func_info.parent
       if pass_result and not found_plausible:
         plausible_iter = iter
         plausible_time = tm
         found_plausible = True
-      dist = 5
+      dist = 4
       if file_info == correct_file_info:
         dist -= 1
         if func_info == correct_func_info:
           dist -= 1
           if line_info == correct_line_info:
             dist -= 1
-            correct_type = 0
-            for i in range(len(correct_recoder_type_list)):
-              if i >= len(recoder_type_list):
-                break
-              if correct_recoder_type_list[i] == recoder_type_list[i]:
-                correct_type += 1
-            for cti in correct_recoder_type_list:
-              if cti == recoder_type:
-                correct_type += 1
-              dist -= (correct_type / len(correct_recoder_type_list))
-              if recoder_case == correct_recoder_case:
-                correct_iter = iter
-                correct_tm = tm
-                dist -= 1
+            if recoder_case == correct_recoder_case:
+              fl_c_x.append(iter)
+              fl_c_y.append(line_info.fl_score)
+              correct_iter = iter
+              correct_tm = tm
+              dist -= 1
       x.append(iter)
       y.append(dist)
+      fl_x.append(iter)
+      fl_y.append(line_info.fl_score)
       if result:
         x_b.append(iter)
         y_b.append(dist)
+        fl_b_x.append(iter)
+        fl_b_y.append(line_info.fl_score)
       if pass_result:
         x_p.append(iter)
         y_p.append(dist)
+        fl_p_x.append(iter)
+        fl_p_y.append(line_info.fl_score)
   if len(x) == 0:
     return 0,0,0,0
-  y_tick = np.arange(0, 6)
-  y_label = ["case", "type", "line", "func", "file", "diff"]
+  y_tick = np.arange(0, 5)
+  y_label = ["case", "line", "func", "file", "diff"]
   plt.clf()
   plt.figure(figsize=(max(24, max(x) // 80), 14))
   fig, ax1 = plt.subplots(1, 1, figsize=(max(24, max(x) // 80), 14))
@@ -1342,6 +1409,20 @@ def recoder_plot_correct(msv_result_file: str, title: str, correct_patch: str, f
   out_file = os.path.join(os.path.dirname(msv_result_file), "out.png")
   plt.grid()
   plt.savefig(out_file)
+  plt.clf()
+  plt.figure(figsize=(max(24, max(fl_x) // 80), 14))
+  fig, ax1 = plt.subplots(1, 1, figsize=(max(24, max(fl_x) // 80), 14))
+  x_len = max(24, max(fl_x) // 80)
+  ax1.scatter(fl_x, fl_y, s=1, color='k', marker=",")
+  ax1.scatter(fl_b_x, fl_b_y, color='r', marker=".")
+  ax1.scatter(fl_p_x, fl_p_y, color='c', marker="*")
+  ax1.scatter(fl_c_x, fl_c_y, color='g', marker="*")
+  ax1.set_title(title + "fl scores - basic(r),plausible(c),correct(g)", fontsize=20)
+  ax1.set_xlabel("iteration", fontsize=16)
+  ax1.set_ylabel("FL score", fontsize=20)
+  out_file = os.path.join(os.path.dirname(msv_result_file), "fl_out.png")
+  plt.grid()
+  plt.savefig(out_file)
   return correct_iter, correct_tm, plausible_iter, plausible_time
 
 
@@ -1349,8 +1430,7 @@ def recoder_table_correct(msv_result_file: str, title: str, correct_patch: str, 
   if not os.path.exists(msv_result_file):
     return 0, 0, 0, 0
   correct_recoder_case = switch_case_map[correct_patch]
-  correct_recoder_type = correct_recoder_case.parent
-  correct_line_info = correct_recoder_type.parent
+  correct_line_info = correct_recoder_case.parent
   correct_func_info = correct_line_info.parent
   correct_file_info = correct_func_info.parent
   x = list()
@@ -1375,31 +1455,28 @@ def recoder_table_correct(msv_result_file: str, title: str, correct_patch: str, 
       config = data["config"][0]
       key = f"{config['id']}-{config['case_id']}"
       recoder_case = switch_case_map[key]
-      recoder_type = recoder_case.parent
-      line_info = recoder_type.parent
+      line_info = recoder_case.parent
       func_info = line_info.parent
       file_info = func_info.parent
       if pass_result and not found_plausible:
         plausible_iter = iter
         plausible_time = tm
         found_plausible = True
-      dist = 5
+      dist = 4
       if file_info == correct_file_info:
         dist -= 1
         if func_info == correct_func_info:
           dist -= 1
           if line_info == correct_line_info:
             dist -= 1
-            if recoder_type == correct_recoder_type:
+            if not found_correct:
+              found_correct = True
+              correct_iter = iter
+              correct_tm = tm
+            if recoder_case == correct_recoder_case:
+              # correct_iter = iter
+              # correct_tm = tm
               dist -= 1
-              if not found_correct:
-                found_correct = True
-                correct_iter = iter
-                correct_tm = tm
-              if recoder_case == correct_recoder_case:
-                # correct_iter = iter
-                # correct_tm = tm
-                dist -= 1
       x.append(iter)
       y.append(dist)
       if result:
@@ -1410,8 +1487,8 @@ def recoder_table_correct(msv_result_file: str, title: str, correct_patch: str, 
         y_p.append(dist)
   if len(x) == 0:
     return 0, 0, 0, 0
-  y_tick = np.arange(0, 6)
-  y_label = ["case", "type", "line", "func", "file", "diff"]
+  y_tick = np.arange(0, 5)
+  y_label = ["case", "line", "func", "file", "diff"]
   plt.clf()
   plt.figure(figsize=(max(24, max(x) // 80), 14))
   fig, ax1 = plt.subplots(1, 1, figsize=(max(24, max(x) // 80), 14))
@@ -1430,48 +1507,95 @@ def recoder_table_correct(msv_result_file: str, title: str, correct_patch: str, 
   return correct_iter, correct_tm, plausible_iter, plausible_time
 
 
-def recoder_batch_plot(correct_patch_csv: str, in_dir: str) -> None:
+def sort_bugids(bugids: List[str]) -> List[str]:
+  proj_dict = dict()
+  for bugid in bugids:
+    proj, id = bugid.split("-")
+    if proj not in proj_dict:
+      proj_dict[proj] = list()
+    proj_dict[proj].append(int(id))
+  projs = sorted(list(proj_dict.keys()))
+  result = list()
+  for proj in projs:
+    ids = proj_dict[proj]
+    ids.sort()
+    for id in ids:
+      result.append(f"{proj}-{id}")
+  return result
+
+def get_recoder_scores(bugid: str, info: Dict[str, RecoderCaseInfo], correct_str: str):
+  scores = list()
+  correct_info = info[correct_str]
+  correct_score = correct_info.prob
+  for cs in correct_info.parent.recoder_case_info_map:
+    case_info = correct_info.parent.recoder_case_info_map[cs]
+    scores.append(case_info.prob)
+  os.makedirs(os.path.join("/root/project/Recoder/out-score", bugid), exist_ok=True)
+  plt.clf()
+  plt.figure(figsize=(max(24, max(scores) // 80), 14))
+  plt.scatter(range(len(scores)), scores, s=1, color='k', marker=",")
+  plt.title(f"{correct_str} - recoder scores", fontsize=20)
+  plt.scatter([scores.index(correct_score)], [correct_score], color='r', marker="*")
+  plt.xlabel("case", fontsize=16)
+  plt.ylabel("likelihood", fontsize=20)
+  plt.savefig(os.path.join("/root/project/Recoder/out-score", bugid, "recoder_scores.png"))
+
+  bak = scores
+  scores = list()
+  for cs in info:
+    case_info = info[cs]
+    scores.append(case_info.prob)
+  plt.clf()
+  plt.figure(figsize=(max(24, max(scores) // 80), 14))
+  plt.scatter(range(len(scores)), scores, s=1, color='k', marker=",")
+  plt.title(f"{correct_str} - recoder scores", fontsize=20)
+  plt.scatter([scores.index(correct_score)], [correct_score], color='r', marker="*")
+  plt.xlabel("case", fontsize=16)
+  plt.ylabel("likelihood", fontsize=20)
+  plt.savefig(os.path.join("/root/project/Recoder/out-score", bugid, "total_recoder_scores.png"))
+  return bak, correct_score
+
+def recoder_batch_plot(correct_patch_csv: str, in_dir: str, id: str) -> None:
   csv = ""
-  all: Dict[str, str] = dict()
+  all: Dict[str, List[str]] = dict()
   with open(correct_patch_csv, "r") as f:
     for line in f.readlines():
-      token = line.strip().split(",")
+      ln = line.strip()
+      if ln.startswith("#") or ln == "":
+        continue
+      token = ln.split(",")
       if len(token) < 2:
         continue
-      all[token[0]] = token[1]
+      all[token[0]] = token[1:]
+  bugids = list(all.keys())
+  bugids = sort_bugids(bugids)
   info = dict()
-  for dir in sorted(os.listdir(in_dir)):
-    if not os.path.isdir(os.path.join(in_dir, dir)):
-      continue
-    print(dir)
-    tokens = dir.split("-")
-    proj = tokens[0]
-    bid = tokens[1]
-    bugid = f"{proj}-{bid}"
-    if bugid not in all:
-      continue
-
-    result_file = os.path.join(in_dir, dir, "msv-result.json")
-    print(result_file)
-    if os.path.exists(result_file):
-      cp = all[bugid]
-      print(f"{dir} : {cp}")
-      workdir = "/root/project/Recoder/d4j/" + bugid 
-      if not os.path.exists(workdir):
-        print(f"{workdir} not exists!!!!!!!")
-        continue
-      if workdir not in info:
-        info[workdir] = read_info_recoder(workdir)
+  for bugid in bugids:
+    print(bugid)
+    correct_patches = all[bugid]
+    workdir = "/root/project/Recoder/d4j/" + bugid
+    if workdir not in info:
+      info[workdir] = read_info_recoder(workdir)
       switch_info, switch_case_map = info[workdir]
-      iter, tm, pi, pt = recoder_plot_correct(result_file, dir, cp, switch_info, switch_case_map)
-      csv += f"{dir},{cp},{iter},{tm},{pi},{pt}\n"
-      # tbar_barchart(result_file, dir, workdir, cp, switch_info, switch_case_map)
-  print(csv)
-  with open("result.csv", "w") as f:
-    f.write(csv)  
+      scores, corr_score = get_recoder_scores(bugid, switch_case_map, correct_patches[0])
+      # with open("/root/project/Recoder/out-score/score.csv", "a") as ff:
+      #   ratio =(corr_score - min(scores)) / (max(scores) - min(scores))
+      #   ff.write(f"{bugid},{corr_score},{min(scores)},{max(scores)},{ratio}\n")
+      # continue
+    switch_info, switch_case_map = info[workdir]
+    recoder_dir = os.path.join(in_dir, f"{bugid}-recoder-{id}")
+    result_file = os.path.join(recoder_dir, "msv-result.json")
+    recoder_plot_correct(result_file, f"{bugid}-recoder-{id}", correct_patches[0], switch_info, switch_case_map)
+    seapr_dir =  os.path.join(in_dir, f"{bugid}-seapr-{id}")
+    result_file = os.path.join(seapr_dir, "msv-result.json")
+    recoder_plot_correct(result_file, f"{bugid}-seapr-{id}", correct_patches[0], switch_info, switch_case_map)
+    for i in range(10):
+      guided_dir = os.path.join(in_dir, f"{bugid}-guided-{id}-{i}")
+      result_file = os.path.join(guided_dir, "msv-result.json")
+      recoder_plot_correct(result_file, f"{bugid}-guided-{id}-{i}", correct_patches[0], switch_info, switch_case_map)
 
 def main(argv):
-  opts, args = getopt.getopt(argv[1:], "hi:o:t:nm:c:w")
+  opts, args = getopt.getopt(argv[1:], "hi:o:t:nm:c:wd:")
   result_file = ""
   output_file = ""
   title = ""
@@ -1480,6 +1604,7 @@ def main(argv):
   work_dir = ""
   correct_patch = list()
   is_tbar = False
+  rid = ""
   for o, a in opts:
     if o == "-i":
       result_file = a
@@ -1495,6 +1620,8 @@ def main(argv):
       mode = a
     elif o == "-c":
       correct_patch = a
+    elif o == "-d":
+      rid = a
     else:
       print("afl_plot.py -i input_dir -t title -o output.png -m auto -c correctpatch")
       print("ex) afl_plot.py -i . -o out.png -t php-2adf58 -m auto -c 54-36:0-2-12")
@@ -1518,7 +1645,7 @@ def main(argv):
   elif mode == "find":
     batch_find(correct_patch, result_file)
   elif mode == "recoder":
-    recoder_batch_plot(correct_patch, result_file)
+    recoder_batch_plot(correct_patch, result_file, rid)
   else:
     msv_plot_correct(result_file, title, work_dir, correct_patch)
   return 0
