@@ -1437,6 +1437,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   if state.total_basic_patch==0 or state.not_use_guided_search:
     selected_switch_info=epsilon_search(state)
     result = TbarPatchInfo(selected_switch_info)
+    state.patch_ranking.remove(selected_switch_info.location)
     return result
 
   selected_file_info,is_guided = select_patch_guide_algorithm(state,state.file_info_map,None)
@@ -1563,6 +1564,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   selected_switch_info:TbarCaseInfo=epsilon_select(state,selected_type_info)
   clear_list(state, p_map)
   result = TbarPatchInfo(selected_switch_info)
+  state.patch_ranking.remove(selected_switch_info.location)
   return result
 
 def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
