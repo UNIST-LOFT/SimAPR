@@ -1956,7 +1956,7 @@ def select_patch_recoder_seapr(state: MSVState) -> RecoderPatchInfo:
     loc = func.case_rank_list[0]
     case_info: RecoderCaseInfo = state.switch_case_map[loc]
     return case_info
-
+  patch_ranking: Dict[float,List[str]]=dict()
   start_time = time.time()
   if not state.use_pattern and state.seapr_layer == SeAPRMode.FUNCTION:
     state.func_list.sort(key=lambda x: max(x.fl_score_list), reverse=True)
@@ -1966,6 +1966,9 @@ def select_patch_recoder_seapr(state: MSVState) -> RecoderPatchInfo:
         continue
       cur_score = get_ochiai(func.same_seapr_pf.pass_count, func.same_seapr_pf.fail_count,
                              func.diff_seapr_pf.pass_count, func.diff_seapr_pf.fail_count)
+      if cur_score not in patch_ranking:
+        patch_ranking[cur_score] = list()
+      patch_ranking[cur_score].extend(func.case_rank_list)
       if cur_score > max_score:
         max_score = cur_score
         selected_patch = get_first_case_info(state, func)
@@ -1988,25 +1991,23 @@ def select_patch_recoder_seapr(state: MSVState) -> RecoderPatchInfo:
         max_score = cur_score
         selected_patch = recoder_case_info
         has_high_qual_patch = True
-  
-  seapr_rank = list()
-  for loc in state.patch_ranking:
-    recoder_case_info: RecoderCaseInfo = state.switch_case_map[loc]
-    if recoder_case_info.case_id not in recoder_case_info.parent.recoder_case_info_map:
-      # state.msv_logger.warning(f"No switch info  {recoder_case_info.location} in patch: {recoder_case_info.parent.recoder_case_info_map}")
-      continue
-    cur_score = get_ochiai(recoder_case_info.same_seapr_pf.pass_count, recoder_case_info.same_seapr_pf.fail_count,
-      recoder_case_info.diff_seapr_pf.pass_count, recoder_case_info.diff_seapr_pf.fail_count)
-    if recoder_case_info.parent.parent.func_rank > 30:
-      seapr_rank.append((loc, 0))
+
+  patch_ranking_sort = sorted(list(patch_ranking.keys()), reverse=True)
+  seapr_rank = 0
+  is_finished = False
+  print(patch_ranking_sort)
+  for score in patch_ranking_sort:
+    if state.correct_patch_str not in patch_ranking[score]:
+      seapr_rank += len(patch_ranking[score])
     else:
-      seapr_rank.append(loc, cur_score)
-  seapr_rank.sort(key=lambda x: x[1])
-  seapr_rank_num = 0
-  for key, score in seapr_rank:
-    seapr_rank_num += 1
-    if key == state.correct_patch_str:
-      state.msv_logger.debug(f"Correct patch {key} is ranked {seapr_rank_num}")
+      for patch in patch_ranking[score]:
+        if patch != state.correct_patch_str:
+          seapr_rank += 1
+        else:
+          state.msv_logger.info(f"Correct patch {state.correct_patch_str} is ranked {seapr_rank}")
+          is_finished = True
+          break
+    if is_finished:
       break
   if not has_high_qual_patch:
     state.select_time+=time.time()-start_time
