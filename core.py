@@ -1715,6 +1715,7 @@ class MSVState:
     self.fixminer_mode=False  # fixminer-mode: Fixminer patch space is seperated to 2 groups
     self.spr_mode=False  # SPR mode: SPR uses FL+template instead of prophet score
     self.sampling_mode=False  # sampling mode: use Thompson-sampling to select patch
+    self.finish_top_method=False  # Finish if every patches in top-30 methods are searched. Should turn on for default SeAPR
 
     self.seapr_remain_cases:List[CaseInfo]=[]
     self.seapr_layer:SeAPRMode=SeAPRMode.FUNCTION

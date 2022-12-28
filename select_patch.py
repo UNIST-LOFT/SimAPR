@@ -1680,7 +1680,7 @@ def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
         selected_patch = tbar_case_info
         has_high_qual_patch = True
   if not has_high_qual_patch:
-    assert False, 'No high quality patch'
+    state.msv_logger.debug('Every top-30 methods are searched, follow original order!')
     state.select_time+=time.time()-start_time
     return select_patch_tbar(state)
   
@@ -2012,6 +2012,7 @@ def select_patch_recoder_seapr(state: MSVState) -> RecoderPatchInfo:
     if is_finished:
       break
   if not has_high_qual_patch:
+    state.msv_logger.debug('Every top-30 methods are searched, follow original order!')
     state.select_time+=time.time()-start_time
     return select_patch_recoder(state)
   state.patch_ranking.remove(selected_patch.to_str())

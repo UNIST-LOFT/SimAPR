@@ -360,6 +360,17 @@ class MSV:
       # self.remove_patch(patch)
 
 class MSVTbar(MSV):
+  def _is_method_over(self) -> bool:
+    """Check the ranks of every remaining methods are over then 30"""
+    if not self.state.finish_top_method: return False
+    
+    min_method_rank=10000 # Some large rank
+    for p in self.state.patch_ranking:
+      if self.state.switch_case_map[p].parent.parent.parent.func_rank < min_method_rank:
+        min_method_rank=self.state.switch_case_map[p].parent.parent.parent.func_rank
+    
+    return min_method_rank>30
+
   def is_alive(self) -> bool:
     if len(self.state.file_info_map) == 0:
       if self.state.fixminer_mode and not self.state.fixminer_swapped:
@@ -375,6 +386,8 @@ class MSVTbar(MSV):
       self.state.is_alive = False
     elif self.state.finish_at_correct_patch and self.patch_str in self.state.correct_patch_str:
       self.state.is_alive = False
+    elif self._is_method_over():
+      self.state.is_alive=False
     return self.state.is_alive
   def save_result(self) -> None:
     # TODO change
@@ -537,6 +550,8 @@ class MSVRecoder(MSVTbar):
       self.state.is_alive = False
     elif self.state.finish_at_correct_patch and (self.patch_str == self.state.correct_patch_str):
       self.state.is_alive = False
+    elif self._is_method_over():
+      self.state.is_alive=False
     return self.state.is_alive
   def run_test(self, patch: RecoderPatchInfo, test: int) -> Tuple[int, bool, float]:
     start_time=time.time()
