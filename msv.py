@@ -16,7 +16,7 @@ import condition
 import select_patch
 import msv_result_handler as result_handler
 import run_test
-
+import ud
 
 class MSV:
   def __init__(self, state: MSVState) -> None:
@@ -478,6 +478,8 @@ class MSVTbar(MSV):
 
       if is_compilable or self.state.count_compile_fail:
         self.state.iteration += 1
+      if self.state.use_unified_debugging and is_compilable:
+        ud.update_ud_tbar(self.state, patch, pass_exists, pass_result)
       result_handler.append_result(self.state, [patch], pass_exists, pass_result, result, is_compilable,fail_time,pass_time)
       result_handler.remove_patch_tbar(self.state, patch)
   
@@ -534,6 +536,8 @@ class MSVTbar(MSV):
             result_handler.update_positive_result_tbar(self.state, patch, pass_result)
         if is_compilable or self.state.count_compile_fail:
           self.state.iteration += 1
+      if self.state.use_unified_debugging and is_compilable:
+        ud.update_ud_tbar(self.state, patch, pass_exists, pass_result)
       result_handler.append_result(self.state, [patch], pass_exists, pass_result, result, is_compilable,fail_time,pass_time)
       result_handler.remove_patch_tbar(self.state, patch)
 

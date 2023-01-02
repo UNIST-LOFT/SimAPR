@@ -278,6 +278,9 @@ class FuncInfo:
     self.same_seapr_pf = PassFail(1, 1)
     self.diff_seapr_pf = PassFail(1, 1)
     self.case_rank_list: List[str] = list()
+
+    # Unified debugging stuffs
+    self.ud_spectrum:List[int]=[0,0,0,0]  # [CleanFix, NoisyFix, NoneFix, NegFix]
   def __hash__(self) -> int:
     return hash(self.id)
   def __eq__(self, other) -> bool:
@@ -315,6 +318,9 @@ class LineInfo:
     self.consecutive_fail_plausible_count:int=0
     self.patches_by_score:Dict[float,List[CaseInfo]]=dict()
     self.remain_patches_by_score:Dict[float,List[CaseInfo]]=dict()
+
+    # Unified debugging stuffs
+    self.ud_spectrum:List[int]=[0,0,0,0]  # [CleanFix, NoisyFix, NoneFix, NegFix]
   def __hash__(self) -> int:
     return hash(self.uuid)
   def __eq__(self, other) -> bool:
@@ -1716,6 +1722,7 @@ class MSVState:
     self.spr_mode=False  # SPR mode: SPR uses FL+template instead of prophet score
     self.sampling_mode=False  # sampling mode: use Thompson-sampling to select patch
     self.finish_top_method=False  # Finish if every patches in top-30 methods are searched. Should turn on for default SeAPR
+    self.use_unified_debugging=False  # Use unified debugging to generate more precise clusters
 
     self.seapr_remain_cases:List[CaseInfo]=[]
     self.seapr_layer:SeAPRMode=SeAPRMode.FUNCTION
@@ -1801,7 +1808,11 @@ def append_java_cache_result(state:MSVState,case:TbarCaseInfo,fail_result:bool,p
   if id not in state.simulation_data:
     current=dict()
     current['basic']=fail_result
-    current['plausible']=pass_result
+    if not fail_result:
+      # If the pach is LQ, we do not run passing tests
+      current['plausible']=None
+    else:
+      current['plausible']=pass_result
     current['pass_all_fail']=pass_all_fail
     current['compilable']=compilable
     current['fail_time']=fail_time

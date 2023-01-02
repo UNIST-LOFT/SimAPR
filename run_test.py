@@ -325,6 +325,8 @@ def run_pass_test_d4j(state: MSVState, new_env: Dict[str, str]) -> bool:
   if not run_result:
     for test in failed_tests:
       state.failed_positive_test.add(test)
+    state.msv_logger.info('Result: FAIL positive tests!')
+    return False
   state.msv_logger.info("Result: PASS positive tests!")
   return run_result
 
