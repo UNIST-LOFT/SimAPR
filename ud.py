@@ -56,6 +56,9 @@ def update_ud_tbar(state:core.MSVState,patch:core.TbarPatchInfo,fail_result:bool
         res,final_pass_time=__run_test_positive(state, patch)
         pass_result=res
         pass_time+=final_pass_time
+        # Update passing test result in cache
+        cur_id=patch.tbar_case_info.location
+        state.simulation_data[cur_id]['plausible']=pass_result
       else:
         state.test_time+=pass_time
         update_ud_spectrum(state,patch.tbar_case_info,result,pass_result)
