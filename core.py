@@ -297,7 +297,7 @@ class LineInfo:
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
     self.output_pf = PassFail()
-    self.fl_score=0
+    self.fl_score=0.
     self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = -1.0
     self.out_dist_map: Dict[int, float] = dict()

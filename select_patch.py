@@ -449,6 +449,146 @@ def epsilon_select(state:MSVState,source=None):
       else:
         raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
 
+def epsilon_search_new(state: MSVState):
+  """
+    Select patch in entire patch space at no guidance.
+    New Horizontal search when the guide is not exist.
+  """
+  # TODO: Add supports for C
+  state.msv_logger.debug('Use no guide horizontal search for entire space')
+  start_time=time.time()
+
+  scores=[]
+  patches:List[LineInfo]=[]
+  for score in state.java_remain_patch_ranking:
+    for i in range(len(state.java_remain_patch_ranking[score])):
+      patch=state.java_remain_patch_ranking[score][i]
+      if patch.parent.parent not in patches:
+        scores.append(score)
+        patches.append(patch.parent.parent)
+
+  scores_norm=PassFail.normalize(scores)
+  selected_line=PassFail.select_by_probability(scores_norm)
+  if state.use_unified_debugging:
+    # Use unified debugging
+    selected_score=scores[selected_line]
+    partial_lines=[]
+    ud_scores=[]
+
+    # Get types of fixes for each line
+    for i in range(len(scores)):
+      if scores[i]==selected_score:
+        partial_lines.append(patches[i])
+        if patches[i].parent.ud_spectrum[0]>0: # CleanFix
+          ud_scores.append(3)
+        elif patches[i].parent.ud_spectrum[1]>0: # NoisyFix
+          ud_scores.append(2)
+        elif patches[i].parent.ud_spectrum[2]>0: # NoneFix
+          ud_scores.append(1)
+        else:
+          ud_scores.append(0)
+
+    ud_scores_norm=PassFail.normalize(ud_scores)
+    selected_ud=PassFail.select_by_probability(ud_scores_norm)
+    selected_patch=partial_lines[selected_ud]
+  else:
+    total_patches=[]
+    for score in patches[selected_line].remain_patches_by_score:
+      for i in range(len(patches[selected_line].remain_patches_by_score[score])):
+        total_patches.append(patches[selected_line].remain_patches_by_score[score][i])
+    selected_index=random.randint(0,len(total_patches)-1)
+    selected_patch=total_patches[selected_index]
+
+  state.select_time+=(time.time()-start_time)
+  state.msv_logger.debug(f'{selected_patch} is selected by horizontal search')
+  return selected_patch
+
+def epsilon_select_new(state:MSVState,source=None):
+  """
+    Select patch in entire patch space at guidance exist.
+    New Horizontal search when the guide is exist.
+  """
+  state.msv_logger.debug('Use guide horizontal search for given patch space')
+  start_time=time.time()
+
+  if source is None:
+    return epsilon_search_new(state)
+  else:
+    # TODO: Add supports for C
+    target_lines:List[LineInfo]=[]
+    if type(source)==FileInfo:
+      source:FileInfo=source
+      for func in source.func_info_map:
+        for line in source.func_info_map[func].line_info_map:
+          target_lines.append(source.func_info_map[func].line_info_map[line])
+    elif type(source)==FuncInfo:
+      source:FuncInfo=source
+      for line in source.line_info_map:
+        target_lines.append(source.line_info_map[line])
+    elif type(source)==LineInfo:
+      source:LineInfo=source
+      target_lines.append(source)
+
+    if len(target_lines)>0:
+      scores=[]
+      patches:List[LineInfo]=[]
+      for line in target_lines:
+        for score in line.remain_patches_by_score:
+          for i in range(len(line.remain_patches_by_score[score])):
+            patch=line.remain_patches_by_score[score][i]
+            if patch.parent.parent not in patches:
+              scores.append(score)
+              patches.append(patch.parent.parent)
+
+      scores_norm=PassFail.normalize(scores)
+      selected_line=PassFail.select_by_probability(scores_norm)
+      if state.use_unified_debugging:
+        # Use unified debugging
+        selected_score=scores[selected_line]
+        partial_lines=[]
+        ud_scores=[]
+
+        # Get types of fixes for each line
+        for i in range(len(scores)):
+          if scores[i]==selected_score:
+            partial_lines.append(patches[i])
+            if patches[i].parent.ud_spectrum[0]>0: # CleanFix
+              ud_scores.append(3)
+            elif patches[i].parent.ud_spectrum[1]>0: # NoisyFix
+              ud_scores.append(2)
+            elif patches[i].parent.ud_spectrum[2]>0: # NoneFix
+              ud_scores.append(1)
+            else:
+              ud_scores.append(0)
+
+        ud_scores_norm=PassFail.normalize(ud_scores)
+        selected_ud=PassFail.select_by_probability(ud_scores_norm)
+        selected_patch=partial_lines[selected_ud]
+      else:
+        total_patches=[]
+        for score in patches[selected_line].remain_patches_by_score:
+          for i in range(len(patches[selected_line].remain_patches_by_score[score])):
+            total_patches.append(patches[selected_line].remain_patches_by_score[score][i])
+        selected_index=random.randint(0,len(total_patches)-1)
+        selected_patch=total_patches[selected_index]
+    elif type(source)==TbarTypeInfo:
+      source:TbarTypeInfo=source
+      if state.use_unified_debugging:
+        pass
+      else:
+        total_patches=[]
+        for score in source.remain_patches_by_score:
+          for i in range(len(source.remain_patches_by_score[score])):
+            total_patches.append(source.remain_patches_by_score[score][i])
+        selected_index=random.randint(0,len(total_patches)-1)
+        selected_patch=total_patches[selected_index]
+    else:
+      raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
+
+    state.msv_logger.debug(f'{selected_patch} is selected by horizontal search')
+    state.select_time+=(time.time()-start_time)
+    return selected_patch
+
 def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
   FL_CONST=0.25
   start_time=time.time()
