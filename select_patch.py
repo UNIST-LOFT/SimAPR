@@ -473,6 +473,7 @@ def epsilon_search_new(state: MSVState):
   scores_norm=PassFail.normalize(scores_list)
   selected_group=PassFail.select_by_probability(scores_norm)
   selected_score=scores_list[selected_group]
+  state.msv_logger.debug(f'Selected score: {selected_score}')
   selected_lines:List[LineInfo]=[]
   for line in patches:
     if line.fl_score==selected_score:
@@ -490,7 +491,7 @@ def epsilon_search_new(state: MSVState):
     # Force to select first patch
     selected_patch=remain_candidates[0]
     state.select_time+=(time.time()-start_time)
-    state.msv_logger.debug(f'{selected_patch} is forced to select by horizontal search!: {cur_rank} vs {len(total_candidates)-len(remain_candidates)}')
+    state.msv_logger.debug(f'{selected_patch.location} is forced to select by horizontal search!: {cur_rank} vs {len(total_candidates)-len(remain_candidates)}')
     return selected_patch
 
   # Select line
@@ -529,13 +530,15 @@ def epsilon_search_new(state: MSVState):
   patch_epsilon=epsilon_greedy(len(total_patches),len(selected_line.remain_patches_by_score[selected_score]))
   is_epsilon_greedy=np.random.random()<patch_epsilon and state.use_epsilon and not state.not_use_epsilon_search
   if is_epsilon_greedy:
+    state.msv_logger.debug(f'Use epsilon greedy to select patch: {patch_epsilon}')
     selected_index=random.randint(0,len(selected_line.remain_patches_by_score[selected_score])-1)
     selected_patch=selected_line.remain_patches_by_score[selected_score][selected_index]
   else:
+    state.msv_logger.debug(f'Use original order to select patch: {patch_epsilon}')
     selected_patch=selected_line.remain_patches_by_score[selected_score][0]
 
   state.select_time+=(time.time()-start_time)
-  state.msv_logger.debug(f'{selected_patch} is selected by horizontal search')
+  state.msv_logger.debug(f'{selected_patch.location} is selected by horizontal search')
   return selected_patch
 
 def epsilon_select_new(state:MSVState,source=None):
@@ -579,6 +582,7 @@ def epsilon_select_new(state:MSVState,source=None):
       scores_norm=PassFail.normalize(scores_list)
       selected_group=PassFail.select_by_probability(scores_norm)
       selected_score=scores_list[selected_group]
+      state.msv_logger.debug(f'Selected score: {selected_score}')
       selected_lines:List[LineInfo]=[]
       for line in patches:
         if line.fl_score==selected_score:
@@ -602,7 +606,7 @@ def epsilon_select_new(state:MSVState,source=None):
         # Force to select first patch
         selected_patch=remain_candidates[0]
         state.select_time+=(time.time()-start_time)
-        state.msv_logger.debug(f'{selected_patch} is forced to select by horizontal search!: {cur_rank} vs {len(total_candidates)-len(remain_candidates)}')
+        state.msv_logger.debug(f'{selected_patch.location} is forced to select by horizontal search!: {cur_rank} vs {len(total_candidates)-len(remain_candidates)}')
         if type(source)==FileInfo:
           return selected_patch.parent.parent.parent
         elif type(source)==FuncInfo:
@@ -610,7 +614,7 @@ def epsilon_select_new(state:MSVState,source=None):
         elif type(source)==LineInfo:
           return selected_patch.parent
         else:
-          raise ValueError(f'Terrible fail at horizontal search: {type(source)}')
+          raise ValueError(f'Unknown type at horizontal search: {type(source)}')
 
       # Select line
       if state.use_unified_debugging:
@@ -661,14 +665,16 @@ def epsilon_select_new(state:MSVState,source=None):
       patch_epsilon=epsilon_greedy(len(total_patches),len(source.remain_patches_by_score[source.parent.fl_score]))
       is_epsilon_greedy=np.random.random()<patch_epsilon and state.use_epsilon and not state.not_use_epsilon_search
       if is_epsilon_greedy:
+        state.msv_logger.debug(f'Use epsilon greedy to select patch: {patch_epsilon}')
         selected_index=random.randint(0,len(source.remain_patches_by_score[source.parent.fl_score])-1)
         selected_patch=source.remain_patches_by_score[source.parent.fl_score][selected_index]
       else:
+        state.msv_logger.debug(f'Use original order to select patch: {patch_epsilon}')
         selected_patch=source.remain_patches_by_score[source.parent.fl_score][0]
     else:
       raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
 
-    state.msv_logger.debug(f'{selected_patch} is selected by horizontal search')
+    state.msv_logger.debug(f'{selected_patch.location} is selected by horizontal search')
     state.select_time+=(time.time()-start_time)
     if type(source)==FileInfo:
       return selected_patch.parent.parent.parent
@@ -679,7 +685,7 @@ def epsilon_select_new(state:MSVState,source=None):
     elif type(source)==TbarTypeInfo:
       return selected_patch
     else:
-      raise ValueError(f'Terrible fail at horizontal search: {type(source)}')
+      raise ValueError(f'Unknown type at horizontal search: {type(source)}')
 
 def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
   FL_CONST=0.25
