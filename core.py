@@ -1808,11 +1808,7 @@ def append_java_cache_result(state:MSVState,case:TbarCaseInfo,fail_result:bool,p
   if id not in state.simulation_data:
     current=dict()
     current['basic']=fail_result
-    if not fail_result:
-      # If the pach is LQ, we do not run passing tests
-      current['plausible']=None
-    else:
-      current['plausible']=pass_result
+    current['plausible']=pass_result
     current['pass_all_fail']=pass_all_fail
     current['compilable']=compilable
     current['fail_time']=fail_time
