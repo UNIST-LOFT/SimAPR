@@ -449,6 +449,7 @@ def epsilon_select(state:MSVState,source=None):
       else:
         raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
 
+FORCE_THRESHOLD=0.1
 def epsilon_search_new(state: MSVState):
   """
     Select patch in entire patch space at no guidance.
@@ -458,46 +459,80 @@ def epsilon_search_new(state: MSVState):
   state.msv_logger.debug('Use no guide horizontal search for entire space')
   start_time=time.time()
 
-  scores=[]
+  # Select group
+  scores_set:Set[float]=set()
   patches:List[LineInfo]=[]
   for score in state.java_remain_patch_ranking:
     for i in range(len(state.java_remain_patch_ranking[score])):
       patch=state.java_remain_patch_ranking[score][i]
       if patch.parent.parent not in patches:
-        scores.append(score)
+        scores_set.add(score)
         patches.append(patch.parent.parent)
 
-  scores_norm=PassFail.normalize(scores)
-  selected_line=PassFail.select_by_probability(scores_norm)
-  if state.use_unified_debugging:
-    # Use unified debugging
-    selected_score=scores[selected_line]
-    partial_lines=[]
-    ud_scores=[]
+  scores_list=list(scores_set)
+  scores_norm=PassFail.normalize(scores_list)
+  selected_group=PassFail.select_by_probability(scores_norm)
+  selected_score=scores_list[selected_group]
+  selected_lines:List[LineInfo]=[]
+  for line in patches:
+    if line.fl_score==selected_score:
+      selected_lines.append(line)
+  total_lines:Set[LineInfo]=set()
+  for i in range(len(state.java_patch_ranking[selected_score])):
+    patch=state.java_patch_ranking[selected_score][i]
+    if patch.parent.parent not in patches:
+      total_lines.add(selected_score)
 
-    # Get types of fixes for each line
-    for i in range(len(scores)):
-      if scores[i]==selected_score:
-        partial_lines.append(patches[i])
-        if patches[i].parent.ud_spectrum[0]>0: # CleanFix
-          ud_scores.append(3)
-        elif patches[i].parent.ud_spectrum[1]>0: # NoisyFix
-          ud_scores.append(2)
-        elif patches[i].parent.ud_spectrum[2]>0: # NoneFix
-          ud_scores.append(1)
-        else:
-          ud_scores.append(0)
+  # Check that we should force to select first patch
+  total_candidates, remain_candidates=state.java_patch_ranking[selected_score],state.java_remain_patch_ranking[selected_score]
+  cur_rank=total_candidates.index(remain_candidates[0])
+  if cur_rank*(1.+FORCE_THRESHOLD)<(len(total_candidates)-len(remain_candidates)):
+    # Force to select first patch
+    selected_patch=remain_candidates[0]
+    state.select_time+=(time.time()-start_time)
+    state.msv_logger.debug(f'{selected_patch} is forced to select by horizontal search!: {cur_rank} vs {len(total_candidates)-len(remain_candidates)}')
+    return selected_patch
+
+  # Select line
+  if state.use_unified_debugging:
+    ud_scores=[]
+    for line in selected_lines:
+      if line.ud_spectrum[0]>0: # CleanFix
+        ud_scores.append(3)
+      elif line.ud_spectrum[1]>0: # NoisyFix
+        ud_scores.append(2)
+      elif line.ud_spectrum[2]>0: # NoneFix
+        ud_scores.append(1)
+      else:
+        ud_scores.append(0)
 
     ud_scores_norm=PassFail.normalize(ud_scores)
     selected_ud=PassFail.select_by_probability(ud_scores_norm)
-    selected_patch=partial_lines[selected_ud]
+    selected_line=selected_lines[selected_ud]
   else:
-    total_patches=[]
-    for score in patches[selected_line].remain_patches_by_score:
-      for i in range(len(patches[selected_line].remain_patches_by_score[score])):
-        total_patches.append(patches[selected_line].remain_patches_by_score[score][i])
-    selected_index=random.randint(0,len(total_patches)-1)
-    selected_patch=total_patches[selected_index]
+    total_lines_list:List[LineInfo]=list(total_lines)
+    # Use epsilon-greedy to select line
+    line_epsilon=epsilon_greedy(len(total_lines_list),len(selected_lines))
+    is_epsilon_greedy=np.random.random()<line_epsilon and state.use_epsilon and not state.not_use_epsilon_search
+
+    if is_epsilon_greedy:
+      selected_line_i=random.randint(0,len(selected_lines)-1)
+      selected_line=selected_lines[selected_line_i]
+    else:
+      selected_line=selected_lines[0]
+    
+  # Choose actual patch from the selected line
+  total_patches=[]
+  for patch in state.java_patch_ranking[selected_score]:
+    if patch.parent.parent==selected_line:
+      total_patches.append(patch)
+  patch_epsilon=epsilon_greedy(len(total_patches),len(selected_line.remain_patches_by_score[selected_score]))
+  is_epsilon_greedy=np.random.random()<patch_epsilon and state.use_epsilon and not state.not_use_epsilon_search
+  if is_epsilon_greedy:
+    selected_index=random.randint(0,len(selected_line.remain_patches_by_score[selected_score])-1)
+    selected_patch=selected_line.remain_patches_by_score[selected_score][selected_index]
+  else:
+    selected_patch=selected_line.remain_patches_by_score[selected_score][0]
 
   state.select_time+=(time.time()-start_time)
   state.msv_logger.debug(f'{selected_patch} is selected by horizontal search')
@@ -512,7 +547,8 @@ def epsilon_select_new(state:MSVState,source=None):
   start_time=time.time()
 
   if source is None:
-    return epsilon_search_new(state)
+    selected_patch=epsilon_search_new(state)
+    return selected_patch.parent.parent.parent.parent
   else:
     # TODO: Add supports for C
     target_lines:List[LineInfo]=[]
@@ -530,64 +566,120 @@ def epsilon_select_new(state:MSVState,source=None):
       target_lines.append(source)
 
     if len(target_lines)>0:
-      scores=[]
+      scores_set:Set[float]=set()
       patches:List[LineInfo]=[]
-      for line in target_lines:
-        for score in line.remain_patches_by_score:
-          for i in range(len(line.remain_patches_by_score[score])):
-            patch=line.remain_patches_by_score[score][i]
-            if patch.parent.parent not in patches:
-              scores.append(score)
-              patches.append(patch.parent.parent)
+      for score in state.java_remain_patch_ranking:
+        for i in range(len(state.java_remain_patch_ranking[score])):
+          patch=state.java_remain_patch_ranking[score][i]
+          if patch.parent.parent not in patches and patch.parent.parent in target_lines:
+            scores_set.add(score)
+            patches.append(patch.parent.parent)
 
-      scores_norm=PassFail.normalize(scores)
-      selected_line=PassFail.select_by_probability(scores_norm)
+      scores_list=list(scores_set)
+      scores_norm=PassFail.normalize(scores_list)
+      selected_group=PassFail.select_by_probability(scores_norm)
+      selected_score=scores_list[selected_group]
+      selected_lines:List[LineInfo]=[]
+      for line in patches:
+        if line.fl_score==selected_score:
+          selected_lines.append(line)
+      total_lines:Set[LineInfo]=set()
+      for i in range(len(state.java_patch_ranking[selected_score])):
+        patch=state.java_patch_ranking[selected_score][i]
+        if patch.parent.parent not in patches and patch.parent.parent in target_lines:
+          total_lines.add(selected_score)
+
+      # Check that we should force to select first patch
+      total_candidates, remain_candidates=[],[]
+      for p in state.java_patch_ranking[selected_score]:
+        if p.parent.parent in target_lines:
+          total_candidates.append(p)
+      for p in state.java_remain_patch_ranking[selected_score]:
+        if p.parent.parent in target_lines:
+          remain_candidates.append(p)
+      cur_rank=total_candidates.index(remain_candidates[0])
+      if cur_rank*(1.+FORCE_THRESHOLD)<(len(total_candidates)-len(remain_candidates)):
+        # Force to select first patch
+        selected_patch=remain_candidates[0]
+        state.select_time+=(time.time()-start_time)
+        state.msv_logger.debug(f'{selected_patch} is forced to select by horizontal search!: {cur_rank} vs {len(total_candidates)-len(remain_candidates)}')
+        if type(source)==FileInfo:
+          return selected_patch.parent.parent.parent
+        elif type(source)==FuncInfo:
+          return selected_patch.parent.parent
+        elif type(source)==LineInfo:
+          return selected_patch.parent
+        else:
+          raise ValueError(f'Terrible fail at horizontal search: {type(source)}')
+
+      # Select line
       if state.use_unified_debugging:
-        # Use unified debugging
-        selected_score=scores[selected_line]
-        partial_lines=[]
         ud_scores=[]
-
-        # Get types of fixes for each line
-        for i in range(len(scores)):
-          if scores[i]==selected_score:
-            partial_lines.append(patches[i])
-            if patches[i].parent.ud_spectrum[0]>0: # CleanFix
-              ud_scores.append(3)
-            elif patches[i].parent.ud_spectrum[1]>0: # NoisyFix
-              ud_scores.append(2)
-            elif patches[i].parent.ud_spectrum[2]>0: # NoneFix
-              ud_scores.append(1)
-            else:
-              ud_scores.append(0)
+        for line in selected_lines:
+          if line.ud_spectrum[0]>0: # CleanFix
+            ud_scores.append(3)
+          elif line.ud_spectrum[1]>0: # NoisyFix
+            ud_scores.append(2)
+          elif line.ud_spectrum[2]>0: # NoneFix
+            ud_scores.append(1)
+          else:
+            ud_scores.append(0)
 
         ud_scores_norm=PassFail.normalize(ud_scores)
         selected_ud=PassFail.select_by_probability(ud_scores_norm)
-        selected_patch=partial_lines[selected_ud]
+        selected_line=selected_lines[selected_ud]
       else:
-        total_patches=[]
-        for score in patches[selected_line].remain_patches_by_score:
-          for i in range(len(patches[selected_line].remain_patches_by_score[score])):
-            total_patches.append(patches[selected_line].remain_patches_by_score[score][i])
-        selected_index=random.randint(0,len(total_patches)-1)
-        selected_patch=total_patches[selected_index]
+        total_lines_list:List[LineInfo]=list(total_lines)
+        # Use epsilon-greedy to select line
+        line_epsilon=epsilon_greedy(len(total_lines_list),len(selected_lines))
+        is_epsilon_greedy=np.random.random()<line_epsilon and state.use_epsilon and not state.not_use_epsilon_search
+
+        if is_epsilon_greedy:
+          selected_line_i=random.randint(0,len(selected_lines)-1)
+          selected_line=selected_lines[selected_line_i]
+        else:
+          selected_line=selected_lines[0]
+        
+      # Choose actual patch from the selected line
+      total_patches=[]
+      for patch in state.java_patch_ranking[selected_score]:
+        if patch.parent.parent==selected_line and patch.parent.parent in target_lines:
+          total_patches.append(patch)
+      patch_epsilon=epsilon_greedy(len(total_patches),len(selected_line.remain_patches_by_score[selected_score]))
+      is_epsilon_greedy=np.random.random()<patch_epsilon and state.use_epsilon and not state.not_use_epsilon_search
+      if is_epsilon_greedy:
+        selected_index=random.randint(0,len(selected_line.remain_patches_by_score[selected_score])-1)
+        selected_patch=selected_line.remain_patches_by_score[selected_score][selected_index]
+      else:
+        selected_patch=selected_line.remain_patches_by_score[selected_score][0]
     elif type(source)==TbarTypeInfo:
       source:TbarTypeInfo=source
-      if state.use_unified_debugging:
-        pass
+      total_patches=[]
+      for patch in state.java_patch_ranking[source.parent.fl_score]:
+        if patch.parent==source:
+          total_patches.append(patch)
+      patch_epsilon=epsilon_greedy(len(total_patches),len(source.remain_patches_by_score[source.parent.fl_score]))
+      is_epsilon_greedy=np.random.random()<patch_epsilon and state.use_epsilon and not state.not_use_epsilon_search
+      if is_epsilon_greedy:
+        selected_index=random.randint(0,len(source.remain_patches_by_score[source.parent.fl_score])-1)
+        selected_patch=source.remain_patches_by_score[source.parent.fl_score][selected_index]
       else:
-        total_patches=[]
-        for score in source.remain_patches_by_score:
-          for i in range(len(source.remain_patches_by_score[score])):
-            total_patches.append(source.remain_patches_by_score[score][i])
-        selected_index=random.randint(0,len(total_patches)-1)
-        selected_patch=total_patches[selected_index]
+        selected_patch=source.remain_patches_by_score[source.parent.fl_score][0]
     else:
       raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
 
     state.msv_logger.debug(f'{selected_patch} is selected by horizontal search')
     state.select_time+=(time.time()-start_time)
-    return selected_patch
+    if type(source)==FileInfo:
+      return selected_patch.parent.parent.parent
+    elif type(source)==FuncInfo:
+      return selected_patch.parent.parent
+    elif type(source)==LineInfo:
+      return selected_patch.parent
+    elif type(source)==TbarTypeInfo:
+      return selected_patch
+    else:
+      raise ValueError(f'Terrible fail at horizontal search: {type(source)}')
 
 def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
   FL_CONST=0.25
@@ -687,11 +779,13 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
       if not is_decided:
         state.msv_logger.debug(f'Do not use guide, use original order!')   
         state.select_time+=time.time()-start_time
-        return epsilon_select(state,parent),False  
+        # return epsilon_select(state,parent),False
+        return epsilon_select_new(state,parent),False
   else:
     # No guide in this layer, use top ranked patch
     state.msv_logger.debug(f'No guided found in this layer, use original order!')
-    return epsilon_select(state,parent),False   
+    # return epsilon_select(state,parent),False
+    return epsilon_select_new(state,parent),False
 
 def select_patch_SPR(state: MSVState) -> PatchInfo:
   # Select file and line by priority
@@ -1575,7 +1669,8 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
 
   # Select file
   if state.total_basic_patch==0 or state.not_use_guided_search:
-    selected_switch_info=epsilon_search(state)
+    # selected_switch_info=epsilon_search(state)
+    selected_switch_info=epsilon_search_new(state)
     result = TbarPatchInfo(selected_switch_info)
     state.patch_ranking.remove(selected_switch_info.location)
     return result
@@ -1701,7 +1796,8 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   clear_list(state, p_map)
 
   # select tbar switch
-  selected_switch_info:TbarCaseInfo=epsilon_select(state,selected_type_info)
+  # selected_switch_info:TbarCaseInfo=epsilon_select(state,selected_type_info)
+  selected_switch_info:TbarCaseInfo=epsilon_select_new(state,selected_type_info)
   clear_list(state, p_map)
   result = TbarPatchInfo(selected_switch_info)
   state.patch_ranking.remove(selected_switch_info.location)
