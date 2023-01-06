@@ -212,7 +212,7 @@ def run_fail_test_d4j(state: MSVState, new_env: Dict[str, str]) -> Tuple[bool, b
   error_str = se.decode('utf-8').strip()
   if result_str == "":
     state.msv_logger.info("Result: FAIL - output is empty")
-    state.msv_logger.debug("STDERR: " + error_str)
+    # state.msv_logger.debug("STDERR: " + error_str)
     return False, False, is_timeout
   state.msv_logger.debug(result_str.replace("\n", " "))
 
@@ -249,7 +249,7 @@ def run_fail_test_d4j(state: MSVState, new_env: Dict[str, str]) -> Tuple[bool, b
     state.msv_logger.info(f"Result: FAIL - compilable - {failed_tests}")
     return True, False, is_timeout
   state.msv_logger.info(f"Result: FAIL - not compilable")
-  state.msv_logger.debug(f"STDERR: {error_str}")
+  # state.msv_logger.debug(f"STDERR: {error_str}")
   return False, False, is_timeout
 
 def run_pass_test_d4j_exec(state: MSVState, new_env: Dict[str, str], tests: List[str]) -> Tuple[bool, Set[str]]:
@@ -278,7 +278,7 @@ def run_pass_test_d4j_exec(state: MSVState, new_env: Dict[str, str], tests: List
   result_str = so.decode('utf-8').strip()
   if result_str == "":
     state.msv_logger.info("Result: FAIL")
-    state.msv_logger.debug("STDERR: " + se.decode('utf-8').strip())
+    # state.msv_logger.debug("STDERR: " + se.decode('utf-8').strip())
     return False, failed_tests
   state.msv_logger.debug(" ".join(result_str.splitlines()))
   result = True
@@ -325,6 +325,8 @@ def run_pass_test_d4j(state: MSVState, new_env: Dict[str, str]) -> bool:
   if not run_result:
     for test in failed_tests:
       state.failed_positive_test.add(test)
+    state.msv_logger.info('Result: FAIL positive tests!')
+    return False
   state.msv_logger.info("Result: PASS positive tests!")
   return run_result
 

@@ -202,8 +202,9 @@ class PassFail:
     return 2 * ((1 - atzero) * x + atzero) - PassFail.concave_up(x, base)
   @staticmethod
   # fail function
-  def log_func(x: float, half: float = 50) -> float:
-    a = half + math.pow(half, 0.5)
+  def log_func(x: float, half: float = 51) -> float:
+    # a = half + math.pow(half, 0.5)
+    a=half
     # a*=0.5
     if a-x<0:
       return 0.
@@ -278,6 +279,9 @@ class FuncInfo:
     self.same_seapr_pf = PassFail(1, 1)
     self.diff_seapr_pf = PassFail(1, 1)
     self.case_rank_list: List[str] = list()
+
+    # Unified debugging stuffs
+    self.ud_spectrum:List[int]=[0,0,0,0]  # [CleanFix, NoisyFix, NoneFix, NegFix]
   def __hash__(self) -> int:
     return hash(self.id)
   def __eq__(self, other) -> bool:
@@ -294,7 +298,7 @@ class LineInfo:
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
     self.output_pf = PassFail()
-    self.fl_score=0
+    self.fl_score=0.
     self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = -1.0
     self.out_dist_map: Dict[int, float] = dict()
@@ -315,6 +319,9 @@ class LineInfo:
     self.consecutive_fail_plausible_count:int=0
     self.patches_by_score:Dict[float,List[CaseInfo]]=dict()
     self.remain_patches_by_score:Dict[float,List[CaseInfo]]=dict()
+
+    # Unified debugging stuffs
+    self.ud_spectrum:List[int]=[0,0,0,0]  # [CleanFix, NoisyFix, NoneFix, NegFix]
   def __hash__(self) -> int:
     return hash(self.uuid)
   def __eq__(self, other) -> bool:
@@ -1715,6 +1722,8 @@ class MSVState:
     self.fixminer_mode=False  # fixminer-mode: Fixminer patch space is seperated to 2 groups
     self.spr_mode=False  # SPR mode: SPR uses FL+template instead of prophet score
     self.sampling_mode=False  # sampling mode: use Thompson-sampling to select patch
+    self.finish_top_method=False  # Finish if every patches in top-30 methods are searched. Should turn on for default SeAPR
+    self.use_unified_debugging=False  # Use unified debugging to generate more precise clusters
 
     self.seapr_remain_cases:List[CaseInfo]=[]
     self.seapr_layer:SeAPRMode=SeAPRMode.FUNCTION
