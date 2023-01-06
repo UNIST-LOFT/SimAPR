@@ -202,8 +202,9 @@ class PassFail:
     return 2 * ((1 - atzero) * x + atzero) - PassFail.concave_up(x, base)
   @staticmethod
   # fail function
-  def log_func(x: float, half: float = 50) -> float:
-    a = half + math.pow(half, 0.5)
+  def log_func(x: float, half: float = 51) -> float:
+    # a = half + math.pow(half, 0.5)
+    a=half
     # a*=0.5
     if a-x<0:
       return 0.
