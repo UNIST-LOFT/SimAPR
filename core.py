@@ -206,7 +206,7 @@ class PassFail:
     # a = half + math.pow(half, 0.5)
     a=half
     # a*=0.5
-    if a-x<0:
+    if a-x<=0:
       return 0.
     else:
       return max(np.log(a - x) / np.log(a), 0.)
