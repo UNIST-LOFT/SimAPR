@@ -127,7 +127,7 @@ def run_single_test(work_dir: str, buggy_project: str, test: str = "") -> Tuple[
     so, se = test_proc.communicate()
   result_str = so.decode('utf-8').strip()
   err_str = se.decode('utf-8').strip()
-  print(err_str, file=sys.stderr)
+  # print(err_str, file=sys.stderr)
   error_num = -1
   failed_tests = list()
   for line in result_str.splitlines():
