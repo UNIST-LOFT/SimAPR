@@ -481,7 +481,7 @@ def epsilon_search_new(state: MSVState):
   total_lines:Set[LineInfo]=set()
   for i in range(len(state.java_patch_ranking[selected_score])):
     patch=state.java_patch_ranking[selected_score][i]
-    if patch.parent.parent not in patches:
+    if patch.parent.parent in patches:
       total_lines.add(selected_score)
 
   # Check that we should force to select first patch
@@ -590,7 +590,7 @@ def epsilon_select_new(state:MSVState,source=None):
       total_lines:Set[LineInfo]=set()
       for i in range(len(state.java_patch_ranking[selected_score])):
         patch=state.java_patch_ranking[selected_score][i]
-        if patch.parent.parent not in patches and patch.parent.parent in target_lines:
+        if patch.parent.parent in patches and patch.parent.parent in target_lines:
           total_lines.add(selected_score)
 
       # Check that we should force to select first patch
