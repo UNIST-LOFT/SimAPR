@@ -430,11 +430,11 @@ def read_info_recoder(state: MSVState) -> None:
           state.simulation_data[key] = data
   
   # Print debug for correct patch
-  correct_patch:RecoderCaseInfo=state.switch_case_map[state.correct_patch_list[0]]
-  correct_score=correct_patch.parent.fl_score
-  same_groups=state.java_patch_ranking[correct_score]
-  state.msv_logger.debug(f'Correct patch group size: {len(same_groups)}')
-  state.msv_logger.debug(f'Correct patch rank in group: {same_groups.index(correct_patch)}')
+  # correct_patch:RecoderCaseInfo=state.switch_case_map[state.correct_patch_list[0]]
+  # correct_score=correct_patch.parent.fl_score
+  # same_groups=state.java_patch_ranking[correct_score]
+  # state.msv_logger.debug(f'Correct patch group size: {len(same_groups)}')
+  # state.msv_logger.debug(f'Correct patch rank in group: {same_groups.index(correct_patch)}')
 
 def read_info_tbar(state: MSVState) -> None:
   with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
