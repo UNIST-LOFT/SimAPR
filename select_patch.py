@@ -521,7 +521,11 @@ def epsilon_search_new(state: MSVState):
     selected_patch=remain_candidates[0]
     state.select_time+=(time.time()-start_time)
     state.msv_logger.debug(f'{selected_patch.location} is forced to select by horizontal search!: {cur_rank} vs {len(total_candidates)-len(remain_candidates)}')
+    state.msv_logger.debug(f'Threshold value: {cur_rank*(1.+FORCE_THRESHOLD)}')
     return selected_patch
+  else:
+    state.msv_logger.debug(f'Continue horizontal search!: {cur_rank} vs {len(total_candidates)-len(remain_candidates)}')
+    state.msv_logger.debug(f'Threshold value: {cur_rank*(1.+FORCE_THRESHOLD)}')
 
   # Select line
   if state.use_unified_debugging:
@@ -691,6 +695,7 @@ def epsilon_select_new(state:MSVState,source=None):
         selected_patch=remain_candidates[0]
         state.select_time+=(time.time()-start_time)
         state.msv_logger.debug(f'{selected_patch.location} is forced to select by horizontal search!: {cur_rank} vs {len(total_candidates)-len(remain_candidates)}')
+        state.msv_logger.debug(f'Threshold value: {cur_rank*(1.+FORCE_THRESHOLD)}')
         if type(source)==FileInfo:
           if state.recoder_mode:
             return selected_patch.parent.parent
@@ -708,6 +713,9 @@ def epsilon_select_new(state:MSVState,source=None):
             return selected_patch.parent #TBAR
         else:
           raise ValueError(f'Unknown type at horizontal search: {type(source)}')
+      else:
+        state.msv_logger.debug(f'Continue horizontal search!: {cur_rank} vs {len(total_candidates)-len(remain_candidates)}')
+        state.msv_logger.debug(f'Threshold value: {cur_rank*(1.+FORCE_THRESHOLD)}')
 
       # Select line
       if state.use_unified_debugging:
