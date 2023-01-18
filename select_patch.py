@@ -485,7 +485,8 @@ def epsilon_search_new(state: MSVState):
   scores_list=list(scores_set)
   scores_norm=PassFail.normalize(scores_list)
   # selected_group=PassFail.select_by_probability(scores_norm)
-  selected_group=0
+  max_score=max(scores_list)
+  selected_group=scores_list.index(max_score)
   selected_score=scores_list[selected_group]
   state.msv_logger.debug(f'Selected score: {selected_score}')
   selected_lines:List[LineInfo]=[]
@@ -640,7 +641,8 @@ def epsilon_select_new(state:MSVState,source=None):
       scores_list=list(scores_set)
       scores_norm=PassFail.normalize(scores_list)
       # selected_group=PassFail.select_by_probability(scores_norm)
-      selected_group=0
+      max_score=max(scores_list)
+      selected_group=scores_list.index(max_score)
       selected_score=scores_list[selected_group]
       state.msv_logger.debug(f'Selected score: {selected_score}')
       selected_lines:List[LineInfo]=[]
