@@ -517,7 +517,7 @@ def epsilon_search_new(state: MSVState):
   else:
     total_candidates, remain_candidates=state.java_patch_ranking[selected_score],state.java_remain_patch_ranking[selected_score]
   cur_rank=total_candidates.index(remain_candidates[0])
-  if cur_rank*(1.+FORCE_THRESHOLD)<(len(total_candidates)-len(remain_candidates)):
+  if cur_rank==0 or cur_rank*(1.+FORCE_THRESHOLD)<(len(total_candidates)-len(remain_candidates)):
     # Force to select first patch
     selected_patch=remain_candidates[0]
     state.select_time+=(time.time()-start_time)
@@ -692,7 +692,7 @@ def epsilon_select_new(state:MSVState,source=None):
             if p.parent.parent in target_lines:
               remain_candidates.append(p)
       cur_rank=total_candidates.index(remain_candidates[0])
-      if cur_rank*(1.+FORCE_THRESHOLD)<(len(total_candidates)-len(remain_candidates)):
+      if cur_rank==0 or cur_rank*(1.+FORCE_THRESHOLD)<(len(total_candidates)-len(remain_candidates)):
         # Force to select first patch
         selected_patch=remain_candidates[0]
         state.select_time+=(time.time()-start_time)
