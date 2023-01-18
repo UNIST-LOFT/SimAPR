@@ -585,13 +585,13 @@ def epsilon_select_new(state:MSVState,source=None):
     target_lines:List[LineInfo]=[]
     if type(source)==FileInfo:
       source:FileInfo=source
-      remain_lines=source.remain_lines_by_scores
+      remain_lines=source.remain_lines_by_score
       for func in source.func_info_map:
         for line in source.func_info_map[func].line_info_map:
           target_lines.append(source.func_info_map[func].line_info_map[line])
     elif type(source)==FuncInfo:
       source:FuncInfo=source
-      remain_lines=source.remain_lines_by_scores
+      remain_lines=source.remain_lines_by_score
       for line in source.line_info_map:
         target_lines.append(source.line_info_map[line])
     elif type(source)==LineInfo:
