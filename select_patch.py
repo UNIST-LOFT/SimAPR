@@ -570,7 +570,7 @@ def epsilon_search_new(state: MSVState):
       else:
         if patch.parent.parent==selected_line:
           total_patches.append(patch)
-  patch_epsilon=epsilon_greedy(len(total_patches),len(selected_line.remain_patches_by_score[selected_score]))
+  patch_epsilon=epsilon_greedy(len(total_patches),len(total_patches)-len(selected_line.remain_patches_by_score[selected_score]))
   is_epsilon_greedy=np.random.random()<patch_epsilon and state.use_epsilon and not state.not_use_epsilon_search
   if is_epsilon_greedy:
     state.msv_logger.debug(f'Use epsilon greedy to select patch: {patch_epsilon}')
@@ -760,7 +760,7 @@ def epsilon_select_new(state:MSVState,source=None):
           else:
             if patch.parent.parent==selected_line and patch.parent.parent in target_lines:
               total_patches.append(patch) # TBAR
-      patch_epsilon=epsilon_greedy(len(total_patches),len(selected_line.remain_patches_by_score[selected_score]))
+      patch_epsilon=epsilon_greedy(len(total_patches),len(total_patches)-len(selected_line.remain_patches_by_score[selected_score]))
       is_epsilon_greedy=np.random.random()<patch_epsilon and state.use_epsilon and not state.not_use_epsilon_search
       if is_epsilon_greedy:
         selected_index=random.randint(0,len(selected_line.remain_patches_by_score[selected_score])-1)
@@ -773,7 +773,7 @@ def epsilon_select_new(state:MSVState,source=None):
       for patch in state.java_patch_ranking[source.parent.fl_score]:
         if patch.parent==source:
           total_patches.append(patch)
-      patch_epsilon=epsilon_greedy(len(total_patches),len(source.remain_patches_by_score[source.parent.fl_score]))
+      patch_epsilon=epsilon_greedy(len(total_patches),len(total_patches)-len(source.remain_patches_by_score[source.parent.fl_score]))
       is_epsilon_greedy=np.random.random()<patch_epsilon and state.use_epsilon and not state.not_use_epsilon_search
       if is_epsilon_greedy:
         state.msv_logger.debug(f'Use epsilon greedy to select patch: {patch_epsilon}')
@@ -788,7 +788,7 @@ def epsilon_select_new(state:MSVState,source=None):
       for patch in state.c_patch_ranking[source.parent.fl_score]:
         if patch.parent.parent==source:
           total_patches.append(patch)
-      patch_epsilon=epsilon_greedy(len(total_patches),len(source.remain_patches_by_score[source.parent.fl_score]))
+      patch_epsilon=epsilon_greedy(len(total_patches),len(total_patches)-len(source.remain_patches_by_score[source.parent.fl_score]))
       is_epsilon_greedy=np.random.random()<patch_epsilon and state.use_epsilon and not state.not_use_epsilon_search
       if is_epsilon_greedy:
         state.msv_logger.debug(f'Use epsilon greedy to select patch: {patch_epsilon}')
@@ -803,7 +803,7 @@ def epsilon_select_new(state:MSVState,source=None):
       for patch in state.c_patch_ranking[source.parent.parent.fl_score]:
         if patch.parent==source:
           total_patches.append(patch)
-      patch_epsilon=epsilon_greedy(len(total_patches),len(source.remain_patches_by_score[source.parent.parent.fl_score]))
+      patch_epsilon=epsilon_greedy(len(total_patches),len(total_patches)-len(source.remain_patches_by_score[source.parent.parent.fl_score]))
       is_epsilon_greedy=np.random.random()<patch_epsilon and state.use_epsilon and not state.not_use_epsilon_search
       if is_epsilon_greedy:
         state.msv_logger.debug(f'Use epsilon greedy to select patch: {patch_epsilon}')
