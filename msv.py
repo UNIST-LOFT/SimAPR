@@ -22,6 +22,7 @@ class MSV:
   def __init__(self, state: MSVState) -> None:
     self.state = state
     self.patch_str="some init patch"
+    self.is_initialized = False
 
   def is_alive(self) -> bool:
     if len(self.state.file_info_map) == 0:
@@ -108,6 +109,7 @@ class MSV:
     return pass_exist
     
   def initialize(self) -> None:
+    self.is_initialized = True
     self.state.seapr_remain_cases.sort(key=lambda x: max(x.prophet_score), reverse=True)
     # run original program and get original profile
     cs = self.state.switch_case_map["0-0"]
@@ -403,6 +405,7 @@ class MSVTbar(MSV):
     run_time=time.time()-start_time
     return run_result,run_time
   def initialize(self) -> None:
+    self.is_initialized = True
     self.state.msv_logger.info("Initializing...")
     original = self.state.patch_location_map["original"]
     op = TbarPatchInfo(original)
@@ -484,7 +487,7 @@ class MSVTbar(MSV):
       result_handler.remove_patch_tbar(self.state, patch)
   
   def run_sim(self) -> None:
-    self.initialize()
+    # self.initialize()
     self.state.start_time = time.time()
     self.state.cycle = 0
     while(self.is_alive()):
@@ -500,6 +503,8 @@ class MSVTbar(MSV):
       pass_time=0
       key = patch.tbar_case_info.location
       if key not in self.state.simulation_data:
+        if not self.is_initialized:
+          self.initialize()
         for neg in self.state.d4j_negative_test:
           compilable, run_result,fail_time = self.run_test(patch, neg)
           self.state.test_time+=fail_time
@@ -568,32 +573,34 @@ class MSVRecoder(MSVTbar):
     run_time=time.time()-start_time
     return run_result,run_time
   def initialize(self) -> None:
+    self.is_initialized = True
     self.state.msv_logger.info("Initializing...")
     original = self.state.patch_location_map["original"]
     op = RecoderPatchInfo(original)
-    # for neg in self.state.d4j_negative_test.copy():
-    #   compilable, run_result,_ = self.run_test(op, neg)
-    #   # self.state.d4j_test_fail_num_map[neg] = fail_num
-    #   if not compilable:
-    #     self.state.msv_logger.warning("Project is not compilable")
-    #     self.state.is_alive = False
-    #     return
-    #   if run_result:
-    #     self.state.msv_logger.warning(f"Removing {neg} from negative test")
-    #     self.state.d4j_negative_test.remove(neg)
-    #     if len(self.state.d4j_negative_test) == 0:
-    #       self.state.msv_logger.critical("No negative test left!!!!")
-    #       self.state.is_alive = False
-    #       return
-    # if not self.state.skip_valid:
-    #   self.state.msv_logger.info(f"Validating {len(self.state.d4j_positive_test)} pass tests")
-    #   new_env = MSVEnvVar.get_new_env_recoder(self.state, op, "")
-    #   new_env = MSVEnvVar.get_new_env_d4j_positive_tests(self.state, self.state.d4j_positive_test, new_env)
-    #   run_result, failed_tests = run_test.run_pass_test_d4j_exec(self.state, new_env, self.state.d4j_positive_test)
-    #   if not run_result:
-    #     for ft in failed_tests:
-    #       self.state.msv_logger.info("Removing {} from positive test".format(ft))
-          # self.state.d4j_positive_test.remove(ft)
+    for neg in self.state.d4j_negative_test.copy():
+      compilable, run_result,_ = self.run_test(op, neg)
+      # self.state.d4j_test_fail_num_map[neg] = fail_num
+      if not compilable:
+        self.state.msv_logger.warning("Project is not compilable")
+        self.state.is_alive = False
+        return
+      if run_result:
+        self.state.msv_logger.warning(f"Removing {neg} from negative test")
+        self.state.d4j_negative_test.remove(neg)
+        if len(self.state.d4j_negative_test) == 0:
+          self.state.msv_logger.critical("No negative test left!!!!")
+          self.state.is_alive = False
+          return
+    if not self.state.skip_valid:
+      self.state.msv_logger.info(f"Validating {len(self.state.d4j_positive_test)} pass tests")
+      new_env = MSVEnvVar.get_new_env_recoder(self.state, op, "")
+      new_env = MSVEnvVar.get_new_env_d4j_positive_tests(self.state, self.state.d4j_positive_test, new_env)
+      run_result, failed_tests = run_test.run_pass_test_d4j_exec(self.state, new_env, self.state.d4j_positive_test)
+      if not run_result:
+        for ft in failed_tests:
+          # self.state.failed_positive_test.add(ft)
+          self.state.msv_logger.info("Removing {} from positive test".format(ft))
+          self.state.d4j_positive_test.remove(ft)
   def run(self) -> None:
     if self.state.use_simulation_mode:
       self.run_sim()
@@ -634,7 +641,7 @@ class MSVRecoder(MSVTbar):
       result_handler.append_result(self.state, [patch], pass_exists, pass_result, result, is_compilable,fail_time,pass_time)
       result_handler.remove_patch_recoder(self.state, patch)
   def run_sim(self) -> None:
-    self.initialize()
+    # self.initialize()
     self.state.start_time = time.time()
     self.state.cycle = 0
     while(self.is_alive()):
@@ -650,6 +657,8 @@ class MSVRecoder(MSVTbar):
       pass_time=0
       key = patch.recoder_case_info.location
       if key not in self.state.simulation_data:
+        if not self.is_initialized:
+          self.initialize()
         for neg in self.state.d4j_negative_test:
           compilable, run_result,fail_time = self.run_test(patch, neg)
           self.state.test_time+=fail_time
