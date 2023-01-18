@@ -1275,6 +1275,9 @@ class PatchInfo:
       temp_loc=LocationScore(self.file_info.file_name,self.line_info.line_number,0,0)
       if not has_patch(self.file_info.file_name,self.line_info.line_number) and temp_loc in state.fl_score:
         state.fl_score.remove(LocationScore(self.file_info.file_name,self.line_info.line_number,0,0))
+      state.score_remain_line_map[self.line_info.fl_score].remove(self.line_info)
+      if len(state.score_remain_line_map[self.line_info.fl_score])==0:
+        state.score_remain_line_map.pop(self.line_info.fl_score)
     if len(self.func_info.line_info_map) == 0:
       del self.file_info.func_info_map[self.func_info.id]
       self.file_info.fl_score_list.remove(cur_fl_score)
@@ -1374,6 +1377,9 @@ class TbarPatchInfo:
       self.func_info.fl_score_list.remove(score)
       self.file_info.fl_score_list.remove(score)
       del self.func_info.line_info_map[self.line_info.uuid]
+      state.score_remain_line_map[self.line_info.fl_score].remove(self.line_info)
+      if len(state.score_remain_line_map[self.line_info.fl_score])==0:
+        state.score_remain_line_map.pop(self.line_info.fl_score)
     if len(self.func_info.line_info_map) == 0:
       del self.file_info.func_info_map[self.func_info.id]
       state.func_list.remove(self.func_info)
@@ -1476,6 +1482,9 @@ class RecoderPatchInfo:
       self.func_info.fl_score_list.remove(score)
       self.file_info.fl_score_list.remove(score)
       del self.func_info.line_info_map[self.line_info.uuid]
+      state.score_remain_line_map[self.line_info.fl_score].remove(self.line_info)
+      if len(state.score_remain_line_map[self.line_info.fl_score])==0:
+        state.score_remain_line_map.pop(self.line_info.fl_score)
     if len(self.func_info.line_info_map) == 0:
       del self.file_info.func_info_map[self.func_info.id]
       state.func_list.remove(self.func_info)
@@ -1732,6 +1741,7 @@ class MSVState:
     self.c_remain_patch_ranking:Dict[float,List[CaseInfo]]=dict()
     self.java_patch_ranking:Dict[float,List[TbarCaseInfo]]=dict()
     self.java_remain_patch_ranking:Dict[float,List[TbarCaseInfo]]=dict()
+    self.score_remain_line_map:Dict[float,List[LineInfo]]=dict()  # Remaining lines by each scores(FL, prophet score, ...)
 
     self.previous_score:float=0.0
     self.same_consecutive_score:Dict[float,int]=dict()

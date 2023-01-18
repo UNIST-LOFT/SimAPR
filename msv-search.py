@@ -326,6 +326,9 @@ def read_info_recoder(state: MSVState) -> None:
         line_info.fl_score = fl_score
         func_info.fl_score_list.append(fl_score)
         file_info.fl_score_list.append(fl_score)
+        if fl_score not in state.score_remain_line_map:
+          state.score_remain_line_map[fl_score]=[]
+        state.score_remain_line_map[fl_score].append(line_info)
         file_line = FileLine(file_info, line_info, 0)
         state.priority_map[f"{file_info.file_name}:{line_info.line_number}"] = file_line
         for cs in line["cases"]:
@@ -363,6 +366,9 @@ def read_info_recoder(state: MSVState) -> None:
           func_info.total_patches_by_score[line_info.fl_score] += 1
         if len(line_info.recoder_case_info_map)==0:
           del func_info.line_info_map[line_info.uuid]
+          state.score_remain_line_map[line_info.fl_score].remove(line_info)
+          if len(state.score_remain_line_map[line_info.fl_score])==0:
+            state.score_remain_line_map.pop(line_info.fl_score)
       for func in file_info.func_info_map.copy().values():
         if len(func.line_info_map)==0:
           del file_info.func_info_map[func.id]
@@ -518,6 +524,9 @@ def read_info_tbar(state: MSVState) -> None:
         line_info.fl_score = float(line['fl_score'])
         func_info.fl_score_list.append(line_info.fl_score)
         file_info.fl_score_list.append(line_info.fl_score)
+        if fl_score not in state.score_remain_line_map:
+          state.score_remain_line_map[fl_score]=[]
+        state.score_remain_line_map[fl_score].append(line_info)
         file_line = FileLine(file_info, line_info, 0)
         state.priority_map[f"{file_info.file_name}:{line_info.line_number}"] = file_line
         cses = None
@@ -553,6 +562,9 @@ def read_info_tbar(state: MSVState) -> None:
           func_info.total_patches_by_score[line_info.fl_score]+=1
         if len(line_info.tbar_type_info_map)==0:
           del func_info.line_info_map[line_info.uuid]
+          state.score_remain_line_map[line_info.fl_score].remove(line_info)
+          if len(state.score_remain_line_map[line_info.fl_score])==0:
+            state.score_remain_line_map.pop(line_info.fl_score)
       for func in file_info.func_info_map.copy().values():
         if len(func.line_info_map)==0:
           del file_info.func_info_map[func.id]
@@ -697,6 +709,9 @@ def read_info_fixminer(state: MSVState) -> None:
         line_info.fl_score = float(line['fl_score'])
         func_info.fl_score_list.append(line_info.fl_score)
         file_info.fl_score_list.append(line_info.fl_score)
+        if fl_score not in state.score_remain_line_map:
+          state.score_remain_line_map[fl_score]=[]
+        state.score_remain_line_map[fl_score].append(line_info)
         file_line = FileLine(file_info, line_info, 0)
         state.sub_priority_map[f"{file_info.file_name}:{line_info.line_number}"] = file_line
         cses = None
@@ -732,6 +747,9 @@ def read_info_fixminer(state: MSVState) -> None:
           func_info.total_patches_by_score[line_info.fl_score]+=1
         if len(line_info.tbar_type_info_map)==0:
           del func_info.line_info_map[line_info.uuid]
+          state.score_remain_line_map[line_info.fl_score].remove(line_info)
+          if len(state.score_remain_line_map[line_info.fl_score])==0:
+            state.score_remain_line_map.pop(line_info.fl_score)
       for func in file_info.func_info_map.copy().values():
         if len(func.line_info_map)==0:
           del file_info.func_info_map[func.id]
@@ -975,6 +993,9 @@ def read_info(state: MSVState) -> None:
         if func_info.fl_score < line_info.fl_score:
           func_info.fl_score = line_info.fl_score
         func_info.fl_score_list.append(score)
+        if score not in state.score_remain_line_map:
+          state.score_remain_line_map[score]=[]
+        state.score_remain_line_map[score].append(line_info)
         file_line = FileLine(file_info, line_info, score)
         state.priority_map[f"{file_info.file_name}:{line_info.line_number}"] = file_line
 
@@ -1116,6 +1137,9 @@ def read_info(state: MSVState) -> None:
             del line_info.switch_info_map[switch_info.switch_number]
         if len(line_info.switch_info_map)==0:
           del func_info.line_info_map[line_info.uuid]
+          state.score_remain_line_map[line_info.fl_score].remove(line_info)
+          if len(state.score_remain_line_map[line_info.fl_score])==0:
+            state.score_remain_line_map.pop(line_info.fl_score)
 
       for func in file_info.func_info_map.copy().values():
         if len(func.line_info_map)==0:
