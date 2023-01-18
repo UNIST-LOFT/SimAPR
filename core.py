@@ -239,6 +239,7 @@ class FileInfo:
     self.consecutive_fail_plausible_count:int=0
     self.patches_by_score:Dict[float,List[CaseInfo]]=dict()
     self.remain_patches_by_score:Dict[float,List[CaseInfo]]=dict()
+    self.remain_lines_by_score:Dict[float,List[LineInfo]]=dict()
   def __hash__(self) -> int:
     return hash(self.file_name)
   def __eq__(self, other) -> bool:
@@ -273,6 +274,7 @@ class FuncInfo:
     self.consecutive_fail_plausible_count:int=0
     self.patches_by_score:Dict[float,List[CaseInfo]]=dict()
     self.remain_patches_by_score:Dict[float,List[CaseInfo]]=dict()
+    self.remain_lines_by_score:Dict[float,List[LineInfo]]=dict()
 
     self.total_patches_by_score:Dict[float,int]=dict() # Total patches grouped by score
     self.searched_patches_by_score:Dict[float,int]=dict() # Total searched patches grouped by score
@@ -1278,6 +1280,12 @@ class PatchInfo:
       state.score_remain_line_map[self.line_info.fl_score].remove(self.line_info)
       if len(state.score_remain_line_map[self.line_info.fl_score])==0:
         state.score_remain_line_map.pop(self.line_info.fl_score)
+      self.func_info.remain_lines_by_score[self.line_info.fl_score].remove(self.line_info)
+      if len(self.func_info.remain_lines_by_score[self.line_info.fl_score])==0:
+        self.func_info.remain_lines_by_score.pop(self.line_info.fl_score)
+      self.file_info.remain_lines_by_score[self.line_info.fl_score].remove(self.line_info)
+      if len(self.file_info.remain_lines_by_score[self.line_info.fl_score])==0:
+        self.file_info.remain_lines_by_score.pop(self.line_info.fl_score)
     if len(self.func_info.line_info_map) == 0:
       del self.file_info.func_info_map[self.func_info.id]
       self.file_info.fl_score_list.remove(cur_fl_score)
@@ -1380,6 +1388,12 @@ class TbarPatchInfo:
       state.score_remain_line_map[self.line_info.fl_score].remove(self.line_info)
       if len(state.score_remain_line_map[self.line_info.fl_score])==0:
         state.score_remain_line_map.pop(self.line_info.fl_score)
+      self.func_info.remain_lines_by_score[self.line_info.fl_score].remove(self.line_info)
+      if len(self.func_info.remain_lines_by_score[self.line_info.fl_score])==0:
+        self.func_info.remain_lines_by_score.pop(self.line_info.fl_score)
+      self.file_info.remain_lines_by_score[self.line_info.fl_score].remove(self.line_info)
+      if len(self.file_info.remain_lines_by_score[self.line_info.fl_score])==0:
+        self.file_info.remain_lines_by_score.pop(self.line_info.fl_score)
     if len(self.func_info.line_info_map) == 0:
       del self.file_info.func_info_map[self.func_info.id]
       state.func_list.remove(self.func_info)
@@ -1487,6 +1501,12 @@ class RecoderPatchInfo:
       state.score_remain_line_map[self.line_info.fl_score].remove(self.line_info)
       if len(state.score_remain_line_map[self.line_info.fl_score])==0:
         state.score_remain_line_map.pop(self.line_info.fl_score)
+      self.func_info.remain_lines_by_score[self.line_info.fl_score].remove(self.line_info)
+      if len(self.func_info.remain_lines_by_score[self.line_info.fl_score])==0:
+        self.func_info.remain_lines_by_score.pop(self.line_info.fl_score)
+      self.file_info.remain_lines_by_score[self.line_info.fl_score].remove(self.line_info)
+      if len(self.file_info.remain_lines_by_score[self.line_info.fl_score])==0:
+        self.file_info.remain_lines_by_score.pop(self.line_info.fl_score)
     if len(self.func_info.line_info_map) == 0:
       del self.file_info.func_info_map[self.func_info.id]
       state.func_list.remove(self.func_info)

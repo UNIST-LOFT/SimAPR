@@ -585,24 +585,27 @@ def epsilon_select_new(state:MSVState,source=None):
     target_lines:List[LineInfo]=[]
     if type(source)==FileInfo:
       source:FileInfo=source
+      remain_lines=source.remain_lines_by_scores
       for func in source.func_info_map:
         for line in source.func_info_map[func].line_info_map:
           target_lines.append(source.func_info_map[func].line_info_map[line])
     elif type(source)==FuncInfo:
       source:FuncInfo=source
+      remain_lines=source.remain_lines_by_scores
       for line in source.line_info_map:
         target_lines.append(source.line_info_map[line])
     elif type(source)==LineInfo:
       source:LineInfo=source
       target_lines.append(source)
+      remain_lines={source.fl_score:[source]}
 
     if len(target_lines)>0:
       patches:List[LineInfo]=[]
-      for score in state.score_remain_line_map:
-        for line in state.score_remain_line_map[score]:
+      for score in remain_lines:
+        for line in remain_lines[score]:
           patches.append(line)
 
-      scores_list=list(state.score_remain_line_map.keys())
+      scores_list=list(remain_lines.keys())
       scores_norm=PassFail.normalize(scores_list)
       # selected_group=PassFail.select_by_probability(scores_norm)
       max_score=max(scores_list)
