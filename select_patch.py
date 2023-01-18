@@ -459,30 +459,12 @@ def epsilon_search_new(state: MSVState):
   start_time=time.time()
 
   # Select group
-  scores_set:Set[float]=set()
   patches:List[LineInfo]=[]
-  if not state.tbar_mode and not state.recoder_mode:
-    # For C
-    for score in state.c_remain_patch_ranking:
-      for i in range(len(state.c_remain_patch_ranking[score])):
-        patch=state.c_remain_patch_ranking[score][i]
-        if patch.parent.parent.parent not in patches:
-          scores_set.add(score)
-          patches.append(patch.parent.parent.parent)
-  else:
-    for score in state.java_remain_patch_ranking:
-      for i in range(len(state.java_remain_patch_ranking[score])):
-        patch=state.java_remain_patch_ranking[score][i]
-        if state.recoder_mode:
-          if patch.parent not in patches:
-            scores_set.add(score)
-            patches.append(patch.parent)
-        else:
-          if patch.parent.parent not in patches:
-            scores_set.add(score)
-            patches.append(patch.parent.parent)
+  for score in state.score_remain_line_map:
+    for line in state.score_remain_line_map[score]:
+      patches.append(line)
 
-  scores_list=list(scores_set)
+  scores_list=list(state.score_remain_line_map.keys())
   scores_norm=PassFail.normalize(scores_list)
   # selected_group=PassFail.select_by_probability(scores_norm)
   max_score=max(scores_list)
@@ -615,30 +597,12 @@ def epsilon_select_new(state:MSVState,source=None):
       target_lines.append(source)
 
     if len(target_lines)>0:
-      scores_set:Set[float]=set()
       patches:List[LineInfo]=[]
-      if not state.tbar_mode and not state.recoder_mode:
-        # For C
-        for score in state.c_remain_patch_ranking:
-          for i in range(len(state.c_remain_patch_ranking[score])):
-            patch=state.c_remain_patch_ranking[score][i]
-            if patch.parent.parent.parent not in patches and patch.parent.parent.parent in target_lines:
-              scores_set.add(score)
-              patches.append(patch.parent.parent.parent)
-      else:
-        for score in state.java_remain_patch_ranking:
-          for i in range(len(state.java_remain_patch_ranking[score])):
-            patch=state.java_remain_patch_ranking[score][i]
-            if state.recoder_mode:
-              if patch.parent in target_lines and patch.parent not in patches:
-                scores_set.add(score)
-                patches.append(patch.parent)
-            else:
-              if patch.parent.parent not in patches and patch.parent.parent in target_lines:
-                scores_set.add(score)
-                patches.append(patch.parent.parent)
+      for score in state.score_remain_line_map:
+        for line in state.score_remain_line_map[score]:
+          patches.append(line)
 
-      scores_list=list(scores_set)
+      scores_list=list(state.score_remain_line_map.keys())
       scores_norm=PassFail.normalize(scores_list)
       # selected_group=PassFail.select_by_probability(scores_norm)
       max_score=max(scores_list)
