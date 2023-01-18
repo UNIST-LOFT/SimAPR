@@ -487,7 +487,7 @@ class MSVTbar(MSV):
       result_handler.remove_patch_tbar(self.state, patch)
   
   def run_sim(self) -> None:
-    # self.initialize()
+    self.initialize()
     self.state.start_time = time.time()
     self.state.cycle = 0
     while(self.is_alive()):
