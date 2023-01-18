@@ -282,7 +282,7 @@ def save_result(state: MSVState) -> None:
     with open(tmp_sim_file, "w") as f:
       json.dump(state.simulation_data, f, indent=2)
     # copy to the original file
-    shutil.copy(tmp_sim_file, state.prev_data)
+    shutil.move(tmp_sim_file, state.prev_data)
 
     if state.remove_cached_file:
       for key in state.simulation_data:
