@@ -1,6 +1,7 @@
 from operator import itemgetter
 from core import *
 from typing import List, Set, Dict, Tuple
+import shutil
 
 def get_ochiai(s_h: float, s_l: float, d_h: float, d_l: float) -> float:
   if s_h == 0.0:
@@ -277,8 +278,11 @@ def save_result(state: MSVState) -> None:
 
   if state.use_simulation_mode:
     # Save cached result to file
-    with open(state.prev_data,'w') as f:
-      json.dump(state.simulation_data,f,indent=2)
+    tmp_sim_file = os.path.join(state.out_dir, "msv-sim-data.json")
+    with open(tmp_sim_file, "w") as f:
+      json.dump(state.simulation_data, f, indent=2)
+    # copy to the original file
+    shutil.copy(tmp_sim_file, state.prev_data)
 
     if state.remove_cached_file:
       for key in state.simulation_data:
@@ -333,19 +337,6 @@ def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result:
   
   with open(os.path.join(state.out_dir, "msv-result.csv"), 'a') as f:
     f.write(json.dumps(obj) + "\n")
-  sim_data_file = os.path.join(state.out_dir, "msv-sim-data.csv")
-  update_sim_data = True
-  if state.use_simulation_mode:
-    if state.tbar_mode:
-      if obj["config"][0]["location"] in state.simulation_data:
-        update_sim_data = False
-    elif state.recoder_mode:
-      key = str(obj["config"][0]["id"]) + "-" + str(obj["config"][0]["case_id"])
-      if key in state.simulation_data:
-        update_sim_data = False
-  if update_sim_data:
-    with open(sim_data_file, "a") as f:
-      f.write(json.dumps(obj) + "\n")
   if (tm - state.last_save_time) > save_interval:
     save_result(state)
 
