@@ -1395,6 +1395,8 @@ class TbarPatchInfo:
     self.file_info.case_update_count += 1
     self.file_info.remain_patches_by_score[self.line_info.fl_score].remove(self.tbar_case_info)
     state.java_remain_patch_ranking[self.line_info.fl_score].remove(self.tbar_case_info)
+    if len(state.java_remain_patch_ranking[self.line_info.fl_score])==0:
+      state.java_remain_patch_ranking.pop(self.line_info.fl_score)
     self.func_info.searched_patches_by_score[self.line_info.fl_score]+=1
 
   def to_json_object(self) -> dict:
@@ -1508,6 +1510,8 @@ class RecoderPatchInfo:
     self.file_info.case_update_count += 1
     self.file_info.remain_patches_by_score[fl_score].remove(self.recoder_case_info)
     state.java_remain_patch_ranking[fl_score].remove(self.recoder_case_info)
+    if len(state.java_remain_patch_ranking[self.line_info.fl_score])==0:
+      state.java_remain_patch_ranking.pop(self.line_info.fl_score)
     self.func_info.searched_patches_by_score[fl_score] += 1
   def to_json_object(self) -> dict:
     conf = dict()
