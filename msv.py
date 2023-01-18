@@ -600,7 +600,7 @@ class MSVRecoder(MSVTbar):
         for ft in failed_tests:
           # self.state.failed_positive_test.add(ft)
           self.state.msv_logger.info("Removing {} from positive test".format(ft))
-          self.state.d4j_positive_test.remove(ft)
+          # self.state.d4j_positive_test.remove(ft)
   def run(self) -> None:
     if self.state.use_simulation_mode:
       self.run_sim()
