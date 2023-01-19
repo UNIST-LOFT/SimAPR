@@ -12,9 +12,10 @@ def ranking_original_template(result_path:str,patch_path:str):
   plau_patches:Dict[str,dict]=[]
   for result in casino_result:
     if result['pass_result']:
-      plau_patches[result['config'][0]['location']]={'iteration':result['iteration'],
+      patch_id=result['config'][0]['location']
+      plau_patches[patch_id]={'iteration':result['iteration'],
               'time':result['time'],
-              'id':result['config'][0]['location']}
+              'id':patch_id}
 
   # Get original ranking
   original_rank_id:List[str]=[]
