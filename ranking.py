@@ -30,7 +30,7 @@ def ranking_original_template(result_path:str,patch_path:str):
 
   # Save sorted result to json file
   with open(f'{result_path}/msv-orig-rank.json','w') as f:
-    json.dump(new_plau,f)
+    json.dump(new_plau,f,indent=2)
 
 if __name__=='__main__':
   import sys
