@@ -9,7 +9,7 @@ def ranking_original_template(result_path:str,patch_path:str):
     original_rank:List[dict]=json.load(f)['ranking']
 
  # Get all plausible patches
-  plau_patches:Dict[str,dict]=[]
+  plau_patches:Dict[str,dict]=dict()
   for result in casino_result:
     if result['pass_result']:
       patch_id=result['config'][0]['location']
