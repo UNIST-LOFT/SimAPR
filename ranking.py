@@ -1,6 +1,7 @@
+import os
 from typing import Dict, List
-import numpy as np
 import json
+import subprocess
 
 def ranking_original_template(result_path:str,patch_path:str):
   with open(f'{result_path}/msv-result.json','r') as f:
@@ -32,6 +33,30 @@ def ranking_original_template(result_path:str,patch_path:str):
   with open(f'{result_path}/msv-orig-rank.json','w') as f:
     json.dump(new_plau,f,indent=2)
 
+def ranking_ods_template(result_path:str,patch_path:str,tool_path:str,project:str):
+  if 'ods-enhanced' not in os.listdir('/root/project'):
+    subprocess.run(['git','clone','https://github.com/foodsnow/ods-enhanced.git'],
+              cwd='/root/project',stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+
+  coming_tool='/root/project/coming'
+  if 'coming' not in os.listdir('/root/project'):
+    subprocess.run(['git','clone','https://github.com/SpoonLabs/coming.git'],
+              cwd='/root/project',stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+    subprocess.run(['mvn','install','-DskipTests'],
+                cwd='/root/project/coming',stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+
+  project_path=tool_path+'/buggy/'+project
+  result=subprocess.run(['python3','parse_msv.py','--msv_results_path',result_path,
+            '--patches-path',patch_path,'--buggy_projects_paths',project_path,
+            '--output',result_path,'--coming_tool_path',coming_tool],
+            cwd='/root/project/ods-enhanced',stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+
+  if result.returncode!=0:
+    print(result.stdout.decode('utf-8'))
+    print(f'Failed to run ods for {result_path}!',file=sys.stderr)
+  else:
+    print(f'Success to run ods for {result_path}!')
+  
 if __name__=='__main__':
   import sys
   argv=sys.argv
@@ -42,5 +67,8 @@ if __name__=='__main__':
     # Original rank of template-based tools
     assert len(argv)==4,'Usage: python3 ranking.py tbar-orig [casino-result-path] [patch-gen-path]'
     ranking_original_template(argv[2],argv[3])
+  elif argv[1]=='tbar-ods':
+    assert len(argv)==6,'Usage: python3 ranking.py tbar-ods [casino-result-path] [patch-gen-path] [tool-path] [project]'
+    ranking_ods_template(argv[2],argv[3],argv[4],argv[5])
   else:
     raise ValueError(f'Unknown command: {argv[1]}')
