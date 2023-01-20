@@ -2173,6 +2173,7 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
   
   if state.total_basic_patch == 0 or state.not_use_guided_search:
     selected_switch_info = epsilon_search(state)
+    state.patch_ranking.remove(selected_switch_info)
     result = RecoderPatchInfo(selected_switch_info)
     return result
   
@@ -2267,6 +2268,7 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
   del c_map[PT.fl] # No fl below line
   
   selected_case_info: RecoderCaseInfo = epsilon_select(state, selected_line_info)
+  state.patch_ranking.remove(selected_case_info)
   result = RecoderPatchInfo(selected_case_info)
   return result
   for file_name in state.file_info_map:
