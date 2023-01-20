@@ -1789,12 +1789,15 @@ def select_patch(state: MSVState, mode: MSVMode, test: int) -> List[PatchInfo]:
 
 
 def select_patch_tbar_mode(state: MSVState) -> TbarPatchInfo:
-  if state.mode == MSVMode.tbar or not use_stochastic(state):
+  if state.mode == MSVMode.tbar:
     return select_patch_tbar(state)
   elif state.mode == MSVMode.seapr:
     return select_patch_tbar_seapr(state)
   else:
-    return select_patch_tbar_guided(state)
+    if use_stochastic(state): 
+      return select_patch_tbar_guided(state)
+    else:
+      return select_patch_tbar(state)
 
 def select_patch_tbar(state: MSVState) -> TbarPatchInfo:
   loc = state.patch_ranking.pop(0)
@@ -2113,7 +2116,10 @@ def select_patch_recoder_mode(state: MSVState) -> RecoderPatchInfo:
   elif state.mode == MSVMode.seapr:
     return select_patch_recoder_seapr(state)
   else:
-    return select_patch_recoder_guided(state)
+    if use_stochastic(state):
+      return select_patch_recoder_guided(state)
+    else:
+      return select_patch_recoder(state)
 
 def select_patch_recoder(state: MSVState) -> RecoderPatchInfo:
   p = state.patch_ranking.pop(0)
