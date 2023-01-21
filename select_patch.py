@@ -450,6 +450,64 @@ def epsilon_select(state:MSVState,source=None):
         raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
 
 FORCE_THRESHOLD=0.1
+def use_stochastic(state:MSVState):
+  """
+    Decide to use stochastic search or follow original tool
+  """
+  state.msv_logger.debug('Decide to use stochastic approach')
+  start_time=time.time()
+
+  # Select group
+  patches:List[LineInfo]=[]
+  for score in state.score_remain_line_map:
+    for line in state.score_remain_line_map[score]:
+      patches.append(line)
+
+  scores_list=list(state.score_remain_line_map.keys())
+  max_score=max(scores_list)
+  selected_group=scores_list.index(max_score)
+  selected_score=scores_list[selected_group]
+  state.msv_logger.debug(f'Selected score: {selected_score}')
+  selected_lines:List[LineInfo]=[]
+  for line in patches:
+    if line.fl_score==selected_score:
+      selected_lines.append(line)
+  total_lines:Set[LineInfo]=set()
+  if not state.tbar_mode and not state.recoder_mode:
+    # For C
+    for i in range(len(state.c_patch_ranking[selected_score])):
+      patch=state.c_patch_ranking[selected_score][i]
+      if patch.parent.parent.parent in patches:
+        total_lines.add(selected_score)
+  else:
+    for i in range(len(state.java_patch_ranking[selected_score])):
+      patch=state.java_patch_ranking[selected_score][i]
+      if state.recoder_mode:
+        if patch.parent in patches:
+          total_lines.add(selected_score)
+      else:
+        if patch.parent.parent in patches:
+          total_lines.add(selected_score)
+
+  # Check that we should force to select first patch
+  if not state.tbar_mode and not state.recoder_mode:
+    # For C
+    total_candidates, remain_candidates=state.c_patch_ranking[selected_score],state.c_remain_patch_ranking[selected_score]  
+  else:
+    total_candidates, remain_candidates=state.java_patch_ranking[selected_score],state.java_remain_patch_ranking[selected_score]
+  cur_rank=total_candidates.index(remain_candidates[0])
+  if cur_rank==0 or cur_rank*(1.+FORCE_THRESHOLD)<(len(total_candidates)-len(remain_candidates)):
+    # Force to select first patch
+    state.select_time+=(time.time()-start_time)
+    state.msv_logger.debug(f'Follow original rank: {cur_rank} vs {len(total_candidates)-len(remain_candidates)}')
+    state.msv_logger.debug(f'Threshold value: {cur_rank*(1.+FORCE_THRESHOLD)}')
+    return False
+  else:
+    state.select_time+=(time.time()-start_time)
+    state.msv_logger.debug(f'Use stochastic approach: {cur_rank} vs {len(total_candidates)-len(remain_candidates)}')
+    state.msv_logger.debug(f'Threshold value: {cur_rank*(1.+FORCE_THRESHOLD)}')
+    return True
+
 def epsilon_search_new(state: MSVState):
   """
     Select patch in entire patch space at no guidance.
@@ -492,23 +550,23 @@ def epsilon_search_new(state: MSVState):
         if patch.parent.parent in patches:
           total_lines.add(selected_score)
 
-  # Check that we should force to select first patch
-  if not state.tbar_mode and not state.recoder_mode:
-    # For C
-    total_candidates, remain_candidates=state.c_patch_ranking[selected_score],state.c_remain_patch_ranking[selected_score]  
-  else:
-    total_candidates, remain_candidates=state.java_patch_ranking[selected_score],state.java_remain_patch_ranking[selected_score]
-  cur_rank=total_candidates.index(remain_candidates[0])
-  if cur_rank==0 or cur_rank*(1.+FORCE_THRESHOLD)<(len(total_candidates)-len(remain_candidates)):
-    # Force to select first patch
-    selected_patch=remain_candidates[0]
-    state.select_time+=(time.time()-start_time)
-    state.msv_logger.debug(f'{selected_patch.location} is forced to select by horizontal search!: {cur_rank} vs {len(total_candidates)-len(remain_candidates)}')
-    state.msv_logger.debug(f'Threshold value: {cur_rank*(1.+FORCE_THRESHOLD)}')
-    return selected_patch
-  else:
-    state.msv_logger.debug(f'Continue horizontal search!: {cur_rank} vs {len(total_candidates)-len(remain_candidates)}')
-    state.msv_logger.debug(f'Threshold value: {cur_rank*(1.+FORCE_THRESHOLD)}')
+  # # Check that we should force to select first patch
+  # if not state.tbar_mode and not state.recoder_mode:
+  #   # For C
+  #   total_candidates, remain_candidates=state.c_patch_ranking[selected_score],state.c_remain_patch_ranking[selected_score]  
+  # else:
+  #   total_candidates, remain_candidates=state.java_patch_ranking[selected_score],state.java_remain_patch_ranking[selected_score]
+  # cur_rank=total_candidates.index(remain_candidates[0])
+  # if cur_rank==0 or cur_rank*(1.+FORCE_THRESHOLD)<(len(total_candidates)-len(remain_candidates)):
+  #   # Force to select first patch
+  #   selected_patch=remain_candidates[0]
+  #   state.select_time+=(time.time()-start_time)
+  #   state.msv_logger.debug(f'{selected_patch.location} is forced to select by horizontal search!: {cur_rank} vs {len(total_candidates)-len(remain_candidates)}')
+  #   state.msv_logger.debug(f'Threshold value: {cur_rank*(1.+FORCE_THRESHOLD)}')
+  #   return selected_patch
+  # else:
+  #   state.msv_logger.debug(f'Continue horizontal search!: {cur_rank} vs {len(total_candidates)-len(remain_candidates)}')
+  #   state.msv_logger.debug(f'Threshold value: {cur_rank*(1.+FORCE_THRESHOLD)}')
 
   # Select line
   if state.use_unified_debugging:
@@ -633,58 +691,58 @@ def epsilon_select_new(state:MSVState,source=None):
             if patch.parent.parent in patches and patch.parent.parent in target_lines:
               total_lines.add(selected_score)
 
-      # Check that we should force to select first patch
-      total_candidates, remain_candidates=[],[]
-      if not state.tbar_mode and not state.recoder_mode:
-        # For C
-        for p in state.c_patch_ranking[selected_score]:
-          if p.parent.parent.parent in target_lines:
-            total_candidates.append(p)
-        for p in state.c_remain_patch_ranking[selected_score]:
-          if p.parent.parent.parent in target_lines:
-            remain_candidates.append(p)
-      else:
-        for p in state.java_patch_ranking[selected_score]:
-          if state.recoder_mode:
-            if p.parent in target_lines:
-              total_candidates.append(p)
-          else:
-            if p.parent.parent in target_lines:
-              total_candidates.append(p)
-        for p in state.java_remain_patch_ranking[selected_score]:
-          if state.recoder_mode:
-            if p.parent in target_lines:
-              remain_candidates.append(p)
-          else:
-            if p.parent.parent in target_lines:
-              remain_candidates.append(p)
-      cur_rank=total_candidates.index(remain_candidates[0])
-      if cur_rank==0 or cur_rank*(1.+FORCE_THRESHOLD)<(len(total_candidates)-len(remain_candidates)):
-        # Force to select first patch
-        selected_patch=remain_candidates[0]
-        state.select_time+=(time.time()-start_time)
-        state.msv_logger.debug(f'{selected_patch.location} is forced to select by horizontal search!: {cur_rank} vs {len(total_candidates)-len(remain_candidates)}')
-        state.msv_logger.debug(f'Threshold value: {cur_rank*(1.+FORCE_THRESHOLD)}')
-        if type(source)==FileInfo:
-          if state.recoder_mode:
-            return selected_patch.parent.parent
-          else:
-            return selected_patch.parent.parent.parent # TBAR
-        elif type(source)==FuncInfo:
-          if state.recoder_mode:
-            return selected_patch.parent
-          else:
-            return selected_patch.parent.parent # TBAR
-        elif type(source)==LineInfo:
-          if state.recoder_mode:
-            return selected_patch
-          else:
-            return selected_patch.parent #TBAR
-        else:
-          raise ValueError(f'Unknown type at horizontal search: {type(source)}')
-      else:
-        state.msv_logger.debug(f'Continue horizontal search!: {cur_rank} vs {len(total_candidates)-len(remain_candidates)}')
-        state.msv_logger.debug(f'Threshold value: {cur_rank*(1.+FORCE_THRESHOLD)}')
+      # # Check that we should force to select first patch
+      # total_candidates, remain_candidates=[],[]
+      # if not state.tbar_mode and not state.recoder_mode:
+      #   # For C
+      #   for p in state.c_patch_ranking[selected_score]:
+      #     if p.parent.parent.parent in target_lines:
+      #       total_candidates.append(p)
+      #   for p in state.c_remain_patch_ranking[selected_score]:
+      #     if p.parent.parent.parent in target_lines:
+      #       remain_candidates.append(p)
+      # else:
+      #   for p in state.java_patch_ranking[selected_score]:
+      #     if state.recoder_mode:
+      #       if p.parent in target_lines:
+      #         total_candidates.append(p)
+      #     else:
+      #       if p.parent.parent in target_lines:
+      #         total_candidates.append(p)
+      #   for p in state.java_remain_patch_ranking[selected_score]:
+      #     if state.recoder_mode:
+      #       if p.parent in target_lines:
+      #         remain_candidates.append(p)
+      #     else:
+      #       if p.parent.parent in target_lines:
+      #         remain_candidates.append(p)
+      # cur_rank=total_candidates.index(remain_candidates[0])
+      # if cur_rank==0 or cur_rank*(1.+FORCE_THRESHOLD)<(len(total_candidates)-len(remain_candidates)):
+      #   # Force to select first patch
+      #   selected_patch=remain_candidates[0]
+      #   state.select_time+=(time.time()-start_time)
+      #   state.msv_logger.debug(f'{selected_patch.location} is forced to select by horizontal search!: {cur_rank} vs {len(total_candidates)-len(remain_candidates)}')
+      #   state.msv_logger.debug(f'Threshold value: {cur_rank*(1.+FORCE_THRESHOLD)}')
+      #   if type(source)==FileInfo:
+      #     if state.recoder_mode:
+      #       return selected_patch.parent.parent
+      #     else:
+      #       return selected_patch.parent.parent.parent # TBAR
+      #   elif type(source)==FuncInfo:
+      #     if state.recoder_mode:
+      #       return selected_patch.parent
+      #     else:
+      #       return selected_patch.parent.parent # TBAR
+      #   elif type(source)==LineInfo:
+      #     if state.recoder_mode:
+      #       return selected_patch
+      #     else:
+      #       return selected_patch.parent #TBAR
+      #   else:
+      #     raise ValueError(f'Unknown type at horizontal search: {type(source)}')
+      # else:
+      #   state.msv_logger.debug(f'Continue horizontal search!: {cur_rank} vs {len(total_candidates)-len(remain_candidates)}')
+      #   state.msv_logger.debug(f'Threshold value: {cur_rank*(1.+FORCE_THRESHOLD)}')
 
       # Select line
       if state.use_unified_debugging:
@@ -810,9 +868,6 @@ def epsilon_select_new(state:MSVState,source=None):
 def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
   FL_CONST=0.25
   start_time=time.time()
-  def normalize_one(score:float):
-    # return (score-state.min_prophet_score)/(state.max_prophet_score-state.min_prophet_score)
-    return abs(state.min_prophet_score)+score+0.0001
 
   for element in elements:
     element_type=type(elements[element])
@@ -1739,7 +1794,10 @@ def select_patch_tbar_mode(state: MSVState) -> TbarPatchInfo:
   elif state.mode == MSVMode.seapr:
     return select_patch_tbar_seapr(state)
   else:
-    return select_patch_tbar_guided(state)
+    if use_stochastic(state): 
+      return select_patch_tbar_guided(state)
+    else:
+      return select_patch_tbar(state)
 
 def select_patch_tbar(state: MSVState) -> TbarPatchInfo:
   loc = state.patch_ranking.pop(0)
@@ -2058,7 +2116,10 @@ def select_patch_recoder_mode(state: MSVState) -> RecoderPatchInfo:
   elif state.mode == MSVMode.seapr:
     return select_patch_recoder_seapr(state)
   else:
-    return select_patch_recoder_guided(state)
+    if use_stochastic(state):
+      return select_patch_recoder_guided(state)
+    else:
+      return select_patch_recoder(state)
 
 def select_patch_recoder(state: MSVState) -> RecoderPatchInfo:
   p = state.patch_ranking.pop(0)
@@ -2112,6 +2173,7 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
   
   if state.total_basic_patch == 0 or state.not_use_guided_search:
     selected_switch_info = epsilon_search(state)
+    state.patch_ranking.remove(selected_switch_info.to_str())
     result = RecoderPatchInfo(selected_switch_info)
     return result
   
@@ -2206,6 +2268,7 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
   del c_map[PT.fl] # No fl below line
   
   selected_case_info: RecoderCaseInfo = epsilon_select(state, selected_line_info)
+  state.patch_ranking.remove(selected_case_info.to_str())
   result = RecoderPatchInfo(selected_case_info)
   return result
   for file_name in state.file_info_map:
