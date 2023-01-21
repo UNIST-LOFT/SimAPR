@@ -1,0 +1,10 @@
+category,number,ratio_total,ratio_compilable,ratio_match
+compilable,48578,44.4101110755588,,
+HQ_method_match,389,0.36,0.8,20.86
+HQ_method_mismatch,1476,1.35,3.04,79.14
+HQ_template_match,59,0.05,0.12,3.16
+HQ_template_mismatch,1806,1.65,3.72,96.84
+LQ_method_match,7978,7.29,16.42,17.08
+LQ_method_mismatch,38735,35.41,79.74,82.92
+LQ_template_match,118,0.11,0.24,0.25
+LQ_template_mismatch,46595,42.6,95.92,99.75
