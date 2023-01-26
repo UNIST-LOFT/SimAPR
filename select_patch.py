@@ -1552,6 +1552,9 @@ def select_patch_seapr(state: MSVState, test: int) -> PatchInfo:
   #   case_info = target.case_map[cs]
 
   # In SPR mode, use SPR algorithm for select candidate
+  if state.bounded_seapr and not check_in_bound(state):
+    state.msv_logger.debug('Previous selection was out of bound, follow original order!')
+    return select_patch_SPR(state)
   start_time=time.time()
   if state.spr_mode:
     max_score = 0.0
@@ -1991,6 +1994,9 @@ def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
   selected_patch: TbarCaseInfo = None
   max_score = 0.0
   has_high_qual_patch = False
+  if state.bounded_seapr and not check_in_bound(state):
+    state.msv_logger.debug('Previous selection was out of bound, follow original order!')
+    return select_patch_tbar(state)
 
   def get_first_case_info(state: MSVState, func: FuncInfo) -> TbarCaseInfo:
     loc = func.case_rank_list[0]
@@ -2374,6 +2380,29 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
   result = RecoderPatchInfo(selected_case_info)
   return result  
 
+def check_in_bound(state: MSVState, bound_limit: float = 0.1) -> bool:
+  """ Check if previous patch is in bound."""
+  results = state.msv_result
+  total = len(results)
+  if total == 0:
+    return True
+  patch = results[-1]
+  conf = patch["config"][0]
+  rank = 0
+  if state.recoder_mode:
+    prev_str = f"{conf['id']}-{conf['case_id']}"
+    # prev = state.switch_case_map[prev_str]
+    rank = state.ranking_map[prev_str]
+  elif state.tbar_mode:
+    prev_str = conf['location']
+    rank = state.ranking_map[prev_str]
+  else:
+    pass
+  if rank > total * (1 + bound_limit):
+    return False
+  return True
+
+
 def select_patch_recoder_seapr(state: MSVState) -> RecoderPatchInfo:
   selected_patch: RecoderCaseInfo = None
   max_score = 0.0
@@ -2385,6 +2414,9 @@ def select_patch_recoder_seapr(state: MSVState) -> RecoderPatchInfo:
     return case_info
   patch_ranking: Dict[float,List[str]]=dict()
   start_time = time.time()
+  if state.bounded_seapr and not check_in_bound(state):
+    state.msv_logger.debug('Previous selection was out of bound, follow original order!')
+    return select_patch_recoder(state)
   if not state.use_pattern and state.seapr_layer == SeAPRMode.FUNCTION:
     state.func_list.sort(key=lambda x: max(x.fl_score_list), reverse=True)
     min_patch_rank = len(state.switch_case_map) + 1

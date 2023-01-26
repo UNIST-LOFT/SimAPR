@@ -24,7 +24,7 @@ def parse_args(argv: list) -> MSVState:
               "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern", "use-simulation-mode=",'remove-cached-file',
               "use-prophet-score", "use-fl", "use-fl-prophet-score", "watch-level=",'use-msv-ext','seapr-mode=','top-fl=','use-fixed-halflife','ignore-compile-error',
               "func-dist-mean=",'lang-model-path=','use-init-trial=','regression-mode=','finish-correct-patch','count-compile-fail','not-use-guide','not-use-epsilon','fixminer-mode','spr-mode','sampling-mode',
-              'finish-top-method','use-ud']
+              'finish-top-method','use-ud', 'bounded-seapr']
   opts, args = getopt.getopt(argv[1:], "ho:w:p:t:m:c:j:T:E:M:S:", longopts)
   state = MSVState()
   state.original_args = argv
@@ -181,6 +181,8 @@ def parse_args(argv: list) -> MSVState:
       state.sampling_mode=True
     elif o in ['--use-ud']:
       state.use_unified_debugging = True
+    elif o in ['--bounded-seapr']:
+      state.bounded_seapr = True
 
   if sub_dir != "":
     state.out_dir = os.path.join(state.out_dir, sub_dir)
@@ -399,6 +401,7 @@ def read_info_recoder(state: MSVState) -> None:
     func_info.case_rank_list.append(rank)
     case_info.patch_rank = rank_num
     rank_num += 1
+    state.ranking_map[rank] = rank_num
     if func_info not in func_rank_checker:
       func_rank_checker.add(func_info)
       func_info.func_rank = func_rank
@@ -609,6 +612,7 @@ def read_info_tbar(state: MSVState) -> None:
       loc = rank['location']
 
     state.patch_ranking.append(loc)
+    state.ranking_map[loc] = rank_num
     case_info: TbarCaseInfo = state.switch_case_map[loc]
     case_info.parent.parent.parent.case_rank_list.append(loc)
     fl_score=case_info.parent.parent.fl_score
@@ -803,6 +807,7 @@ def read_info_fixminer(state: MSVState) -> None:
       loc = rank  
     else:
       loc = rank['location']
+    state.ranking_map[loc] = rank_num
 
     state.sub_patch_ranking.append(loc)
     case_info: TbarCaseInfo = state.switch_case_map[loc]
