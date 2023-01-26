@@ -456,56 +456,18 @@ def use_stochastic(state:MSVState):
   """
   state.msv_logger.debug('Decide to use stochastic approach')
   start_time=time.time()
-
-  # Select group
-  patches:List[LineInfo]=[]
-  for score in state.score_remain_line_map:
-    for line in state.score_remain_line_map[score]:
-      patches.append(line)
-
-  scores_list=list(state.score_remain_line_map.keys())
-  max_score=max(scores_list)
-  selected_group=scores_list.index(max_score)
-  selected_score=scores_list[selected_group]
-  state.msv_logger.debug(f'Selected score: {selected_score}')
-  selected_lines:List[LineInfo]=[]
-  for line in patches:
-    if line.fl_score==selected_score:
-      selected_lines.append(line)
-  total_lines:Set[LineInfo]=set()
-  if not state.tbar_mode and not state.recoder_mode:
-    # For C
-    for i in range(len(state.c_patch_ranking[selected_score])):
-      patch=state.c_patch_ranking[selected_score][i]
-      if patch.parent.parent.parent in patches:
-        total_lines.add(selected_score)
-  else:
-    for i in range(len(state.java_patch_ranking[selected_score])):
-      patch=state.java_patch_ranking[selected_score][i]
-      if state.recoder_mode:
-        if patch.parent in patches:
-          total_lines.add(selected_score)
-      else:
-        if patch.parent.parent in patches:
-          total_lines.add(selected_score)
-
-  # Check that we should force to select first patch
-  if not state.tbar_mode and not state.recoder_mode:
-    # For C
-    total_candidates, remain_candidates=state.c_patch_ranking[selected_score],state.c_remain_patch_ranking[selected_score]  
-  else:
-    total_candidates, remain_candidates=state.java_patch_ranking[selected_score],state.java_remain_patch_ranking[selected_score]
-  cur_rank=total_candidates.index(remain_candidates[0])
-  if cur_rank==0 or cur_rank*(1.+FORCE_THRESHOLD)<(len(total_candidates)-len(remain_candidates)):
+  
+  if state.orig_rank_iter==0 or state.orig_rank_iter*(1.+FORCE_THRESHOLD)<state.iteration:
     # Force to select first patch
     state.select_time+=(time.time()-start_time)
-    state.msv_logger.debug(f'Follow original rank: {cur_rank} vs {len(total_candidates)-len(remain_candidates)}')
-    state.msv_logger.debug(f'Threshold value: {cur_rank*(1.+FORCE_THRESHOLD)}')
+    state.msv_logger.debug(f'Follow original rank: {state.orig_rank_iter} vs {state.iteration}')
+    state.msv_logger.debug(f'Threshold value: {state.orig_rank_iter*(1.+FORCE_THRESHOLD)}')
+    state.orig_rank_iter+=1
     return False
   else:
     state.select_time+=(time.time()-start_time)
-    state.msv_logger.debug(f'Use stochastic approach: {cur_rank} vs {len(total_candidates)-len(remain_candidates)}')
-    state.msv_logger.debug(f'Threshold value: {cur_rank*(1.+FORCE_THRESHOLD)}')
+    state.msv_logger.debug(f'Use stochastic approach: {state.orig_rank_iter} vs {state.iteration}')
+    state.msv_logger.debug(f'Threshold value: {state.orig_rank_iter*(1.+FORCE_THRESHOLD)}')
     return True
 
 def epsilon_search_new(state: MSVState):

@@ -1731,6 +1731,7 @@ class MSVState:
     self.total_passed_patch=0
     self.total_plausible_patch=0
     self.iteration=0
+    self.orig_rank_iter=0
     self.use_partial_validation = True
     self.max_initial_trial = 0
     self.c_map = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.0}
