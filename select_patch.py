@@ -1767,6 +1767,7 @@ def select_patch_tbar_mode(state: MSVState) -> TbarPatchInfo:
 def select_patch_tbar(state: MSVState) -> TbarPatchInfo:
   loc = state.patch_ranking.pop(0)
   caseinfo = state.switch_case_map[loc]
+  caseinfo.parent.parent.parent.case_rank_list.pop(0)
   return TbarPatchInfo(caseinfo)
 
 def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
@@ -2092,6 +2093,8 @@ def select_patch_recoder_mode(state: MSVState) -> RecoderPatchInfo:
 def select_patch_recoder(state: MSVState) -> RecoderPatchInfo:
   p = state.patch_ranking.pop(0)
   caseinfo = state.switch_case_map[p]
+  if not state.use_pattern and state.seapr_layer == SeAPRMode.FUNCTION:
+    caseinfo.parent.parent.case_rank_list.pop(0)
   return RecoderPatchInfo(caseinfo)
 
 def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
