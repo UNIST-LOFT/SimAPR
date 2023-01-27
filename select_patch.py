@@ -454,19 +454,21 @@ def use_stochastic(state:MSVState):
   """
     Decide to use stochastic search or follow original tool
   """
-  state.msv_logger.debug('Decide to use stochastic approach')
+  state.msv_logger.debug('Decide approach')
   start_time=time.time()
   
-  if state.orig_rank_iter==0 or state.orig_rank_iter*(1.+FORCE_THRESHOLD)<state.iteration:
+  if state.orig_rank_iter==0 or state.orig_rank_iter*(1.+FORCE_THRESHOLD)<state.iteration+1:
     # Force to select first patch
     state.select_time+=(time.time()-start_time)
-    state.msv_logger.debug(f'Follow original rank: {state.orig_rank_iter} vs {state.iteration}')
+    state.msv_logger.debug('Force to use original rank')
+    state.msv_logger.debug(f'Follow original rank: {state.orig_rank_iter} vs {state.iteration+1}')
     state.msv_logger.debug(f'Threshold value: {state.orig_rank_iter*(1.+FORCE_THRESHOLD)}')
     state.orig_rank_iter+=1
     return False
   else:
     state.select_time+=(time.time()-start_time)
-    state.msv_logger.debug(f'Use stochastic approach: {state.orig_rank_iter} vs {state.iteration}')
+    state.msv_logger.debug('Use stochastic approach')
+    state.msv_logger.debug(f'Use stochastic approach: {state.orig_rank_iter} vs {state.iteration+1}')
     state.msv_logger.debug(f'Threshold value: {state.orig_rank_iter*(1.+FORCE_THRESHOLD)}')
     return True
 
