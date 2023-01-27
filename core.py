@@ -1741,6 +1741,7 @@ class MSVState:
     self.use_msv_ext=False
     self.tbar_mode = False
     self.recoder_mode = False
+    self.prapr_mode=False
     self.use_exp_alpha = False
     self.run_all_test=False
     self.regression_php_mode=''

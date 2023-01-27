@@ -32,7 +32,7 @@ def weighted_harmonic_mean(a: float, b: float, weight_a: int=1, weight_b: int=10
   return ((weight_a*(a**-1)+weight_b*(b**-1))/(weight_a+weight_b))**-1
 
 def get_static_score(state:MSVState,element):
-  if state.tbar_mode or state.recoder_mode:
+  if state.tbar_mode or state.recoder_mode or state.prapr_mode:
     if type(element)==FileInfo or type(element)==FuncInfo:
       return max(element.fl_score_list)
     elif type(element)==LineInfo:
@@ -163,7 +163,7 @@ def epsilon_search(state:MSVState):
 
   start_time=time.time()
   # Get all top fl patches
-  if state.tbar_mode or state.recoder_mode:
+  if state.tbar_mode or state.recoder_mode or state.prapr_mode:
     cur_list=state.java_patch_ranking
     cur_remain_list=state.java_remain_patch_ranking
   else:
@@ -174,14 +174,14 @@ def epsilon_search(state:MSVState):
   for i,score in enumerate(cur_remain_list_sorted):
     normalized=normalized_score[i]
     if len(cur_remain_list[score])>0 and cur_score==-100.:
-      if state.tbar_mode or state.recoder_mode:
+      if state.tbar_mode or state.recoder_mode or state.prapr_mode:
         cur_score=score
       else:
         cur_score=normalized
       top_fl_patches+=cur_remain_list[score]
       top_all_patches+=cur_list[score]
       break
-    elif (cur_score > -100.0) and ((cur_score - (score if state.tbar_mode or state.recoder_mode else normalized)) < (cur_score * EPSILON_THRESHOLD)):
+    elif (cur_score > -100.0) and ((cur_score - (score if state.tbar_mode or state.recoder_mode or state.prapr_mode else normalized)) < (cur_score * EPSILON_THRESHOLD)):
       top_fl_patches+=cur_remain_list[score]
       top_all_patches+=cur_list[score]
 
@@ -211,7 +211,7 @@ def epsilon_search(state:MSVState):
         if case_info.parent not in lines:
           if state.recoder_mode:
             lines.add(case_info.parent)
-          elif state.tbar_mode:
+          elif state.tbar_mode or state.prapr_mode:
             lines.add(case_info.parent.parent)
           else:
             lines.add(case_info.parent.parent.parent)
@@ -221,7 +221,7 @@ def epsilon_search(state:MSVState):
       case_info_list=[]
       if state.recoder_mode:
         case_info_list = list(line_info.recoder_case_info_map.values())
-      elif state.tbar_mode:
+      elif state.tbar_mode or state.prapr_mode:
         for case_info in top_fl_patches:
           if case_info.parent.parent==line_info:
             case_info_list.append(case_info)
@@ -281,7 +281,7 @@ def epsilon_select(state:MSVState,source=None):
   start_time=time.time()
   # Get all top fl patches
   if source is None:
-    if state.tbar_mode or state.recoder_mode:
+    if state.tbar_mode or state.recoder_mode or state.prapr_mode:
       cur_list=state.java_patch_ranking
       cur_remain_list=state.java_remain_patch_ranking
     else:
@@ -292,14 +292,14 @@ def epsilon_select(state:MSVState,source=None):
     for i,score in enumerate(cur_remain_list_sorted):
       normalized=normalized_score[i]
       if len(cur_remain_list[score])>0 and cur_score==-100.:
-        if state.tbar_mode or state.recoder_mode:
+        if state.tbar_mode or state.recoder_mode or state.prapr_mode:
           cur_score=score
         else:
           cur_score=normalized
         top_fl_patches+=cur_remain_list[score]
         top_all_patches+=cur_list[score]
         break
-      elif (cur_score > -100.0) and ((cur_score - (score if state.tbar_mode or state.recoder_mode else normalized)) < (cur_score * EPSILON_THRESHOLD)):
+      elif (cur_score > -100.0) and ((cur_score - (score if state.tbar_mode or state.recoder_mode or state.prapr_mode else normalized)) < (cur_score * EPSILON_THRESHOLD)):
         top_fl_patches += cur_remain_list[score]
         top_all_patches += cur_list[score]
   else:
@@ -308,14 +308,14 @@ def epsilon_select(state:MSVState,source=None):
     for i,score in enumerate(cur_remain_list_sorted):
       normalized=normalized_score[i]
       if len(source.remain_patches_by_score[score])>0 and cur_score==-100.:
-        if state.tbar_mode or state.recoder_mode:
+        if state.tbar_mode or state.recoder_mode or state.prapr_mode:
           cur_score=score
         else:
           cur_score=normalized
         top_fl_patches+=source.remain_patches_by_score[score]
         top_all_patches+=source.patches_by_score[score]
         break
-      elif (cur_score > -100.0) and ((cur_score - (score if state.tbar_mode or state.recoder_mode else normalized)) < (cur_score * EPSILON_THRESHOLD)):
+      elif (cur_score > -100.0) and ((cur_score - (score if state.tbar_mode or state.recoder_mode or state.prapr_mode else normalized)) < (cur_score * EPSILON_THRESHOLD)):
         top_fl_patches += source.remain_patches_by_score[score]
         top_all_patches += source.patches_by_score[score]
   
@@ -334,7 +334,7 @@ def epsilon_select(state:MSVState,source=None):
     # Get all top scored data in source
     cur_fl_patches=top_fl_patches
     for case_info in cur_fl_patches:
-      if state.tbar_mode:
+      if state.tbar_mode or state.prapr_mode:
         # For java
         if source is None:
           if case_info.parent.parent.parent.parent in state.file_info_map.values():
@@ -400,7 +400,7 @@ def epsilon_select(state:MSVState,source=None):
     state.msv_logger.debug(f'Use original order, epsilon: {epsilon}')
     cur_fl_patches=top_fl_patches
     state.select_time+=time.time()-start_time
-    if state.tbar_mode:
+    if state.tbar_mode or state.prapr_mode:
       # For java
       if source is None:
         return cur_fl_patches[0].parent.parent.parent.parent
@@ -496,7 +496,7 @@ def epsilon_search_new(state: MSVState):
     if line.fl_score==selected_score:
       selected_lines.append(line)
   total_lines:Set[LineInfo]=set()
-  if not state.tbar_mode and not state.recoder_mode:
+  if not state.tbar_mode and not state.recoder_mode and not state.prapr_mode:
     # For C
     for i in range(len(state.c_patch_ranking[selected_score])):
       patch=state.c_patch_ranking[selected_score][i]
@@ -560,7 +560,7 @@ def epsilon_search_new(state: MSVState):
     
   # Choose actual patch from the selected line
   total_patches=[]
-  if not state.tbar_mode and not state.recoder_mode:
+  if not state.tbar_mode and not state.recoder_mode and not state.prapr_mode:
     # For C
     for patch in state.c_patch_ranking[selected_score]:
       if patch.parent.parent.parent==selected_line:
@@ -637,7 +637,7 @@ def epsilon_select_new(state:MSVState,source=None):
         if line.fl_score==selected_score:
           selected_lines.append(line)
       total_lines:Set[LineInfo]=set()
-      if not state.tbar_mode and not state.recoder_mode:
+      if not state.tbar_mode and not state.recoder_mode and not state.prapr_mode:
         # For C
         for i in range(len(state.c_patch_ranking[selected_score])):
           patch=state.c_patch_ranking[selected_score][i]
@@ -736,7 +736,7 @@ def epsilon_select_new(state:MSVState,source=None):
         
       # Choose actual patch from the selected line
       total_patches=[]
-      if not state.tbar_mode and not state.recoder_mode:
+      if not state.tbar_mode and not state.recoder_mode and not state.prapr_mode:
         # For C
         for patch in state.c_patch_ranking[selected_score]:
           if patch.parent.parent.parent==selected_line and patch.parent.parent.parent in target_lines:
@@ -836,7 +836,7 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
   selected=[]
   p_p=[]
   p_b=[]
-  if state.tbar_mode or state.recoder_mode:
+  if state.tbar_mode or state.recoder_mode or state.prapr_mode:
     min_score=min(state.java_remain_patch_ranking.keys())
   else:
     min_score=min(state.c_remain_patch_ranking.keys())
@@ -875,8 +875,8 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
         state.msv_logger.debug(f'Try plausible patch with a: {selected[max_index].positive_pf.pass_count}, b: {selected[max_index].positive_pf.fail_count}')
         freq=selected[max_index].children_plausible_patches/state.total_plausible_patch if state.total_plausible_patch > 0 else 0.
         bp_freq=selected[max_index].consecutive_fail_plausible_count
-        cur_score=get_static_score(state,selected[max_index]) if state.tbar_mode or state.recoder_mode or state.spr_mode else PassFail.normalize(scores)[max_index]
-        prev_score=state.previous_score if state.tbar_mode or state.recoder_mode or state.spr_mode else PassFail.normalize(scores)[-1]
+        cur_score=get_static_score(state,selected[max_index]) if state.tbar_mode or state.recoder_mode or state.spr_mode or state.prapr_mode else PassFail.normalize(scores)[max_index]
+        prev_score=state.previous_score if state.tbar_mode or state.recoder_mode or state.spr_mode or state.prapr_mode else PassFail.normalize(scores)[-1]
         score_rate=min(cur_score/prev_score,1.) if prev_score!=0. else 0.
         if random.random()< (weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq))*(score_rate*FL_CONST if score_rate!=1.0 else 1.0)):
           state.msv_logger.debug(f'Use guidance with plausible patch: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}, {cur_score}/{prev_score}')
@@ -910,8 +910,8 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
         state.msv_logger.debug(f'Try basic patch with a: {selected[max_index].pf.pass_count}, b: {selected[max_index].pf.fail_count}')
         freq=selected[max_index].children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0.
         bp_freq=selected[max_index].consecutive_fail_count
-        cur_score=get_static_score(state,selected[max_index]) if state.tbar_mode or state.recoder_mode or state.spr_mode else PassFail.normalize(scores)[max_index]
-        prev_score=state.previous_score if state.tbar_mode or state.recoder_mode or state.spr_mode else PassFail.normalize(scores)[-1]
+        cur_score=get_static_score(state,selected[max_index]) if state.tbar_mode or state.recoder_mode or state.spr_mode or state.prapr_mode else PassFail.normalize(scores)[max_index]
+        prev_score=state.previous_score if state.tbar_mode or state.recoder_mode or state.spr_mode or state.prapr_mode else PassFail.normalize(scores)[-1]
         score_rate=min(cur_score/prev_score,1.) if prev_score!=0. else 0.
         if random.random()< (weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq))*(score_rate*FL_CONST if score_rate!=1.0 else 1.0)):
           state.msv_logger.debug(f'Use guidance with basic patch: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}, {cur_score}/{prev_score}')
@@ -2358,7 +2358,7 @@ def check_in_bound(state: MSVState, bound_limit: float = 0.1) -> bool:
     prev_str = f"{conf['id']}-{conf['case_id']}"
     # prev = state.switch_case_map[prev_str]
     rank = state.ranking_map[prev_str]
-  elif state.tbar_mode:
+  elif state.tbar_mode or state.prapr_mode:
     prev_str = conf['location']
     rank = state.ranking_map[prev_str]
   else:
