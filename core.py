@@ -1663,7 +1663,9 @@ class MSVState:
   recoder_mode: bool
   use_exp_alpha: bool
   patch_ranking: List[str]
+  ranking_map: Dict[str, int]
   total_basic_patch: int
+  bounded_seapr: bool
   def __init__(self) -> None:
     self.msv_version = "1.0.0"
     self.mode = MSVMode.guided
@@ -1739,6 +1741,7 @@ class MSVState:
     self.use_msv_ext=False
     self.tbar_mode = False
     self.recoder_mode = False
+    self.prapr_mode=False
     self.use_exp_alpha = False
     self.run_all_test=False
     self.regression_php_mode=''
@@ -1761,6 +1764,8 @@ class MSVState:
 
     self.seapr_remain_cases:List[CaseInfo]=[]
     self.seapr_layer:SeAPRMode=SeAPRMode.FUNCTION
+    self.bounded_seapr = False
+    self.ranking_map = dict()
 
     self.c_patch_ranking:Dict[float,List[CaseInfo]]=dict()
     self.c_remain_patch_ranking:Dict[float,List[CaseInfo]]=dict()

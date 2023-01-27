@@ -14,7 +14,7 @@ import shutil
 
 from core import *
 
-from msv import MSV, MSVTbar, MSVRecoder
+from msv import MSV, MSVTbar, MSVRecoder, MSVPraPR
 import add_sim_score
 
 def parse_args(argv: list) -> MSVState:
@@ -24,7 +24,7 @@ def parse_args(argv: list) -> MSVState:
               "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern", "use-simulation-mode=",'remove-cached-file',
               "use-prophet-score", "use-fl", "use-fl-prophet-score", "watch-level=",'use-msv-ext','seapr-mode=','top-fl=','use-fixed-halflife','ignore-compile-error',
               "func-dist-mean=",'lang-model-path=','use-init-trial=','regression-mode=','finish-correct-patch','count-compile-fail','not-use-guide','not-use-epsilon','fixminer-mode','spr-mode','sampling-mode',
-              'finish-top-method','use-ud']
+              'finish-top-method','use-ud', 'bounded-seapr','prapr-mode']
   opts, args = getopt.getopt(argv[1:], "ho:w:p:t:m:c:j:T:E:M:S:", longopts)
   state = MSVState()
   state.original_args = argv
@@ -153,6 +153,8 @@ def parse_args(argv: list) -> MSVState:
       state.tbar_mode = True
     elif o in ['--recoder-mode']:
       state.recoder_mode = True
+    elif o in ['--prapr-mode']:
+      state.prapr_mode=True
     elif o in ['--seed']:
       random.seed(int(a))
       np.random.seed(int(a))
@@ -181,6 +183,8 @@ def parse_args(argv: list) -> MSVState:
       state.sampling_mode=True
     elif o in ['--use-ud']:
       state.use_unified_debugging = True
+    elif o in ['--bounded-seapr']:
+      state.bounded_seapr = True
 
   if sub_dir != "":
     state.out_dir = os.path.join(state.out_dir, sub_dir)
@@ -399,6 +403,7 @@ def read_info_recoder(state: MSVState) -> None:
     func_info.case_rank_list.append(rank)
     case_info.patch_rank = rank_num
     rank_num += 1
+    state.ranking_map[rank] = rank_num
     if func_info not in func_rank_checker:
       func_rank_checker.add(func_info)
       func_info.func_rank = func_rank
@@ -609,6 +614,7 @@ def read_info_tbar(state: MSVState) -> None:
       loc = rank['location']
 
     state.patch_ranking.append(loc)
+    state.ranking_map[loc] = rank_num
     case_info: TbarCaseInfo = state.switch_case_map[loc]
     case_info.parent.parent.parent.case_rank_list.append(loc)
     fl_score=case_info.parent.parent.fl_score
@@ -803,6 +809,7 @@ def read_info_fixminer(state: MSVState) -> None:
       loc = rank  
     else:
       loc = rank['location']
+    state.ranking_map[loc] = rank_num
 
     state.sub_patch_ranking.append(loc)
     case_info: TbarCaseInfo = state.switch_case_map[loc]
@@ -860,6 +867,187 @@ def read_info_fixminer(state: MSVState) -> None:
   # temp_tbar_case = TbarCaseInfo(temp_tbar_type, "original", 0, 0)
   # state.switch_case_map["original"] = temp_tbar_case
   # state.patch_location_map["original"] = temp_tbar_case
+
+def read_info_prapr(state: MSVState) -> None:
+  with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
+    info = json.load(f)
+    state.d4j_negative_test = []  # PraPR do not need test list
+    state.d4j_positive_test = []
+    state.d4j_failed_passing_tests = set()
+    # Read priority (for FL score)
+    priority_info=dict()
+    for priority in info['priority']:
+      temp_file: str = priority["file"]
+      temp_line: int = priority["line"]
+      score: float = priority["fl_score"]
+      store = (temp_file, temp_line, score)
+      state.priority_list.append(store)
+      priority_info[(temp_file, temp_line)]=score
+
+    # Read rules to build patch tree structure
+    file_map = state.file_info_map
+    ff_map: Dict[str, Dict[str, Tuple[int, int]]] = dict()
+    check_func: Set[FuncInfo] = set()
+
+    for file in info['rules']:  # file: dict[str, Method]
+      if len(file) == 0:
+        continue
+      file_info = FileInfo(file)
+      file_name = file
+      file_map[file] = file_info
+      for method in info['rules'][file]['methods']:  # method: dict[str, Line]
+        func_info = None
+        line_info = None
+        if len(method) == 0:
+          continue
+        func_info=FuncInfo(file_info, method, 0, 0)
+        file_info.func_info_map[func_info.id] = func_info
+        state.total_methods+=1
+        for line in info['rules'][file]['methods'][method]['lines']:  # line: dict[int, Template]
+          if len(line)==0:
+            continue
+          line_info = LineInfo(func_info, int(line))
+          func_info.line_info_map[line_info.uuid] = line_info
+
+          state.line_list.append(line_info)
+          if func_info not in check_func:
+            check_func.add(func_info)
+            state.func_list.append(func_info)
+          line_info.fl_score = priority_info[(file_info.file_name, line_info.line_number)]
+          func_info.fl_score_list.append(line_info.fl_score)
+          file_info.fl_score_list.append(line_info.fl_score)
+          if line_info.fl_score not in state.score_remain_line_map:
+            state.score_remain_line_map[line_info.fl_score]=[]
+          state.score_remain_line_map[line_info.fl_score].append(line_info)
+          if line_info.fl_score not in file_info.remain_lines_by_score:
+            file_info.remain_lines_by_score[line_info.fl_score]=[]
+          file_info.remain_lines_by_score[line_info.fl_score].append(line_info)
+          if line_info.fl_score not in func_info.remain_lines_by_score:
+            func_info.remain_lines_by_score[line_info.fl_score]=[]
+          func_info.remain_lines_by_score[line_info.fl_score].append(line_info)
+
+          file_line = FileLine(file_info, line_info, priority_info[(file_info.file_name, line_info.line_number)])
+          state.priority_map[f"{file_info.file_name}:{line_info.line_number}"] = file_line
+
+          for template in info['rules'][file]['methods'][method]['lines'][line]['templates']:  # template: dict[str, patches]
+            # fl_score = sw["score"]
+            line_info.tbar_type_info_map[template] = TbarTypeInfo(line_info, template)
+            tbar_type_info = line_info.tbar_type_info_map[template]
+
+            for patch in info['rules'][file]['methods'][method]['lines'][line]['templates'][template]['patches']:  # patch: list[str]
+              tbar_case_info = TbarCaseInfo(tbar_type_info, patch, 0, 0)
+              tbar_type_info.tbar_case_info_map[patch] = tbar_case_info
+              state.switch_case_map[patch] = tbar_case_info
+              state.patch_location_map[patch] = tbar_case_info
+              tbar_case_info.total_case_info+=1
+              tbar_type_info.total_case_info += 1
+              line_info.total_case_info += 1
+              func_info.total_case_info += 1
+              file_info.total_case_info += 1
+              if line_info.fl_score not in func_info.total_patches_by_score:
+                func_info.total_patches_by_score[line_info.fl_score]=0
+                func_info.searched_patches_by_score[line_info.fl_score]=0
+              func_info.total_patches_by_score[line_info.fl_score]+=1
+
+            # Remove empty nodes
+            if len(tbar_type_info.tbar_case_info_map)==0:
+              del line_info.tbar_type_info_map[template]
+              if len(func_info.line_info_map)==0:
+                del func_info.line_info_map[line_info.uuid]
+                state.score_remain_line_map[line_info.fl_score].remove(line_info)
+                if len(state.score_remain_line_map[line_info.fl_score])==0:
+                  state.score_remain_line_map.pop(line_info.fl_score)
+                func_info.remain_lines_by_score[line_info.fl_score].remove(line_info)
+                if len(func_info.remain_lines_by_score[line_info.fl_score])==0:
+                  func_info.remain_lines_by_score.pop(line_info.fl_score)
+                file_info.remain_lines_by_score[line_info.fl_score].remove(line_info)
+                if len(file_info.remain_lines_by_score[line_info.fl_score])==0:
+                  file_info.remain_lines_by_score.pop(line_info.fl_score)
+        for func in file_info.func_info_map.copy().values():
+          if len(func.line_info_map)==0:
+            del file_info.func_info_map[func.id]
+            state.total_methods-=1
+        if len(file_info.func_info_map)==0:
+          del state.file_info_map[file_info.file_name]
+
+  state.d4j_buggy_project = info["project_name"]
+  # Read ranking
+  rank_num = 0
+  ranking = info['ranking']
+  func_rank = 0
+  for rank in ranking:
+    rank_num += 1
+    loc = ""
+    if isinstance(rank, str):
+      loc = rank  
+    else:
+      loc = rank['location']
+
+    state.patch_ranking.append(loc)
+    state.ranking_map[loc] = rank_num
+    case_info: TbarCaseInfo = state.switch_case_map[loc]
+    case_info.parent.parent.parent.case_rank_list.append(loc)
+    fl_score=case_info.parent.parent.fl_score
+    if fl_score not in state.java_patch_ranking:
+      state.java_patch_ranking[fl_score] = []
+      state.java_remain_patch_ranking[fl_score] = []
+    state.java_patch_ranking[fl_score].append(case_info)
+    state.java_remain_patch_ranking[fl_score].append(case_info)
+    
+    if fl_score not in case_info.parent.patches_by_score:
+      case_info.parent.patches_by_score[fl_score] = []
+      case_info.parent.remain_patches_by_score[fl_score]=[]
+    case_info.parent.patches_by_score[fl_score].append(case_info)
+    case_info.parent.remain_patches_by_score[fl_score].append(case_info)
+
+    if fl_score not in case_info.parent.parent.patches_by_score:
+      case_info.parent.parent.patches_by_score[fl_score] = []
+      case_info.parent.parent.remain_patches_by_score[fl_score]=[]
+    case_info.parent.parent.patches_by_score[fl_score].append(case_info)
+    case_info.parent.parent.remain_patches_by_score[fl_score].append(case_info)
+
+    if fl_score not in case_info.parent.parent.parent.patches_by_score:
+      case_info.parent.parent.parent.patches_by_score[fl_score] = []
+      case_info.parent.parent.parent.remain_patches_by_score[fl_score]=[]
+    case_info.parent.parent.parent.patches_by_score[fl_score].append(case_info)
+    case_info.parent.parent.parent.remain_patches_by_score[fl_score].append(case_info)
+
+    if fl_score not in case_info.parent.parent.parent.parent.patches_by_score:
+      case_info.parent.parent.parent.parent.patches_by_score[fl_score] = []
+      case_info.parent.parent.parent.parent.remain_patches_by_score[fl_score]=[]
+    case_info.parent.parent.parent.parent.patches_by_score[fl_score].append(case_info)
+    case_info.parent.parent.parent.parent.remain_patches_by_score[fl_score].append(case_info)
+
+    case_info.patch_rank = rank_num
+    func_info = case_info.parent.parent.parent
+    if func_info.func_rank == -1:
+      func_info.func_rank = func_rank
+      func_rank += 1
+
+  patch_ranking_list=[]
+  for fl_score in state.java_patch_ranking:
+    if len(state.java_patch_ranking[fl_score])>0:
+      patch_ranking_list.append(len(state.java_patch_ranking[fl_score]))
+  state.max_epsilon_group_size=mean(patch_ranking_list)*2
+  state.msv_logger.debug(f'Set maximum epsilon group size to {state.max_epsilon_group_size}')
+
+  #Add original to switch_case_map
+  temp_file: FileInfo = FileInfo('original')
+  temp_func = FuncInfo(temp_file, "original_fn", 0, 0)
+  temp_file.func_info_map["original_fn:0-0"] = temp_func
+  temp_line: LineInfo = LineInfo(temp_func, 0)
+  # temp_file.line_info_list.append(temp_line)
+  temp_tbar_type = TbarTypeInfo(temp_line, "original_mut")
+  temp_tbar_case = TbarCaseInfo(temp_tbar_type, "original", 0, 0)
+  state.switch_case_map["original"] = temp_tbar_case
+  state.patch_location_map["original"] = temp_tbar_case
+  if state.use_simulation_mode:
+    if os.path.exists(state.prev_data):
+      with open(state.prev_data, "r") as f:
+        prev_info = json.load(f)
+        for key in prev_info:
+          data=prev_info[key]
+          state.simulation_data[key] = data
 
 def trim_with_watch_level(state: MSVState, watch_level: str, correct_str: str) -> None:
   correct_case = state.correct_case_info
@@ -936,7 +1124,6 @@ def trim_with_watch_level(state: MSVState, watch_level: str, correct_str: str) -
 def read_info(state: MSVState) -> None:
   with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
     info = json.load(f)
-    read_var_count(state,info['sizes'])
     check_func = set()
 
     def get_score(file, line, max_sec_score_map):
@@ -1389,6 +1576,10 @@ def main(argv: list):
     read_info_recoder(state)
     state.msv_logger.info('Recoder mode: Initialized!')
     msv = MSVRecoder(state)
+  elif state.prapr_mode:
+    read_info_prapr(state)
+    state.msv_logger.info('PraPR mode: Initialized!')
+    msv = MSVPraPR(state)
   else:
     read_info(state)
     read_fl_score(state)

@@ -694,3 +694,72 @@ class MSVRecoder(MSVTbar):
         self.state.iteration += 1
       result_handler.append_result(self.state, [patch], pass_exists, pass_result, result, is_compilable,fail_time,pass_time)
       result_handler.remove_patch_recoder(self.state, patch)
+
+class MSVPraPR(MSV):
+  def _is_method_over(self) -> bool:
+    """Check the ranks of every remaining methods are over then 30"""
+    if not self.state.finish_top_method: return False
+    
+    min_method_rank=10000 # Some large rank
+    for p in self.state.patch_ranking:
+      if self.state.switch_case_map[p].parent.parent.parent.func_rank < min_method_rank:
+        min_method_rank=self.state.switch_case_map[p].parent.parent.parent.func_rank
+    
+    return min_method_rank>30
+
+  def is_alive(self) -> bool:
+    if len(self.state.file_info_map) == 0:
+      self.state.is_alive = False
+    if self.state.cycle_limit > 0 and self.state.iteration >= self.state.cycle_limit:
+      self.state.is_alive = False
+    elif self.state.time_limit > 0 and (self.state.select_time+self.state.test_time) > self.state.time_limit:
+      self.state.is_alive = False
+    elif len(self.state.patch_ranking) == 0:
+      self.state.is_alive = False
+    elif self.state.finish_at_correct_patch and self.patch_str in self.state.correct_patch_str:
+      self.state.is_alive = False
+    elif self._is_method_over():
+      self.state.is_alive=False
+    return self.state.is_alive
+  def save_result(self) -> None:
+    # TODO change
+    result_handler.save_result(self.state)
+  def run(self) -> None:
+    assert self.state.use_simulation_mode,'PraPR needs cache files always'
+    self.run_sim()
+  
+  def run_sim(self) -> None:
+    self.state.start_time = time.time()
+    self.state.cycle = 0
+    while(self.is_alive()):
+      self.state.msv_logger.info(f'[{self.state.cycle}]: executing')
+      patch = select_patch.select_patch_tbar_mode(self.state)
+      self.patch_str=patch.tbar_case_info.location
+      self.state.msv_logger.info(f"Patch: {patch.tbar_case_info.location}")
+      self.state.msv_logger.info(f"{patch.file_info.file_name}${patch.func_info.id}${patch.line_info.line_number}")
+      pass_exists = False
+      result = True
+      pass_result = False
+      is_compilable = True
+      pass_time=0
+      key = patch.tbar_case_info.location
+
+      msv_result = self.state.simulation_data[key]
+      pass_exists = msv_result['basic']
+      result = msv_result['pass_all_fail']
+      pass_result = msv_result['plausible']
+      fail_time=msv_result['fail_time']
+      self.state.test_time+=fail_time
+      self.state.test_time+=pass_time
+      pass_time=msv_result['pass_time']
+      is_compilable=msv_result['compilable']
+      if is_compilable or self.state.ignore_compile_error:
+        result_handler.update_result_tbar(self.state, patch, pass_exists)
+        if result:
+          result_handler.update_positive_result_tbar(self.state, patch, pass_result)
+      if is_compilable or self.state.count_compile_fail:
+        self.state.iteration += 1
+      if self.state.use_unified_debugging and is_compilable:
+        ud.update_ud_tbar(self.state, patch, pass_exists, pass_result)
+      result_handler.append_result(self.state, [patch], pass_exists, pass_result, result, is_compilable,fail_time,pass_time)
+      result_handler.remove_patch_tbar(self.state, patch)

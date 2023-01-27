@@ -317,7 +317,7 @@ def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result:
   state.msv_result.append(obj)
   state.used_patch.append(result)
 
-  if state.use_simulation_mode:
+  if state.use_simulation_mode and not state.prapr_mode:
     # Cache test result if option used
     for patch in selected_patch:
       if state.tbar_mode or state.recoder_mode:
