@@ -499,7 +499,7 @@ def epsilon_search_new(state: MSVState):
       if line.fl_score==selected_score:
         selected_lines.append(line)
     total_lines:Set[LineInfo]=set()
-    if not state.tbar_mode and not state.recoder_mode:
+    if not state.tbar_mode and not state.recoder_mode and not state.prapr_mode:
       # For C
       for i in range(len(state.c_patch_ranking[selected_score])):
         patch=state.c_patch_ranking[selected_score][i]
@@ -604,7 +604,7 @@ def epsilon_select_new(state:MSVState,source=None):
           if line.fl_score==selected_score:
             selected_lines.append(line)
         total_lines:Set[LineInfo]=set()
-        if not state.tbar_mode and not state.recoder_mode:
+        if not state.tbar_mode and not state.recoder_mode and not state.prapr_mode:
           # For C
           for i in range(len(state.c_patch_ranking[selected_score])):
             patch=state.c_patch_ranking[selected_score][i]
