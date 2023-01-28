@@ -469,6 +469,17 @@ def read_info_tbar(state: MSVState) -> None:
     state.d4j_negative_test = info["failing_test_cases"]
     state.d4j_positive_test = info["passing_test_cases"]
     state.d4j_failed_passing_tests = set(info["failed_passing_tests"])
+
+    rank_list=[]
+    ranking = info['ranking']
+    for rank in ranking:
+      loc = ""
+      if isinstance(rank, str):
+        loc = rank  
+      else:
+        loc = rank['location']
+      rank_list.append(loc)
+
     # Read priority (for FL score)
     # n = len(info['priority'])
     # for priority in info['priority']:
@@ -566,12 +577,46 @@ def read_info_tbar(state: MSVState) -> None:
             start = 0
             end = 0
           location = sw["location"]
+          if location not in rank_list:
+            continue
           # fl_score = sw["score"]
           if mut not in line_info.tbar_type_info_map:
             line_info.tbar_type_info_map[mut] = TbarTypeInfo(line_info, mut)
           tbar_type_info = line_info.tbar_type_info_map[mut]
           tbar_case_info = TbarCaseInfo(tbar_type_info, location, start, end)
           tbar_type_info.tbar_case_info_map[location] = tbar_case_info
+
+          fl_score=tbar_case_info.parent.parent.fl_score
+          if fl_score not in state.java_patch_ranking:
+            state.java_patch_ranking[fl_score] = []
+            state.java_remain_patch_ranking[fl_score] = []
+          state.java_patch_ranking[fl_score].append(tbar_case_info)
+          state.java_remain_patch_ranking[fl_score].append(tbar_case_info)
+          
+          if fl_score not in tbar_case_info.parent.patches_by_score:
+            tbar_case_info.parent.patches_by_score[fl_score] = []
+            tbar_case_info.parent.remain_patches_by_score[fl_score]=[]
+          tbar_case_info.parent.patches_by_score[fl_score].append(tbar_case_info)
+          tbar_case_info.parent.remain_patches_by_score[fl_score].append(tbar_case_info)
+
+          if fl_score not in tbar_case_info.parent.parent.patches_by_score:
+            tbar_case_info.parent.parent.patches_by_score[fl_score] = []
+            tbar_case_info.parent.parent.remain_patches_by_score[fl_score]=[]
+          tbar_case_info.parent.parent.patches_by_score[fl_score].append(tbar_case_info)
+          tbar_case_info.parent.parent.remain_patches_by_score[fl_score].append(tbar_case_info)
+
+          if fl_score not in tbar_case_info.parent.parent.parent.patches_by_score:
+            tbar_case_info.parent.parent.parent.patches_by_score[fl_score] = []
+            tbar_case_info.parent.parent.parent.remain_patches_by_score[fl_score]=[]
+          tbar_case_info.parent.parent.parent.patches_by_score[fl_score].append(tbar_case_info)
+          tbar_case_info.parent.parent.parent.remain_patches_by_score[fl_score].append(tbar_case_info)
+
+          if fl_score not in tbar_case_info.parent.parent.parent.parent.patches_by_score:
+            tbar_case_info.parent.parent.parent.parent.patches_by_score[fl_score] = []
+            tbar_case_info.parent.parent.parent.parent.remain_patches_by_score[fl_score]=[]
+          tbar_case_info.parent.parent.parent.parent.patches_by_score[fl_score].append(tbar_case_info)
+          tbar_case_info.parent.parent.parent.parent.remain_patches_by_score[fl_score].append(tbar_case_info)
+
           state.switch_case_map[location] = tbar_case_info
           state.patch_location_map[location] = tbar_case_info
           tbar_case_info.total_case_info+=1
@@ -618,35 +663,6 @@ def read_info_tbar(state: MSVState) -> None:
     case_info: TbarCaseInfo = state.switch_case_map[loc]
     case_info.parent.parent.parent.case_rank_list.append(loc)
     fl_score=case_info.parent.parent.fl_score
-    if fl_score not in state.java_patch_ranking:
-      state.java_patch_ranking[fl_score] = []
-      state.java_remain_patch_ranking[fl_score] = []
-    state.java_patch_ranking[fl_score].append(case_info)
-    state.java_remain_patch_ranking[fl_score].append(case_info)
-    
-    if fl_score not in case_info.parent.patches_by_score:
-      case_info.parent.patches_by_score[fl_score] = []
-      case_info.parent.remain_patches_by_score[fl_score]=[]
-    case_info.parent.patches_by_score[fl_score].append(case_info)
-    case_info.parent.remain_patches_by_score[fl_score].append(case_info)
-
-    if fl_score not in case_info.parent.parent.patches_by_score:
-      case_info.parent.parent.patches_by_score[fl_score] = []
-      case_info.parent.parent.remain_patches_by_score[fl_score]=[]
-    case_info.parent.parent.patches_by_score[fl_score].append(case_info)
-    case_info.parent.parent.remain_patches_by_score[fl_score].append(case_info)
-
-    if fl_score not in case_info.parent.parent.parent.patches_by_score:
-      case_info.parent.parent.parent.patches_by_score[fl_score] = []
-      case_info.parent.parent.parent.remain_patches_by_score[fl_score]=[]
-    case_info.parent.parent.parent.patches_by_score[fl_score].append(case_info)
-    case_info.parent.parent.parent.remain_patches_by_score[fl_score].append(case_info)
-
-    if fl_score not in case_info.parent.parent.parent.parent.patches_by_score:
-      case_info.parent.parent.parent.parent.patches_by_score[fl_score] = []
-      case_info.parent.parent.parent.parent.remain_patches_by_score[fl_score]=[]
-    case_info.parent.parent.parent.parent.patches_by_score[fl_score].append(case_info)
-    case_info.parent.parent.parent.parent.remain_patches_by_score[fl_score].append(case_info)
 
     case_info.patch_rank = rank_num
     func_info = case_info.parent.parent.parent
