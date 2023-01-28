@@ -454,6 +454,7 @@ def use_stochastic(state:MSVState):
   """
     Decide to use stochastic search or follow original tool
   """
+  return True
   state.msv_logger.debug('Decide approach')
   start_time=time.time()
   
@@ -561,7 +562,7 @@ def epsilon_select_new(state:MSVState,source=None):
   start_time=time.time()
 
   if source is None:
-    selected_patch=epsilon_search_new(state)
+    selected_patch=epsilon_search(state)
     if state.recoder_mode:
       return selected_patch.parent.parent.parent
     else:
@@ -783,12 +784,12 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
         state.msv_logger.debug(f'Do not use guide, use original order!')   
         state.select_time+=time.time()-start_time
         # return epsilon_select(state,parent),False
-        return epsilon_select_new(state,parent),False
+        return epsilon_select(state,parent),False
   else:
     # No guide in this layer, use top ranked patch
     state.msv_logger.debug(f'No guided found in this layer, use original order!')
     # return epsilon_select(state,parent),False
-    return epsilon_select_new(state,parent),False
+    return epsilon_select(state,parent),False
 
 def select_patch_SPR(state: MSVState) -> PatchInfo:
   # Select file and line by priority
@@ -1680,7 +1681,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   # Select file
   if state.total_basic_patch==0 or state.not_use_guided_search:
     # selected_switch_info=epsilon_search(state)
-    selected_switch_info=epsilon_search_new(state)
+    selected_switch_info=epsilon_search(state)
     result = TbarPatchInfo(selected_switch_info)
     state.patch_ranking.remove(selected_switch_info.location)
     return result
@@ -1807,7 +1808,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
 
   # select tbar switch
   # selected_switch_info:TbarCaseInfo=epsilon_select(state,selected_type_info)
-  selected_switch_info:TbarCaseInfo=epsilon_select_new(state,selected_type_info)
+  selected_switch_info:TbarCaseInfo=epsilon_select(state,selected_type_info)
   clear_list(state, p_map)
   result = TbarPatchInfo(selected_switch_info)
   state.patch_ranking.remove(selected_switch_info.location)
