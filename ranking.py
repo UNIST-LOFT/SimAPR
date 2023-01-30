@@ -6,35 +6,61 @@ import subprocess
 ods_dir = "/root/project/ods-enhanced"
 coming_dir = "/root/project/comming"
 
-def ranking_original_learning(result_path:str,patch_path:str):
-  with open(f'{result_path}/msv-result.json','r') as f:
-    casino_result:List[dict]=json.load(f)
-  with open(f'{patch_path}/switch-info.json','r') as f:
-    original_rank:List[dict]=json.load(f)['ranking']
+def get_bugids(bugid_file: str) -> List[str]:
+    bugids = []
+    with open(bugid_file, "r") as f:
+        for line in f:
+            line = line.strip()
+            if len(line) == 0 or line.startswith("#"):
+                continue
+            bugid = line.split(",")[0]
+            bugids.append(bugid)
+    return bugids
 
+def ranking_original_learning(recoder_path:str,patch_path:str):
+  patches_path = "/root/DiffTGen/patches/alpharepair"
+  bugids = os.listdir(patches_path)
+  rank_map = dict()
+  for bugid in bugids:
+    if not os.path.exists(f"{patches_path}/{bugid}/{bugid}.json"):
+      continue
+    rank_map[bugid] = dict()
+    with open(f"{patches_path}/{bugid}/{bugid}.json", "r") as f:
+      plaus = json.load(f)
+      for plau in plaus["plausible_patches"]:
+        rank_map[bugid][plau["id"]] = {"location": plau["location"], "rank": -1}
+
+    with open(f'{recoder_path}/d4j/{bugid}/switch-info.json','r') as f:
+      original_rank:List[dict]=json.load(f)['ranking']
+      tmp_map = rank_map[bugid]
+      rank = 0
+      for cand_id in original_rank:
+        if cand_id in tmp_map:
+          rank += 1
+          tmp_map[cand_id]["rank"] = rank
+  with open(f"{recoder_path}/data/rank_map.json", "w") as f:
+    json.dump(rank_map, f, indent=2)
   # Get all plausible patches
-  plau_patches:Dict[str,dict]=dict()
-  for result in casino_result:
-    if result['pass_result']:
-      patch_id=f"{result['config'][0]['id']}-{result['config'][0]['case_id']}"
-      plau_patches[patch_id]={'iteration':result['iteration'],
-              'time':result['time'],
-              'id':patch_id}
+  # plau_patches:Dict[str,dict]=dict()
+  # for result in casino_result:
+  #   if result['pass_result']:
+  #     patch_id=f"{result['config'][0]['id']}-{result['config'][0]['case_id']}"
+  #     plau_patches[patch_id]={'iteration':result['iteration'],
+  #             'time':result['time'],
+  #             'id':patch_id}
   # print(f'Plausible patches: {len(plau_patches)}')
   # Get original ranking
-  original_rank_id:List[str]=[]
-  for candidate in original_rank:
-    original_rank_id.append(candidate)
-  # print(f'Original rank: {original_rank_id}')
-  # Sort plausible patches with original rank
-  new_plau:List[dict]=[]
-  for cand_id in original_rank_id:
-    if cand_id in plau_patches:
-      new_plau.append(plau_patches[cand_id])
+  # original_rank_id:List[str]=[]
+  # for candidate in original_rank:
+  #   original_rank_id.append(candidate)
+  # # print(f'Original rank: {original_rank_id}')
+  # # Sort plausible patches with original rank
+  # new_plau:List[dict]=[]
 
-  # Save sorted result to json file
-  with open(f'{result_path}/msv-orig-rank.json','w') as f:
-    json.dump(new_plau,f,indent=2)
+
+  # # Save sorted result to json file
+  # with open(f'{result_path}/msv-orig-rank.json','w') as f:
+  #   json.dump(new_plau,f,indent=2)
 
 def ranking_ods_learning(result_path:str,patch_path:str,tool_path:str,project:str):
   if not os.path.exists(ods_dir):
@@ -130,7 +156,7 @@ if __name__=='__main__':
     ranking_ods_template(argv[2],argv[3],argv[4],argv[5])
   elif argv[1] == 'recoder-orig':
     # Original rank of recoder-based tools
-    assert len(argv)==4,'Usage: python3 ranking.py recoder-orig [casino-result-path] [patch-gen-path]'
+    assert len(argv)==4,'Usage: python3 ranking.py recoder-orig [casino-path] [patch-gen-path]'
     ranking_original_learning(argv[2],argv[3])
   elif argv[1] == 'recoder-ods':
     assert len(argv)==6,'Usage: python3 ranking.py recoder-ods [casino-result-path] [patch-gen-path] [tool-path] [project]'
