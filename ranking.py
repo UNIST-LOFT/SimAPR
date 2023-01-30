@@ -129,7 +129,7 @@ def ranking_ods_template(result_path:str,patch_path:str,tool_path:str,project:st
     subprocess.run(['mvn','install','-DskipTests'],
                 cwd='/root/project/coming',stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
 
-  project_path=tool_path+'/buggy/'+project
+  project_path=tool_path+'/buggy'
   result=subprocess.run(['python3','parse_msv.py','--msv_results_path',result_path,
             '--patches_path',patch_path,'--buggy_projects_path',project_path,
             '--output',result_path,'--coming_tool_path',coming_tool],
