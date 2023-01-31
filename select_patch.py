@@ -1617,6 +1617,8 @@ def select_patch(state: MSVState, mode: MSVMode, test: int) -> List[PatchInfo]:
 def select_patch_tbar_mode(state: MSVState) -> TbarPatchInfo:
   if state.mode == MSVMode.tbar:
     return select_patch_tbar(state)
+  elif state.mode==MSVMode.genprog:
+    return select_patch_tbar_genprog(state)
   elif state.mode == MSVMode.seapr:
     return select_patch_tbar_seapr(state)
   else:
@@ -1942,9 +1944,59 @@ def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
   state.patch_ranking.remove(selected_patch.location)
   return TbarPatchInfo(selected_patch)
 
+def select_patch_tbar_genprog(state: MSVState) -> TbarPatchInfo:
+  start_time = time.time()
+  # Select file
+  state.msv_logger.debug(f'Select with simple stochastic')
+  file_score_list=[]
+  file_list=[]
+  for file in state.file_info_map:
+    file_score_list.append(max(state.file_info_map[file].fl_score_list))
+    file_list.append(state.file_info_map[file])
+  file_score_norm=PassFail.normalize(file_score_list)
+  selected_file_index=PassFail.select_by_probability(file_score_norm)
+  selected_file:FileInfo=file_list[selected_file_index]
+
+  # Select method
+  method_score_list=[]
+  method_list=[]
+  for method in selected_file.func_info_map.values():
+    method_score_list.append(max(method.fl_score_list))
+    method_list.append(method)
+  method_score_norm=PassFail.normalize(method_score_list)
+  selected_method_index=PassFail.select_by_probability(method_score_norm)
+  selected_method:FuncInfo=method_list[selected_method_index]
+
+  # Select Line
+  line_score_list=[]
+  line_list=[]
+  for line in selected_method.line_info_map.values():
+    line_score_list.append(line.fl_score)
+    line_list.append(line)
+  line_score_norm=PassFail.normalize(line_score_list)
+  selected_line_index=PassFail.select_by_probability(line_score_norm)
+  selected_line:LineInfo=line_list[selected_line_index]
+
+  # Select template
+  template_list=list(selected_line.tbar_type_info_map.values())
+  selected_template_index=random.randint(0,len(template_list)-1)
+  selected_template:TbarTypeInfo=template_list[selected_template_index]
+
+  # Select patch
+  patch_list=list(selected_template.tbar_case_info_map.values())
+  selected_patch_index=random.randint(0,len(patch_list)-1)
+  selected_patch=patch_list[selected_patch_index]
+
+  state.select_time+=time.time()-start_time
+  state.msv_logger.debug(f'{selected_patch.location} selected')
+  state.patch_ranking.remove(selected_patch.location)
+  return TbarPatchInfo(selected_patch)
+
 def select_patch_recoder_mode(state: MSVState) -> RecoderPatchInfo:
   if state.mode == MSVMode.recoder:
     return select_patch_recoder(state)
+  elif state.mode==MSVMode.genprog:
+    return select_patch_recoder_genprog(state)
   elif state.mode == MSVMode.seapr:
     return select_patch_recoder_seapr(state)
   else:
@@ -2314,4 +2366,47 @@ def select_patch_recoder_seapr(state: MSVState) -> RecoderPatchInfo:
     selected_patch.parent.parent.case_rank_list.pop(0)
   state.select_time+=time.time()-start_time
 
+  return RecoderPatchInfo(selected_patch)
+
+def select_patch_recoder_genprog(state: MSVState) -> TbarPatchInfo:
+  start_time = time.time()
+  # Select file
+  state.msv_logger.debug(f'Select with simple stochastic')
+  file_score_list=[]
+  file_list=[]
+  for file in state.file_info_map:
+    file_score_list.append(max(state.file_info_map[file].fl_score_list))
+    file_list.append(state.file_info_map[file])
+  file_score_norm=PassFail.normalize(file_score_list)
+  selected_file_index=PassFail.select_by_probability(file_score_norm)
+  selected_file:FileInfo=file_list[selected_file_index]
+
+  # Select method
+  method_score_list=[]
+  method_list=[]
+  for method in selected_file.func_info_map.values():
+    method_score_list.append(max(method.fl_score_list))
+    method_list.append(method)
+  method_score_norm=PassFail.normalize(method_score_list)
+  selected_method_index=PassFail.select_by_probability(method_score_norm)
+  selected_method:FuncInfo=method_list[selected_method_index]
+
+  # Select Line
+  line_score_list=[]
+  line_list=[]
+  for line in selected_method.line_info_map.values():
+    line_score_list.append(line.fl_score)
+    line_list.append(line)
+  line_score_norm=PassFail.normalize(line_score_list)
+  selected_line_index=PassFail.select_by_probability(line_score_norm)
+  selected_line:LineInfo=line_list[selected_line_index]
+
+  # Select patch
+  patch_list=list(selected_line.recoder_case_info_map.values())
+  selected_patch_index=random.randint(0,len(patch_list)-1)
+  selected_patch=patch_list[selected_patch_index]
+
+  state.select_time+=time.time()-start_time
+  state.msv_logger.debug(f'{selected_patch.to_str()} selected')
+  state.patch_ranking.remove(selected_patch.to_str())
   return RecoderPatchInfo(selected_patch)

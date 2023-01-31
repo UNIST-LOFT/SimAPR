@@ -442,7 +442,7 @@ class MSVTbar(MSV):
           #   continue
           # fail_set.add(key)
           # self.state.d4j_positive_test.remove(key)
-          self.state.msv_logger.warning(f"FAIL at {ft}!!!!")
+          self.state.msv_logger.warning(f"FAIL at {ft}!!!!")    
   def run(self) -> None:
     if self.state.use_simulation_mode:
       self.run_sim()

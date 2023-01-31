@@ -24,6 +24,7 @@ class MSVMode(Enum):
   seapr = 8
   tbar = 9
   recoder = 10
+  genprog = 11
 
 class PatchType(Enum):
   TightenConditionKind = 0
