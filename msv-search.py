@@ -24,7 +24,7 @@ def parse_args(argv: list) -> MSVState:
               "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern", "use-simulation-mode=",'remove-cached-file',
               "use-prophet-score", "use-fl", "use-fl-prophet-score", "watch-level=",'use-msv-ext','seapr-mode=','top-fl=','use-fixed-halflife','ignore-compile-error',
               "func-dist-mean=",'lang-model-path=','use-init-trial=','regression-mode=','finish-correct-patch','count-compile-fail','not-use-guide','not-use-epsilon','fixminer-mode','spr-mode','sampling-mode',
-              'finish-top-method','use-ud', 'bounded-seapr','prapr-mode']
+              'finish-top-method','use-ud', 'bounded-seapr','prapr-mode','not-use-accept']
   opts, args = getopt.getopt(argv[1:], "ho:w:p:t:m:c:j:T:E:M:S:", longopts)
   state = MSVState()
   state.original_args = argv
@@ -172,6 +172,8 @@ def parse_args(argv: list) -> MSVState:
         print('Can not use both --not-use-guide and --not-use-epsilon-search!',file=sys.stderr)
         exit(1)
       state.not_use_epsilon_search=True
+    elif o in ['--not-use-accept']:
+      state.not_use_acceptance_prob=True
     elif o in ['--count-compile-fail']:
       state.count_compile_fail = False
     elif o in ['--fixminer-mode']:
