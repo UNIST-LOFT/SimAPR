@@ -401,8 +401,6 @@ class ProphetCondition:
     for test in values:
       # collect all available constants
       for i,var in enumerate(test):
-        if self.state.use_msv_ext:
-          available_const[i].add(0)  # Always use 0 since it's usually used by pointers, but not for original prophet/SPR
         if self.state.use_fixed_const:
           # use fixed constant(-100 ≤ c ≤ 100) instead of constants from test execution
           for j in range(-100,101):
@@ -425,22 +423,12 @@ class ProphetCondition:
           if result>=0:
             init_results.append(self.SynthesisResult(i,value,oper,result))
 
-    sorted_result=sorted(init_results)
-    new_sorted=[]
-    if self.state.use_msv_ext:
-      if sorted_result[19].result==0: # If result==0 conditions are more than 20, use every conditions
-        for res in sorted_result:
-          if res.result==0:
-            new_sorted.append(res)
-      else:
-        new_sorted=sorted_result[:20]
-    else:
-      new_sorted=sorted_result[:20]
-    for result in new_sorted:
+    sorted_result=sorted(init_results)[:20]
+    for result in sorted_result:
       self.state.msv_logger.info(f"Created {result.result}: {result.operator}-{result.var1}-{result.const_or_var2_value}")
 
     final_result=[]
-    for result in new_sorted:
+    for result in sorted_result:
       if OperatorType.EQ_VAR <= result.operator <= OperatorType.LT_VAR:
         final_result.append((result.operator,result.var1,result.var2))
       else:
@@ -918,8 +906,6 @@ class GuidedPathCondition:
     for test in values:
       # collect all available constants
       for i,var in enumerate(test):
-        if self.state.use_msv_ext:
-          available_const[i].add(0)  # Always use 0 since it's usually used by pointers, but not for original prophet/SPR
         if self.state.use_fixed_const:
           # use fixed constant(-100 ≤ c ≤ 100) instead of constants from test execution
           for j in range(-100,101):
@@ -942,22 +928,12 @@ class GuidedPathCondition:
           if result>=0:
             init_results.append(self.SynthesisResult(i,value,oper,result))
 
-    sorted_result=sorted(init_results)
-    new_sorted=[]
-    if self.state.use_msv_ext:
-      if sorted_result[19].result==0: # If result==0 conditions are more than 20, use every conditions
-        for res in sorted_result:
-          if res.result==0:
-            new_sorted.append(res)
-      else:
-        new_sorted=sorted_result[:20]
-    else:
-      new_sorted=sorted_result[:20]
-    for result in new_sorted:
+    sorted_result=sorted(init_results)[:20]
+    for result in sorted_result:
       self.state.msv_logger.info(f"Created {result.result}: {result.operator}-{result.var1}-{result.const_or_var2_value}")
 
     final_result=[]
-    for result in new_sorted:
+    for result in sorted_result:
       if OperatorType.EQ_VAR <= result.operator <= OperatorType.LT_VAR:
         final_result.append((result.operator,result.var1,result.var2))
       else:
