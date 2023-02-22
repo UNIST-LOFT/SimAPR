@@ -21,33 +21,21 @@ class MSVMode(Enum):
   recoder = 5
   genprog = 6
 
-# Parameter Type
-class PT(Enum):
-  selected = 0
-  basic = 1 # basic
-  plau = 2  # plausible
-  fl = 3    # fault localization
-  out = 4   # output difference
-  cov = 5   # coverage
-  rand = 6  # random
-  odist = 7    # output distance
-  sigma = 8 # standard deviation of normal distribution
-  halflife = 9 # half life of parameters
-  k = 10    # increase or decrease beta distribution with k
-  alpha = 11 # alpha of beta distribution
-  beta = 12 # beta of beta distribution
-  epsilon = 13 # epsilon-greedy
-  b_dec=14 # decrease of beta distribution
-  a_init=15 # init value of a in beta dist
-  b_init=16 # init value of b in beta dist
-  frequency=17 # frequency of basic patches from total basic patches
-  bp_frequency=18 # frequency of basic patches from total searched patches in subtree
+# Parameters
+class PT():
+  ALPHA_INCREASE=1
+  BETA_INCREASE=0
+  ALPHA_INIT=2
+  BETA_INIT=2
+  EPSILON_THRESHOLD=0.05
+  FL_WEIGHT=0.25
+  EPSILON_A=10
+  EPSILON_B=3
 
 class SeAPRMode(Enum):
   FILE=0,
   FUNCTION=1,
   LINE=2,
-  SWITCH=3,
   TYPE=4
 
 class PassFail:
@@ -714,9 +702,6 @@ class MSVState:
   test_to_location: Dict[int, Dict[str, Set[int]]] # test_number -> {file_name: set(line_number)}
   use_pattern: bool      # For SeAPR mode
   simulation_data: Dict[str, dict] # patch_id -> fail_result, pass_result, fail_time, pass_time. compile_result
-  c_map: Dict[PT, float]
-  params: Dict[PT, float]
-  params_decay: Dict[PT, float]
   original_output_distance_map: Dict[int, float]
   tbar_mode: bool
   recoder_mode: bool
@@ -779,9 +764,6 @@ class MSVState:
     self.iteration=0
     self.orig_rank_iter=0
     self.use_partial_validation = True
-    self.c_map = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.0}
-    self.params = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.0, PT.cov: 2.0, PT.sigma: 0.0, PT.halflife: 1.0, PT.epsilon: 0.0,PT.b_dec:0.0,PT.a_init:2.0,PT.b_init:2.0}
-    self.params_decay = {PT.fl:1.0,PT.basic:1.0,PT.plau:1.0}
     self.original_output_distance_map = dict()
     self.tbar_mode = False
     self.recoder_mode = False

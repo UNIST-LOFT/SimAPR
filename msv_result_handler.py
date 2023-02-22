@@ -57,7 +57,7 @@ def append_result(state: MSVState, selected_patch: List[TbarPatchInfo], test_res
     save_result(state)
 
 def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: bool) -> None:
-  selected_patch.update_result(result, 1, state.params[PT.b_dec],state.use_exp_alpha)
+  selected_patch.update_result(result, PT.ALPHA_INCREASE, PT.BETA_INCREASE,state.use_exp_alpha)
   if result:
     state.total_basic_patch += 1
     selected_patch.tbar_type_info.children_basic_patches+=1
@@ -159,13 +159,13 @@ def update_positive_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, 
     selected_patch.func_info.consecutive_fail_plausible_count+=1
     selected_patch.file_info.consecutive_fail_plausible_count+=1
     
-  selected_patch.update_result_positive(result, 1, state.params[PT.b_dec],state.use_exp_alpha)
+  selected_patch.update_result_positive(result, PT.ALPHA_INCREASE, PT.BETA_INCREASE,state.use_exp_alpha)
 
 def remove_patch_tbar(state: MSVState, selected_patch: TbarPatchInfo) -> None:
   selected_patch.remove_patch(state)
 
 def update_result_recoder(state: MSVState, selected_patch: RecoderPatchInfo, result: bool) -> None:
-  selected_patch.update_result(result, 1, state.params[PT.b_dec],state.use_exp_alpha)
+  selected_patch.update_result(result, PT.ALPHA_INCREASE, PT.BETA_INCREASE,state.use_exp_alpha)
   if result:
     state.total_basic_patch += 1
     selected_patch.line_info.children_basic_patches += 1
@@ -231,7 +231,7 @@ def update_positive_result_recoder(state: MSVState, selected_patch: RecoderPatch
     selected_patch.line_info.consecutive_fail_plausible_count += 1
     selected_patch.func_info.consecutive_fail_plausible_count += 1
     selected_patch.file_info.consecutive_fail_plausible_count += 1
-  selected_patch.update_result_positive(result, 1, state.params[PT.b_dec],state.use_exp_alpha)
+  selected_patch.update_result_positive(result, PT.ALPHA_INCREASE, PT.BETA_INCREASE,state.use_exp_alpha)
 
 def remove_patch_recoder(state: MSVState, selected_patch: RecoderPatchInfo) -> None:
   selected_patch.remove_patch(state)

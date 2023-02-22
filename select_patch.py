@@ -1,5 +1,3 @@
-from operator import ne
-from statistics import harmonic_mean
 from core import *
 import numpy as np
 
@@ -8,7 +6,7 @@ def epsilon_greedy(total:int,x:int):
     Compute epsilin value of Epsilon-greedy algorithm
     x: larger epsilon for larger x
   """
-  return 1 / (1 + np.e ** (-1 / (total / 10) * (x - total / 3)))
+  return 1 / (1 + np.e ** (-1 / (total / PT.EPSILON_A) * (x - total / PT.EPSILON_B)))
 
 def weighted_mean(a:float, b:float, weight_a:int=1, weight_b:int=1):
   """
@@ -38,43 +36,6 @@ def get_static_score(state:MSVState,element):
     else: raise ValueError(f'Unknown element type {type(element)}')
   else:
     raise ValueError(f'Should be tbar mode, recoder mode or prapr mode')
-
-def select_by_probability(state: MSVState, p_map: Dict[PT, List[float]], c_map: Dict[PT, float], normalize: Set[PT] = {}) -> int:
-  if len(p_map) == 0:
-    state.msv_logger.critical("Empty p_map!!!!")
-    return -1
-  num = len(p_map[PT.selected])
-  if num == 0:
-    state.msv_logger.critical("Empty selected list!!!!")
-    return -1
-  result = [0 for i in range(num)]
-  for key in c_map:
-    c = c_map[key]
-    p = p_map[key]
-    if len(p) == 0:
-      state.msv_logger.warning(f"Empty p {key}!!!!")
-      continue
-    if key in normalize:
-      p = PassFail.normalize(p)
-      sigma = state.params[PT.sigma]  # default: 0.0
-      p = PassFail.select_value_normal(p, sigma)
-    # prob = PassFail.softmax(p)
-    prob=[0 for _ in range(num)] # Not use FL for guided search
-    for i in range(num):
-      if key == PT.basic or key == PT.plau:
-        unique = PassFail.concave_up(p_map[PT.frequency][i])
-        bp_freq = PassFail.concave_down(p_map[PT.bp_frequency][i])
-        if weighted_mean(unique, bp_freq) > np.random.random():
-          if key==PT.plau:
-            result[i] += 2*c * prob[i]
-          else:
-            result[i] += c * prob[i]
-      else:
-        result[i] += c * prob[i]
-  return PassFail.argmax(result)
-
-EPSILON_THRESHOLD=0.05
-SPR_EPSILON_THRESHOLD=1
 
 def epsilon_search(state:MSVState):
   """
@@ -107,7 +68,7 @@ def epsilon_search(state:MSVState):
       top_fl_patches+=cur_remain_list[score]
       top_all_patches+=cur_list[score]
       break
-    elif (cur_score > -100.0) and ((cur_score - (score if state.tbar_mode or state.recoder_mode or state.prapr_mode else normalized)) < (cur_score * EPSILON_THRESHOLD)):
+    elif (cur_score > -100.0) and ((cur_score - (score if state.tbar_mode or state.recoder_mode or state.prapr_mode else normalized)) < (cur_score * PT.EPSILON_THRESHOLD)):
       top_fl_patches+=cur_remain_list[score]
       top_all_patches+=cur_list[score]
 
@@ -215,7 +176,7 @@ def epsilon_select(state:MSVState,source=None):
         top_fl_patches+=cur_remain_list[score]
         top_all_patches+=cur_list[score]
         break
-      elif (cur_score > -100.0) and ((cur_score - (score if state.tbar_mode or state.recoder_mode or state.prapr_mode else normalized)) < (cur_score * EPSILON_THRESHOLD)):
+      elif (cur_score > -100.0) and ((cur_score - (score if state.tbar_mode or state.recoder_mode or state.prapr_mode else normalized)) < (cur_score * PT.EPSILON_THRESHOLD)):
         top_fl_patches += cur_remain_list[score]
         top_all_patches += cur_list[score]
   else:
@@ -231,7 +192,7 @@ def epsilon_select(state:MSVState,source=None):
         top_fl_patches+=source.remain_patches_by_score[score]
         top_all_patches+=source.patches_by_score[score]
         break
-      elif (cur_score > -100.0) and ((cur_score - (score if state.tbar_mode or state.recoder_mode or state.prapr_mode else normalized)) < (cur_score * EPSILON_THRESHOLD)):
+      elif (cur_score > -100.0) and ((cur_score - (score if state.tbar_mode or state.recoder_mode or state.prapr_mode else normalized)) < (cur_score * PT.EPSILON_THRESHOLD)):
         top_fl_patches += source.remain_patches_by_score[score]
         top_all_patches += source.patches_by_score[score]
   
@@ -347,7 +308,6 @@ def epsilon_select(state:MSVState,source=None):
         raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
 
 def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
-  FL_CONST=0.25
   start_time=time.time()
 
   for element in elements:
@@ -376,7 +336,7 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
         selected.append(info)
         state.msv_logger.debug(f'Plausible: a: {info.positive_pf.pass_count}, b: {info.positive_pf.fail_count}')
         if info.children_plausible_patches>0:
-          p_p.append(info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+          p_p.append(info.positive_pf.select_value(PT.ALPHA_INIT,PT.BETA_INIT))
         else:
           p_p.append(0.)
 
@@ -397,7 +357,7 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
         cur_score=get_static_score(state,selected[max_index]) if state.tbar_mode or state.recoder_mode or state.prapr_mode else PassFail.normalize(scores)[max_index]
         prev_score=state.previous_score if state.tbar_mode or state.recoder_mode or state.prapr_mode else PassFail.normalize(scores)[-1]
         score_rate=min(cur_score/prev_score,1.) if prev_score!=0. else 0.
-        if random.random()< (weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq))*(score_rate*FL_CONST if score_rate!=1.0 else 1.0)):
+        if random.random()< (weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq))*(score_rate*PT.FL_WEIGHT if score_rate!=1.0 else 1.0)):
           state.msv_logger.debug(f'Use guidance with plausible patch: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}, {cur_score}/{prev_score}')
 
           state.select_time+=time.time()-start_time
@@ -410,7 +370,7 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
         info = elements[element_name]
         selected.append(info)
         if info.children_basic_patches>0:
-          p_b.append(info.positive_pf.select_value(state.params[PT.a_init],state.params[PT.b_init]))
+          p_b.append(info.positive_pf.select_value(PT.ALPHA_INIT,PT.BETA_INIT))
         else:
           p_b.append(0.)
         state.msv_logger.debug(f'Basic: a: {info.pf.pass_count}, b: {info.pf.fail_count}')
@@ -432,7 +392,7 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
         cur_score=get_static_score(state,selected[max_index]) if state.tbar_mode or state.recoder_mode or state.prapr_mode else PassFail.normalize(scores)[max_index]
         prev_score=state.previous_score if state.tbar_mode or state.recoder_mode or state.prapr_mode else PassFail.normalize(scores)[-1]
         score_rate=min(cur_score/prev_score,1.) if prev_score!=0. else 0.
-        if random.random()< (weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq))*(score_rate*FL_CONST if score_rate!=1.0 else 1.0)):
+        if random.random()< (weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq))*(score_rate*PT.FL_WEIGHT if score_rate!=1.0 else 1.0)):
           state.msv_logger.debug(f'Use guidance with basic patch: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}, {cur_score}/{prev_score}')
 
           state.select_time+=time.time()-start_time
@@ -448,10 +408,6 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
     state.msv_logger.debug(f'No guided found in this layer, use original order!')
     # return epsilon_select(state,parent),False
     return epsilon_select(state,parent),False
-
-def clear_list(state: MSVState, p_map: Dict[str, List[float]]) -> None:
-  for p in p_map:
-    p_map[p].clear()
 
 def select_patch_tbar_mode(state: MSVState) -> TbarPatchInfo:
   if state.mode == MSVMode.tbar:
@@ -473,31 +429,9 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   """
   Select a patch for Tbar.
   """
-  pf_rand = PassFail()
-  rand_cmap = {PT.rand: 1.0}
-  # lists which are used to store the scores of each patch
-  selected = list()
-  p_rand = list() # random
-  p_b = list() # basic
-  p_p = list() # plausible
   p_fl = list() # fault localization
-  p_o = list() # output
-  p_odist = list() # output distance
-  p_cov = list() # coverage
   p_frequency = list() # frequency of basic patches from total basic patches
   p_bp_frequency=list() # frequency of basic patches from total searched patches in subtree
-  p_map = {PT.selected: selected, PT.rand: p_rand, PT.basic: p_b, 
-          PT.plau: p_p, PT.fl: p_fl, PT.out: p_o, PT.cov: p_cov, PT.odist: p_odist,PT.frequency:p_frequency,PT.bp_frequency:p_bp_frequency}
-  c_map = state.c_map.copy()
-  normalize: Set[PT] = {PT.fl, PT.cov}
-  # TODO: decay * alpha + beta * 0.5 ** (iter / halflife)
-  # decay = 1 - (0.5 ** (iter / state.params[PT.halflife]))
-  decay = 1 - (0.5 ** (state.total_basic_patch / state.params[PT.halflife]))
-  for key in state.params_decay:
-    diff = state.params_decay[key] - state.params[key]
-    if key not in c_map:
-      continue
-    c_map[key] += diff * decay
 
   # Select file
   if state.total_basic_patch==0 or state.not_use_guided_search:
@@ -534,8 +468,6 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
     if not is_correct_guide:
       state.msv_logger.debug(f'Misguide at file')
     
-  clear_list(state, p_map)
-
   # Select function
   selected_func_info,is_guided = select_patch_guide_algorithm(state,selected_file_info.func_info_map,selected_file_info)
   for func_name in selected_file_info.func_info_map:
@@ -564,8 +496,6 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
         break
     if not is_correct_guide:
       state.msv_logger.debug(f'Misguide at func')
-    
-  clear_list(state, p_map)
 
   # Select line
   selected_line_info,is_guided = select_patch_guide_algorithm(state,selected_func_info.line_info_map,selected_func_info)
@@ -596,9 +526,6 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
     if not is_correct_guide:
       state.msv_logger.debug(f'Misguide at line')
 
-  clear_list(state, p_map)
-  del c_map[PT.fl] # No fl below line
-
   # Select type
   selected_type_info,is_guided = select_patch_guide_algorithm(state,selected_line_info.tbar_type_info_map,selected_line_info)
   for tbar_type in selected_line_info.tbar_type_info_map:
@@ -625,12 +552,8 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
     if not is_correct_guide:
       state.msv_logger.debug(f'Misguide at type')
 
-  clear_list(state, p_map)
-
   # select tbar switch
-  # selected_switch_info:TbarCaseInfo=epsilon_select(state,selected_type_info)
   selected_switch_info:TbarCaseInfo=epsilon_select(state,selected_type_info)
-  clear_list(state, p_map)
   result = TbarPatchInfo(selected_switch_info)
   state.patch_ranking.remove(selected_switch_info.location)
   return result
@@ -823,32 +746,10 @@ def select_patch_recoder(state: MSVState) -> RecoderPatchInfo:
   return RecoderPatchInfo(caseinfo)
 
 def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
-  pf_rand = PassFail()
-  rand_cmap = {PT.rand: 1.0}
-  # lists which are used to store the scores of each patch
-  selected = list()
-  p_rand = list()  # random
-  p_b = list()  # basic
-  p_p = list()  # plausible
   p_fl = list()  # fault localization
-  p_o = list()  # output
-  p_odist = list()  # output distance
-  p_cov = list()  # coverage
   p_frequency = list()  # frequency of basic patches from total basic patches
   # frequency of basic patches from total searched patches in subtree
   p_bp_frequency = list()
-  p_map = {PT.selected: selected, PT.rand: p_rand, PT.basic: p_b,
-           PT.plau: p_p, PT.fl: p_fl, PT.out: p_o, PT.cov: p_cov, PT.odist: p_odist, PT.frequency: p_frequency, PT.bp_frequency: p_bp_frequency}
-  c_map = state.c_map.copy()
-  normalize: Set[PT] = {PT.fl, PT.cov}
-  # TODO: decay * alpha + beta * 0.5 ** (iter / halflife)
-  decay = 1 - (0.5 ** (state.total_basic_patch / state.params[PT.halflife]))
-  #decay = 1 - (0.5 ** (iter / state.params[PT.halflife]))
-  for key in state.params_decay:
-    diff = state.params_decay[key] - state.params[key]
-    if key not in c_map:
-      continue
-    c_map[key] += diff * decay
 
   if state.total_basic_patch == 0 or state.not_use_guided_search:
     selected_switch_info = epsilon_search(state)
@@ -883,8 +784,6 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
     if not is_correct_guide:
       state.msv_logger.debug(f'Misguide at file')
 
-  clear_list(state, p_map)
-
   selected_func_info,is_guided = select_patch_guide_algorithm(state,selected_file_info.func_info_map,selected_file_info)
   for func_name in selected_file_info.func_info_map:
     func_info=selected_file_info.func_info_map[func_name]
@@ -912,8 +811,6 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
         break
     if not is_correct_guide:
       state.msv_logger.debug(f'Misguide at func')
-
-  clear_list(state, p_map)
   
   selected_line_info,is_guided = select_patch_guide_algorithm(state,selected_func_info.line_info_map,selected_func_info)
   for line in selected_func_info.line_info_map:
@@ -943,9 +840,6 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
     if not is_correct_guide:
       state.msv_logger.debug(f'Misguide at line')
 
-  clear_list(state, p_map)
-  del c_map[PT.fl] # No fl below line
-  
   selected_case_info: RecoderCaseInfo = epsilon_select(state, selected_line_info)
   state.patch_ranking.remove(selected_case_info.to_str())
   result = RecoderPatchInfo(selected_case_info)

@@ -64,8 +64,6 @@ def parse_args(argv: list) -> MSVState:
         state.seapr_layer = SeAPRMode.FUNCTION
       elif a.lower()=='line':
         state.seapr_layer = SeAPRMode.LINE
-      elif a.lower()=='switch':
-        state.seapr_layer = SeAPRMode.SWITCH
       elif a.lower()=='type':
         state.seapr_layer = SeAPRMode.TYPE
       else:
