@@ -14,21 +14,20 @@ import shutil
 
 from core import *
 
-from msv import MSV, MSVTbar, MSVRecoder, MSVPraPR
+from msv import MSVTbar, MSVRecoder, MSVPraPR
 
 def parse_args(argv: list) -> MSVState:
-  longopts = ["help", "outdir=", "workdir=", "timeout=", "msv-path=", "time-limit=", "cycle-limit=", "epsilon-greedy-exploration",
-              "mode=", "max-parallel-cpu=",'skip-valid','use-fixed-beta','use-cpr-space','use-fixed-const', 'params=', 'tbar-mode', 'recoder-mode', "use-exp-alpha",
-              "use-condition-synthesis", "use-hierarchical-selection=", "use-pass-test", "use-partial-validation", "use-full-validation",'seed=',
-              "multi-line=", "prev-result", "sub-node=", "main-node", 'new-revlog=', "use-pattern", "use-simulation-mode=",'remove-cached-file',
-              "use-prophet-score", "use-fl", "use-fl-prophet-score", "watch-level=",'use-msv-ext','seapr-mode=','top-fl=','use-fixed-halflife','ignore-compile-error',
-              "func-dist-mean=",'lang-model-path=','use-init-trial=','regression-mode=','finish-correct-patch','count-compile-fail','not-use-guide','not-use-epsilon','fixminer-mode','spr-mode','sampling-mode',
-              'finish-top-method','use-ud', 'bounded-seapr','prapr-mode','not-use-accept']
-  opts, args = getopt.getopt(argv[1:], "ho:w:p:t:m:c:j:T:E:M:S:", longopts)
+  longopts = ["help", "outdir=", "workdir=", "timeout=", "time-limit=", "cycle-limit=",
+              "mode=", 'skip-valid', 'params=', 'tbar-mode', 'recoder-mode', "use-exp-alpha",
+              "use-pass-test", "use-full-validation",'seed=',
+              "use-pattern", "use-simulation-mode=",
+              'seapr-mode=','top-fl=','ignore-compile-error',
+              'finish-correct-patch','count-compile-fail','not-use-guide','not-use-epsilon','fixminer-mode',
+              'finish-top-method','use-ud', 'prapr-mode']
+  opts, args = getopt.getopt(argv[1:], "ho:w:t:m:c:T:E:", longopts)
   state = MSVState()
   state.original_args = argv
   state.args = args  # After --
-  sub_dir = ""
   for o, a in opts:
     if o in ['-h', '--help']:
       print("Usage: msv-search [options] <file>")
@@ -39,74 +38,25 @@ def parse_args(argv: list) -> MSVState:
       state.timeout = int(a)
     elif o in ['-w', '--workdir']:
       state.work_dir = a
-    elif o in ['-p', '--msv-path']:
-      state.msv_path = a
     elif o in ['-c', '--correct-patch']:
       state.correct_patch_str = a
       state.correct_patch_list=a.split(',')
-    elif o in ['--watch-level']:
-      state.watch_level = a
     elif o in ['-m', '--mode']:
       state.mode = MSVMode[a.lower()]
-    elif o in ['-S', '--sub-node']:
-      sub_dir = a
-    elif o in ["--epsilon-greedy-exploration"]:
-      # state.params[PT.epsilon] = int(a) / 100
-      state.use_epsilon=False
-    elif o in ['-j', '--max-parallel-cpu']:
-      state.max_parallel_cpu = int(a)
     elif o in ['-T', '--time-limit']:
       state.time_limit = int(a)
     elif o in ['-E', '--cycle-limit']:
       state.cycle_limit = int(a)
-    elif o in ['--use-condition-synthesis']:
-      state.use_condition_synthesis = True
-    elif o in ['--use-fl']:
-      state.use_fl = True
-    elif o in ['--use-prophet-score']:
-      state.use_prophet_score = True
-    elif o in ['--use-fl-prophet-score']:
-      state.use_prophet_score = True
-      state.use_fl = True
-    elif o in ['--use-hierarchical-selection']:
-      state.use_hierarchical_selection = int(a)
     elif o in ['--use-pass-test']:
       state.use_pass_test = True
-    elif o in ['--multi-line']:
-      state.use_multi_line = int(a)
-    elif o in ['--use-fixed-beta']:
-      state.use_fixed_beta=True
     elif o in ['--use-exp-alpha']:
       state.use_exp_alpha=True
     elif o in ['--skip-valid']:
       state.skip_valid=True
-    elif o in ['--new-revlog']:
-      state.new_revlog = a
-      state.skip_valid = True
-    elif o in ['--use-cpr-space']:
-      state.use_cpr_space=True
-    elif o in ['--use-fixed-const']:
-      state.use_fixed_const=True
     elif o in ['--use-pattern']:
       state.use_pattern = True
     elif o in ['--top-fl']:
       state.top_fl=int(a)
-    elif o in ['--use-init-trial']:
-      state.max_initial_trial=int(a)
-    elif o in ['--use-fixed-halflife']:
-      state.use_fixed_halflife=True
-    elif o in ['--regression-mode']:
-      if a!='php' and a!='new-php' and a!='':
-        print('regression test mode should be "php", "new-php" or ""')
-        exit(1)
-      state.regression_php_mode=a
-    elif o in ['--func-dist-mean']:
-      if a!='arithmetic' and a!='harmonic':
-        print(f'mean formula "{a}" not supported, should be "arithmetic", "harmonic" or ""',file=sys.stderr)
-        exit(1)
-      state.language_model_mean=a
-    elif o in ['--lang-model-path']:
-      state.language_model_path=a
     elif o in ['--seapr-mode']:
       if a.lower()=='file':
         state.seapr_layer = SeAPRMode.FILE
@@ -124,11 +74,6 @@ def parse_args(argv: list) -> MSVState:
     elif o in ['--use-simulation-mode']:
       state.use_simulation_mode = True
       state.prev_data = a
-    elif o in ['--remove-cached-file']:
-      state.msv_logger.warn('Removing cached files, be careful!')
-      state.remove_cached_file=True
-    elif o in ['--use-partial-validation']:
-      state.use_partial_validation = True
     elif o in ['--use-full-validation']:
       state.use_partial_validation = False
     elif o in ['--params']:
@@ -146,8 +91,6 @@ def parse_args(argv: list) -> MSVState:
           k = PT[key.strip()]
           v = float(value.strip())
           state.params_decay[k] = v
-    elif o in ['--use-msv-ext']:
-      state.use_msv_ext = True
     elif o in ['--tbar-mode']:
       state.tbar_mode = True
     elif o in ['--recoder-mode']:
@@ -171,24 +114,14 @@ def parse_args(argv: list) -> MSVState:
         print('Can not use both --not-use-guide and --not-use-epsilon-search!',file=sys.stderr)
         exit(1)
       state.not_use_epsilon_search=True
-    elif o in ['--not-use-accept']:
-      state.not_use_acceptance_prob=True
     elif o in ['--count-compile-fail']:
       state.count_compile_fail = False
     elif o in ['--fixminer-mode']:
       state.fixminer_mode=True
       state.tbar_mode=True
-    elif o in ['--spr-mode']:
-      state.spr_mode=True
-    elif o in ['--sampling-mode']:
-      state.sampling_mode=True
     elif o in ['--use-ud']:
       state.use_unified_debugging = True
-    elif o in ['--bounded-seapr']:
-      state.bounded_seapr = True
 
-  if sub_dir != "":
-    state.out_dir = os.path.join(state.out_dir, sub_dir)
   if not os.path.exists(state.out_dir):
     os.makedirs(state.out_dir)
   state.tmp_dir = os.path.join(state.out_dir, 'tmp')
@@ -196,17 +129,7 @@ def parse_args(argv: list) -> MSVState:
     shutil.rmtree(state.tmp_dir)
   os.makedirs(state.tmp_dir)
 
-  ## set options for Prophet search
-  if state.mode==MSVMode.prophet:
-    state.use_condition_synthesis=False
-    state.use_fl=False
-    state.use_hierarchical_selection=False
-    state.use_multi_line=1 # prophet only runs 1-line patch
-    state.use_fixed_beta=False
-    state.use_cpr_space=False
-    state.max_parallel_cpu=1 # prophet doesn't run parallel
   return state
-
 
 def set_logger(state: MSVState) -> logging.Logger:
   logger = logging.getLogger('msv-search')
@@ -242,34 +165,6 @@ def read_fl_score(state: MSVState):
       line_score=LocationScore(splitted[0],int(splitted[1]),int(splitted[6]),int(splitted[7]))
       if line_score not in state.fl_score and has_patch(line_score.file_name,line_score.line):
         state.fl_score.append(line_score)
-
-def read_fl_info(state: MSVState, priority:dict) -> list:
-  class Location:
-    def __init__(self,file:str,line:int,primary_score:int,secondary_score:int) -> None:
-      self.file=file
-      self.line=line
-      self.primary_score=primary_score
-      self.secondary_score=secondary_score
-    def __lt__(self,other:"Location"):
-      if self.primary_score>other.primary_score:
-        return True
-      elif self.primary_score==other.primary_score and self.secondary_score<other.secondary_score:
-        return True
-      else:
-        return False
-
-  locs=[]
-  for info in priority:
-    locs.append(Location(info['file'],info['line'],info['primary_score'],info['second_score']))
-  
-  result=sorted(locs)
-  if state.top_fl>0:
-    result=result[:state.top_fl]
-  
-  final_locs=[]
-  for loc in result:
-    final_locs.append((loc.file,loc.line))
-  return final_locs
 
 def read_info_recoder(state: MSVState) -> None:
   with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
@@ -1065,78 +960,6 @@ def read_info_prapr(state: MSVState) -> None:
         for key in prev_info:
           data=prev_info[key]
           state.simulation_data[key] = data
-
-def trim_with_watch_level(state: MSVState, watch_level: str, correct_str: str) -> None:
-  correct_case = state.correct_case_info
-  correct_type = correct_case.parent
-  correct_switch = correct_type.parent
-  correct_line = correct_switch.parent
-  correct_func = correct_line.parent
-  correct_file = correct_func.parent
-
-  def has_func(func_list:List[FuncInfo],func:str):
-    for f in func_list:
-      if f.id==func:
-        return True
-    return False
-
-  total_func_list=[]
-  for file in state.file_info_map.values():
-    for func in file.func_info_map.values():
-      total_func_list.append(func)
-  # top3_func=find_top_function(total_func_list)
-  # if correct_func not in top3_func:
-  #   top3_func.insert(0,correct_func)
-  top3_func=[correct_func]
-
-  for file in state.file_info_map.copy():
-    if file != correct_file.file_name:
-      del state.file_info_map[file]
-      for case in state.seapr_remain_cases.copy():
-        if case.parent.parent.parent.parent.parent.file_name==file:
-          state.seapr_remain_cases.remove(case)
-  if watch_level == "file":
-    return
-      
-  for func in correct_file.func_info_map.copy():
-    if func != correct_func.id:
-      del correct_file.func_info_map[func]
-      for case in state.seapr_remain_cases.copy():
-          if case.parent.parent.parent.parent.id==func:
-            state.seapr_remain_cases.remove(case)
-  if watch_level == "func":
-    return
-  for line in correct_func.line_info_map.copy():
-    if line != correct_line.uuid:
-      del correct_func.line_info_map[line]
-      for case in state.seapr_remain_cases.copy():
-          if case.parent.parent.parent.line_number==line or not has_func(top3_func,case.parent.parent.parent.parent.func_name):
-            state.seapr_remain_cases.remove(case)
-  if watch_level == "line":
-    return
-  for sw in correct_line.switch_info_map.copy():
-    if sw != correct_switch.switch_number:
-      del correct_line.switch_info_map[sw]
-      for case in state.seapr_remain_cases.copy():
-          if case.parent.parent.switch_number==sw or not has_func(top3_func,case.parent.parent.parent.parent.func_name):
-            state.seapr_remain_cases.remove(case)
-  if watch_level == "switch":
-    return
-  for ty in correct_switch.type_info_map.copy():
-    if ty != correct_type.patch_type:
-      del correct_switch.type_info_map[ty]
-      for case in state.seapr_remain_cases.copy():
-          if case.parent.patch_type==ty or not has_func(top3_func,case.parent.parent.parent.parent.func_name):
-            state.seapr_remain_cases.remove(case)
-  if watch_level == "type":
-    return
-  for cs in correct_type.case_info_map.copy():
-    if cs != correct_case.case_number:
-      del correct_type.case_info_map[cs]
-      for case in state.seapr_remain_cases.copy():
-          if case.case_number==cs or not has_func(top3_func,case.parent.parent.parent.parent.func_name):
-            state.seapr_remain_cases.remove(case)
-  return
 
 def copy_previous_results(state: MSVState) -> None:
   result_log = os.path.join(state.out_dir, "msv-search.log")

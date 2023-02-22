@@ -8,14 +8,6 @@ def get_ochiai(s_h: float, s_l: float, d_h: float, d_l: float) -> float:
     return 0.0
   return s_h / (((s_h + d_h) * (s_h + s_l)) ** 0.5)
 
-def find_func_loc(state: MSVState, base_loc: FileLine) -> Tuple[str, int, int]:
-  for func in state.function_to_location_map:
-    loc = state.function_to_location_map[func]
-    if loc[0] == base_loc.file_info.file_name:
-      if loc[1] <= base_loc.line_info.line_number and base_loc.line_info.line_number <= loc[2]:
-        return loc
-  return None
-
 def save_result(state: MSVState) -> None:
   state.last_save_time = time.time()
   result_file = os.path.join(state.out_dir, "msv-result.json")
@@ -25,23 +17,8 @@ def save_result(state: MSVState) -> None:
 
   if state.use_simulation_mode:
     # Save cached result to file
-    tmp_sim_file = os.path.join(state.out_dir, "msv-sim-data.json")
-    with open(tmp_sim_file, "w") as f:
+    with open(state.prev_data, "w") as f:
       json.dump(state.simulation_data, f, indent=2)
-    # copy to the original file
-    shutil.move(tmp_sim_file, state.prev_data)
-
-    if state.remove_cached_file:
-      for key in state.simulation_data:
-        data=state.simulation_data[key]
-        abst_path = state.work_dir+'/'+key
-        if not data['basic'] and os.path.exists(abst_path):
-          # Remove unnecessary infos if cached and not basic patch
-          result=subprocess.run(['rm','-rf',abst_path],stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
-
-          index=key.rfind('/')
-          sub_path=state.work_dir+'/'+key[:index]
-          result=subprocess.run(['rm','-rf',sub_path],stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
 
 # Append result list, save result to file periodically
 def append_result(state: MSVState, selected_patch: List[TbarPatchInfo], test_result: bool,pass_test_result:bool=False, pass_all_neg_test: bool = False,compilable: bool = True,fail_time:float=0.0,pass_time:float=0.0) -> None:
@@ -80,10 +57,7 @@ def append_result(state: MSVState, selected_patch: List[TbarPatchInfo], test_res
     save_result(state)
 
 def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: bool) -> None:
-  if state.sampling_mode:
-    selected_patch.update_result(result, 1, 1,False, False)
-  else:
-    selected_patch.update_result(result, 1, state.params[PT.b_dec],state.use_exp_alpha, state.use_fixed_beta)
+  selected_patch.update_result(result, 1, state.params[PT.b_dec],state.use_exp_alpha)
   if result:
     state.total_basic_patch += 1
     selected_patch.tbar_type_info.children_basic_patches+=1
@@ -185,16 +159,13 @@ def update_positive_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, 
     selected_patch.func_info.consecutive_fail_plausible_count+=1
     selected_patch.file_info.consecutive_fail_plausible_count+=1
     
-  if state.sampling_mode:
-    selected_patch.update_result_positive(result, 1, 1,False, False)
-  else:  
-    selected_patch.update_result_positive(result, 1, state.params[PT.b_dec],state.use_exp_alpha, state.use_fixed_beta)
+  selected_patch.update_result_positive(result, 1, state.params[PT.b_dec],state.use_exp_alpha)
 
 def remove_patch_tbar(state: MSVState, selected_patch: TbarPatchInfo) -> None:
   selected_patch.remove_patch(state)
 
 def update_result_recoder(state: MSVState, selected_patch: RecoderPatchInfo, result: bool) -> None:
-  selected_patch.update_result(result, 1, state.params[PT.b_dec],state.use_exp_alpha, state.use_fixed_beta)
+  selected_patch.update_result(result, 1, state.params[PT.b_dec],state.use_exp_alpha)
   if result:
     state.total_basic_patch += 1
     selected_patch.line_info.children_basic_patches += 1
@@ -247,19 +218,6 @@ def update_result_recoder(state: MSVState, selected_patch: RecoderPatchInfo, res
           rc.same_seapr_pf.update(result, 1)
         else:
           rc.diff_seapr_pf.update(result, 1)
-        # if state.use_pattern and result:
-        #   pattern = 0
-        #   tmp_rti = recoder_type_info
-        #   for rti in selected_patch.recoder_type_info_list:
-        #     if tmp_rti is None:
-        #       break
-        #     if rti.act == tmp_rti.act:
-        #       pattern += 1
-        #       tmp_rti = tmp_rti.prev
-        #     else:
-        #       break
-        #   if pattern > 0:
-        #     rc.same_seapr_pf.update(True, pattern)
 
 def update_positive_result_recoder(state: MSVState, selected_patch: RecoderPatchInfo, result: bool) -> None:
   if result:
@@ -273,7 +231,7 @@ def update_positive_result_recoder(state: MSVState, selected_patch: RecoderPatch
     selected_patch.line_info.consecutive_fail_plausible_count += 1
     selected_patch.func_info.consecutive_fail_plausible_count += 1
     selected_patch.file_info.consecutive_fail_plausible_count += 1
-  selected_patch.update_result_positive(result, 1, state.params[PT.b_dec],state.use_exp_alpha, state.use_fixed_beta)
+  selected_patch.update_result_positive(result, 1, state.params[PT.b_dec],state.use_exp_alpha)
 
 def remove_patch_recoder(state: MSVState, selected_patch: RecoderPatchInfo) -> None:
   selected_patch.remove_patch(state)

@@ -54,12 +54,6 @@ class PassFail:
   def __init__(self, p: float = 0., f: float = 0.) -> None:
     self.pass_count = p
     self.fail_count = f
-  def __fixed_beta__(self,use_fixed_beta,alpha,beta):
-    if not use_fixed_beta:
-      return 1
-    else:
-      mode=self.beta_mode(alpha,beta)
-      return 0.5*(pow(3.7,mode))+0.2
   def __exp_alpha(self, exp_alpha:bool) -> float:
     if exp_alpha:
       if self.pass_count==0:
@@ -75,11 +69,8 @@ class PassFail:
   def update(self, result: bool, n: float,b_n:float=1.0, exp_alpha: bool = False, use_fixed_beta:bool=False) -> None:
     if result:
       self.pass_count += n * self.__exp_alpha(exp_alpha)
-    else:
-      self.fail_count += b_n*self.__fixed_beta__(use_fixed_beta,self.pass_count,self.fail_count)
   def update_with_pf(self, other,b_n:float=1.0,use_fixed_beta:bool=False) -> None:
     self.pass_count += other.pass_count
-    self.fail_count += other.fail_count*self.__fixed_beta__(use_fixed_beta,self.pass_count,self.fail_count)
   def expect_probability(self,additional_score:float=0) -> float:
     return self.beta_mode(self.pass_count + 1.5+additional_score, self.fail_count + 2.0)
   def select_value(self,a_init:float=1.0,b_init:float=1.0) -> float: # select a value randomly from the beta distribution
@@ -474,31 +465,6 @@ class TbarPatchInfo:
     self.line_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.func_info.pf.update(result, n,b_n,exp_alpha, fixed_beta)
     self.file_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
-  def update_result_out_dist(self, state: 'MSVState', result: bool, dist: float, test: int) -> None:
-    self.out_dist = dist
-    is_diff = True
-    if test in state.original_output_distance_map:
-      is_diff = dist != state.original_output_distance_map[test]
-    tmp = self.tbar_case_info.update_count * self.tbar_case_info.out_dist
-    self.tbar_case_info.out_dist = (tmp + dist) / (self.tbar_case_info.update_count + 1)
-    self.tbar_case_info.update_count += 1
-    self.tbar_case_info.output_pf.update(is_diff, 1.0)
-    tmp = self.tbar_type_info.update_count * self.tbar_type_info.out_dist
-    self.tbar_type_info.out_dist = (tmp + dist) / (self.tbar_type_info.update_count + 1)
-    self.tbar_type_info.update_count += 1
-    self.tbar_type_info.output_pf.update(is_diff, 1.0)
-    tmp = self.line_info.update_count * self.line_info.out_dist
-    self.line_info.out_dist = (tmp + dist) / (self.line_info.update_count + 1)
-    self.line_info.update_count += 1
-    self.line_info.output_pf.update(is_diff, 1.0)
-    tmp = self.func_info.update_count * self.func_info.out_dist
-    self.func_info.out_dist = (tmp + dist) / (self.func_info.update_count + 1)
-    self.func_info.update_count += 1
-    self.func_info.output_pf.update(is_diff, 1.0)
-    tmp = self.file_info.update_count * self.file_info.out_dist
-    self.file_info.out_dist = (tmp + dist) / (self.file_info.update_count + 1)
-    self.file_info.update_count += 1
-    self.file_info.output_pf.update(is_diff, 1.0)    
   def update_result_positive(self, result: bool, n: float, b_n:float,exp_alpha: bool, fixed_beta: bool) -> None:
     self.tbar_case_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.tbar_type_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
@@ -579,31 +545,6 @@ class RecoderPatchInfo:
     self.line_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.func_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.file_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
-  def update_result_out_dist(self, state: 'MSVState', result: bool, dist: float, test: int) -> None:
-    self.out_dist = dist
-    is_diff = True
-    if test in state.original_output_distance_map:
-      is_diff = dist != state.original_output_distance_map[test]
-    tmp = self.recoder_case_info.update_count * self.recoder_case_info.out_dist
-    self.recoder_case_info.out_dist = (tmp + dist) / (self.recoder_case_info.update_count + 1)
-    self.recoder_case_info.update_count += 1
-    self.recoder_case_info.output_pf.update(is_diff, 1.0)
-    # tmp = self.recoder_type_info.update_count * self.recoder_type_info.out_dist
-    # self.recoder_type_info.out_dist = (tmp + dist) / (self.recoder_type_info.update_count + 1)
-    # self.recoder_type_info.update_count += 1
-    # self.recoder_type_info.output_pf.update(is_diff, 1.0)
-    tmp = self.line_info.update_count * self.line_info.out_dist
-    self.line_info.out_dist = (tmp + dist) / (self.line_info.update_count + 1)
-    self.line_info.update_count += 1
-    self.line_info.output_pf.update(is_diff, 1.0)
-    tmp = self.func_info.update_count * self.func_info.out_dist
-    self.func_info.out_dist = (tmp + dist) / (self.func_info.update_count + 1)
-    self.func_info.update_count += 1
-    self.func_info.output_pf.update(is_diff, 1.0)
-    tmp = self.file_info.update_count * self.file_info.out_dist
-    self.file_info.out_dist = (tmp + dist) / (self.file_info.update_count + 1)
-    self.file_info.update_count += 1
-    self.file_info.output_pf.update(is_diff, 1.0)    
   def update_result_positive(self, result: bool, n: float, b_n:float,exp_alpha: bool, fixed_beta: bool) -> None:
     self.recoder_case_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
     # self.recoder_type_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
@@ -733,7 +674,6 @@ class MSVState:
   args: List[str]
   msv_version: str
   mode: MSVMode
-  msv_path: str
   work_dir: str
   out_dir: str
   msv_uuid: str
@@ -744,21 +684,13 @@ class MSVState:
   start_time: float
   last_save_time: float
   is_alive: bool
-  use_condition_synthesis: bool
-  use_fl: bool
-  use_prophet_score: bool
-  use_hierarchical_selection: int
   use_pass_test: bool
-  use_multi_line: int
   use_partial_validation: bool
   ignore_compile_error: bool
   time_limit: int
   cycle_limit: int
   correct_case_info: TbarCaseInfo
   correct_patch_str: str
-  watch_level: str
-  max_parallel_cpu: int
-  new_revlog: str
   patch_info_map: Dict[str, FileInfo]  # fine_name: str -> FileInfo
   file_info_map: Dict[str, FileInfo]   # file_name: str -> FileInfo
   switch_case_map: Dict[str, Union[TbarCaseInfo, TbarCaseInfo, RecoderCaseInfo]] # f"{switch_number}-{case_number}" -> SwitchCase
@@ -782,7 +714,6 @@ class MSVState:
   test_to_location: Dict[int, Dict[str, Set[int]]] # test_number -> {file_name: set(line_number)}
   use_pattern: bool      # For SeAPR mode
   simulation_data: Dict[str, dict] # patch_id -> fail_result, pass_result, fail_time, pass_time. compile_result
-  max_initial_trial: int
   c_map: Dict[PT, float]
   params: Dict[PT, float]
   params_decay: Dict[PT, float]
@@ -793,29 +724,19 @@ class MSVState:
   patch_ranking: List[str]
   ranking_map: Dict[str, int]
   total_basic_patch: int
-  bounded_seapr: bool
   def __init__(self) -> None:
     self.msv_version = "1.0.0"
     self.mode = MSVMode.guided
-    self.msv_path = ""
     self.msv_uuid = str(uuid.uuid4())
     self.cycle = 0
     self.total_basic_patch = 0
     self.start_time = time.time()
     self.last_save_time = self.start_time
     self.is_alive = True
-    self.use_condition_synthesis = False
-    self.use_fl = False
-    self.use_prophet_score = False
-    self.use_hierarchical_selection = 1
     self.use_pass_test = False
-    self.use_multi_line = 1
     self.skip_valid=False
-    self.use_fixed_beta=False
     self.time_limit = -1
     self.cycle_limit = -1
-    self.max_parallel_cpu = 8
-    self.new_revlog = ""
     self.patch_info_map = dict()
     self.switch_case_map = dict()
     self.selected_patch = None
@@ -835,9 +756,7 @@ class MSVState:
     self.msv_result = list()
     self.var_counts=dict()
     self.failed_positive_test = set()
-    self.use_cpr_space=False
     self.priority_map = dict()
-    self.use_fixed_const=False
     self.used_patch = list()
     self.critical_map = dict()
     self.profile_diff = None
@@ -854,45 +773,33 @@ class MSVState:
     self.simulation_data = dict()
     self.correct_patch_str: str = ""
     self.correct_case_info: TbarCaseInfo = None
-    self.watch_level: str = ""
     self.total_searched_patch=0
     self.total_passed_patch=0
     self.total_plausible_patch=0
     self.iteration=0
     self.orig_rank_iter=0
     self.use_partial_validation = True
-    self.max_initial_trial = 0
     self.c_map = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.0}
     self.params = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.0, PT.cov: 2.0, PT.sigma: 0.0, PT.halflife: 1.0, PT.epsilon: 0.0,PT.b_dec:0.0,PT.a_init:2.0,PT.b_init:2.0}
     self.params_decay = {PT.fl:1.0,PT.basic:1.0,PT.plau:1.0}
     self.original_output_distance_map = dict()
-    self.use_msv_ext=False
     self.tbar_mode = False
     self.recoder_mode = False
     self.prapr_mode=False
     self.use_exp_alpha = False
     self.run_all_test=False
-    self.regression_php_mode=''
     self.top_fl=0
     self.patch_ranking = list()
-    self.use_fixed_halflife=False
     self.regression_test_info:List[int]=list()
-    self.language_model_path='./Google-word2vec.txt'
-    self.language_model_mean=''
-    self.remove_cached_file=False
-    self.use_epsilon=True
     self.finish_at_correct_patch=False
     self.func_list: List[FuncInfo] = list()
     self.count_compile_fail=True
     self.fixminer_mode=False  # fixminer-mode: Fixminer patch space is seperated to 2 groups
-    self.spr_mode=False  # SPR mode: SPR uses FL+template instead of prophet score
-    self.sampling_mode=False  # sampling mode: use Thompson-sampling to select patch
     self.finish_top_method=False  # Finish if every patches in top-30 methods are searched. Should turn on for default SeAPR
     self.use_unified_debugging=False  # Use unified debugging to generate more precise clusters
 
     self.seapr_remain_cases:List[TbarCaseInfo]=[]
     self.seapr_layer:SeAPRMode=SeAPRMode.FUNCTION
-    self.bounded_seapr = False
     self.ranking_map = dict()
 
     self.c_patch_ranking:Dict[float,List[TbarCaseInfo]]=dict()
@@ -910,7 +817,6 @@ class MSVState:
 
     self.not_use_guided_search=False  # Use only epsilon-greedy search
     self.not_use_epsilon_search=False  # Use only guided search and original
-    self.not_use_acceptance_prob=True  # Always use vertical search
     self.test_time=0.  # Total compile and test time
     self.select_time=0.  # Total select time
     self.total_methods=0  # Total methods
@@ -949,18 +855,6 @@ def remove_file_or_pass(file:str):
       os.remove(file)
   except:
     pass
-
-def record_to_int(record: List[bool]) -> List[int]:
-  """
-    Convert boolean written record to binary list.
-
-    record: record written in bool
-    return: record written in 0 or 1
-  """
-  result=[]
-  for path in record:
-    result.append(1 if path else 0)
-  return result
 
 def append_java_cache_result(state:MSVState,case:TbarCaseInfo,fail_result:bool,pass_result:bool,pass_all_fail:bool,compilable:bool,
       fail_time:float, pass_time:float):
