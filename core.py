@@ -57,6 +57,8 @@ class PassFail:
   def update(self, result: bool, n: float,b_n:float=1.0, exp_alpha: bool = False, use_fixed_beta:bool=False) -> None:
     if result:
       self.pass_count += n * self.__exp_alpha(exp_alpha)
+    else:
+      self.fail_count+=b_n
   def update_with_pf(self, other,b_n:float=1.0,use_fixed_beta:bool=False) -> None:
     self.pass_count += other.pass_count
   def expect_probability(self,additional_score:float=0) -> float:
@@ -542,7 +544,7 @@ class RecoderPatchInfo:
     self.line_info.score_list.remove(prob)
     self.func_info.score_list.remove(prob)
     self.file_info.score_list.remove(prob)
-    
+
     self.recoder_case_info.case_update_count += 1
     self.line_info.case_update_count += 1
     fl_score = self.line_info.fl_score
