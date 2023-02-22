@@ -78,10 +78,6 @@ def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: b
     selected_patch.func_info.consecutive_fail_plausible_count+=1
     selected_patch.file_info.consecutive_fail_plausible_count+=1
 
-  # for score in state.java_remain_patch_ranking:
-  #   if len(state.java_remain_patch_ranking[score]) != 0:
-  #     state.previous_score=score
-  #     break
   state.previous_score=selected_patch.line_info.fl_score
 
   if state.mode == MSVMode.seapr:
@@ -182,10 +178,6 @@ def update_result_recoder(state: MSVState, selected_patch: RecoderPatchInfo, res
     selected_patch.func_info.consecutive_fail_plausible_count += 1
     selected_patch.file_info.consecutive_fail_plausible_count += 1
 
-  # for score in state.java_remain_patch_ranking:
-  #   if len(state.java_remain_patch_ranking[score]) != 0:
-  #     state.previous_score=score
-  #     break
   state.previous_score=selected_patch.line_info.fl_score
 
   if state.mode == MSVMode.seapr:
@@ -199,12 +191,10 @@ def update_result_recoder(state: MSVState, selected_patch: RecoderPatchInfo, res
     else:
       for loc in state.patch_ranking:
         rc: RecoderCaseInfo = state.switch_case_map[loc]
-        # recoder_type_info = rc.parent
         line_info = rc.parent
         func_info = line_info.parent
         file_info = func_info.parent
         is_share = False
-        same_pattern = False
         if state.seapr_layer == SeAPRMode.FILE:
           if selected_patch.file_info == file_info:
             is_share = True

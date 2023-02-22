@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 import os
 import sys
 import subprocess
@@ -21,7 +20,7 @@ class MSVTbar():
   def __init__(self, state: MSVState) -> None:
     self.state:MSVState=state
     self.is_initialized:bool=False
-    
+
   def _is_method_over(self) -> bool:
     """Check the ranks of every remaining methods are over then 30"""
     if not self.state.finish_top_method: return False
@@ -52,7 +51,6 @@ class MSVTbar():
       self.state.is_alive=False
     return self.state.is_alive
   def save_result(self) -> None:
-    # TODO change
     result_handler.save_result(self.state)
   def run_test(self, patch: TbarPatchInfo, test: int) -> Tuple[int, bool,float]:
     start_time=time.time()
@@ -74,7 +72,6 @@ class MSVTbar():
         self.state.d4j_negative_test.remove(neg)
       else:
         compilable, run_result,_ = self.run_test(op, neg)
-        # self.state.d4j_test_fail_num_map[neg] = fail_num
         if not compilable:
           self.state.msv_logger.warning("Project is not compilable")
           self.state.is_alive = False
@@ -88,7 +85,6 @@ class MSVTbar():
         return
     if not self.state.skip_valid:
       self.state.msv_logger.info(f"Validating {len(self.state.d4j_positive_test)} pass tests")
-      # TODO: add positive test
       new_env = MSVEnvVar.get_new_env_tbar(self.state, op, "")
       new_env = MSVEnvVar.get_new_env_d4j_positive_tests(self.state, self.state.d4j_positive_test, new_env)
       run_result, failed_tests = run_test.run_pass_test_d4j_exec(self.state, new_env, self.state.d4j_positive_test)
@@ -97,17 +93,12 @@ class MSVTbar():
         for ft in failed_tests:
           if ft in self.state.d4j_negative_test or ft in self.state.failed_positive_test:
             continue
-          # key = ft.split("::")[0]
-          # if key in fail_set:
-          #   continue
-          # fail_set.add(key)
-          # self.state.d4j_positive_test.remove(key)
           self.state.msv_logger.warning(f"FAIL at {ft}!!!!")    
   def run(self) -> None:
+    self.initialize()
     if self.state.use_simulation_mode:
       self.run_sim()
       return
-    self.initialize()
     self.state.start_time = time.time()
     self.state.cycle = 0
     while self.is_alive():
@@ -147,7 +138,6 @@ class MSVTbar():
       result_handler.remove_patch_tbar(self.state, patch)
   
   def run_sim(self) -> None:
-    # self.initialize()
     self.state.start_time = time.time()
     self.state.cycle = 0
     while(self.is_alive()):
@@ -239,7 +229,6 @@ class MSVRecoder(MSVTbar):
     op = RecoderPatchInfo(original)
     for neg in self.state.d4j_negative_test.copy():
       compilable, run_result,_ = self.run_test(op, neg)
-      # self.state.d4j_test_fail_num_map[neg] = fail_num
       if not compilable:
         self.state.msv_logger.warning("Project is not compilable")
         self.state.is_alive = False
@@ -258,14 +247,12 @@ class MSVRecoder(MSVTbar):
       run_result, failed_tests = run_test.run_pass_test_d4j_exec(self.state, new_env, self.state.d4j_positive_test)
       if not run_result:
         for ft in failed_tests:
-          # self.state.failed_positive_test.add(ft)
           self.state.msv_logger.info("Removing {} from positive test".format(ft))
-          # self.state.d4j_positive_test.remove(ft)
   def run(self) -> None:
+    self.initialize()
     if self.state.use_simulation_mode:
       self.run_sim()
       return
-    self.initialize()
     self.state.start_time = time.time()
     self.state.cycle = 0
     while(self.is_alive()):
@@ -301,7 +288,6 @@ class MSVRecoder(MSVTbar):
       result_handler.append_result(self.state, [patch], pass_exists, pass_result, result, is_compilable,fail_time,pass_time)
       result_handler.remove_patch_recoder(self.state, patch)
   def run_sim(self) -> None:
-    # self.initialize()
     self.state.start_time = time.time()
     self.state.cycle = 0
     while(self.is_alive()):
@@ -382,7 +368,6 @@ class MSVPraPR(MSVTbar):
       self.state.is_alive=False
     return self.state.is_alive
   def save_result(self) -> None:
-    # TODO change
     result_handler.save_result(self.state)
   def run(self) -> None:
     assert self.state.use_simulation_mode,'PraPR needs cache files always'

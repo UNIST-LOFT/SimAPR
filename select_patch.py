@@ -75,7 +75,6 @@ def epsilon_search(state:MSVState):
   # Get total patches and total searched patches, for epsilon greedy method
   if cur_score not in state.same_consecutive_score:
     state.same_consecutive_score[cur_score]=1
-  # is_secondary=state.same_consecutive_score[cur_score]%state.MAX_CONSECUTIVE_SAME_SCORE==0
   is_secondary=False
   state.same_consecutive_score[cur_score]+=1
   if not is_secondary or len(next_top_fl_patches)==0:
@@ -91,8 +90,6 @@ def epsilon_search(state:MSVState):
     if is_epsilon_greedy:
       # Perform random search in epsilon probability
       state.msv_logger.debug(f'Use epsilon greedy method, epsilon: {epsilon}')
-      # index=random.randint(0,len(top_fl_patches)-1)
-      # selected_case_info = top_fl_patches[index]
       lines = set()
       for case_info in top_fl_patches:
         if case_info.parent not in lines:
@@ -245,21 +242,7 @@ def epsilon_select(state:MSVState,source=None):
             result.add(case_info)
         
       else:
-        # For C
-        if source is None:
-          if case_info.parent.parent.parent.parent.parent in state.file_info_map.values():
-            result.add(case_info.parent.parent.parent.parent.parent)
-        elif type(source) == FileInfo:
-          if case_info.parent.parent.parent.parent in source.func_info_map.values():
-            result.add(case_info.parent.parent.parent.parent)
-        elif type(source) == FuncInfo:
-          if case_info.parent.parent.parent in source.line_info_map.values():
-            result.add(case_info.parent.parent.parent)
-        elif type(source) == LineInfo:
-          if case_info.parent.parent in source.switch_info_map.values():
-            result.add(case_info.parent.parent)
-        else:
-          raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
+        raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
 
     # Choose random element in candidates
     result=list(result)
@@ -295,17 +278,7 @@ def epsilon_select(state:MSVState,source=None):
       elif type(source) == LineInfo:
         return cur_fl_patches[0]
     else:
-      # For C
-      if source is None:
-        return cur_fl_patches[0].parent.parent.parent.parent.parent
-      elif type(source) == FileInfo:
-        return cur_fl_patches[0].parent.parent.parent.parent
-      elif type(source) == FuncInfo:
-        return cur_fl_patches[0].parent.parent.parent
-      elif type(source) == LineInfo:
-        return cur_fl_patches[0].parent.parent
-      else:
-        raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
+      raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
 
 def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
   start_time=time.time()
@@ -881,7 +854,6 @@ def select_patch_recoder_seapr(state: MSVState) -> RecoderPatchInfo:
     for loc in state.patch_ranking:
       recoder_case_info: RecoderCaseInfo = state.switch_case_map[loc]
       if recoder_case_info.case_id not in recoder_case_info.parent.recoder_case_info_map:
-        # state.msv_logger.warning(f"No switch info  {recoder_case_info.location} in patch: {recoder_case_info.parent.recoder_case_info_map}")
         continue
       cur_score = get_ochiai(recoder_case_info.same_seapr_pf.pass_count, recoder_case_info.same_seapr_pf.fail_count,
         recoder_case_info.diff_seapr_pf.pass_count, recoder_case_info.diff_seapr_pf.fail_count)

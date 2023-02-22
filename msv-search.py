@@ -237,30 +237,17 @@ def read_info_recoder(state: MSVState) -> None:
         state.priority_map[f"{file_info.file_name}:{line_info.line_number}"] = file_line
         for cs in line["cases"]:
           case_id = cs["case"]
-          # mode = cs["mode"]
-          # actlist = cs["actlist"]
           location = cs["location"]
           prob = cs["prob"]
-          # type_map = line_info.recoder_type_info_map
-          # prev = None
-          # for act in actlist:
-          #   if act not in type_map:
-          #     type_map[act] = RecoderTypeInfo(line_info, act, prev)
-          #   prev = type_map[act]
-          #   prev.score_list.append(prob)
-          #   type_map = prev.next
-          # recoder_type_info = prev
+
           recoder_case_info = RecoderCaseInfo(line_info, location, case_id)
           line_info.recoder_case_info_map[case_id] = recoder_case_info
           state.switch_case_map[f"{line_info.line_id}-{case_id}"] = recoder_case_info
           state.patch_location_map[location] = recoder_case_info
           recoder_case_info.prob = prob
-          # recoder_type_info.score_list.append(prob)
           line_info.score_list.append(prob)
           func_info.score_list.append(prob)
           file_info.score_list.append(prob)
-          # for ti in recoder_type_info.get_path():
-          #   ti.total_case_info += 1
           line_info.total_case_info += 1
           func_info.total_case_info += 1
           file_info.total_case_info += 1
@@ -336,8 +323,6 @@ def read_info_recoder(state: MSVState) -> None:
   temp_func = FuncInfo(temp_file, "original_fn", 0, 0)
   temp_file.func_info_map["original_fn:0-0"] = temp_func
   temp_line: LineInfo = LineInfo(temp_func, 0)
-  # temp_file.line_info_list.append(temp_line)
-  # temp_recoder_type = RecoderTypeInfo(temp_line, 0, None)
   temp_recoder_case = RecoderCaseInfo(temp_line, "original", 0)
   state.switch_case_map["0-0"] = temp_recoder_case
   state.patch_location_map["original"] = temp_recoder_case
@@ -349,13 +334,6 @@ def read_info_recoder(state: MSVState) -> None:
           data=prev_info[key]
           state.simulation_data[key] = data
   
-  # Print debug for correct patch
-  # correct_patch:RecoderCaseInfo=state.switch_case_map[state.correct_patch_list[0]]
-  # correct_score=correct_patch.parent.fl_score
-  # same_groups=state.java_patch_ranking[correct_score]
-  # state.msv_logger.debug(f'Correct patch group size: {len(same_groups)}')
-  # state.msv_logger.debug(f'Correct patch rank in group: {same_groups.index(correct_patch)}')
-
 def read_info_tbar(state: MSVState) -> None:
   with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
     info = json.load(f)
@@ -374,14 +352,6 @@ def read_info_tbar(state: MSVState) -> None:
         loc = rank['location']
       rank_list.append(loc)
 
-    # Read priority (for FL score)
-    # n = len(info['priority'])
-    # for priority in info['priority']:
-    #   temp_file: str = priority["file"]
-    #   temp_line: int = priority["line"]
-    #   score: float = priority["score"]
-    #   store = (temp_file, temp_line, score)
-    #   state.priority_list.append(store)
     # Read rules to build patch tree structure
     file_map = state.file_info_map
     ff_map: Dict[str, Dict[str, Tuple[int, int]]] = dict()
@@ -428,7 +398,6 @@ def read_info_tbar(state: MSVState) -> None:
               break
         else:
           ff_map[file_name] = dict()
-        #line_info = LineInfo(file_info, int(line['line']))
         if line_info is None:
           # No function found for this line!!!
           # Use default...
@@ -473,7 +442,6 @@ def read_info_tbar(state: MSVState) -> None:
           location = sw["location"]
           if location not in rank_list:
             continue
-          # fl_score = sw["score"]
           if mut not in line_info.tbar_type_info_map:
             line_info.tbar_type_info_map[mut] = TbarTypeInfo(line_info, mut)
           tbar_type_info = line_info.tbar_type_info_map[mut]
@@ -576,7 +544,6 @@ def read_info_tbar(state: MSVState) -> None:
   temp_func = FuncInfo(temp_file, "original_fn", 0, 0)
   temp_file.func_info_map["original_fn:0-0"] = temp_func
   temp_line: LineInfo = LineInfo(temp_func, 0)
-  # temp_file.line_info_list.append(temp_line)
   temp_tbar_type = TbarTypeInfo(temp_line, "original_mut")
   temp_tbar_case = TbarCaseInfo(temp_tbar_type, "original", 0, 0)
   state.switch_case_map["original"] = temp_tbar_case
@@ -631,7 +598,6 @@ def read_info_fixminer(state: MSVState) -> None:
               break
         else:
           ff_map[file_name] = dict()
-        #line_info = LineInfo(file_info, int(line['line']))
         if line_info is None:
           # No function found for this line!!!
           # Use default...
@@ -767,16 +733,6 @@ def read_info_fixminer(state: MSVState) -> None:
       patch_ranking_list.append(len(state.sub_java_patch_ranking[fl_score]))
   state.sub_max_epsilon_group_size=mean(patch_ranking_list)*2
   state.msv_logger.debug(f'Set maximum sub-epsilon group size to {state.sub_max_epsilon_group_size}')
-  # #Add original to switch_case_map
-  # temp_file: FileInfo = FileInfo('original')
-  # temp_func = FuncInfo(temp_file, "original_fn", 0, 0)
-  # temp_file.func_info_map["original_fn:0-0"] = temp_func
-  # temp_line: LineInfo = LineInfo(temp_func, 0)
-  # # temp_file.line_info_list.append(temp_line)
-  # temp_tbar_type = TbarTypeInfo(temp_line, "original_mut")
-  # temp_tbar_case = TbarCaseInfo(temp_tbar_type, "original", 0, 0)
-  # state.switch_case_map["original"] = temp_tbar_case
-  # state.patch_location_map["original"] = temp_tbar_case
 
 def read_info_prapr(state: MSVState) -> None:
   with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
@@ -840,7 +796,6 @@ def read_info_prapr(state: MSVState) -> None:
           state.priority_map[f"{file_info.file_name}:{line_info.line_number}"] = file_line
 
           for template in info['rules'][file]['methods'][method]['lines'][line]['templates']:  # template: dict[str, patches]
-            # fl_score = sw["score"]
             line_info.tbar_type_info_map[template] = TbarTypeInfo(line_info, template)
             tbar_type_info = line_info.tbar_type_info_map[template]
 
@@ -946,7 +901,6 @@ def read_info_prapr(state: MSVState) -> None:
   temp_func = FuncInfo(temp_file, "original_fn", 0, 0)
   temp_file.func_info_map["original_fn:0-0"] = temp_func
   temp_line: LineInfo = LineInfo(temp_func, 0)
-  # temp_file.line_info_list.append(temp_line)
   temp_tbar_type = TbarTypeInfo(temp_line, "original_mut")
   temp_tbar_case = TbarCaseInfo(temp_tbar_type, "original", 0, 0)
   state.switch_case_map["original"] = temp_tbar_case

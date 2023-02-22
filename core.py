@@ -90,18 +90,14 @@ class PassFail:
       if x[i] == m:
         tmp.append(i)
     return np.random.choice(tmp)
-    # return np.argmax(x)
   @staticmethod
   def select_value_normal(x: List[float], sigma: float) -> List[float]:
     for i in range(len(x)):
       val = x[i]
-      #sigma = 0.1 / 1.96 # max(0.001, val * (1 - val) / 10)
       x[i] = np.random.normal(val, sigma)
     return x
   @staticmethod
   def select_by_probability(probability: List[float]) -> int:   # pf_list: list of PassFail
-    # probability=[]
-    # probability = list(map(lambda x: x.expect_probability(), pf_list))
     total = 0
     for p in probability:
       if p > 0:
@@ -120,22 +116,15 @@ class PassFail:
   @staticmethod
   def concave_up(x: float, base: float = math.e) -> float:
     # unique function
-    # return np.exp(1 - (1 / (x + 0.000001)))
     return x * x
-    # return np.power(base, x-1)
-    # return PassFail.concave_up_exp(x, base)
   @staticmethod
   def concave_down(x: float, base: float = math.e) -> float:
-    # return 2 * x - PassFail.concave_up(x)
-    # return np.power(base, x-1)
     atzero = PassFail.concave_up(0, base)
     return 2 * ((1 - atzero) * x + atzero) - PassFail.concave_up(x, base)
   @staticmethod
   # fail function
   def log_func(x: float, half: float = 51) -> float:
-    # a = half + math.pow(half, 0.5)
     a=half
-    # a*=0.5
     if a-x<=0:
       return 0.
     else:
@@ -181,7 +170,6 @@ class FuncInfo:
     self.begin = begin
     self.end = end
     self.id = f"{self.func_name}:{self.begin}-{self.end}"
-    #self.line_info_list: List[LineInfo] = list()
     self.line_info_map: Dict[uuid.UUID, LineInfo] = dict()
     self.pf = PassFail()
     self.positive_pf = PassFail()
@@ -222,7 +210,6 @@ class LineInfo:
   def __init__(self, parent: FuncInfo, line_number: int) -> None:
     self.uuid = uuid.uuid4()
     self.line_number = line_number
-    #self.switch_info_list: List[SwitchInfo] = list()
     self.parent = parent
     self.pf = PassFail()
     self.critical_pf = PassFail()
@@ -238,7 +225,6 @@ class LineInfo:
     self.has_init_patch=False
     self.case_update_count: int = 0
     self.tbar_type_info_map: Dict[str, TbarTypeInfo] = dict()
-    # self.recoder_type_info_map: Dict[str, RecoderTypeInfo] = dict()
     self.line_id = -1
     self.recoder_case_info_map: Dict[int, RecoderCaseInfo] = dict()
     self.score_list: List[float] = list()
@@ -373,7 +359,6 @@ class FileLine:
     self.case_map: Dict[str, TbarCaseInfo] = dict() # switch_number-case_number -> TbarCaseInfo
     self.seapr_e_pf: PassFail = PassFail()
     self.seapr_n_pf: PassFail = PassFail()
-    # self.type_map: Dict[PatchType, Tuple[PassFail, PassFail]] = dict()
   def to_str(self) -> str:
     return f"{self.file_info.file_name}:{self.line_info.line_number}"
   def __str__(self) -> str:
@@ -430,11 +415,6 @@ class MSVEnvVar:
     return new_env
   @staticmethod
   def get_new_env_d4j_positive_tests(state: 'MSVState', tests: List[str], new_env: Dict[str, str]) -> Dict[str, str]:
-    # test_list = f"/tmp/{uuid.uuid4()}.list"
-    # new_env["MSV_TEST_LIST"] = test_list
-    # with open(test_list, "w") as f:
-    #   for test in tests:
-    #     f.write(test + "\n")
     new_env["MSV_TEST"] = "ALL"
     return new_env
 
@@ -518,8 +498,6 @@ class TbarPatchInfo:
 class RecoderPatchInfo:
   def __init__(self, recoder_case_info: RecoderCaseInfo) -> None:
     self.recoder_case_info = recoder_case_info
-    # self.recoder_type_info = recoder_case_info.parent # leaf node
-    # self.recoder_type_info_list = self.recoder_type_info.get_path()
     self.line_info = self.recoder_case_info.parent
     self.func_info = self.line_info.parent
     self.file_info = self.func_info.parent
@@ -527,17 +505,11 @@ class RecoderPatchInfo:
     self.out_diff = False
   def update_result(self, result: bool, n: float, b_n:float,exp_alpha: bool, fixed_beta: bool) -> None:
     self.recoder_case_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
-    # for rti in self.recoder_type_info_list:
-    #   rti.pf.update(result, n,b_n, exp_alpha, fixed_beta)
-    # self.recoder_type_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.line_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.func_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.file_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
   def update_result_positive(self, result: bool, n: float, b_n:float,exp_alpha: bool, fixed_beta: bool) -> None:
     self.recoder_case_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
-    # self.recoder_type_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
-    # for rti in self.recoder_type_info_list:
-    #   rti.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.line_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.func_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.file_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
@@ -545,14 +517,7 @@ class RecoderPatchInfo:
     if self.recoder_case_info.case_id not in self.line_info.recoder_case_info_map:
       state.msv_logger.critical(f"{self.recoder_case_info.case_id} not in {self.line_info.recoder_case_info_map}")
     del self.line_info.recoder_case_info_map[self.recoder_case_info.case_id]
-    # if len(self.recoder_type_info.recoder_case_info_map) == 0:
-    #   del self.line_info.recoder_type_info_map[self.recoder_type_info.mode]
-    # for rti in self.recoder_type_info_list:
-    #   if len(rti.next) == 0 and len(rti.recoder_case_info_map) == 0:
-    #     if rti.prev is not None:
-    #       del rti.prev.next[rti.act]
-    #     else:
-    #       del self.line_info.recoder_type_info_map[rti.act]
+
     if len(self.line_info.recoder_case_info_map) == 0:
       score = self.line_info.fl_score
       self.func_info.fl_score_list.remove(score)
@@ -573,15 +538,12 @@ class RecoderPatchInfo:
     if len(self.file_info.func_info_map) == 0:
       del state.file_info_map[self.file_info.file_name]
     prob = self.recoder_case_info.prob
-    # self.recoder_type_info.score_list.remove(prob)
+
     self.line_info.score_list.remove(prob)
     self.func_info.score_list.remove(prob)
     self.file_info.score_list.remove(prob)
+    
     self.recoder_case_info.case_update_count += 1
-    # self.recoder_type_info.case_update_count += 1
-    # for rti in self.recoder_type_info_list:
-    #   rti.case_update_count += 1
-    #   rti.score_list.remove(prob)
     self.line_info.case_update_count += 1
     fl_score = self.line_info.fl_score
     self.line_info.remain_patches_by_score[fl_score].remove(self.recoder_case_info)
