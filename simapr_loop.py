@@ -12,12 +12,12 @@ from enum import Enum
 
 from core import *
 import select_patch
-import msv_result_handler as result_handler
+import result_handler as result_handler
 import run_test
 
-class MSVTbar():
-  def __init__(self, state: MSVState) -> None:
-    self.state:MSVState=state
+class TBarLoop():
+  def __init__(self, state: GlobalState) -> None:
+    self.state:GlobalState=state
     self.is_initialized:bool=False
 
   def _is_method_over(self) -> bool:
@@ -49,17 +49,17 @@ class MSVTbar():
     result_handler.save_result(self.state)
   def run_test(self, patch: TbarPatchInfo, test: int) -> Tuple[int, bool,float]:
     start_time=time.time()
-    compilable, run_result, is_timeout = run_test.run_fail_test_d4j(self.state, MSVEnvVar.get_new_env_tbar(self.state, patch, test))
+    compilable, run_result, is_timeout = run_test.run_fail_test_d4j(self.state, EnvGenerator.get_new_env_tbar(self.state, patch, test))
     run_time=time.time()-start_time
     return compilable, run_result, run_time
   def run_test_positive(self, patch: TbarPatchInfo) -> Tuple[bool,float]:
     start_time=time.time()
-    run_result = run_test.run_pass_test_d4j(self.state, MSVEnvVar.get_new_env_tbar(self.state, patch, ""))
+    run_result = run_test.run_pass_test_d4j(self.state, EnvGenerator.get_new_env_tbar(self.state, patch, ""))
     run_time=time.time()-start_time
     return run_result,run_time
   def initialize(self) -> None:
     self.is_initialized = True
-    self.state.msv_logger.info("Initializing...")
+    self.state.logger.info("Initializing...")
     original = self.state.patch_location_map["original"]
     op = TbarPatchInfo(original)
     for neg in self.state.d4j_negative_test.copy():
@@ -68,27 +68,27 @@ class MSVTbar():
       else:
         compilable, run_result,_ = self.run_test(op, neg)
         if not compilable:
-          self.state.msv_logger.warning("Project is not compilable")
+          self.state.logger.warning("Project is not compilable")
           self.state.is_alive = False
           return
         if run_result:
-          self.state.msv_logger.warning(f"Removing {neg} from negative test")
+          self.state.logger.warning(f"Removing {neg} from negative test")
           self.state.d4j_negative_test.remove(neg)
       if len(self.state.d4j_negative_test) == 0:
-        self.state.msv_logger.critical("No negative test left!!!!")
+        self.state.logger.critical("No negative test left!!!!")
         self.state.is_alive = False
         return
     if not self.state.skip_valid:
-      self.state.msv_logger.info(f"Validating {len(self.state.d4j_positive_test)} pass tests")
-      new_env = MSVEnvVar.get_new_env_tbar(self.state, op, "")
-      new_env = MSVEnvVar.get_new_env_d4j_positive_tests(self.state, self.state.d4j_positive_test, new_env)
+      self.state.logger.info(f"Validating {len(self.state.d4j_positive_test)} pass tests")
+      new_env = EnvGenerator.get_new_env_tbar(self.state, op, "")
+      new_env = EnvGenerator.get_new_env_d4j_positive_tests(self.state, self.state.d4j_positive_test, new_env)
       run_result, failed_tests = run_test.run_pass_test_d4j_exec(self.state, new_env, self.state.d4j_positive_test)
       if not run_result:
         fail_set = set()
         for ft in failed_tests:
           if ft in self.state.d4j_negative_test or ft in self.state.failed_positive_test:
             continue
-          self.state.msv_logger.warning(f"FAIL at {ft}!!!!")    
+          self.state.logger.warning(f"FAIL at {ft}!!!!")    
   def run(self) -> None:
     self.initialize()
     if self.state.use_simulation_mode:
@@ -97,11 +97,11 @@ class MSVTbar():
     self.state.start_time = time.time()
     self.state.cycle = 0
     while self.is_alive():
-      self.state.msv_logger.info(f'[{self.state.cycle}]: executing')
+      self.state.logger.info(f'[{self.state.cycle}]: executing')
       patch = select_patch.select_patch_tbar_mode(self.state)
       self.patch_str=patch.tbar_case_info.location
-      self.state.msv_logger.info(f"Patch: {patch.tbar_case_info.location}")
-      self.state.msv_logger.info(f"{patch.file_info.file_name}${patch.func_info.id}${patch.line_info.line_number}")
+      self.state.logger.info(f"Patch: {patch.tbar_case_info.location}")
+      self.state.logger.info(f"{patch.file_info.file_name}${patch.func_info.id}${patch.line_info.line_number}")
       pass_exists = False
       result = True
       pass_result = False
@@ -115,7 +115,7 @@ class MSVTbar():
           pass_exists = True
         if not run_result:
           result = False
-          if self.state.use_partial_validation and self.state.mode==MSVMode.seapr:
+          if self.state.use_partial_validation and self.state.mode==Mode.seapr:
             break
         self.state.test_time+=fail_time
       if is_compilable or self.state.ignore_compile_error:
@@ -134,11 +134,11 @@ class MSVTbar():
     self.state.start_time = time.time()
     self.state.cycle = 0
     while(self.is_alive()):
-      self.state.msv_logger.info(f'[{self.state.cycle}]: executing')
+      self.state.logger.info(f'[{self.state.cycle}]: executing')
       patch = select_patch.select_patch_tbar_mode(self.state)
       self.patch_str=patch.tbar_case_info.location
-      self.state.msv_logger.info(f"Patch: {patch.tbar_case_info.location}")
-      self.state.msv_logger.info(f"{patch.file_info.file_name}${patch.func_info.id}${patch.line_info.line_number}")
+      self.state.logger.info(f"Patch: {patch.tbar_case_info.location}")
+      self.state.logger.info(f"{patch.file_info.file_name}${patch.func_info.id}${patch.line_info.line_number}")
       pass_exists = False
       result = True
       pass_result = False
@@ -169,15 +169,15 @@ class MSVTbar():
           self.state.iteration += 1
 
       else:
-        msv_result = self.state.simulation_data[key]
-        pass_exists = msv_result['basic']
-        result = msv_result['pass_all_fail']
-        pass_result = msv_result['plausible']
-        fail_time=msv_result['fail_time']
+        simapr_result = self.state.simulation_data[key]
+        pass_exists = simapr_result['basic']
+        result = simapr_result['pass_all_fail']
+        pass_result = simapr_result['plausible']
+        fail_time=simapr_result['fail_time']
         self.state.test_time+=fail_time
         self.state.test_time+=pass_time
-        pass_time=msv_result['pass_time']
-        is_compilable=msv_result['compilable']
+        pass_time=simapr_result['pass_time']
+        is_compilable=simapr_result['compilable']
         if is_compilable or self.state.ignore_compile_error:
           result_handler.update_result_tbar(self.state, patch, pass_exists)
           if result:
@@ -188,7 +188,7 @@ class MSVTbar():
       result_handler.remove_patch_tbar(self.state, patch)
 
 
-class MSVRecoder(MSVTbar):
+class RecoderLoop(TBarLoop):
   def is_alive(self) -> bool:
     if len(self.state.file_info_map) == 0:
       self.state.is_alive = False
@@ -205,40 +205,40 @@ class MSVRecoder(MSVTbar):
     return self.state.is_alive
   def run_test(self, patch: RecoderPatchInfo, test: int) -> Tuple[int, bool, float]:
     start_time=time.time()
-    compilable, run_result, is_timeout = run_test.run_fail_test_d4j(self.state, MSVEnvVar.get_new_env_recoder(self.state, patch, test))
+    compilable, run_result, is_timeout = run_test.run_fail_test_d4j(self.state, EnvGenerator.get_new_env_recoder(self.state, patch, test))
     run_time=time.time() - start_time
     return compilable, run_result,run_time
   def run_test_positive(self, patch: RecoderPatchInfo) -> Tuple[bool,float]:
     start_time=time.time()
-    run_result = run_test.run_pass_test_d4j(self.state, MSVEnvVar.get_new_env_recoder(self.state, patch, ""))
+    run_result = run_test.run_pass_test_d4j(self.state, EnvGenerator.get_new_env_recoder(self.state, patch, ""))
     run_time=time.time()-start_time
     return run_result,run_time
   def initialize(self) -> None:
     self.is_initialized = True
-    self.state.msv_logger.info("Initializing...")
+    self.state.logger.info("Initializing...")
     original = self.state.patch_location_map["original"]
     op = RecoderPatchInfo(original)
     for neg in self.state.d4j_negative_test.copy():
       compilable, run_result,_ = self.run_test(op, neg)
       if not compilable:
-        self.state.msv_logger.warning("Project is not compilable")
+        self.state.logger.warning("Project is not compilable")
         self.state.is_alive = False
         return
       if run_result:
-        self.state.msv_logger.warning(f"Removing {neg} from negative test")
+        self.state.logger.warning(f"Removing {neg} from negative test")
         self.state.d4j_negative_test.remove(neg)
         if len(self.state.d4j_negative_test) == 0:
-          self.state.msv_logger.critical("No negative test left!!!!")
+          self.state.logger.critical("No negative test left!!!!")
           self.state.is_alive = False
           return
     if not self.state.skip_valid:
-      self.state.msv_logger.info(f"Validating {len(self.state.d4j_positive_test)} pass tests")
-      new_env = MSVEnvVar.get_new_env_recoder(self.state, op, "")
-      new_env = MSVEnvVar.get_new_env_d4j_positive_tests(self.state, self.state.d4j_positive_test, new_env)
+      self.state.logger.info(f"Validating {len(self.state.d4j_positive_test)} pass tests")
+      new_env = EnvGenerator.get_new_env_recoder(self.state, op, "")
+      new_env = EnvGenerator.get_new_env_d4j_positive_tests(self.state, self.state.d4j_positive_test, new_env)
       run_result, failed_tests = run_test.run_pass_test_d4j_exec(self.state, new_env, self.state.d4j_positive_test)
       if not run_result:
         for ft in failed_tests:
-          self.state.msv_logger.info("Removing {} from positive test".format(ft))
+          self.state.logger.info("Removing {} from positive test".format(ft))
   def run(self) -> None:
     self.initialize()
     if self.state.use_simulation_mode:
@@ -247,10 +247,10 @@ class MSVRecoder(MSVTbar):
     self.state.start_time = time.time()
     self.state.cycle = 0
     while(self.is_alive()):
-      self.state.msv_logger.info(f'[{self.state.cycle}]: executing')
+      self.state.logger.info(f'[{self.state.cycle}]: executing')
       patch = select_patch.select_patch_recoder_mode(self.state)
-      self.state.msv_logger.info(f"Patch: {patch.recoder_case_info.location}")
-      self.state.msv_logger.info(f"{patch.file_info.file_name}${patch.func_info.id}${patch.line_info.line_number}")
+      self.state.logger.info(f"Patch: {patch.recoder_case_info.location}")
+      self.state.logger.info(f"{patch.file_info.file_name}${patch.func_info.id}${patch.line_info.line_number}")
       self.patch_str = patch.to_str_sw_cs()
       pass_exists = False
       result = True
@@ -282,10 +282,10 @@ class MSVRecoder(MSVTbar):
     self.state.start_time = time.time()
     self.state.cycle = 0
     while(self.is_alive()):
-      self.state.msv_logger.info(f'[{self.state.cycle}]: executing')
+      self.state.logger.info(f'[{self.state.cycle}]: executing')
       patch = select_patch.select_patch_recoder_mode(self.state)
-      self.state.msv_logger.info(f"Patch: {patch.recoder_case_info.location}")
-      self.state.msv_logger.info(f"{patch.file_info.file_name}${patch.func_info.id}${patch.line_info.line_number}")
+      self.state.logger.info(f"Patch: {patch.recoder_case_info.location}")
+      self.state.logger.info(f"{patch.file_info.file_name}${patch.func_info.id}${patch.line_info.line_number}")
       self.patch_str = patch.to_str_sw_cs()
       pass_exists = False
       result = True
@@ -314,15 +314,15 @@ class MSVRecoder(MSVTbar):
             self.state.test_time+=pass_time
             result_handler.update_positive_result_recoder(self.state, patch, pass_result)
       else:
-        msv_result = self.state.simulation_data[key]
-        pass_exists = msv_result['basic']
-        run_result = msv_result['pass_all_fail']
-        pass_result = msv_result['plausible']
-        fail_time=msv_result['fail_time']
-        pass_time=msv_result['pass_time']
+        simapr_result = self.state.simulation_data[key]
+        pass_exists = simapr_result['basic']
+        run_result = simapr_result['pass_all_fail']
+        pass_result = simapr_result['plausible']
+        fail_time=simapr_result['fail_time']
+        pass_time=simapr_result['pass_time']
         self.state.test_time+=fail_time
         self.state.test_time+=pass_time
-        is_compilable=msv_result['compilable']
+        is_compilable=simapr_result['compilable']
         if is_compilable or self.state.ignore_compile_error:
           result_handler.update_result_recoder(self.state, patch, pass_exists)
           if run_result:
@@ -332,7 +332,7 @@ class MSVRecoder(MSVTbar):
       result_handler.append_result(self.state, [patch], pass_exists, pass_result, result, is_compilable,fail_time,pass_time)
       result_handler.remove_patch_recoder(self.state, patch)
 
-class MSVPraPR(MSVTbar):
+class PraPRLoop(TBarLoop):
   def _is_method_over(self) -> bool:
     """Check the ranks of every remaining methods are over then 30"""
     if not self.state.finish_top_method: return False
@@ -368,11 +368,11 @@ class MSVPraPR(MSVTbar):
     self.state.start_time = time.time()
     self.state.cycle = 0
     while(self.is_alive()):
-      self.state.msv_logger.info(f'[{self.state.cycle}]: executing')
+      self.state.logger.info(f'[{self.state.cycle}]: executing')
       patch = select_patch.select_patch_tbar_mode(self.state)
       self.patch_str=patch.tbar_case_info.location
-      self.state.msv_logger.info(f"Patch: {patch.tbar_case_info.location}")
-      self.state.msv_logger.info(f"{patch.file_info.file_name}${patch.func_info.id}${patch.line_info.line_number}")
+      self.state.logger.info(f"Patch: {patch.tbar_case_info.location}")
+      self.state.logger.info(f"{patch.file_info.file_name}${patch.func_info.id}${patch.line_info.line_number}")
       pass_exists = False
       result = True
       pass_result = False
@@ -380,15 +380,15 @@ class MSVPraPR(MSVTbar):
       pass_time=0
       key = patch.tbar_case_info.location
 
-      msv_result = self.state.simulation_data[key]
-      pass_exists = msv_result['basic']
-      result = msv_result['pass_all_fail']
-      pass_result = msv_result['plausible']
-      fail_time=msv_result['fail_time']
+      simapr_result = self.state.simulation_data[key]
+      pass_exists = simapr_result['basic']
+      result = simapr_result['pass_all_fail']
+      pass_result = simapr_result['plausible']
+      fail_time=simapr_result['fail_time']
       self.state.test_time+=fail_time
       self.state.test_time+=pass_time
-      pass_time=msv_result['pass_time']
-      is_compilable=msv_result['compilable']
+      pass_time=simapr_result['pass_time']
+      is_compilable=simapr_result['compilable']
       if is_compilable or self.state.ignore_compile_error:
         result_handler.update_result_tbar(self.state, patch, pass_exists)
         if result:

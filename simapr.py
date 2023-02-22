@@ -14,9 +14,9 @@ import shutil
 
 from core import *
 
-from msv import MSVTbar, MSVRecoder, MSVPraPR
+from simapr_loop import TBarLoop, RecoderLoop, PraPRLoop
 
-def parse_args(argv: list) -> MSVState:
+def parse_args(argv: list) -> GlobalState:
   longopts = ["help", "outdir=", "workdir=", "timeout=", "time-limit=", "cycle-limit=",
               "mode=", 'skip-valid', 'params=', 'tbar-mode', 'recoder-mode', "use-exp-alpha",
               "use-pass-test", "use-full-validation",'seed=',
@@ -25,12 +25,12 @@ def parse_args(argv: list) -> MSVState:
               'finish-correct-patch','count-compile-fail','not-use-guide','not-use-epsilon',
               'finish-top-method', 'prapr-mode']
   opts, args = getopt.getopt(argv[1:], "ho:w:t:m:c:T:E:", longopts)
-  state = MSVState()
+  state = GlobalState()
   state.original_args = argv
   state.args = args  # After --
   for o, a in opts:
     if o in ['-h', '--help']:
-      print("Usage: msv-search [options] <file>")
+      print("Usage: python3 simapr.py [options] <file>")
       exit(1)
     elif o in ['-o', '--outdir']:
       state.out_dir = a
@@ -42,7 +42,7 @@ def parse_args(argv: list) -> MSVState:
       state.correct_patch_str = a
       state.correct_patch_list=a.split(',')
     elif o in ['-m', '--mode']:
-      state.mode = MSVMode[a.lower()]
+      state.mode = Mode[a.lower()]
     elif o in ['-T', '--time-limit']:
       state.time_limit = int(a)
     elif o in ['-E', '--cycle-limit']:
@@ -124,10 +124,10 @@ def parse_args(argv: list) -> MSVState:
 
   return state
 
-def set_logger(state: MSVState) -> logging.Logger:
-  logger = logging.getLogger('msv-search')
+def set_logger(state: GlobalState) -> logging.Logger:
+  logger = logging.getLogger('simapr')
   logger.setLevel(logging.DEBUG)
-  fh = logging.FileHandler(os.path.join(state.out_dir, 'msv-search.log'))
+  fh = logging.FileHandler(os.path.join(state.out_dir, 'simapr.log'))
   fh.setLevel(logging.DEBUG)
   ch = logging.StreamHandler()
   ch.setLevel(logging.INFO)
@@ -137,12 +137,11 @@ def set_logger(state: MSVState) -> logging.Logger:
   logger.addHandler(fh)
   logger.addHandler(ch)
   logger.info('Logger is set')
-  logger.warning(f"MSV-SEARCH: {' '.join(state.original_args)}")
-  logger.warning(f"Version: {state.msv_version}")
-  logger.info(f'params: {state.params}')
+  logger.warning(f"SimAPR: {' '.join(state.original_args)}")
+  logger.warning(f"Version: {state.simapr_version}")
   return logger
 
-def read_info_recoder(state: MSVState) -> None:
+def read_info_recoder(state: GlobalState) -> None:
   with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
     info = json.load(f)
     state.d4j_negative_test = info['failing_test_cases']
@@ -293,7 +292,7 @@ def read_info_recoder(state: MSVState) -> None:
     if len(state.java_patch_ranking[fl_score])>0:
       patch_ranking_list.append(len(state.java_patch_ranking[fl_score]))
   state.max_epsilon_group_size=mean(patch_ranking_list)*2
-  state.msv_logger.debug(f'Set maximum epsilon group size to {state.max_epsilon_group_size}')
+  state.logger.debug(f'Set maximum epsilon group size to {state.max_epsilon_group_size}')
 
   #Add original to switch_case_map
   temp_file: FileInfo = FileInfo('original')
@@ -311,7 +310,7 @@ def read_info_recoder(state: MSVState) -> None:
           data=prev_info[key]
           state.simulation_data[key] = data
   
-def read_info_tbar(state: MSVState) -> None:
+def read_info_tbar(state: GlobalState) -> None:
   with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
     info = json.load(f)
     # Read test informations (which tests to run, which of them are failing test or passing test)
@@ -378,7 +377,7 @@ def read_info_tbar(state: MSVState) -> None:
         if line_info is None:
           # No function found for this line!!!
           # Use default...
-          state.msv_logger.info(f"No function found {file_info.file_name}:{line['line']}")
+          state.logger.info(f"No function found {file_info.file_name}:{line['line']}")
           func_info = FuncInfo(file_info, "no_function_found", int(line['line']), int(line['line']))
           file_info.func_info_map[func_info.id] = func_info
           state.total_methods+=1
@@ -513,7 +512,7 @@ def read_info_tbar(state: MSVState) -> None:
     if len(state.java_patch_ranking[fl_score])>0:
       patch_ranking_list.append(len(state.java_patch_ranking[fl_score]))
   state.max_epsilon_group_size=mean(patch_ranking_list)*2
-  state.msv_logger.debug(f'Set maximum epsilon group size to {state.max_epsilon_group_size}')
+  state.logger.debug(f'Set maximum epsilon group size to {state.max_epsilon_group_size}')
 
   #Add original to switch_case_map
   temp_file: FileInfo = FileInfo('original')
@@ -532,7 +531,7 @@ def read_info_tbar(state: MSVState) -> None:
           data=prev_info[key]
           state.simulation_data[key] = data
 
-def read_info_prapr(state: MSVState) -> None:
+def read_info_prapr(state: GlobalState) -> None:
   with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
     info = json.load(f)
     state.d4j_negative_test = []  # PraPR do not need test list
@@ -691,7 +690,7 @@ def read_info_prapr(state: MSVState) -> None:
     if len(state.java_patch_ranking[fl_score])>0:
       patch_ranking_list.append(len(state.java_patch_ranking[fl_score]))
   state.max_epsilon_group_size=mean(patch_ranking_list)*2
-  state.msv_logger.debug(f'Set maximum epsilon group size to {state.max_epsilon_group_size}')
+  state.logger.debug(f'Set maximum epsilon group size to {state.max_epsilon_group_size}')
 
   #Add original to switch_case_map
   temp_file: FileInfo = FileInfo('original')
@@ -710,65 +709,65 @@ def read_info_prapr(state: MSVState) -> None:
           data=prev_info[key]
           state.simulation_data[key] = data
 
-def copy_previous_results(state: MSVState) -> None:
-  result_log = os.path.join(state.out_dir, "msv-search.log")
-  result_json = os.path.join(state.out_dir, "msv-result.json")
+def copy_previous_results(state: GlobalState) -> None:
+  result_log = os.path.join(state.out_dir, "simapr-search.log")
+  result_json = os.path.join(state.out_dir, "simapr-result.json")
   prefix = 0
   if os.path.exists(result_log):
-    while os.path.exists(os.path.join(state.out_dir, f"bak{prefix}-msv-search.log")):
+    while os.path.exists(os.path.join(state.out_dir, f"bak{prefix}-simapr-search.log")):
       prefix += 1
-    shutil.copy(result_log, os.path.join(state.out_dir, f"bak{prefix}-msv-search.log"))
+    shutil.copy(result_log, os.path.join(state.out_dir, f"bak{prefix}-simapr-search.log"))
     os.remove(result_log)
-  result_files = ["msv-result.json", "msv-result.csv", "critical-info.csv", "msv-sim-data.json", "msv-original-sim-data.json"]
+  result_files = ["simapr-result.json", "simapr-result.csv", "critical-info.csv", "simapr-sim-data.json", "simapr-original-sim-data.json"]
   for result_file in result_files:
     if os.path.exists(os.path.join(state.out_dir, result_file)):
       shutil.copy(os.path.join(state.out_dir, result_file), os.path.join(state.out_dir, f"bak{prefix}-{result_file}"))
       os.remove(os.path.join(state.out_dir, result_file))
-  if os.path.exists(os.path.join(state.out_dir, "msv-finished")):
-    os.remove(os.path.join(state.out_dir, "msv-finished"))
+  if os.path.exists(os.path.join(state.out_dir, "simapr-finished")):
+    os.remove(os.path.join(state.out_dir, "simapr-finished"))
   if state.use_simulation_mode:
     if os.path.exists(state.prev_data):
-      shutil.copy(state.prev_data, os.path.join(state.out_dir, "msv-original-sim-data.json"))
+      shutil.copy(state.prev_data, os.path.join(state.out_dir, "simapr-original-sim-data.json"))
 
 def main(argv: list):
   sys.setrecursionlimit(2002) # Reset recursion limit, for preventing RecursionError
   state = parse_args(argv)
   copy_previous_results(state)
-  state.msv_logger = set_logger(state)
+  state.logger = set_logger(state)
   if state.tbar_mode:
     read_info_tbar(state)
-    state.msv_logger.info(f'Total methods: {state.total_methods}')
-    state.msv_logger.info('TBar mode: Initialized!')
-    msv = MSVTbar(state)
+    state.logger.info(f'Total methods: {state.total_methods}')
+    state.logger.info('TBar mode: Initialized!')
+    simapr = TBarLoop(state)
   elif state.recoder_mode:
     read_info_recoder(state)
-    state.msv_logger.info('Recoder mode: Initialized!')
-    msv = MSVRecoder(state)
+    state.logger.info('Recoder mode: Initialized!')
+    simapr = RecoderLoop(state)
   elif state.prapr_mode:
     read_info_prapr(state)
-    state.msv_logger.info('PraPR mode: Initialized!')
-    msv = MSVPraPR(state)
-  state.msv_logger.info('MSV is started')
+    state.logger.info('PraPR mode: Initialized!')
+    simapr = PraPRLoop(state)
+  state.logger.info('SimAPR is started')
   try:
-    msv.run()
-    with open(os.path.join(state.out_dir, "msv-finished"), "w") as f:
+    simapr.run()
+    with open(os.path.join(state.out_dir, "simapr-finished"), "w") as f:
       f.write(' '.join(state.original_args))
       f.write("\n")
-      f.write(state.msv_version + "\n")
-      f.write("MSV is finished\n")
+      f.write(state.simapr_version + "\n")
+      f.write("SimAPR is finished\n")
       f.write(f'Running time: {state.select_time+state.test_time}\n')
       f.write(f'Select time: {state.select_time}\n')
       f.write(f'Test time: {state.test_time}\n')
   except:
-    state.msv_logger.error('MSV is crashed!!!!!!!!!!!!!!!!')
-    state.msv_logger.exception("Got exception in msv.run()")
+    state.logger.error('SimAPR is crashed!!!!!!!!!!!!!!!!')
+    state.logger.exception("Got exception in simapr.run()")
     raise
-  state.msv_logger.info('MSV is finished')
+  state.logger.info('SimAPR is finished')
   # state.select_time/=1000000
-  state.msv_logger.info(f'Running time: {state.select_time+state.test_time}')
-  state.msv_logger.info(f'Select time: {state.select_time}')
-  state.msv_logger.info(f'Test time: {state.test_time}')
-  msv.save_result()
+  state.logger.info(f'Running time: {state.select_time+state.test_time}')
+  state.logger.info(f'Select time: {state.select_time}')
+  state.logger.info(f'Test time: {state.test_time}')
+  simapr.save_result()
 
 
 if __name__ == "__main__":

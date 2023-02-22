@@ -13,7 +13,7 @@ from enum import Enum
 from typing import List, Dict, Tuple, Set, Union
 import uuid
 import math
-class MSVMode(Enum):
+class Mode(Enum):
   guided = 1
   original = 2
   seapr = 3
@@ -297,39 +297,39 @@ class FileLine:
   def __eq__(self, other) -> bool:
     return self.file_info == other.file_info and self.line_info == other.line_info
 
-class MSVEnvVar:
+class EnvGenerator:
   def __init__(self) -> None:
     pass
   @staticmethod
-  def get_new_env_tbar(state: 'MSVState', patch: 'TbarPatchInfo', test: str) -> Dict[str, str]:
+  def get_new_env_tbar(state: 'GlobalState', patch: 'TbarPatchInfo', test: str) -> Dict[str, str]:
     new_env = os.environ.copy()
-    new_env["MSV_UUID"] = str(state.uuid)
-    new_env["MSV_TEST"] = str(test)
-    new_env["MSV_LOCATION"] = str(patch.tbar_case_info.location)
-    new_env["MSV_WORKDIR"] = state.work_dir
-    new_env["MSV_BUGGY_LOCATION"] = patch.file_info.file_name
-    new_env["MSV_BUGGY_PROJECT"] = state.d4j_buggy_project
-    new_env["MSV_OUTPUT_DISTANCE_FILE"] = f"/tmp/{uuid.uuid4()}.out"
-    new_env["MSV_TIMEOUT"] = str(state.timeout)
+    new_env["SIMAPR_UUID"] = str(state.uuid)
+    new_env["SIMAPR_TEST"] = str(test)
+    new_env["SIMAPR_LOCATION"] = str(patch.tbar_case_info.location)
+    new_env["SIMAPR_WORKDIR"] = state.work_dir
+    new_env["SIMAPR_BUGGY_LOCATION"] = patch.file_info.file_name
+    new_env["SIMAPR_BUGGY_PROJECT"] = state.d4j_buggy_project
+    new_env["SIMAPR_OUTPUT_DISTANCE_FILE"] = f"/tmp/{uuid.uuid4()}.out"
+    new_env["SIMAPR_TIMEOUT"] = str(state.timeout)
     if patch.file_info.class_name != "":
-      new_env["MSV_CLASS_NAME"] = patch.file_info.class_name
+      new_env["SIMAPR_CLASS_NAME"] = patch.file_info.class_name
     return new_env
   @staticmethod
-  def get_new_env_recoder(state: 'MSVState', patch: 'RecoderPatchInfo', test: str) -> Dict[str, str]:
+  def get_new_env_recoder(state: 'GlobalState', patch: 'RecoderPatchInfo', test: str) -> Dict[str, str]:
     new_env = os.environ.copy()
-    new_env["MSV_UUID"] = str(state.uuid)
-    new_env["MSV_TEST"] = str(test)
-    new_env["MSV_LOCATION"] = str(patch.recoder_case_info.location)
-    new_env["MSV_WORKDIR"] = state.work_dir
-    new_env["MSV_BUGGY_LOCATION"] = patch.file_info.file_name
-    new_env["MSV_BUGGY_PROJECT"] = state.d4j_buggy_project
-    new_env["MSV_OUTPUT_DISTANCE_FILE"] = f"/tmp/{uuid.uuid4()}.out"
-    new_env["MSV_TIMEOUT"] = str(state.timeout)
-    new_env["MSV_RECODER"] = "-"
+    new_env["SIMAPR_UUID"] = str(state.uuid)
+    new_env["SIMAPR_TEST"] = str(test)
+    new_env["SIMAPR_LOCATION"] = str(patch.recoder_case_info.location)
+    new_env["SIMAPR_WORKDIR"] = state.work_dir
+    new_env["SIMAPR_BUGGY_LOCATION"] = patch.file_info.file_name
+    new_env["SIMAPR_BUGGY_PROJECT"] = state.d4j_buggy_project
+    new_env["SIMAPR_OUTPUT_DISTANCE_FILE"] = f"/tmp/{uuid.uuid4()}.out"
+    new_env["SIMAPR_TIMEOUT"] = str(state.timeout)
+    new_env["SIMAPR_RECODER"] = "-"
     return new_env
   @staticmethod
-  def get_new_env_d4j_positive_tests(state: 'MSVState', tests: List[str], new_env: Dict[str, str]) -> Dict[str, str]:
-    new_env["MSV_TEST"] = "ALL"
+  def get_new_env_d4j_positive_tests(state: 'GlobalState', tests: List[str], new_env: Dict[str, str]) -> Dict[str, str]:
+    new_env["SIMAPR_TEST"] = "ALL"
     return new_env
 
 class TbarPatchInfo:
@@ -353,9 +353,9 @@ class TbarPatchInfo:
     self.line_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.func_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.file_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
-  def remove_patch(self, state: 'MSVState') -> None:
+  def remove_patch(self, state: 'GlobalState') -> None:
     if self.tbar_case_info.location not in self.tbar_type_info.tbar_case_info_map:
-      state.msv_logger.critical(f"{self.tbar_case_info.location} not in {self.tbar_type_info.tbar_case_info_map}")
+      state.logger.critical(f"{self.tbar_case_info.location} not in {self.tbar_type_info.tbar_case_info_map}")
     del self.tbar_type_info.tbar_case_info_map[self.tbar_case_info.location]
     if len(self.tbar_type_info.tbar_case_info_map) == 0:
       del self.line_info.tbar_type_info_map[self.tbar_type_info.mutation]
@@ -427,9 +427,9 @@ class RecoderPatchInfo:
     self.line_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.func_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
     self.file_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
-  def remove_patch(self, state: 'MSVState') -> None:
+  def remove_patch(self, state: 'GlobalState') -> None:
     if self.recoder_case_info.case_id not in self.line_info.recoder_case_info_map:
-      state.msv_logger.critical(f"{self.recoder_case_info.case_id} not in {self.line_info.recoder_case_info_map}")
+      state.logger.critical(f"{self.recoder_case_info.case_id} not in {self.line_info.recoder_case_info_map}")
     del self.line_info.recoder_case_info_map[self.recoder_case_info.case_id]
 
     if len(self.line_info.recoder_case_info_map) == 0:
@@ -489,7 +489,7 @@ class RecoderPatchInfo:
     return ",".join(result)
 
 @dataclass
-class MSVResult:
+class Result:
   iteration: int
   time: float
   config: List[TbarPatchInfo]
@@ -532,15 +532,15 @@ class MSVResult:
     return object
 
 @dataclass()
-class MSVState:
-  msv_logger: logging.Logger
+class GlobalState:
+  logger: logging.Logger
   original_args: List[str]
   args: List[str]
   work_dir: str
   out_dir: str
   def __init__(self) -> None:
-    self.msv_version = "1.0.0"
-    self.mode = MSVMode.guided
+    self.simapr_version = "1.0.0"
+    self.mode = Mode.guided
     self.cycle = 0
     self.total_basic_patch = 0
     self.start_time = time.time()
@@ -559,10 +559,10 @@ class MSVState:
     self.patch_location_map: Dict[str, Union[TbarCaseInfo, RecoderCaseInfo]] = dict()
     self.priority_list: List[Tuple[str, int, float]] = list()
     self.line_list:List[LineInfo]=list()
-    self.msv_result:List[dict] = list()
+    self.simapr_result:List[dict] = list()
     self.failed_positive_test:Set[str] = set()
     self.priority_map: Dict[str, FileLine] = dict()
-    self.used_patch:List[MSVResult] = list()
+    self.used_patch:List[Result] = list()
     self.timeout = 60000
     self.uuid=uuid.uuid1()
     self.tmp_dir = "/tmp"
@@ -641,12 +641,12 @@ def remove_file_or_pass(file:str):
   except:
     pass
 
-def append_java_cache_result(state:MSVState,case:TbarCaseInfo,fail_result:bool,pass_result:bool,pass_all_fail:bool,compilable:bool,
+def append_java_cache_result(state:GlobalState,case:TbarCaseInfo,fail_result:bool,pass_result:bool,pass_all_fail:bool,compilable:bool,
       fail_time:float, pass_time:float):
   """
     Append result to cache file, if not exist. Otherwise, do nothing.
     
-    state: MSVState
+    state: GlobalState
     case: current patch
     fail_result: result of fail test (bool)
     pass_result: result of pass test (bool)

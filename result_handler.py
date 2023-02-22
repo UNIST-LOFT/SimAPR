@@ -8,12 +8,12 @@ def get_ochiai(s_h: float, s_l: float, d_h: float, d_l: float) -> float:
     return 0.0
   return s_h / (((s_h + d_h) * (s_h + s_l)) ** 0.5)
 
-def save_result(state: MSVState) -> None:
+def save_result(state: GlobalState) -> None:
   state.last_save_time = time.time()
-  result_file = os.path.join(state.out_dir, "msv-result.json")
-  state.msv_logger.info(f"Saving result to {result_file}")
+  result_file = os.path.join(state.out_dir, "simapr-result.json")
+  state.logger.info(f"Saving result to {result_file}")
   with open(result_file, 'w') as f:
-    json.dump(state.msv_result, f, indent=2)
+    json.dump(state.simapr_result, f, indent=2)
 
   if state.use_simulation_mode:
     # Save cached result to file
@@ -21,7 +21,7 @@ def save_result(state: MSVState) -> None:
       json.dump(state.simulation_data, f, indent=2)
 
 # Append result list, save result to file periodically
-def append_result(state: MSVState, selected_patch: List[TbarPatchInfo], test_result: bool,pass_test_result:bool=False, pass_all_neg_test: bool = False,compilable: bool = True,fail_time:float=0.0,pass_time:float=0.0) -> None:
+def append_result(state: GlobalState, selected_patch: List[TbarPatchInfo], test_result: bool,pass_test_result:bool=False, pass_all_neg_test: bool = False,compilable: bool = True,fail_time:float=0.0,pass_time:float=0.0) -> None:
   """
     fail_time: second
     pass_time: second
@@ -29,7 +29,7 @@ def append_result(state: MSVState, selected_patch: List[TbarPatchInfo], test_res
   save_interval = 1800 # 30 minutes
   tm = time.time()
   tm_interval=state.select_time+state.test_time
-  result = MSVResult(state.cycle,state.iteration,tm_interval, selected_patch, 
+  result = Result(state.cycle,state.iteration,tm_interval, selected_patch, 
           test_result, pass_test_result, selected_patch[0].out_dist, pass_all_neg_test, compilable=compilable)
   
   if result.result:
@@ -38,7 +38,7 @@ def append_result(state: MSVState, selected_patch: List[TbarPatchInfo], test_res
     state.total_plausible_patch+=1
   state.total_searched_patch+=1
   obj = result.to_json_object(state.total_searched_patch,state.total_passed_patch,state.total_plausible_patch)
-  state.msv_result.append(obj)
+  state.simapr_result.append(obj)
   state.used_patch.append(result)
 
   if state.use_simulation_mode and not state.prapr_mode:
@@ -51,12 +51,12 @@ def append_result(state: MSVState, selected_patch: List[TbarPatchInfo], test_res
         case_info = patch.recoder_case_info
       append_java_cache_result(state,case_info,test_result,pass_test_result,pass_all_neg_test,compilable,fail_time,pass_time)
   
-  with open(os.path.join(state.out_dir, "msv-result.csv"), 'a') as f:
+  with open(os.path.join(state.out_dir, "simapr-result.csv"), 'a') as f:
     f.write(json.dumps(obj) + "\n")
   if (tm - state.last_save_time) > save_interval:
     save_result(state)
 
-def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: bool) -> None:
+def update_result_tbar(state: GlobalState, selected_patch: TbarPatchInfo, result: bool) -> None:
   selected_patch.update_result(result, PT.ALPHA_INCREASE, PT.BETA_INCREASE,state.use_exp_alpha)
   if result:
     state.total_basic_patch += 1
@@ -80,7 +80,7 @@ def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: b
 
   state.previous_score=selected_patch.line_info.fl_score
 
-  if state.mode == MSVMode.seapr:
+  if state.mode == Mode.seapr:
     # Optimization: for default SeAPR, we use cluster to update the result
     if not state.use_pattern and state.seapr_layer == SeAPRMode.FUNCTION:
       for func_info in state.func_list:
@@ -130,16 +130,16 @@ def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: b
 
       if selected_patch.func_info in cor_set:
         if not result:
-          state.msv_logger.debug('Misguide type L')
+          state.logger.debug('Misguide type L')
         else:
-          state.msv_logger.debug('Correct guide H')
+          state.logger.debug('Correct guide H')
       elif selected_patch.func_info not in cor_set:
         if result:
-          state.msv_logger.debug('Misguide type H')
+          state.logger.debug('Misguide type H')
         else:
-          state.msv_logger.debug('Correct guide L')
+          state.logger.debug('Correct guide L')
 
-def update_positive_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: bool) -> None:
+def update_positive_result_tbar(state: GlobalState, selected_patch: TbarPatchInfo, result: bool) -> None:
   if result:
     selected_patch.tbar_type_info.children_plausible_patches+=1
     selected_patch.line_info.children_plausible_patches+=1
@@ -157,10 +157,10 @@ def update_positive_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, 
     
   selected_patch.update_result_positive(result, PT.ALPHA_INCREASE, PT.BETA_INCREASE,state.use_exp_alpha)
 
-def remove_patch_tbar(state: MSVState, selected_patch: TbarPatchInfo) -> None:
+def remove_patch_tbar(state: GlobalState, selected_patch: TbarPatchInfo) -> None:
   selected_patch.remove_patch(state)
 
-def update_result_recoder(state: MSVState, selected_patch: RecoderPatchInfo, result: bool) -> None:
+def update_result_recoder(state: GlobalState, selected_patch: RecoderPatchInfo, result: bool) -> None:
   selected_patch.update_result(result, PT.ALPHA_INCREASE, PT.BETA_INCREASE,state.use_exp_alpha)
   if result:
     state.total_basic_patch += 1
@@ -180,7 +180,7 @@ def update_result_recoder(state: MSVState, selected_patch: RecoderPatchInfo, res
 
   state.previous_score=selected_patch.line_info.fl_score
 
-  if state.mode == MSVMode.seapr:
+  if state.mode == Mode.seapr:
     # Optimization: for default SeAPR, we use cluster to update the result
     if not state.use_pattern and state.seapr_layer == SeAPRMode.FUNCTION:
       for func_info in state.func_list:
@@ -209,7 +209,7 @@ def update_result_recoder(state: MSVState, selected_patch: RecoderPatchInfo, res
         else:
           rc.diff_seapr_pf.update(result, 1)
 
-def update_positive_result_recoder(state: MSVState, selected_patch: RecoderPatchInfo, result: bool) -> None:
+def update_positive_result_recoder(state: GlobalState, selected_patch: RecoderPatchInfo, result: bool) -> None:
   if result:
     selected_patch.line_info.children_plausible_patches += 1
     selected_patch.func_info.children_plausible_patches += 1
@@ -223,5 +223,5 @@ def update_positive_result_recoder(state: MSVState, selected_patch: RecoderPatch
     selected_patch.file_info.consecutive_fail_plausible_count += 1
   selected_patch.update_result_positive(result, PT.ALPHA_INCREASE, PT.BETA_INCREASE,state.use_exp_alpha)
 
-def remove_patch_recoder(state: MSVState, selected_patch: RecoderPatchInfo) -> None:
+def remove_patch_recoder(state: GlobalState, selected_patch: RecoderPatchInfo) -> None:
   selected_patch.remove_patch(state)

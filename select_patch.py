@@ -19,7 +19,7 @@ def get_ochiai(s_h: float, s_l: float, d_h: float, d_l: float) -> float:
     return 0.0
   return s_h / (((s_h + d_h) * (s_h + s_l)) ** 0.5)
 
-def get_static_score(state:MSVState,element):
+def get_static_score(state:GlobalState,element):
   if state.tbar_mode or state.recoder_mode or state.prapr_mode:
     if type(element)==FileInfo or type(element)==FuncInfo:
       return max(element.fl_score_list)
@@ -37,7 +37,7 @@ def get_static_score(state:MSVState,element):
   else:
     raise ValueError(f'Should be tbar mode, recoder mode or prapr mode')
 
-def epsilon_search(state:MSVState):
+def epsilon_search(state:GlobalState):
   """
     Do epsilon search if there's no basic patch.
     source: File/Function/Line/TbarType info, or None if file selection
@@ -78,7 +78,7 @@ def epsilon_search(state:MSVState):
   is_secondary=False
   state.same_consecutive_score[cur_score]+=1
   if not is_secondary or len(next_top_fl_patches)==0:
-    state.msv_logger.debug(f'Use original order, score: {cur_score}')
+    state.logger.debug(f'Use original order, score: {cur_score}')
     total_patches=len(top_all_patches)
     total_searched=len(top_all_patches)-len(top_fl_patches)
     epsilon=epsilon_greedy(total_patches,total_searched)
@@ -89,7 +89,7 @@ def epsilon_search(state:MSVState):
 
     if is_epsilon_greedy:
       # Perform random search in epsilon probability
-      state.msv_logger.debug(f'Use epsilon greedy method, epsilon: {epsilon}')
+      state.logger.debug(f'Use epsilon greedy method, epsilon: {epsilon}')
       lines = set()
       for case_info in top_fl_patches:
         if case_info.parent not in lines:
@@ -119,12 +119,12 @@ def epsilon_search(state:MSVState):
       state.select_time+=time.time()-start_time
       return selected_case_info
     else:
-      state.msv_logger.debug(f'Use original order, epsilon: {epsilon}')
+      state.logger.debug(f'Use original order, epsilon: {epsilon}')
       state.select_time+=time.time()-start_time
       return top_fl_patches[0]
   
   else:
-    state.msv_logger.debug(f'Use secondary order, score: {cur_score}')
+    state.logger.debug(f'Use secondary order, score: {cur_score}')
     total_patches=len(next_top_all_patches)
     total_searched=len(next_top_all_patches)-len(next_top_fl_patches)
     epsilon=epsilon_greedy(total_patches,total_searched)
@@ -135,16 +135,16 @@ def epsilon_search(state:MSVState):
 
     if is_epsilon_greedy:
       # Perform random search in epsilon probability
-      state.msv_logger.debug(f'Use epsilon greedy method, epsilon: {epsilon}')
+      state.logger.debug(f'Use epsilon greedy method, epsilon: {epsilon}')
       index=random.randint(0,len(next_top_fl_patches)-1)
       state.select_time+=time.time()-start_time
       return next_top_fl_patches[index]
     else:
-      state.msv_logger.debug(f'Use secondary order, epsilon: {epsilon}')
+      state.logger.debug(f'Use secondary order, epsilon: {epsilon}')
       state.select_time+=time.time()-start_time
       return next_top_fl_patches[0]
 
-def epsilon_select(state:MSVState,source=None):
+def epsilon_select(state:GlobalState,source=None):
   """
     Do epsilon search if there's no basic patch.
     source: File/Function/Line/TbarType info, or None if file selection
@@ -202,7 +202,7 @@ def epsilon_select(state:MSVState,source=None):
 
   if is_epsilon_greedy:
     # Perform random search in epsilon probability
-    state.msv_logger.debug(f'Use epsilon greedy method, epsilon: {epsilon}')
+    state.logger.debug(f'Use epsilon greedy method, epsilon: {epsilon}')
     # First, find all available candidates
     result=set()
     # Get all top scored data in source
@@ -251,7 +251,7 @@ def epsilon_select(state:MSVState,source=None):
     return result[index]
   else:
     # Return top scored layer in original
-    state.msv_logger.debug(f'Use original order, epsilon: {epsilon}')
+    state.logger.debug(f'Use original order, epsilon: {epsilon}')
     cur_fl_patches=top_fl_patches
     state.select_time+=time.time()-start_time
     if state.tbar_mode or state.prapr_mode:
@@ -280,7 +280,7 @@ def epsilon_select(state:MSVState,source=None):
     else:
       raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
 
-def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
+def select_patch_guide_algorithm(state: GlobalState,elements:dict,parent=None):
   start_time=time.time()
 
   for element in elements:
@@ -307,7 +307,7 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
       for element_name in elements:
         info = elements[element_name]
         selected.append(info)
-        state.msv_logger.debug(f'Plausible: a: {info.positive_pf.pass_count}, b: {info.positive_pf.fail_count}')
+        state.logger.debug(f'Plausible: a: {info.positive_pf.pass_count}, b: {info.positive_pf.fail_count}')
         if info.children_plausible_patches>0:
           p_p.append(info.positive_pf.select_value(PT.ALPHA_INIT,PT.BETA_INIT))
         else:
@@ -324,14 +324,14 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
       scores.append(state.previous_score)
 
       if max_index>=0:
-        state.msv_logger.debug(f'Try plausible patch with a: {selected[max_index].positive_pf.pass_count}, b: {selected[max_index].positive_pf.fail_count}')
+        state.logger.debug(f'Try plausible patch with a: {selected[max_index].positive_pf.pass_count}, b: {selected[max_index].positive_pf.fail_count}')
         freq=selected[max_index].children_plausible_patches/state.total_plausible_patch if state.total_plausible_patch > 0 else 0.
         bp_freq=selected[max_index].consecutive_fail_plausible_count
         cur_score=get_static_score(state,selected[max_index]) if state.tbar_mode or state.recoder_mode or state.prapr_mode else PassFail.normalize(scores)[max_index]
         prev_score=state.previous_score if state.tbar_mode or state.recoder_mode or state.prapr_mode else PassFail.normalize(scores)[-1]
         score_rate=min(cur_score/prev_score,1.) if prev_score!=0. else 0.
         if random.random()< (weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq))*(score_rate*PT.FL_WEIGHT if score_rate!=1.0 else 1.0)):
-          state.msv_logger.debug(f'Use guidance with plausible patch: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}, {cur_score}/{prev_score}')
+          state.logger.debug(f'Use guidance with plausible patch: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}, {cur_score}/{prev_score}')
 
           state.select_time+=time.time()-start_time
           return selected[max_index],True
@@ -346,7 +346,7 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
           p_b.append(info.positive_pf.select_value(PT.ALPHA_INIT,PT.BETA_INIT))
         else:
           p_b.append(0.)
-        state.msv_logger.debug(f'Basic: a: {info.pf.pass_count}, b: {info.pf.fail_count}')
+        state.logger.debug(f'Basic: a: {info.pf.pass_count}, b: {info.pf.fail_count}')
 
       max_score=0.
       max_index=-1
@@ -359,46 +359,46 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
       scores.append(state.previous_score)
 
       if max_index>=0:
-        state.msv_logger.debug(f'Try basic patch with a: {selected[max_index].pf.pass_count}, b: {selected[max_index].pf.fail_count}')
+        state.logger.debug(f'Try basic patch with a: {selected[max_index].pf.pass_count}, b: {selected[max_index].pf.fail_count}')
         freq=selected[max_index].children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0.
         bp_freq=selected[max_index].consecutive_fail_count
         cur_score=get_static_score(state,selected[max_index]) if state.tbar_mode or state.recoder_mode or state.prapr_mode else PassFail.normalize(scores)[max_index]
         prev_score=state.previous_score if state.tbar_mode or state.recoder_mode or state.prapr_mode else PassFail.normalize(scores)[-1]
         score_rate=min(cur_score/prev_score,1.) if prev_score!=0. else 0.
         if random.random()< (weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq))*(score_rate*PT.FL_WEIGHT if score_rate!=1.0 else 1.0)):
-          state.msv_logger.debug(f'Use guidance with basic patch: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}, {cur_score}/{prev_score}')
+          state.logger.debug(f'Use guidance with basic patch: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}, {cur_score}/{prev_score}')
 
           state.select_time+=time.time()-start_time
           return selected[max_index],True
       
       if not is_decided:
-        state.msv_logger.debug(f'Do not use guide, use original order!')   
+        state.logger.debug(f'Do not use guide, use original order!')   
         state.select_time+=time.time()-start_time
         # return epsilon_select(state,parent),False
         return epsilon_select(state,parent),False
   else:
     # No guide in this layer, use top ranked patch
-    state.msv_logger.debug(f'No guided found in this layer, use original order!')
+    state.logger.debug(f'No guided found in this layer, use original order!')
     # return epsilon_select(state,parent),False
     return epsilon_select(state,parent),False
 
-def select_patch_tbar_mode(state: MSVState) -> TbarPatchInfo:
-  if state.mode == MSVMode.tbar:
+def select_patch_tbar_mode(state: GlobalState) -> TbarPatchInfo:
+  if state.mode == Mode.tbar:
     return select_patch_tbar(state)
-  elif state.mode==MSVMode.genprog:
+  elif state.mode==Mode.genprog:
     return select_patch_tbar_genprog(state)
-  elif state.mode == MSVMode.seapr:
+  elif state.mode == Mode.seapr:
     return select_patch_tbar_seapr(state)
   else:
     return select_patch_tbar_guided(state)
 
-def select_patch_tbar(state: MSVState) -> TbarPatchInfo:
+def select_patch_tbar(state: GlobalState) -> TbarPatchInfo:
   loc = state.patch_ranking.pop(0)
   caseinfo = state.switch_case_map[loc]
   caseinfo.parent.parent.parent.case_rank_list.pop(0)
   return TbarPatchInfo(caseinfo)
 
-def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
+def select_patch_tbar_guided(state: GlobalState) -> TbarPatchInfo:
   """
   Select a patch for Tbar.
   """
@@ -426,7 +426,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
     if state.file_info_map[file]==selected_file_info:
       selected_file=i
       break
-  state.msv_logger.debug(f'Selected file: FL: {norm[selected_file]}/{p_fl[selected_file]}, Basic: {selected_file_info.pf.beta_mode(selected_file_info.pf.pass_count,selected_file_info.pf.fail_count)}, '+
+  state.logger.debug(f'Selected file: FL: {norm[selected_file]}/{p_fl[selected_file]}, Basic: {selected_file_info.pf.beta_mode(selected_file_info.pf.pass_count,selected_file_info.pf.fail_count)}, '+
                   f'Plausible: {selected_file_info.positive_pf.beta_mode(selected_file_info.positive_pf.pass_count,selected_file_info.positive_pf.fail_count)}, '+
                   f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_file])}/{p_frequency[selected_file]}, BPFreq: {PassFail.log_func(p_bp_frequency[selected_file])}')
 
@@ -435,11 +435,11 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
     for cor in state.correct_patch_list:
       cor_patch=state.switch_case_map[cor]
       if cor_patch.parent.parent.parent.parent==selected_file_info:
-        state.msv_logger.debug(f'Correct guide at file')
+        state.logger.debug(f'Correct guide at file')
         is_correct_guide=True
         break
     if not is_correct_guide:
-      state.msv_logger.debug(f'Misguide at file')
+      state.logger.debug(f'Misguide at file')
     
   # Select function
   selected_func_info,is_guided = select_patch_guide_algorithm(state,selected_file_info.func_info_map,selected_file_info)
@@ -455,7 +455,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
       selected_func=i
       break
   norm=PassFail.normalize(p_fl)
-  state.msv_logger.debug(f'Selected function: FL: {norm[selected_func]}/{p_fl[selected_func]}, Basic: {selected_func_info.pf.beta_mode(selected_func_info.pf.pass_count,selected_func_info.pf.fail_count)}, '+
+  state.logger.debug(f'Selected function: FL: {norm[selected_func]}/{p_fl[selected_func]}, Basic: {selected_func_info.pf.beta_mode(selected_func_info.pf.pass_count,selected_func_info.pf.fail_count)}, '+
                   f'Plausible: {selected_func_info.positive_pf.beta_mode(selected_func_info.positive_pf.pass_count,selected_func_info.positive_pf.fail_count)}, '+
                   f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_func])}/{p_frequency[selected_func]}, BPFreq: {PassFail.log_func(p_bp_frequency[selected_func])}')
 
@@ -464,11 +464,11 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
     for cor in state.correct_patch_list:
       cor_patch=state.switch_case_map[cor]
       if cor_patch.parent.parent.parent==selected_func_info:
-        state.msv_logger.debug(f'Correct guide at func')
+        state.logger.debug(f'Correct guide at func')
         is_correct_guide=True
         break
     if not is_correct_guide:
-      state.msv_logger.debug(f'Misguide at func')
+      state.logger.debug(f'Misguide at func')
 
   # Select line
   selected_line_info,is_guided = select_patch_guide_algorithm(state,selected_func_info.line_info_map,selected_func_info)
@@ -484,7 +484,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
       selected_line=i
       break
   norm=PassFail.normalize(p_fl)
-  state.msv_logger.debug(f'Selected line: FL: {norm[selected_line]}/{p_fl[selected_line]}, Basic: {selected_line_info.pf.beta_mode(selected_line_info.pf.pass_count,selected_line_info.pf.fail_count)}, '+
+  state.logger.debug(f'Selected line: FL: {norm[selected_line]}/{p_fl[selected_line]}, Basic: {selected_line_info.pf.beta_mode(selected_line_info.pf.pass_count,selected_line_info.pf.fail_count)}, '+
                   f'Plausible: {selected_line_info.positive_pf.beta_mode(selected_line_info.positive_pf.pass_count,selected_line_info.positive_pf.fail_count)}, '+
                   f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_line])}/{p_frequency[selected_line]}, BPFreq: {PassFail.log_func(p_bp_frequency[selected_line])}')
   
@@ -493,11 +493,11 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
     for cor in state.correct_patch_list:
       cor_patch=state.switch_case_map[cor]
       if cor_patch.parent.parent==selected_line_info:
-        state.msv_logger.debug(f'Correct guide at line')
+        state.logger.debug(f'Correct guide at line')
         is_correct_guide=True
         break
     if not is_correct_guide:
-      state.msv_logger.debug(f'Misguide at line')
+      state.logger.debug(f'Misguide at line')
 
   # Select type
   selected_type_info,is_guided = select_patch_guide_algorithm(state,selected_line_info.tbar_type_info_map,selected_line_info)
@@ -510,7 +510,7 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
     if selected_line_info.tbar_type_info_map[tbar_type]==selected_type_info:
       selected_type=i
       break
-  state.msv_logger.debug(f'Selected type: Basic: {selected_type_info.pf.beta_mode(selected_type_info.pf.pass_count,selected_type_info.pf.fail_count)}, '+
+  state.logger.debug(f'Selected type: Basic: {selected_type_info.pf.beta_mode(selected_type_info.pf.pass_count,selected_type_info.pf.fail_count)}, '+
                   f'Plausible: {selected_type_info.positive_pf.beta_mode(selected_type_info.positive_pf.pass_count,selected_type_info.positive_pf.fail_count)}, '+
                   f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_type])}/{p_frequency[selected_type]}, BPFreq: {PassFail.log_func(p_bp_frequency[selected_type])}')
 
@@ -519,11 +519,11 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
     for cor in state.correct_patch_list:
       cor_patch=state.switch_case_map[cor]
       if cor_patch.parent==selected_type_info:
-        state.msv_logger.debug(f'Correct guide at type')
+        state.logger.debug(f'Correct guide at type')
         is_correct_guide=True
         break
     if not is_correct_guide:
-      state.msv_logger.debug(f'Misguide at type')
+      state.logger.debug(f'Misguide at type')
 
   # select tbar switch
   selected_switch_info:TbarCaseInfo=epsilon_select(state,selected_type_info)
@@ -531,12 +531,12 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   state.patch_ranking.remove(selected_switch_info.location)
   return result
 
-def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
+def select_patch_tbar_seapr(state: GlobalState) -> TbarPatchInfo:
   selected_patch: TbarCaseInfo = None
   max_score = 0.0
   has_high_qual_patch = False
 
-  def get_first_case_info(state: MSVState, func: FuncInfo) -> TbarCaseInfo:
+  def get_first_case_info(state: GlobalState, func: FuncInfo) -> TbarCaseInfo:
     loc = func.case_rank_list[0]
     case_info: TbarCaseInfo = state.switch_case_map[loc]
     return case_info
@@ -568,7 +568,7 @@ def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
                 counter+=1
               else:
                 is_finish=True
-                state.msv_logger.debug(f'Correct patch {cor_patch} is ranked {counter+1}')
+                state.logger.debug(f'Correct patch {cor_patch} is ranked {counter+1}')
                 break
           if is_finish:
             break
@@ -581,7 +581,7 @@ def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
       if tbar_case_info.parent.parent.parent.func_rank > 30:
         continue
       if loc not in tbar_case_info.parent.tbar_case_info_map:
-        # state.msv_logger.warning(f"No switch info  {tbar_case_info.location} in patch: {tbar_case_info.parent.tbar_case_info_map}")
+        # state.logger.warning(f"No switch info  {tbar_case_info.location} in patch: {tbar_case_info.parent.tbar_case_info_map}")
         continue
       cur_score = get_ochiai(tbar_case_info.same_seapr_pf.pass_count, tbar_case_info.same_seapr_pf.fail_count,
         tbar_case_info.diff_seapr_pf.pass_count, tbar_case_info.diff_seapr_pf.fail_count)
@@ -602,7 +602,7 @@ def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
               counter+=1
             else:
               is_finish=True
-              state.msv_logger.debug(f'Correct patch {cor_patch} is ranked {counter+1}')
+              state.logger.debug(f'Correct patch {cor_patch} is ranked {counter+1}')
               break
           if is_finish:
             break
@@ -635,7 +635,7 @@ def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
       if tbar_case_info.parent.parent.parent.func_rank > 30:
         continue
       if loc not in tbar_case_info.parent.tbar_case_info_map:
-        # state.msv_logger.warning(f"No switch info  {tbar_case_info.location} in patch: {tbar_case_info.parent.tbar_case_info_map}")
+        # state.logger.warning(f"No switch info  {tbar_case_info.location} in patch: {tbar_case_info.parent.tbar_case_info_map}")
         continue
       cur_score = get_ochiai(tbar_case_info.same_seapr_pf.pass_count, tbar_case_info.same_seapr_pf.fail_count,
         tbar_case_info.diff_seapr_pf.pass_count, tbar_case_info.diff_seapr_pf.fail_count)
@@ -644,19 +644,19 @@ def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
         selected_patch = tbar_case_info
         has_high_qual_patch = True
   if not has_high_qual_patch:
-    state.msv_logger.debug('Every top-30 methods are searched, follow original order!')
+    state.logger.debug('Every top-30 methods are searched, follow original order!')
     state.select_time+=time.time()-start_time
     return select_patch_tbar(state)
   selected_patch.parent.parent.parent.case_rank_list.pop(0)
   state.select_time+=time.time()-start_time
-  state.msv_logger.debug(f'SeAPR score: {max_score}')
+  state.logger.debug(f'SeAPR score: {max_score}')
   state.patch_ranking.remove(selected_patch.location)
   return TbarPatchInfo(selected_patch)
 
-def select_patch_tbar_genprog(state: MSVState) -> TbarPatchInfo:
+def select_patch_tbar_genprog(state: GlobalState) -> TbarPatchInfo:
   start_time = time.time()
   # Select file
-  state.msv_logger.debug(f'Select with simple stochastic')
+  state.logger.debug(f'Select with simple stochastic')
   file_score_list=[]
   file_list=[]
   for file in state.file_info_map:
@@ -697,28 +697,28 @@ def select_patch_tbar_genprog(state: MSVState) -> TbarPatchInfo:
   selected_patch=patch_list[selected_patch_index]
 
   state.select_time+=time.time()-start_time
-  state.msv_logger.debug(f'{selected_patch.location} selected')
+  state.logger.debug(f'{selected_patch.location} selected')
   state.patch_ranking.remove(selected_patch.location)
   return TbarPatchInfo(selected_patch)
 
-def select_patch_recoder_mode(state: MSVState) -> RecoderPatchInfo:
-  if state.mode == MSVMode.recoder:
+def select_patch_recoder_mode(state: GlobalState) -> RecoderPatchInfo:
+  if state.mode == Mode.recoder:
     return select_patch_recoder(state)
-  elif state.mode==MSVMode.genprog:
+  elif state.mode==Mode.genprog:
     return select_patch_recoder_genprog(state)
-  elif state.mode == MSVMode.seapr:
+  elif state.mode == Mode.seapr:
     return select_patch_recoder_seapr(state)
   else:
     return select_patch_recoder_guided(state)
 
-def select_patch_recoder(state: MSVState) -> RecoderPatchInfo:
+def select_patch_recoder(state: GlobalState) -> RecoderPatchInfo:
   p = state.patch_ranking.pop(0)
   caseinfo = state.switch_case_map[p]
   if not state.use_pattern and state.seapr_layer == SeAPRMode.FUNCTION:
     caseinfo.parent.parent.case_rank_list.pop(0)
   return RecoderPatchInfo(caseinfo)
 
-def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
+def select_patch_recoder_guided(state: GlobalState) -> RecoderPatchInfo:
   p_fl = list()  # fault localization
   p_frequency = list()  # frequency of basic patches from total basic patches
   # frequency of basic patches from total searched patches in subtree
@@ -742,7 +742,7 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
     if state.file_info_map[file]==selected_file_info:
       selected_file=i
       break
-  state.msv_logger.debug(f'Selected file: FL: {norm[selected_file]}/{p_fl[selected_file]}, Basic: {selected_file_info.pf.beta_mode(selected_file_info.pf.pass_count,selected_file_info.pf.fail_count)}, '+
+  state.logger.debug(f'Selected file: FL: {norm[selected_file]}/{p_fl[selected_file]}, Basic: {selected_file_info.pf.beta_mode(selected_file_info.pf.pass_count,selected_file_info.pf.fail_count)}, '+
                   f'Plausible: {selected_file_info.positive_pf.beta_mode(selected_file_info.positive_pf.pass_count,selected_file_info.positive_pf.fail_count)}, '+
                   f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_file])}/{p_frequency[selected_file]}, BPFreq: {PassFail.log_func(p_bp_frequency[selected_file])}')
 
@@ -751,11 +751,11 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
     for cor in state.correct_patch_list:
       cor_patch=state.switch_case_map[cor]
       if cor_patch.parent.parent.parent==selected_file_info:
-        state.msv_logger.debug(f'Correct guide at file')
+        state.logger.debug(f'Correct guide at file')
         is_correct_guide=True
         break
     if not is_correct_guide:
-      state.msv_logger.debug(f'Misguide at file')
+      state.logger.debug(f'Misguide at file')
 
   selected_func_info,is_guided = select_patch_guide_algorithm(state,selected_file_info.func_info_map,selected_file_info)
   for func_name in selected_file_info.func_info_map:
@@ -770,7 +770,7 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
       selected_func=i
       break
   norm=PassFail.normalize(p_fl)
-  state.msv_logger.debug(f'Selected function: FL: {norm[selected_func]}/{p_fl[selected_func]}, Basic: {selected_func_info.pf.beta_mode(selected_func_info.pf.pass_count,selected_func_info.pf.fail_count)}, '+
+  state.logger.debug(f'Selected function: FL: {norm[selected_func]}/{p_fl[selected_func]}, Basic: {selected_func_info.pf.beta_mode(selected_func_info.pf.pass_count,selected_func_info.pf.fail_count)}, '+
                   f'Plausible: {selected_func_info.positive_pf.beta_mode(selected_func_info.positive_pf.pass_count,selected_func_info.positive_pf.fail_count)}, '+
                   f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_func])}/{p_frequency[selected_func]}, BPFreq: {PassFail.log_func(p_bp_frequency[selected_func])}')
 
@@ -779,11 +779,11 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
     for cor in state.correct_patch_list:
       cor_patch=state.switch_case_map[cor]
       if cor_patch.parent.parent==selected_func_info:
-        state.msv_logger.debug(f'Correct guide at func')
+        state.logger.debug(f'Correct guide at func')
         is_correct_guide=True
         break
     if not is_correct_guide:
-      state.msv_logger.debug(f'Misguide at func')
+      state.logger.debug(f'Misguide at func')
   
   selected_line_info,is_guided = select_patch_guide_algorithm(state,selected_func_info.line_info_map,selected_func_info)
   for line in selected_func_info.line_info_map:
@@ -798,7 +798,7 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
       selected_line=i
       break
   norm=PassFail.normalize(p_fl)
-  state.msv_logger.debug(f'Selected line: FL: {norm[selected_line]}/{p_fl[selected_line]}, Basic: {selected_line_info.pf.beta_mode(selected_line_info.pf.pass_count,selected_line_info.pf.fail_count)}, '+
+  state.logger.debug(f'Selected line: FL: {norm[selected_line]}/{p_fl[selected_line]}, Basic: {selected_line_info.pf.beta_mode(selected_line_info.pf.pass_count,selected_line_info.pf.fail_count)}, '+
                   f'Plausible: {selected_line_info.positive_pf.beta_mode(selected_line_info.positive_pf.pass_count,selected_line_info.positive_pf.fail_count)}, '+
                   f'Unique/Freq: {PassFail.concave_up(p_frequency[selected_line])}/{p_frequency[selected_line]}, BPFreq: {PassFail.log_func(p_bp_frequency[selected_line])}')
 
@@ -807,23 +807,23 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
     for cor in state.correct_patch_list:
       cor_patch=state.switch_case_map[cor]
       if cor_patch.parent==selected_line_info:
-        state.msv_logger.debug(f'Correct guide at line')
+        state.logger.debug(f'Correct guide at line')
         is_correct_guide=True
         break
     if not is_correct_guide:
-      state.msv_logger.debug(f'Misguide at line')
+      state.logger.debug(f'Misguide at line')
 
   selected_case_info: RecoderCaseInfo = epsilon_select(state, selected_line_info)
   state.patch_ranking.remove(selected_case_info.to_str())
   result = RecoderPatchInfo(selected_case_info)
   return result
 
-def select_patch_recoder_seapr(state: MSVState) -> RecoderPatchInfo:
+def select_patch_recoder_seapr(state: GlobalState) -> RecoderPatchInfo:
   selected_patch: RecoderCaseInfo = None
   max_score = 0.0
   has_high_qual_patch = False
 
-  def get_first_case_info(state: MSVState, func: FuncInfo) -> RecoderCaseInfo:
+  def get_first_case_info(state: GlobalState, func: FuncInfo) -> RecoderCaseInfo:
     loc = func.case_rank_list[0]
     case_info: RecoderCaseInfo = state.switch_case_map[loc]
     return case_info
@@ -874,27 +874,27 @@ def select_patch_recoder_seapr(state: MSVState) -> RecoderPatchInfo:
         if patch != state.correct_patch_str:
           seapr_rank += 1
         else:
-          state.msv_logger.info(f"Correct patch {state.correct_patch_str} is ranked {seapr_rank}")
+          state.logger.info(f"Correct patch {state.correct_patch_str} is ranked {seapr_rank}")
           is_finished = True
           break
     if is_finished:
       break
   if not has_high_qual_patch:
-    state.msv_logger.debug('Every top-30 methods are searched, follow original order!')
+    state.logger.debug('Every top-30 methods are searched, follow original order!')
     state.select_time+=time.time()-start_time
     return select_patch_recoder(state)
   state.patch_ranking.remove(selected_patch.to_str())
-  state.msv_logger.debug(f"Selected patch: {selected_patch.to_str()}, seapr score: {max_score}")
+  state.logger.debug(f"Selected patch: {selected_patch.to_str()}, seapr score: {max_score}")
   if not state.use_pattern and state.seapr_layer == SeAPRMode.FUNCTION:
     selected_patch.parent.parent.case_rank_list.pop(0)
   state.select_time+=time.time()-start_time
 
   return RecoderPatchInfo(selected_patch)
 
-def select_patch_recoder_genprog(state: MSVState) -> TbarPatchInfo:
+def select_patch_recoder_genprog(state: GlobalState) -> TbarPatchInfo:
   start_time = time.time()
   # Select file
-  state.msv_logger.debug(f'Select with simple stochastic')
+  state.logger.debug(f'Select with simple stochastic')
   file_score_list=[]
   file_list=[]
   for file in state.file_info_map:
@@ -930,6 +930,6 @@ def select_patch_recoder_genprog(state: MSVState) -> TbarPatchInfo:
   selected_patch=patch_list[selected_patch_index]
 
   state.select_time+=time.time()-start_time
-  state.msv_logger.debug(f'{selected_patch.to_str()} selected')
+  state.logger.debug(f'{selected_patch.to_str()} selected')
   state.patch_ranking.remove(selected_patch.to_str())
   return RecoderPatchInfo(selected_patch)

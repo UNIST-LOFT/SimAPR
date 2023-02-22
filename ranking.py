@@ -40,27 +40,6 @@ def ranking_original_learning(recoder_path:str,patch_path:str):
           tmp_map[cand_id]["rank"] = rank
   with open(f"{recoder_path}/data/rank_map.json", "w") as f:
     json.dump(rank_map, f, indent=2)
-  # Get all plausible patches
-  # plau_patches:Dict[str,dict]=dict()
-  # for result in casino_result:
-  #   if result['pass_result']:
-  #     patch_id=f"{result['config'][0]['id']}-{result['config'][0]['case_id']}"
-  #     plau_patches[patch_id]={'iteration':result['iteration'],
-  #             'time':result['time'],
-  #             'id':patch_id}
-  # print(f'Plausible patches: {len(plau_patches)}')
-  # Get original ranking
-  # original_rank_id:List[str]=[]
-  # for candidate in original_rank:
-  #   original_rank_id.append(candidate)
-  # # print(f'Original rank: {original_rank_id}')
-  # # Sort plausible patches with original rank
-  # new_plau:List[dict]=[]
-
-
-  # # Save sorted result to json file
-  # with open(f'{result_path}/msv-orig-rank.json','w') as f:
-  #   json.dump(new_plau,f,indent=2)
 
 def ranking_ods_learning(result_path:str,patch_path:str,tool_path:str,project:str):
   if not os.path.exists(ods_dir):
@@ -73,7 +52,7 @@ def ranking_ods_learning(result_path:str,patch_path:str,tool_path:str,project:st
                 cwd=coming_dir,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
 
   project_path=tool_path+'/buggy/'+project
-  result=subprocess.run(['python3','parse_msv.py','--msv_results_path',result_path,
+  result=subprocess.run(['python3','parse_msv.py','--simapr_results_path',result_path,
             '--patches-path',patch_path,'--buggy_projects_paths',project_path,
             '--output',result_path,'--coming_tool_path',coming_dir],
             cwd=ods_dir,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
@@ -85,14 +64,14 @@ def ranking_ods_learning(result_path:str,patch_path:str,tool_path:str,project:st
     print(f'Success to run ods for {result_path}!')
 
 def ranking_original_template(result_path:str,patch_path:str):
-  with open(f'{result_path}/msv-result.json','r') as f:
-    casino_result:List[dict]=json.load(f)
+  with open(f'{result_path}/simapr-result.json','r') as f:
+    simapr_result:List[dict]=json.load(f)
   with open(f'{patch_path}/switch-info.json','r') as f:
     original_rank:List[dict]=json.load(f)['ranking']
 
   # Get all plausible patches
   plau_patches:Dict[str,dict]=dict()
-  for result in casino_result:
+  for result in simapr_result:
     if result['pass_result']:
       patch_id=result['config'][0]['location']
       plau_patches[patch_id]={'iteration':result['iteration'],
@@ -114,7 +93,7 @@ def ranking_original_template(result_path:str,patch_path:str):
       new_plau.append(plau_patches[cand_id])
 
   # Save sorted result to json file
-  with open(f'{result_path}/msv-orig-rank.json','w') as f:
+  with open(f'{result_path}/simapr-orig-rank.json','w') as f:
     json.dump(new_plau,f,indent=2)
 
 def ranking_ods_template(result_path:str,patch_path:str,tool_path:str,project:str):
@@ -130,7 +109,7 @@ def ranking_ods_template(result_path:str,patch_path:str,tool_path:str,project:st
                 cwd='/root/project/coming',stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
 
   project_path=tool_path+'/buggy'
-  result=subprocess.run(['python3','parse_msv.py','--msv_results_path',result_path,
+  result=subprocess.run(['python3','parse_msv.py','--simapr_results_path',result_path,
             '--patches_path',patch_path,'--buggy_projects_path',project_path,
             '--output',result_path,'--coming_tool_path',coming_tool],
             cwd='/root/project/ods-enhanced',stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
@@ -149,17 +128,17 @@ if __name__=='__main__':
 
   if argv[1]=='tbar-orig':
     # Original rank of template-based tools
-    assert len(argv)==4,'Usage: python3 ranking.py tbar-orig [casino-result-path] [patch-gen-path]'
+    assert len(argv)==4,'Usage: python3 ranking.py tbar-orig [simapr-result-path] [patch-gen-path]'
     ranking_original_template(argv[2],argv[3])
   elif argv[1]=='tbar-ods':
-    assert len(argv)==6,'Usage: python3 ranking.py tbar-ods [casino-result-path] [patch-gen-path] [tool-path] [project]'
+    assert len(argv)==6,'Usage: python3 ranking.py tbar-ods [simapr-result-path] [patch-gen-path] [tool-path] [project]'
     ranking_ods_template(argv[2],argv[3],argv[4],argv[5])
   elif argv[1] == 'recoder-orig':
     # Original rank of recoder-based tools
-    assert len(argv)==4,'Usage: python3 ranking.py recoder-orig [casino-path] [patch-gen-path]'
+    assert len(argv)==4,'Usage: python3 ranking.py recoder-orig [simapr-path] [patch-gen-path]'
     ranking_original_learning(argv[2],argv[3])
   elif argv[1] == 'recoder-ods':
-    assert len(argv)==6,'Usage: python3 ranking.py recoder-ods [casino-result-path] [patch-gen-path] [tool-path] [project]'
+    assert len(argv)==6,'Usage: python3 ranking.py recoder-ods [simapr-result-path] [patch-gen-path] [tool-path] [project]'
     ods_dir = "/root/ods-enhanced"
     coming_dir = "/root/coming"
     ranking_ods_learning(argv[2],argv[3],argv[4],argv[5])

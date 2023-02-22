@@ -27,8 +27,8 @@ def run_d4j_export(d4j_dir: str) -> tuple:
 
 def get_paths(project, buggy_dir):
   sep = "_"
-  if "MSV_RECODER" in os.environ:
-    sep = os.environ["MSV_RECODER"]
+  if "SIMAPR_RECODER" in os.environ:
+    sep = os.environ["SIMAPR_RECODER"]
   project_name, bug_id = project.split(sep)
   if len(bug_id)>=4:
     bug_id=bug_id[:-3]
@@ -91,8 +91,8 @@ def compile_project_updated(work_dir, buggy_project):
   result = True
   so = "".encode()
   se = "".encode()
-  if "MSV_TIMEOUT" in os.environ:
-    timeout = int(os.environ["MSV_TIMEOUT"])
+  if "SIMAPR_TIMEOUT" in os.environ:
+    timeout = int(os.environ["SIMAPR_TIMEOUT"])
     try:
       so, se = compile_proc.communicate(timeout=timeout/1000)
     except:
@@ -122,8 +122,8 @@ def run_single_test(work_dir: str, buggy_project: str, test: str = "") -> Tuple[
   so = "".encode()
   se = "".encode()
   test_proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-  if "MSV_TIMEOUT" in os.environ:
-    timeout = int(os.environ["MSV_TIMEOUT"])
+  if "SIMAPR_TIMEOUT" in os.environ:
+    timeout = int(os.environ["SIMAPR_TIMEOUT"])
     if test == "":
       timeout *= 3
     try:
@@ -243,24 +243,24 @@ def simple_test():
 
 def main(argv: List[str]) -> None:
   root_path = argv[1]
-  buggy_project = os.environ["MSV_BUGGY_PROJECT"]
+  buggy_project = os.environ["SIMAPR_BUGGY_PROJECT"]
   sep = "_"
-  if "MSV_RECODER" in os.environ:
-    sep = os.environ["MSV_RECODER"]
+  if "SIMAPR_RECODER" in os.environ:
+    sep = os.environ["SIMAPR_RECODER"]
   proj, pid = buggy_project.split(sep)
   buggy_dir = os.path.join(root_path, buggy_project)
-  patch_location = os.environ["MSV_LOCATION"]
-  d4j_dir = os.environ["MSV_WORKDIR"]
+  patch_location = os.environ["SIMAPR_LOCATION"]
+  d4j_dir = os.environ["SIMAPR_WORKDIR"]
   run_original = patch_location == "original"
   patch_location = d4j_dir + os.path.sep + patch_location #os.path.join(d4j_dir, patch_location)
-  buggy_location = os.environ["MSV_BUGGY_LOCATION"]
+  buggy_location = os.environ["SIMAPR_BUGGY_LOCATION"]
   if buggy_location.startswith("buggy"):
     buggy_location = os.path.join(root_path, buggy_location)
   else:
     buggy_location = os.path.join(buggy_dir, buggy_location)
   class_file = ""
-  if "MSV_CLASS_NAME" in os.environ:
-    class_file = os.environ["MSV_CLASS_NAME"]
+  if "SIMAPR_CLASS_NAME" in os.environ:
+    class_file = os.environ["SIMAPR_CLASS_NAME"]
     class_file = os.path.join(buggy_dir, class_file)
   if not os.path.exists(buggy_location): # when original
     os.system(f"rm -rf {buggy_dir}")
@@ -269,7 +269,7 @@ def main(argv: List[str]) -> None:
       pid=pid[:-3]
     subprocess.run(f"defects4j checkout -p {proj} -v {pid}b -w {buggy_dir}", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
   workdir = buggy_dir
-  test = os.environ["MSV_TEST"]
+  test = os.environ["SIMAPR_TEST"]
   if test == "ALL":
     test = ""
   test_project(
