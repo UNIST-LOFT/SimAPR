@@ -14,62 +14,12 @@ from typing import List, Dict, Tuple, Set, Union
 import uuid
 import math
 class MSVMode(Enum):
-  prophet = 1
-  guided = 2
-  random = 3
-  original = 4
-  positive = 5
-  validation = 6
-  spr = 7
-  seapr = 8
-  tbar = 9
-  recoder = 10
-  genprog = 11
-
-class PatchType(Enum):
-  TightenConditionKind = 0
-  LoosenConditionKind = 1
-  GuardKind = 2
-  SpecialGuardKind = 3
-  IfExitKind = 4
-  AddInitKind = 5
-  ReplaceKind = 6
-  ReplaceStringKind = 7
-  ReplaceFunctionKind = 8
-  AddStmtKind=9
-  AddStmtAndReplaceAtomKind=10
-  AddIfStmtKind=11
-  ConditionKind=12
-  MSVExtFunctionReplaceKind=21
-  MSVExtAddConditionKind=22
-  MSVExtReplaceFunctionInConditionKind=23
-  MSVExtRemoveStmtKind=24
-  Original = 31
-
-class OperatorType(Enum):
-  EQ = 0
-  NE = 1
-  GT = 2
-  LT = 3
-  ALL_1 = 4
-  EQ_VAR = 5
-  NE_VAR = 6
-  GT_VAR = 7
-  LT_VAR = 8
-
-  def __lt__(self, other):
-    return self.value < other.value
-  
-  def __le__(self,other):
-    return self.value <= other.value
-
-class EnvVarMode(Enum):
-  basic = 0
-  record_it = 1
-  record_all_1 = 2
-  collect_neg = 3
-  collect_pos = 4
-  cond_syn = 5
+  guided = 1
+  original = 2
+  seapr = 3
+  tbar = 4
+  recoder = 5
+  genprog = 6
 
 # Parameter Type
 class PT(Enum):
@@ -224,7 +174,6 @@ class FileInfo:
     self.output_pf = PassFail()
     self.fl_score=-1
     self.fl_score_list: List[float] = list()
-    self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = -1.0
     self.out_dist_map: Dict[int, float] = dict()
     self.update_count: int = 0
@@ -238,8 +187,8 @@ class FileInfo:
     self.children_plausible_patches:int=0
     self.consecutive_fail_count:int=0
     self.consecutive_fail_plausible_count:int=0
-    self.patches_by_score:Dict[float,List[CaseInfo]]=dict()
-    self.remain_patches_by_score:Dict[float,List[CaseInfo]]=dict()
+    self.patches_by_score:Dict[float,List[TbarCaseInfo]]=dict()
+    self.remain_patches_by_score:Dict[float,List[TbarCaseInfo]]=dict()
     self.remain_lines_by_score:Dict[float,List[LineInfo]]=dict()
   def __hash__(self) -> int:
     return hash(self.file_name)
@@ -273,8 +222,8 @@ class FuncInfo:
     self.children_plausible_patches:int=0
     self.consecutive_fail_count:int=0
     self.consecutive_fail_plausible_count:int=0
-    self.patches_by_score:Dict[float,List[CaseInfo]]=dict()
-    self.remain_patches_by_score:Dict[float,List[CaseInfo]]=dict()
+    self.patches_by_score:Dict[float,List[TbarCaseInfo]]=dict()
+    self.remain_patches_by_score:Dict[float,List[TbarCaseInfo]]=dict()
     self.remain_lines_by_score:Dict[float,List[LineInfo]]=dict()
 
     self.total_patches_by_score:Dict[float,int]=dict() # Total patches grouped by score
@@ -295,14 +244,12 @@ class LineInfo:
     self.uuid = uuid.uuid4()
     self.line_number = line_number
     #self.switch_info_list: List[SwitchInfo] = list()
-    self.switch_info_map: Dict[int, SwitchInfo] = dict()
     self.parent = parent
     self.pf = PassFail()
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
     self.output_pf = PassFail()
     self.fl_score=0.
-    self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = -1.0
     self.out_dist_map: Dict[int, float] = dict()
     self.update_count: int = 0
@@ -320,8 +267,8 @@ class LineInfo:
     self.children_plausible_patches:int=0
     self.consecutive_fail_count:int=0
     self.consecutive_fail_plausible_count:int=0
-    self.patches_by_score:Dict[float,List[CaseInfo]]=dict()
-    self.remain_patches_by_score:Dict[float,List[CaseInfo]]=dict()
+    self.patches_by_score:Dict[float,List[TbarCaseInfo]]=dict()
+    self.remain_patches_by_score:Dict[float,List[TbarCaseInfo]]=dict()
 
     # Unified debugging stuffs
     self.ud_spectrum:List[int]=[0,0,0,0]  # [CleanFix, NoisyFix, NoneFix, NegFix]
@@ -347,8 +294,8 @@ class TbarTypeInfo:
     self.children_plausible_patches:int=0
     self.consecutive_fail_count:int=0
     self.consecutive_fail_plausible_count:int=0
-    self.patches_by_score:Dict[float,List[CaseInfo]]=dict()
-    self.remain_patches_by_score:Dict[float,List[CaseInfo]]=dict()
+    self.patches_by_score:Dict[float,List[TbarCaseInfo]]=dict()
+    self.remain_patches_by_score:Dict[float,List[TbarCaseInfo]]=dict()
   def __hash__(self) -> int:
     return hash(self.mutation)
   def __eq__(self, other) -> bool:
@@ -438,219 +385,13 @@ class RecoderCaseInfo:
   def to_str(self) -> str:
     return f"{self.parent.line_id}-{self.case_id}"
 
-class SwitchInfo:
-  def __init__(self, parent: LineInfo, switch_number: int) -> None:
-    self.switch_number = switch_number
-    self.parent = parent
-    #self.type_info_list: List[TypeInfo] = list()
-    self.type_info_map: Dict[PatchType, TypeInfo] = dict()
-    self.pf = PassFail()
-    self.critical_pf = PassFail()
-    self.positive_pf = PassFail()
-    self.output_pf = PassFail()
-    self.profile_diff: 'ProfileDiff' = None
-    self.out_dist: float = -1.0
-    self.out_dist_map: Dict[int, float] = dict()
-    self.update_count: int = 0
-    self.total_case_info: int = 0
-    self.prophet_score:list=[]
-    self.has_init_patch=False
-    self.case_update_count: int = 0
-    self.children_basic_patches:int=0
-    self.children_plausible_patches:int=0
-    self.consecutive_fail_count:int=0
-    self.consecutive_fail_plausible_count:int=0
-    self.patches_by_score:Dict[float,List[CaseInfo]]=dict()
-    self.remain_patches_by_score:Dict[float,List[CaseInfo]]=dict()
-
-  def __hash__(self) -> int:
-    return hash(self.switch_number)
-  def __eq__(self, other) -> bool:
-    return self.switch_number == other.switch_number
-
-class TypeInfo:
-  def __init__(self, parent: SwitchInfo, patch_type: PatchType) -> None:
-    self.patch_type = patch_type
-    self.parent = parent
-    #self.case_info_list: List[CaseInfo] = list()
-    self.case_info_map: Dict[int, CaseInfo] = dict()
-    self.pf = PassFail()
-    self.critical_pf = PassFail()
-    self.positive_pf = PassFail()
-    self.output_pf = PassFail()
-    self.profile_diff: 'ProfileDiff' = None
-    self.out_dist: float = -1.0
-    self.out_dist_map: Dict[int, float] = dict()
-    self.update_count: int = 0
-    self.total_case_info: int = 0
-    self.prophet_score:list=[]
-    self.has_init_patch=False
-    self.case_update_count: int = 0
-    self.children_basic_patches:int=0
-    self.children_plausible_patches:int=0
-    self.consecutive_fail_count:int=0
-    self.consecutive_fail_plausible_count:int=0
-    self.patches_by_score:Dict[float,List[CaseInfo]]=dict()
-    self.remain_patches_by_score:Dict[float,List[CaseInfo]]=dict()
-  def __hash__(self) -> int:
-    return hash(self.patch_type)
-  def __eq__(self, other) -> bool:
-    return self.patch_type == other.patch_type and self.parent==other.parent
-
-class CaseInfo:
-  def __init__(self, parent: TypeInfo, case_number: int, is_condition: bool) -> None:
-    self.case_number = case_number
-    self.parent = parent
-    self.is_condition = is_condition
-    self.var_count: int = 0
-    self.operator_info_list: List[OperatorInfo]=list()
-    self.condition_list: List[(OperatorType, int, int)]=[]
-    self.pf = PassFail()
-    self.critical_pf = PassFail()
-    self.positive_pf = PassFail()
-    self.output_pf = PassFail()
-    self.processed=False # for prophet condition
-    self.failed = False # for simulation mode
-    self.profile_diff: 'ProfileDiff' = None
-    self.out_dist: float = -1.0
-    self.out_dist_map: Dict[int, float] = dict()
-    self.update_count: int = 0
-    self.prophet_score:list=[]
-    self.location: FileLine = None
-    self.seapr_same_high:float=1.0
-    self.seapr_same_low:float=1.0
-    self.seapr_diff_high:float=1.0
-    self.seapr_diff_low:float=1.0
-    self.current_record:List[bool]=[] # current record, for out condition synthesis
-    self.synthesis_tried:int=0 # tried counter for search record, removed after 11
-    self.has_init_patch=False
-    self.func_distance=0.9999 # If it is function replace, save distance of function name
-    self.total_case_info=1
-    self.parent.total_case_info += 1
-    self.parent.parent.total_case_info += 1
-    self.parent.parent.parent.total_case_info += 1
-    self.parent.parent.parent.parent.total_case_info += 1
-    self.parent.parent.parent.parent.parent.total_case_info += 1
-  def __hash__(self) -> int:
-    return hash(self.case_number)
-  def __eq__(self, other) -> bool:
-    return self.case_number == other.case_number and self.parent.parent==other.parent.parent
-  def to_str(self) -> str:
-    return f"{self.parent.parent.switch_number}-{self.case_number}"
-  def __str__(self) -> str:
-    return self.to_str()
-
-class OperatorInfo:
-  def __init__(self, parent: CaseInfo, operator_type: OperatorType, var_count:int=0) -> None:
-    self.operator_type = operator_type
-    self.parent = parent
-    self.variable_info_list: List[VariableInfo] = list()
-    self.temp_variable_info_list: List[VariableInfo] = list() # Variable which consumed all constants
-    self.pf = PassFail()
-    self.critical_pf = PassFail()
-    self.positive_pf = PassFail()
-    self.output_pf = PassFail()
-    self.var_count=var_count
-    self.profile_diff: 'ProfileDiff' = None
-    self.out_dist: float = -1.0
-    self.out_dist_map: Dict[int, float] = dict()
-    self.update_count: int = 0
-    self.prophet_score:list=[]
-    self.has_init_patch=False
-  def __hash__(self) -> int:
-    return self.operator_type.value
-  def __eq__(self, other) -> bool:
-    if other is None:   # It can be None if record fails
-      return False
-    return self.operator_type == other.operator_type
-  
-  @staticmethod
-  def valueOf(value:int)->"OperatorInfo":
-    if value==0:
-      return OperatorType.EQ
-    elif value==1:
-      return OperatorType.NE
-    elif value==2:
-      return OperatorType.GT
-    elif value==3:
-      return OperatorType.LT
-    elif value==4:
-      return OperatorType.ALL_1
-    elif value==5:
-      return OperatorType.EQ_VAR
-    elif value==6:
-      return OperatorType.NE_VAR
-    elif value==7:
-      return OperatorType.GT_VAR
-    elif value==8:
-      return OperatorType.LT_VAR
-    else:
-      return OperatorType.EQ
-
-class VariableInfo:
-  def __init__(self, parent: OperatorInfo, variable: int) -> None:
-    self.variable = variable
-    self.parent = parent
-    self.constant_info_list: List[ConstantInfo] = list() # if new_condition_syn is turned on, len=1
-    self.pf = PassFail()
-    self.critical_pf = PassFail()
-    self.positive_pf = PassFail()
-    self.output_pf = PassFail()
-    self.used_const=set()
-    self.profile_diff: 'ProfileDiff' = None
-    self.out_dist: float = -1.0
-    self.out_dist_map: Dict[int, float] = dict()
-    self.update_count: int = 0
-    self.prophet_score:int=0
-    self.has_init_patch=False
-  def to_str(self) -> str:
-    return f"{self.parent.parent.parent.parent.switch_number}-{self.parent.parent.case_number}-{self.parent}-{self.variable}"
-  def __str__(self) -> str:
-    return self.to_str()
-  def __hash__(self) -> int:
-    return hash(self.to_str())
-  def __eq__(self, other) -> bool:
-    return self.to_str() == other.to_str()
-
-class ConstantInfo:
-  def __init__(self, parent: VariableInfo, constant_value: int) -> None:
-    self.constant_value = constant_value
-    self.parent:ConstantInfo = None # parent constant, or None if new_condition_syn not set
-    self.variable=parent # variable
-    self.pf = PassFail()
-    self.critical_pf = PassFail()
-    self.positive_pf = PassFail()
-    self.output_pf = PassFail()
-    self.left:ConstantInfo=None
-    self.right:ConstantInfo=None
-    self.profile_diff: 'ProfileDiff' = None
-    self.out_dist: float = -1.0
-    self.out_dist_map: Dict[int, float] = dict()
-    self.update_count: int = 0
-    self.has_init_patch=False
-  def __hash__(self) -> int:
-    return hash(self.constant_value)
-  def __eq__(self, other) -> bool:
-    return self.constant_value == other.constant_value
-
-# Find with f"{switch_number}-{case_number}"
-class SwitchCase:
-  def __init__(self, case_info: CaseInfo, switch_number: int, case_number: int) -> None:
-    self.case_info = case_info
-    self.switch_number = switch_number
-    self.case_number = case_number
-  def __hash__(self) -> int:
-    return hash(f"{self.switch_number}-{self.case_number}")
-  def __eq__(self, other) -> bool:
-    return self.switch_number == other.switch_number and self.case_number == other.case_number
-
 # Find with f"{file_name}:{line_number}"
 class FileLine:
   def __init__(self, fi: FileInfo, li: LineInfo, score: float) -> None:
     self.file_info = fi
     self.line_info = li
     self.score = score
-    self.case_map: Dict[str, CaseInfo] = dict() # switch_number-case_number -> CaseInfo
+    self.case_map: Dict[str, TbarCaseInfo] = dict() # switch_number-case_number -> TbarCaseInfo
     self.seapr_e_pf: PassFail = PassFail()
     self.seapr_n_pf: PassFail = PassFail()
     # self.type_map: Dict[PatchType, Tuple[PassFail, PassFail]] = dict()
@@ -678,254 +419,9 @@ class LocationScore:
       else:
         return False
 
-class ProfileElement:
-  def __init__(self, function: str, variable: str, value: int) -> None:
-    self.function = function
-    self.variable = variable
-    self.value = value
-    self.critical_value = 0
-    self.critical_pf = PassFail()
-  def to_str(self) -> str:
-    return f"{self.function}/{self.variable}"
-  def __str__(self) -> str:
-    return self.to_str()
-  def __hash__(self) -> int:
-    return hash(self.to_str())
-  def __eq__(self, other) -> bool:
-    return self.function == other.function and self.variable == other.variable
-  def copy(self) -> 'ProfileElement':
-    return ProfileElement(self.function, self.variable, self.value)
-
-class Profile:
-  def __init__(self, state: 'MSVState', profile: str) -> None:
-    self.state = state
-    self.profile_dict: Dict[ProfileElement, ProfileElement] = dict()
-    self.profile_critical_dict: Dict[ProfileElement, ProfileElement] = dict()
-    self.profile_critical_dict_values: Dict[ProfileElement, ProfileValue] = dict()
-    state.msv_logger.debug(f"Profile: {profile}")
-    profile_meta_filename = os.path.join(state.tmp_dir, f"{profile}_profile.log")
-    if not os.path.exists(profile_meta_filename):
-      state.msv_logger.debug(f"Profile meta file not found: {profile_meta_filename}")
-      return
-    with open(profile_meta_filename, "r") as pm:
-      for func in pm.readlines():
-        if func.startswith("#"):
-          continue
-        func = func.strip()
-        if func == "":
-          continue
-        profile_file = os.path.join(state.tmp_dir, f"{profile}_{func}_profile.log")
-        if not os.path.exists(profile_file):
-          state.msv_logger.debug(f"Profile file not found: {profile_file}")
-          continue
-        with open(profile_file, "r") as p:
-          for line in p.readlines():
-            if line.startswith("#"):
-              continue
-            line = line.strip()
-            if line == "":
-              continue
-            line_split = line.split("=")
-            if len(line_split) != 2:
-              continue
-            var = line_split[0].strip()
-            value = int(line_split[1].strip())
-            profile_elem = ProfileElement(func, var, value)
-            self.profile_dict[profile_elem] = profile_elem
-        if os.path.exists(profile_file):
-          os.remove(profile_file)
-    if os.path.exists(profile_meta_filename):
-      os.remove(profile_meta_filename)
-  # self is original profile
-  def diff(self, other: 'Profile', result: bool) -> Tuple[Set[ProfileElement], Set[ProfileElement]]:
-    profile_diff_set = set()
-    profile_same_set = set()
-    for profile_elem in self.profile_dict:
-      if profile_elem not in other.profile_dict:
-        profile_diff_set.add(profile_elem.copy())
-      else:
-        if profile_elem.value != other.profile_dict[profile_elem].value:
-          profile_diff_set.add(other.profile_dict[profile_elem].copy())
-        else:
-          profile_same_set.add(profile_elem.copy())
-    for profile_elem in other.profile_dict:
-      if profile_elem not in self.profile_dict:
-        profile_diff_set.add(profile_elem.copy())
-    return (profile_diff_set, profile_same_set)
-
-  def get_diff(self, other: 'Profile', result: bool) -> PassFail:
-    diff_pf = PassFail()
-    profile_diff_set = set()
-    profile_same_set = set()
-    for profile_elem in self.profile_dict:
-      if profile_elem not in other.profile_dict:
-        profile_diff_set.add(profile_elem)
-      else:
-        if profile_elem.value != other.profile_dict[profile_elem].value:
-          profile_diff_set.add(profile_elem)
-        else:
-          profile_same_set.add(profile_elem)
-    for pe in other.profile_dict:
-      if pe not in self.profile_dict:
-        profile_diff_set.add(pe)
-    diff = len(profile_diff_set)
-    same = len(profile_same_set)
-    diff_pf.update(True, diff)
-    diff_pf.update(False, same)
-    return diff_pf
-
-  def get_critical_diff(self, other: 'Profile', result: bool) -> PassFail:
-    critical_pf = PassFail()
-    profile_diff_set, profile_same_set = self.diff(other, result)
-    if result:
-      self.state.msv_logger.info(f"Found patch with { len(profile_diff_set) } diff variables!")
-      new_crit = 0
-      existing_crit = 0
-      for elem in profile_diff_set:
-        if elem in self.profile_critical_dict:
-          existing_crit += 1
-          self.profile_critical_dict[elem].critical_value += 1
-          critical_pf.update(True, self.profile_critical_dict[elem].critical_value)
-          if elem.value in self.profile_critical_dict_values[elem].values:
-            self.profile_critical_dict_values[elem].values[elem.value] += 1
-          else:
-            self.profile_critical_dict_values[elem].values[elem.value] = 1
-        else:
-          new_crit += 1
-          elem.critical_value = 1
-          self.profile_critical_dict[elem] = elem
-          temp_pv = ProfileValue()
-          temp_pv.values[elem.value] = 1
-          self.profile_critical_dict_values[elem] = temp_pv
-          critical_pf.update(True, 1)
-      for elem in self.profile_critical_dict:
-        if elem not in profile_diff_set:
-          critical_pf.update(False, self.profile_critical_dict[elem].critical_value)
-      self.state.msv_logger.info(f"Get {new_crit} new / {existing_crit} existing critical variables!")
-      return critical_pf
-    if len(self.profile_critical_dict) == 0:
-      return self.get_diff(other, result)
-    
-    for elem in self.profile_critical_dict:
-      if elem in profile_diff_set:
-        critical_pf.update(True, elem.critical_value)
-      else:
-        critical_pf.update(False, elem.critical_value)
-    for elem in profile_diff_set:
-      if elem not in self.profile_critical_dict:
-        critical_pf.update(False, 1)
-    return critical_pf
-
-class ProfileValue:
-  def __init__(self) -> None:
-    self.values: Dict[int, int] = dict() # key: value, value: count
-    self.pf = PassFail()
-
-class ProfileDiff:
-  def __init__(self, test: int, original: Profile, diff_set: Set[ProfileElement]) -> None:
-    self.count = 1
-    self.profile_dict: Dict[int, Dict[ProfileElement, ProfileValue]] = dict()
-    self.profile_dict[test] = dict()
-    profile_dict = self.profile_dict[test]
-    for elem in diff_set:
-      temp_pv = ProfileValue()
-      temp_pv.pf.update(True, 1)
-      temp_pv.values[elem.value] = 1
-      profile_dict[elem] = temp_pv
-  def update(self, test: int, pd: 'ProfileDiff') -> None:
-    self.count += 1
-    profile_dict = self.profile_dict[test]
-    for elem in pd.profile_dict[test]:
-      if elem in profile_dict:
-        if elem.value in profile_dict[elem].values:
-          profile_dict[elem].values[elem.value] += 1
-        else:
-          profile_dict[elem].values[elem.value] = 1
-        profile_dict[elem].pf.update(True, 1)
-      else: # new diff variable found
-        temp_pv = ProfileValue()
-        temp_pv.pf = PassFail(1, self.count - 1)
-        temp_pv.values[elem.value] = 1
-        profile_dict[elem] = temp_pv
-    for elem in profile_dict:
-      if elem not in pd.profile_dict[test]:
-        profile_dict[elem].pf.update(False, 1)
-  def get_diff(self, test: int, original: Profile) -> float:
-    pf = PassFail()
-    if self is None:
-      return pf.expect_probability() / 2
-    # If critical variable set is empty, return diff
-    if len(original.profile_critical_dict) == 0:
-      if len(original.profile_dict) > 0:
-        return len(self.profile_dict[test]) / len(original.profile_dict)
-      else:
-        return pf.expect_probability() / 2
-    critical_dict = original.profile_critical_dict
-    profile_dict = self.profile_dict[test]
-    intersect = 0   # crit & diff
-    crit_weight_total = 0
-    diff_remain = 0 # diff\crit
-    for elem in critical_dict:
-      cv = critical_dict[elem].critical_value
-      crit_weight_total += cv
-      if elem in profile_dict:        
-        p = profile_dict[elem].pf.expect_probability()
-        intersect += cv * p
-    diff_remain_total = 0
-    for elem in profile_dict:
-      if elem not in critical_dict:
-        diff_remain_total += 1
-        diff_remain += profile_dict[elem].pf.expect_probability()
-    result = intersect / crit_weight_total
-    if diff_remain_total > 0:
-      result = (result * (1 - diff_remain / diff_remain_total))
-    return result
-
 class MSVEnvVar:
   def __init__(self) -> None:
     pass
-  @staticmethod
-  def get_new_env(state: 'MSVState', patch: List['PatchInfo'], test: int, mode: EnvVarMode = EnvVarMode.basic,set_tmp_file=True) -> Dict[str, str]:
-    new_env = os.environ.copy()
-    new_env["__PID"] = f"{test}-{patch[0].to_str_sw_cs()}"
-    new_env["MSV_UUID"] = str(state.uuid)
-    # new_env["MSV_OUTPUT_DISTANCE_FILE"] = os.path.join(state.tmp_dir, f"{state.uuid}.out")
-    new_env["MSV_OUTPUT_DISTANCE_FILE"] = f"/tmp/{uuid.uuid4()}.out"
-    new_env["MSV_TMP_DIR"] = state.tmp_dir
-    new_env["MSV_PATH"] = state.msv_path
-    tmp_file = f"/tmp/{state.uuid}-{patch[0].to_str_sw_cs()}.tmp"
-    log_file = f"/tmp/{state.uuid}-{patch[0].to_str_sw_cs()}.log"
-    for patch_info in patch:
-      sw = patch_info.switch_info.switch_number
-      cs = patch_info.case_info.case_number
-      new_env[f"__SWITCH{sw}"] = str(cs)
-      if mode==EnvVarMode.record_it:
-        new_env["IS_NEG"]='1'
-        new_env['NEG_ARG']='1'
-        new_env['TMP_FILE']= tmp_file
-      elif mode==EnvVarMode.record_all_1:
-        new_env["IS_NEG"]='1'
-        new_env['NEG_ARG']='0'
-        new_env['TMP_FILE']= tmp_file
-      elif mode==EnvVarMode.collect_neg:
-        new_env['IS_NEG']='RECORD1'
-        new_env['NEG_ARG']= tmp_file
-        new_env['TMP_FILE']= log_file
-      elif mode==EnvVarMode.collect_pos:
-        new_env['IS_NEG']='RECORD0'
-        new_env['TMP_FILE']= log_file
-      else:
-        new_env["IS_NEG"] = "RUN"
-        if set_tmp_file:
-          new_env["TMP_FILE"] = tmp_file
-        else:
-          del new_env["MSV_OUTPUT_DISTANCE_FILE"]
-        if patch_info.is_condition and patch_info.operator_info is not None:
-          new_env[f"__{sw}_{cs}__OPERATOR"] = str(patch_info.operator_info.operator_type.value)
-          if not patch_info.operator_info.operator_type==OperatorType.ALL_1:
-            new_env[f"__{sw}_{cs}__VARIABLE"] = str(patch_info.variable_info.variable)
-            new_env[f"__{sw}_{cs}__CONSTANT"] = str(patch_info.constant_info.constant_value)
-    return new_env
   @staticmethod
   def get_new_env_tbar(state: 'MSVState', patch: 'TbarPatchInfo', test: str) -> Dict[str, str]:
     new_env = os.environ.copy()
@@ -962,372 +458,6 @@ class MSVEnvVar:
     #     f.write(test + "\n")
     new_env["MSV_TEST"] = "ALL"
     return new_env
-
-class PatchInfo:
-  def __init__(self, case_info: CaseInfo, op_info: OperatorInfo, var_info: VariableInfo, con_info: ConstantInfo) -> None:
-    self.case_info = case_info
-    self.type_info = case_info.parent
-    self.switch_info = self.type_info.parent
-    self.line_info = self.switch_info.parent
-    self.func_info = self.line_info.parent
-    self.file_info = self.func_info.parent
-    self.is_condition = case_info.is_condition
-    self.operator_info = op_info
-    self.variable_info = var_info
-    self.constant_info = con_info
-    self.record=case_info.current_record
-    self.profile_diff: ProfileDiff = None
-    self.out_dist = -1.0
-    self.out_diff: bool = False
-  def update_result(self, result: bool, n: float,b_n:float, use_exp_alpha: bool, use_fixed_beta:bool) -> None:
-    if result:
-      self.type_info.children_basic_patches+=1
-      self.switch_info.children_basic_patches+=1
-      self.line_info.children_basic_patches+=1
-      self.func_info.children_basic_patches+=1
-      self.file_info.children_basic_patches+=1
-
-    self.type_info.pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
-    self.switch_info.pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
-    self.line_info.pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
-    self.func_info.pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
-    self.file_info.pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
-
-    if result:
-      self.case_info.has_init_patch=True
-      self.type_info.has_init_patch=True
-      self.switch_info.has_init_patch=True
-      self.line_info.has_init_patch=True
-      self.func_info.has_init_patch=True
-      self.file_info.has_init_patch=True
-
-    if self.is_condition and self.operator_info is not None:
-      self.operator_info.pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
-      if result:
-        self.operator_info.has_init_patch=True
-      if self.operator_info.operator_type!=OperatorType.ALL_1:
-        self.variable_info.pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
-        self.constant_info.pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
-        if result:
-          self.variable_info.has_init_patch=True
-          self.constant_info.has_init_patch=True
-
-  def update_result_out_dist(self, state: 'MSVState', result: bool, dist: float, test: int) -> None:
-    self.out_dist = dist
-    is_diff = True
-    if test in state.original_output_distance_map:
-      is_diff = dist != state.original_output_distance_map[test]
-    self.out_diff = is_diff or self.out_diff
-    tmp = self.case_info.update_count * self.case_info.out_dist
-    self.case_info.out_dist = (tmp + dist) / (self.case_info.update_count + 1)
-    self.case_info.out_dist_map[test] = (tmp + dist) / (self.case_info.update_count + 1)
-    self.case_info.update_count += 1
-    self.case_info.output_pf.update(is_diff, 1.0)
-    tmp = self.type_info.update_count * self.type_info.out_dist
-    self.type_info.out_dist = (tmp + dist) / (self.type_info.update_count + 1)
-    self.type_info.out_dist_map[test] = (tmp + dist) / (self.type_info.update_count + 1)
-    self.type_info.update_count += 1
-    self.type_info.output_pf.update(is_diff, 1.0)
-    tmp = self.switch_info.update_count * self.switch_info.out_dist
-    self.switch_info.out_dist = (tmp + dist) / (self.switch_info.update_count + 1)
-    self.switch_info.out_dist_map[test] = (tmp + dist) / (self.switch_info.update_count + 1)
-    self.switch_info.update_count += 1
-    self.switch_info.output_pf.update(is_diff, 1.0)
-    tmp = self.line_info.update_count * self.line_info.out_dist
-    self.line_info.out_dist = (tmp + dist) / (self.line_info.update_count + 1)
-    self.line_info.out_dist_map[test] = (tmp + dist) / (self.line_info.update_count + 1)
-    self.line_info.update_count += 1
-    self.line_info.output_pf.update(is_diff, 1.0)
-    tmp = self.func_info.out_dist * self.func_info.update_count
-    self.func_info.out_dist = (tmp + dist) / (self.func_info.update_count + 1)
-    self.func_info.out_dist_map[test] = (tmp + dist) / (self.func_info.update_count + 1)
-    self.func_info.update_count += 1
-    self.func_info.output_pf.update(is_diff, 1.0)
-    tmp = self.file_info.update_count * self.file_info.out_dist
-    self.file_info.out_dist = (tmp + dist) / (self.file_info.update_count + 1)
-    self.file_info.out_dist_map[test] = (tmp + dist) / (self.file_info.update_count + 1)
-    self.file_info.update_count += 1
-    self.file_info.output_pf.update(is_diff, 1.0)
-    if self.is_condition and self.operator_info is not None:
-      tmp = self.operator_info.update_count * self.operator_info.out_dist
-      self.operator_info.out_dist = (tmp + dist) / (self.operator_info.update_count + 1)
-      self.operator_info.out_dist_map[test] = (tmp + dist) / (self.operator_info.update_count + 1)
-      self.operator_info.update_count += 1
-      self.operator_info.output_pf.update(is_diff, 1.0)
-      if self.operator_info.operator_type != OperatorType.ALL_1:
-        tmp = self.variable_info.update_count * self.variable_info.out_dist
-        self.variable_info.out_dist = (tmp + dist) / (self.variable_info.update_count + 1)
-        self.variable_info.out_dist_map[test] = (tmp + dist) / (self.variable_info.update_count + 1)
-        self.variable_info.update_count += 1
-        self.variable_info.output_pf.update(is_diff, 1.0)
-        tmp = self.constant_info.update_count * self.constant_info.out_dist
-        self.constant_info.out_dist = (tmp + dist) / (self.constant_info.update_count + 1)
-        self.constant_info.out_dist_map[test] = (tmp + dist) / (self.constant_info.update_count + 1)
-        self.constant_info.update_count += 1
-        self.constant_info.output_pf.update(is_diff, 1.0)
-  
-  def add_profile(self, test: int, original: Profile, diff_set: Set[ProfileElement]) -> None:
-    self.profile_diff = ProfileDiff(test, original, diff_set)
-    if self.is_condition and self.operator_info is not None:
-      if self.operator_info.operator_type == OperatorType.ALL_1:
-        self.operator_info.profile_diff = self.profile_diff
-        if self.case_info.profile_diff is None:
-          self.case_info.profile_diff = ProfileDiff(test, original, diff_set)
-        else:
-          self.case_info.profile_diff.update(test, self.profile_diff)
-      else:
-        self.constant_info.profile_diff = self.profile_diff
-        if self.variable_info.profile_diff is None:
-          self.variable_info.profile_diff = ProfileDiff(test, original, diff_set)
-        else:
-          self.variable_info.profile_diff.update(test, self.profile_diff)
-        if self.operator_info.profile_diff is None:
-          self.operator_info.profile_diff = ProfileDiff(test, original, diff_set)
-        else:
-          self.operator_info.profile_diff.update(test, self.profile_diff)
-        if self.case_info.profile_diff is None:
-          self.case_info.profile_diff = ProfileDiff(test, original, diff_set)
-        else:
-          self.case_info.profile_diff.update(test, self.profile_diff)
-    else:
-      self.case_info.profile_diff = self.profile_diff
-    if self.type_info.profile_diff is None:
-      self.type_info.profile_diff = ProfileDiff(test, original, diff_set)
-    else:
-      self.type_info.profile_diff.update(test, self.profile_diff)
-    if self.switch_info.profile_diff is None:
-      self.switch_info.profile_diff = ProfileDiff(test, original, diff_set)
-    else:
-      self.switch_info.profile_diff.update(test, self.profile_diff)
-    if self.line_info.profile_diff is None:
-      self.line_info.profile_diff = ProfileDiff(test, original, diff_set)
-    else:
-      self.line_info.profile_diff.update(test, self.profile_diff)
-    if self.file_info.profile_diff is None:
-      self.file_info.profile_diff = ProfileDiff(test, original, diff_set)
-    else:
-      self.file_info.profile_diff.update(test, self.profile_diff)
-    
-
-  def update_result_critical(self, critical_pf: PassFail,use_fixed_beta:bool) -> None:
-    self.case_info.critical_pf.update_with_pf(critical_pf)
-    self.type_info.critical_pf.update_with_pf(critical_pf)
-    self.switch_info.critical_pf.update_with_pf(critical_pf)
-    self.line_info.critical_pf.update_with_pf(critical_pf)
-    self.file_info.critical_pf.update_with_pf(critical_pf)
-    if self.is_condition and self.operator_info is not None:
-      self.operator_info.critical_pf.update_with_pf(critical_pf)
-      if self.operator_info.operator_type!=OperatorType.ALL_1:
-        self.variable_info.critical_pf.update_with_pf(critical_pf)
-        self.constant_info.critical_pf.update_with_pf(critical_pf)
-  
-  def update_result_positive(self, result: bool, n: float, b_n:float,use_exp_alpha: bool, use_fixed_beta:bool) -> None:
-    self.case_info.positive_pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
-    self.type_info.positive_pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
-    self.switch_info.positive_pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
-    self.line_info.positive_pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
-    self.func_info.positive_pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
-    self.file_info.positive_pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
-    if self.is_condition and self.operator_info is not None:
-      self.operator_info.positive_pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
-      if self.operator_info.operator_type!=OperatorType.ALL_1:
-        self.variable_info.positive_pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
-        self.constant_info.positive_pf.update(result, n,b_n, use_exp_alpha, use_fixed_beta)
-  
-  def remove_patch(self, state: 'MSVState') -> None:
-    cur_fl_score=self.line_info.fl_score
-    if state.spr_mode:
-      cur_score=cur_fl_score
-    else:
-      cur_score=self.case_info.prophet_score[0]
-    if self.is_condition and self.operator_info is not None and self.case_info.operator_info_list is not None:
-      if self.operator_info.operator_type == OperatorType.ALL_1:
-        self.case_info.operator_info_list.remove(self.operator_info)
-        self.case_info.condition_list.remove((self.operator_info.operator_type,-1,-1))
-      else:
-        if not state.use_condition_synthesis:
-          self.case_info.condition_list.remove((self.operator_info.operator_type,self.variable_info.variable,self.constant_info.constant_value))
-          self.variable_info.constant_info_list.remove(self.constant_info)
-          if len(self.variable_info.constant_info_list) == 0:
-            self.operator_info.variable_info_list.remove(self.variable_info)
-          if len(self.operator_info.variable_info_list) == 0:
-            self.case_info.operator_info_list.remove(self.operator_info)
-
-        else:
-          node=self.constant_info
-          if node.left is None and node.right is None:
-            next=None
-          elif node.left is None and node.right is not None:
-            next=node.right
-            next.parent=node.parent
-          elif node.left is not None and node.right is None:
-            next=node.left
-            next.parent=node.parent
-          else:
-            next=node.left
-            next.parent=node.parent
-
-            target=node.right
-            current=next
-            while current is not None:
-              if target.constant_value<current.constant_value:
-                if current.left is None:
-                  current.left=target
-                  target.parent=current
-                  break
-                else:
-                  current=current.left
-              else:
-                if current.right is None:
-                  current.right=target
-                  target.parent=current
-                  break
-                else:
-                  current=current.right
-          if node.parent is None:
-            if next is None:
-              node.variable.constant_info_list.clear()
-            else:
-              if len(node.variable.constant_info_list)==0:
-                node.variable.constant_info_list.append(next)
-              else:
-                node.variable.constant_info_list[0]=next
-          elif node.parent.left is not None and node.parent.left == node:
-            node.parent.left=next
-          elif node.parent.right == node:
-            node.parent.right=next
-
-          is_remove=True
-          for var in self.operator_info.variable_info_list:
-            if len(var.constant_info_list)>0:
-              is_remove=False
-          if is_remove:
-            self.case_info.operator_info_list.remove(self.operator_info)
-
-      if len(self.case_info.operator_info_list) == 0:
-        del self.type_info.case_info_map[self.case_info.case_number]
-        state.seapr_remain_cases.remove(self.case_info)
-        state.c_remain_patch_ranking[cur_score].remove(self.case_info)
-        self.line_info.type_priority[self.type_info.patch_type].remove(self.case_info)
-        self.type_info.remain_patches_by_score[cur_score].remove(self.case_info)
-        self.switch_info.remain_patches_by_score[cur_score].remove(self.case_info)
-        self.line_info.remain_patches_by_score[cur_score].remove(self.case_info)
-        self.func_info.remain_patches_by_score[cur_score].remove(self.case_info)
-        self.file_info.remain_patches_by_score[cur_score].remove(self.case_info)
-        for score in self.case_info.prophet_score:
-          self.type_info.prophet_score.remove(score)
-          self.switch_info.prophet_score.remove(score)
-          self.line_info.prophet_score.remove(score)
-          self.func_info.prophet_score.remove(score)
-          self.file_info.prophet_score.remove(score)
-        self.type_info.case_update_count += 1
-        self.switch_info.case_update_count += 1
-        self.line_info.case_update_count += 1
-        self.func_info.case_update_count += 1
-        self.file_info.case_update_count += 1
-        #self.type_info.case_info_list.remove(self.case_info)
-        with open(os.path.join(state.out_dir, "p1.log"),'a') as f:
-          f.write(f'{self.file_info.file_name}-{self.line_info.line_number}-{self.switch_info.switch_number}-{self.type_info.patch_type}-{self.case_info.case_number}: {self.case_info.pf.pass_count}/{self.case_info.pf.pass_count+self.case_info.pf.fail_count}\n')
-
-    else:
-      #self.type_info.case_info_list.remove(self.case_info)
-      del self.type_info.case_info_map[self.case_info.case_number]
-      state.seapr_remain_cases.remove(self.case_info)
-      state.c_remain_patch_ranking[cur_score].remove(self.case_info)
-      self.line_info.type_priority[self.type_info.patch_type].remove(self.case_info)
-      self.type_info.remain_patches_by_score[cur_score].remove(self.case_info)
-      self.switch_info.remain_patches_by_score[cur_score].remove(self.case_info)
-      self.line_info.remain_patches_by_score[cur_score].remove(self.case_info)
-      self.func_info.remain_patches_by_score[cur_score].remove(self.case_info)
-      self.file_info.remain_patches_by_score[cur_score].remove(self.case_info)
-
-      for score in self.case_info.prophet_score:
-        self.type_info.prophet_score.remove(score)
-        self.switch_info.prophet_score.remove(score)
-        self.line_info.prophet_score.remove(score)
-        self.func_info.prophet_score.remove(score)
-        self.file_info.prophet_score.remove(score)
-      self.type_info.case_update_count += 1
-      self.switch_info.case_update_count += 1
-      self.line_info.case_update_count += 1
-      self.func_info.case_update_count += 1
-      self.file_info.case_update_count += 1
-      with open(os.path.join(state.out_dir, "p1.log"),'a') as f:
-        f.write(f'{self.file_info.file_name}-{self.line_info.line_number}-{self.switch_info.switch_number}-{self.type_info.patch_type}-{self.case_info.case_number}: {self.case_info.pf.pass_count}/{self.case_info.pf.pass_count+self.case_info.pf.fail_count}\n')
-
-    if len(self.type_info.case_info_map) == 0:
-      del self.switch_info.type_info_map[self.type_info.patch_type]
-    if len(self.switch_info.type_info_map) == 0:
-      del self.line_info.switch_info_map[self.switch_info.switch_number]
-
-    def has_patch(file,line):
-      for file_info in state.file_info_map.values():
-        for func_info in file_info.func_info_map.values():
-          for line_info in func_info.line_info_map.values():
-            if file==file_info.file_name and line==line_info.line_number:
-              return True
-      return False
-
-    if len(self.line_info.type_priority[self.type_info.patch_type])==0:
-      del self.line_info.type_priority[self.type_info.patch_type]
-
-    if len(self.line_info.switch_info_map) == 0:
-      del self.func_info.line_info_map[self.line_info.uuid]
-      self.func_info.fl_score_list.remove(cur_fl_score)
-      state.line_list.remove(self.line_info)
-      temp_loc=LocationScore(self.file_info.file_name,self.line_info.line_number,0,0)
-      if not has_patch(self.file_info.file_name,self.line_info.line_number) and temp_loc in state.fl_score:
-        state.fl_score.remove(LocationScore(self.file_info.file_name,self.line_info.line_number,0,0))
-      state.score_remain_line_map[self.line_info.fl_score].remove(self.line_info)
-      if len(state.score_remain_line_map[self.line_info.fl_score])==0:
-        state.score_remain_line_map.pop(self.line_info.fl_score)
-      self.func_info.remain_lines_by_score[self.line_info.fl_score].remove(self.line_info)
-      if len(self.func_info.remain_lines_by_score[self.line_info.fl_score])==0:
-        self.func_info.remain_lines_by_score.pop(self.line_info.fl_score)
-      self.file_info.remain_lines_by_score[self.line_info.fl_score].remove(self.line_info)
-      if len(self.file_info.remain_lines_by_score[self.line_info.fl_score])==0:
-        self.file_info.remain_lines_by_score.pop(self.line_info.fl_score)
-    if len(self.func_info.line_info_map) == 0:
-      del self.file_info.func_info_map[self.func_info.id]
-      self.file_info.fl_score_list.remove(cur_fl_score)
-      state.func_list.remove(self.func_info)
-    if len(self.file_info.func_info_map) == 0:
-      del state.file_info_map[self.file_info.file_name]
-
-
-  def to_json_object(self) -> dict:
-    conf = dict()
-    conf['file']=self.file_info.file_name
-    conf['function']=self.func_info.func_name
-    conf['line']=self.line_info.line_number
-    conf["switch"] = self.switch_info.switch_number
-    conf["case"] = self.case_info.case_number
-    conf["is_cond"] = self.is_condition
-    if self.is_condition:
-      if self.operator_info is None:   # It's null if record fails
-        return conf
-      conf["operator"] = self.operator_info.operator_type.value
-      if self.operator_info.operator_type!=OperatorType.ALL_1:
-        conf["variable"] = self.variable_info.variable
-        conf["constant"] = self.constant_info.constant_value
-    return conf
-  def __str__(self) -> str:
-    return self.to_str()
-  def to_str(self) -> str:
-    base = f"{self.switch_info.switch_number}-{self.case_info.case_number}"
-    if self.is_condition and self.operator_info is not None:
-      base += f":{self.operator_info.operator_type.value}"
-      if self.operator_info.operator_type!=OperatorType.ALL_1:
-        base += f"-{self.variable_info.variable}-{self.constant_info.constant_value}"
-    return base
-  def to_str_sw_cs(self) -> str:
-    return f"{self.switch_info.switch_number}-{self.case_info.case_number}"
-  @staticmethod
-  def list_to_str(selected_patch: list) -> str:
-    result = list()
-    for patch in selected_patch:
-      result.append(patch.to_str())
-    return ",".join(result)
 
 class TbarPatchInfo:
   def __init__(self, tbar_case_info: TbarCaseInfo) -> None:
@@ -1557,12 +687,12 @@ class RecoderPatchInfo:
 class MSVResult:
   iteration: int
   time: float
-  config: List[PatchInfo]
+  config: List[TbarPatchInfo]
   result: bool
   pass_result: bool
   pass_all_neg_test: bool
   output_distance: float
-  def __init__(self, execution: int, iteration:int,time: float, config: List[PatchInfo], result: bool,pass_test_result:bool=False, output_distance: float = 100.0, pass_all_neg_test: bool = False, compilable: bool = True) -> None:
+  def __init__(self, execution: int, iteration:int,time: float, config: List[TbarPatchInfo], result: bool,pass_test_result:bool=False, output_distance: float = 100.0, pass_all_neg_test: bool = False, compilable: bool = True) -> None:
     self.execution = execution
     self.iteration=iteration
     self.time = time
@@ -1624,31 +754,28 @@ class MSVState:
   ignore_compile_error: bool
   time_limit: int
   cycle_limit: int
-  correct_case_info: CaseInfo
+  correct_case_info: TbarCaseInfo
   correct_patch_str: str
   watch_level: str
   max_parallel_cpu: int
   new_revlog: str
   patch_info_map: Dict[str, FileInfo]  # fine_name: str -> FileInfo
   file_info_map: Dict[str, FileInfo]   # file_name: str -> FileInfo
-  switch_case_map: Dict[str, Union[CaseInfo, TbarCaseInfo, RecoderCaseInfo]] # f"{switch_number}-{case_number}" -> SwitchCase
+  switch_case_map: Dict[str, Union[TbarCaseInfo, TbarCaseInfo, RecoderCaseInfo]] # f"{switch_number}-{case_number}" -> SwitchCase
   patch_location_map: Dict[str, Union[TbarCaseInfo, RecoderCaseInfo]]
-  selected_patch: List[PatchInfo] # Unused
+  selected_patch: List[TbarPatchInfo] # Unused
   selected_test: List[int]        # Unused
   used_patch: List[MSVResult]
-  critical_map: Dict[int, Dict[ProfileElement, List[int]]]
   negative_test: List[int]        # Negative test case
   positive_test: List[int]        # Positive test case
   d4j_negative_test: List[str]
   d4j_positive_test: List[str]
   d4j_failed_passing_tests: Set[str]
   d4j_test_fail_num_map: Dict[str, int]
-  profile_map: Dict[int, Profile] # test case number -> Profile (of original program)
   priority_list: List[Tuple[str, int, float]]  # (file_name, line_number, score)
   priority_map: Dict[str, FileLine] # f"{file_name}:{line_number}" -> FileLine
   msv_result: List[dict]   # List of json object by MSVResult.to_json_object()
   failed_positive_test: Set[int] # Set of positive test that failed
-  profile_diff: ProfileDiff
   tmp_dir: str
   max_dist: float
   function_to_location_map: Dict[str, Tuple[str, int, int]] # function_name -> (file_name, line_start, line_end)
@@ -1726,7 +853,7 @@ class MSVState:
     self.ignore_compile_error = True
     self.simulation_data = dict()
     self.correct_patch_str: str = ""
-    self.correct_case_info: CaseInfo = None
+    self.correct_case_info: TbarCaseInfo = None
     self.watch_level: str = ""
     self.total_searched_patch=0
     self.total_passed_patch=0
@@ -1763,13 +890,13 @@ class MSVState:
     self.finish_top_method=False  # Finish if every patches in top-30 methods are searched. Should turn on for default SeAPR
     self.use_unified_debugging=False  # Use unified debugging to generate more precise clusters
 
-    self.seapr_remain_cases:List[CaseInfo]=[]
+    self.seapr_remain_cases:List[TbarCaseInfo]=[]
     self.seapr_layer:SeAPRMode=SeAPRMode.FUNCTION
     self.bounded_seapr = False
     self.ranking_map = dict()
 
-    self.c_patch_ranking:Dict[float,List[CaseInfo]]=dict()
-    self.c_remain_patch_ranking:Dict[float,List[CaseInfo]]=dict()
+    self.c_patch_ranking:Dict[float,List[TbarCaseInfo]]=dict()
+    self.c_remain_patch_ranking:Dict[float,List[TbarCaseInfo]]=dict()
     self.java_patch_ranking:Dict[float,List[TbarCaseInfo]]=dict()
     self.java_remain_patch_ranking:Dict[float,List[TbarCaseInfo]]=dict()
     self.score_remain_line_map:Dict[float,List[LineInfo]]=dict()  # Remaining lines by each scores(FL, prophet score, ...)
@@ -1848,38 +975,6 @@ def append_java_cache_result(state:MSVState,case:TbarCaseInfo,fail_result:bool,p
     pass_time: pass time (second)
   """
   id=case.location
-  if id not in state.simulation_data:
-    current=dict()
-    current['basic']=fail_result
-    current['plausible']=pass_result
-    current['pass_all_fail']=pass_all_fail
-    current['compilable']=compilable
-    current['fail_time']=fail_time
-    current['pass_time']=pass_time
-
-    state.simulation_data[id]=current
-
-def append_c_cache_result(state:MSVState,case:CaseInfo,fail_result:bool,pass_result:bool,pass_all_fail:bool,compilable:bool,
-      fail_time:float,pass_time:float,operator:OperatorInfo=None,variable:VariableInfo=None,constant:ConstantInfo=None):
-  """
-    Append result to cache file, if not exist. Otherwise, do nothing.
-    
-    state: MSVState
-    case: current patch
-    fail_result: result of fail test (bool)
-    pass_result: result of pass test (bool)
-    fail_time: fail time (second)
-    pass_time: pass time (second)
-    operator: operator info, if exist
-    variable: variable info, if exist
-    constant: constant info, if exist
-  """
-  id=case.to_str()
-  if operator is not None:
-    id+=f":{operator.operator_type.value}"
-    if variable is not None:
-      id+=f"|{variable.variable}|{constant.constant_value}"
-  
   if id not in state.simulation_data:
     current=dict()
     current['basic']=fail_result
