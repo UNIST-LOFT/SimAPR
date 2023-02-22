@@ -1,6 +1,7 @@
 # SimAPR
 
-## 1. Setup
+## 1. Environment & Setup
+SimAPR required Python >= 3.8. To install dependencies:
 ```
 python3 -m pip install -r requirements.txt
 ```
@@ -9,11 +10,12 @@ python3 -m pip install -r requirements.txt
 
 Run SimAPR
 ```
-simapr.py -o out-dir -w work-dir -m mode -t timeout -p path-to-msv -- php-test.py src tests workdir
+simapr.py [options] -- <command to run tests...>
 ```
+`<command to run tests...>` can be multiple arguments.
 
 ## 3. Mode
-* guided: default
-* seapr: using SeAPR
-* original: run original program
-* genprog: run GenProg family algorithm
+* guided: Casino algorithm
+* seapr: SeAPR algorithm
+* original: Original sequence from APR tools
+* genprog: GenProg family algorithm
