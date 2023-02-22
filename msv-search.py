@@ -147,23 +147,6 @@ def set_logger(state: MSVState) -> logging.Logger:
   logger.info(f'params: {state.params}')
   return logger
 
-def read_fl_score(state: MSVState):
-  def has_patch(file,line):
-    for file_info in state.file_info_map.values():
-      for func_info in file_info.func_info_map.values():
-        for line_info in func_info.line_info_map.values():
-          if file==file_info.file_name and line==line_info.line_number:
-            return True
-    return False
-
-  with open(os.path.join(state.work_dir, 'profile_localization.res'),'r') as loc_file:
-    lines=loc_file.readlines()
-    for line in lines:
-      splitted=line.split()
-      line_score=LocationScore(splitted[0],int(splitted[1]),int(splitted[6]),int(splitted[7]))
-      if line_score not in state.fl_score and has_patch(line_score.file_name,line_score.line):
-        state.fl_score.append(line_score)
-
 def read_info_recoder(state: MSVState) -> None:
   with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
     info = json.load(f)
@@ -284,7 +267,6 @@ def read_info_recoder(state: MSVState) -> None:
     func_info.case_rank_list.append(rank)
     case_info.patch_rank = rank_num
     rank_num += 1
-    state.ranking_map[rank] = rank_num
     if func_info not in func_rank_checker:
       func_rank_checker.add(func_info)
       func_info.func_rank = func_rank
@@ -521,7 +503,6 @@ def read_info_tbar(state: MSVState) -> None:
       loc = rank['location']
 
     state.patch_ranking.append(loc)
-    state.ranking_map[loc] = rank_num
     case_info: TbarCaseInfo = state.switch_case_map[loc]
     case_info.parent.parent.parent.case_rank_list.append(loc)
     fl_score=case_info.parent.parent.fl_score
@@ -685,7 +666,6 @@ def read_info_fixminer(state: MSVState) -> None:
       loc = rank  
     else:
       loc = rank['location']
-    state.ranking_map[loc] = rank_num
 
     state.sub_patch_ranking.append(loc)
     case_info: TbarCaseInfo = state.switch_case_map[loc]
@@ -849,7 +829,6 @@ def read_info_prapr(state: MSVState) -> None:
       loc = rank['location']
 
     state.patch_ranking.append(loc)
-    state.ranking_map[loc] = rank_num
     case_info: TbarCaseInfo = state.switch_case_map[loc]
     case_info.parent.parent.parent.case_rank_list.append(loc)
     fl_score=case_info.parent.parent.fl_score

@@ -136,20 +136,12 @@ class PassFail:
 class FileInfo:
   def __init__(self, file_name: str) -> None:
     self.file_name = file_name
-    #self.line_info_list: List[LineInfo] = list()
     self.func_info_map: Dict[str, FuncInfo] = dict() # f"{func_name}:{func_line_begin}-{func_line_end}"
     self.pf = PassFail()
-    self.critical_pf = PassFail()
     self.positive_pf = PassFail()
-    self.output_pf = PassFail()
     self.fl_score=-1
     self.fl_score_list: List[float] = list()
-    self.out_dist: float = -1.0
-    self.out_dist_map: Dict[int, float] = dict()
-    self.update_count: int = 0
     self.total_case_info: int = 0
-    self.prophet_score:list=[]
-    self.has_init_patch=False
     self.case_update_count: int = 0
     self.score_list: List[float] = list()
     self.class_name: str = ""
@@ -175,15 +167,10 @@ class FuncInfo:
     self.line_info_map: Dict[uuid.UUID, LineInfo] = dict()
     self.pf = PassFail()
     self.positive_pf = PassFail()
-    self.output_pf = PassFail()
     self.fl_score: float = -1.0
     self.fl_score_list: List[float] = list()
-    self.out_dist: float = -1.0
-    self.out_dist_map: Dict[int, float] = dict()
     self.update_count: int = 0
     self.total_case_info: int = 0
-    self.prophet_score: List[float] = []
-    self.has_init_patch=False
     self.case_update_count: int = 0
     self.score_list: List[float] = list()
     self.func_rank: int = -1
@@ -200,9 +187,6 @@ class FuncInfo:
     self.same_seapr_pf = PassFail(1, 1)
     self.diff_seapr_pf = PassFail(1, 1)
     self.case_rank_list: List[str] = list()
-
-    # Unified debugging stuffs
-    self.ud_spectrum:List[int]=[0,0,0,0]  # [CleanFix, NoisyFix, NoneFix, NegFix]
   def __hash__(self) -> int:
     return hash(self.id)
   def __eq__(self, other) -> bool:
@@ -214,17 +198,10 @@ class LineInfo:
     self.line_number = line_number
     self.parent = parent
     self.pf = PassFail()
-    self.critical_pf = PassFail()
     self.positive_pf = PassFail()
-    self.output_pf = PassFail()
     self.fl_score=0.
-    self.out_dist: float = -1.0
-    self.out_dist_map: Dict[int, float] = dict()
     self.update_count: int = 0
     self.total_case_info: int = 0
-    self.prophet_score:list=[]
-    self.type_priority=dict()
-    self.has_init_patch=False
     self.case_update_count: int = 0
     self.tbar_type_info_map: Dict[str, TbarTypeInfo] = dict()
     self.line_id = -1
@@ -236,9 +213,6 @@ class LineInfo:
     self.consecutive_fail_plausible_count:int=0
     self.patches_by_score:Dict[float,List[TbarCaseInfo]]=dict()
     self.remain_patches_by_score:Dict[float,List[TbarCaseInfo]]=dict()
-
-    # Unified debugging stuffs
-    self.ud_spectrum:List[int]=[0,0,0,0]  # [CleanFix, NoisyFix, NoneFix, NegFix]
   def __hash__(self) -> int:
     return hash(self.uuid)
   def __eq__(self, other) -> bool:
@@ -250,12 +224,9 @@ class TbarTypeInfo:
     self.mutation = mutation
     self.pf = PassFail()
     self.positive_pf = PassFail()
-    self.output_pf = PassFail()
     self.update_count: int = 0
     self.total_case_info: int = 0
     self.case_update_count: int = 0
-    self.out_dist: float = -1.0
-    self.out_dist_map: Dict[int, float] = dict()
     self.tbar_case_info_map: Dict[str, TbarCaseInfo] = dict()
     self.children_basic_patches:int=0
     self.children_plausible_patches:int=0
@@ -276,12 +247,9 @@ class TbarCaseInfo:
     self.end = end
     self.pf = PassFail()
     self.positive_pf = PassFail()
-    self.output_pf = PassFail()
     self.update_count: int = 0
     self.total_case_info: int = 0
     self.case_update_count: int = 0
-    self.out_dist: float = -1.0
-    self.out_dist_map: Dict[int, float] = dict()
     self.same_seapr_pf = PassFail(1, 1)
     self.diff_seapr_pf = PassFail(1, 1)
     self.patch_rank: int = -1
@@ -290,44 +258,6 @@ class TbarCaseInfo:
   def __eq__(self, other) -> bool:
     return self.location == other.location
 
-class RecoderTypeInfo:
-  def __init__(self, parent: LineInfo, act: str, prev: 'RecoderTypeInfo') -> None:
-    self.parent = parent
-    self.act = act
-    self.prev = prev
-    self.next: Dict[str, 'RecoderTypeInfo'] = dict()
-    self.pf = PassFail()
-    self.positive_pf = PassFail()
-    self.output_pf = PassFail()
-    self.update_count: int = 0
-    self.total_case_info: int = 0
-    self.case_update_count: int = 0
-    self.out_dist: float = -1.0
-    self.score_list: List[float] = list()
-    self.out_dist_map: Dict[int, float] = dict()
-    self.recoder_case_info_map: Dict[int, RecoderCaseInfo] = dict()
-  def is_root(self) -> bool:
-    return self.prev is None
-  def is_leaf(self) -> bool:
-    return len(self.next) == 0
-  def get_root(self) -> 'RecoderTypeInfo':
-    if self.prev is None:
-      return self
-    return self.prev.get_root()
-  def get_path(self) -> List['RecoderTypeInfo']:
-    if not self.is_leaf():
-      return list()
-    type_info = self
-    path = [type_info]
-    while not type_info.is_root():
-      type_info = type_info.prev
-      path.append(type_info)
-    return path
-  def __hash__(self) -> int:
-    return hash(self.act)
-  def __eq__(self, other) -> bool:
-    return self.act == other.act
-
 class RecoderCaseInfo:
   def __init__(self, parent: LineInfo, location: str, case_id: int) -> None:
     self.parent = parent
@@ -335,13 +265,10 @@ class RecoderCaseInfo:
     self.case_id = case_id
     self.pf = PassFail()
     self.positive_pf = PassFail()
-    self.output_pf = PassFail()
     self.update_count: int = 0
     self.total_case_info: int = 0
     self.case_update_count: int = 0
-    self.out_dist: float = -1.0
     self.prob: float = 0
-    self.out_dist_map: Dict[int, float] = dict()
     self.same_seapr_pf = PassFail(1, 1)
     self.diff_seapr_pf = PassFail(1, 1)
     self.patch_rank: int = -1
@@ -369,21 +296,6 @@ class FileLine:
     return hash(self.to_str())
   def __eq__(self, other) -> bool:
     return self.file_info == other.file_info and self.line_info == other.line_info
-
-class LocationScore:
-  def __init__(self,file:str,line:int,primary_score:int,secondary_score:int):
-    self.file_name=file
-    self.line=line
-    self.primary_score=primary_score
-    self.secondary_score=secondary_score
-  def __eq__(self,object):
-    if object is None or type(object)!=LocationScore:
-      return False
-    else:
-      if self.file_name==object.file_name and self.line==object.line:
-        return True
-      else:
-        return False
 
 class MSVEnvVar:
   def __init__(self) -> None:
@@ -624,59 +536,11 @@ class MSVState:
   msv_logger: logging.Logger
   original_args: List[str]
   args: List[str]
-  msv_version: str
-  mode: MSVMode
   work_dir: str
   out_dir: str
-  msv_uuid: str
-  use_simulation_mode: bool
-  prev_data: str
-  cycle: int
-  timeout: int
-  start_time: float
-  last_save_time: float
-  is_alive: bool
-  use_pass_test: bool
-  use_partial_validation: bool
-  ignore_compile_error: bool
-  time_limit: int
-  cycle_limit: int
-  correct_case_info: TbarCaseInfo
-  correct_patch_str: str
-  patch_info_map: Dict[str, FileInfo]  # fine_name: str -> FileInfo
-  file_info_map: Dict[str, FileInfo]   # file_name: str -> FileInfo
-  switch_case_map: Dict[str, Union[TbarCaseInfo, TbarCaseInfo, RecoderCaseInfo]] # f"{switch_number}-{case_number}" -> SwitchCase
-  patch_location_map: Dict[str, Union[TbarCaseInfo, RecoderCaseInfo]]
-  selected_patch: List[TbarPatchInfo] # Unused
-  selected_test: List[int]        # Unused
-  used_patch: List[MSVResult]
-  negative_test: List[int]        # Negative test case
-  positive_test: List[int]        # Positive test case
-  d4j_negative_test: List[str]
-  d4j_positive_test: List[str]
-  d4j_failed_passing_tests: Set[str]
-  d4j_test_fail_num_map: Dict[str, int]
-  priority_list: List[Tuple[str, int, float]]  # (file_name, line_number, score)
-  priority_map: Dict[str, FileLine] # f"{file_name}:{line_number}" -> FileLine
-  msv_result: List[dict]   # List of json object by MSVResult.to_json_object()
-  failed_positive_test: Set[int] # Set of positive test that failed
-  tmp_dir: str
-  max_dist: float
-  function_to_location_map: Dict[str, Tuple[str, int, int]] # function_name -> (file_name, line_start, line_end)
-  test_to_location: Dict[int, Dict[str, Set[int]]] # test_number -> {file_name: set(line_number)}
-  use_pattern: bool      # For SeAPR mode
-  simulation_data: Dict[str, dict] # patch_id -> fail_result, pass_result, fail_time, pass_time. compile_result
-  original_output_distance_map: Dict[int, float]
-  tbar_mode: bool
-  recoder_mode: bool
-  use_exp_alpha: bool
-  patch_ranking: List[str]
-  ranking_map: Dict[str, int]
-  total_basic_patch: int
   def __init__(self) -> None:
     self.msv_version = "1.0.0"
     self.mode = MSVMode.guided
-    self.msv_uuid = str(uuid.uuid4())
     self.cycle = 0
     self.total_basic_patch = 0
     self.start_time = time.time()
@@ -686,79 +550,55 @@ class MSVState:
     self.skip_valid=False
     self.time_limit = -1
     self.cycle_limit = -1
-    self.patch_info_map = dict()
-    self.switch_case_map = dict()
-    self.selected_patch = None
-    self.file_info_map = dict()
-    self.negative_test = list()
-    self.positive_test = list()
-    self.d4j_negative_test = list()
-    self.d4j_positive_test = list()
-    self.d4j_failed_passing_tests = set()
-    self.d4j_test_fail_num_map = dict()
+    self.switch_case_map: Dict[str, Union[TbarCaseInfo, RecoderCaseInfo]] = dict()
+    self.file_info_map: Dict[str, FileInfo] = dict()
+    self.d4j_negative_test:List[str] = list()
+    self.d4j_positive_test:List[str] = list()
+    self.d4j_failed_passing_tests:Set[str] = set()
     self.d4j_buggy_project: str = ""
-    self.patch_location_map = dict()
-    self.profile_map = dict()
-    self.priority_list = list()
-    self.fl_score:List[LocationScore]=list()
+    self.patch_location_map: Dict[str, Union[TbarCaseInfo, RecoderCaseInfo]] = dict()
+    self.priority_list: List[Tuple[str, int, float]] = list()
     self.line_list:List[LineInfo]=list()
-    self.msv_result = list()
-    self.var_counts=dict()
-    self.failed_positive_test = set()
-    self.priority_map = dict()
-    self.used_patch = list()
-    self.critical_map = dict()
-    self.profile_diff = None
+    self.msv_result:List[dict] = list()
+    self.failed_positive_test:Set[str] = set()
+    self.priority_map: Dict[str, FileLine] = dict()
+    self.used_patch:List[MSVResult] = list()
     self.timeout = 60000
     self.uuid=uuid.uuid1()
     self.tmp_dir = "/tmp"
-    self.max_dist = 100.0
-    self.function_to_location_map = dict()
-    self.test_to_location = dict()
+    self.function_to_location_map: Dict[str, Tuple[str, int, int]] = dict()
     self.use_pattern = False
     self.use_simulation_mode = False
     self.prev_data = ""
     self.ignore_compile_error = True
-    self.simulation_data = dict()
+    self.simulation_data: Dict[str, dict] = dict()
     self.correct_patch_str: str = ""
-    self.correct_case_info: TbarCaseInfo = None
+    self.correct_case_info: Union[TbarCaseInfo,RecoderCaseInfo] = None
     self.total_searched_patch=0
     self.total_passed_patch=0
     self.total_plausible_patch=0
     self.iteration=0
-    self.orig_rank_iter=0
     self.use_partial_validation = True
-    self.original_output_distance_map = dict()
     self.tbar_mode = False
     self.recoder_mode = False
     self.prapr_mode=False
     self.use_exp_alpha = False
-    self.run_all_test=False
     self.top_fl=0
-    self.patch_ranking = list()
-    self.regression_test_info:List[int]=list()
+    self.patch_ranking:List[str] = list()
     self.finish_at_correct_patch=False
     self.func_list: List[FuncInfo] = list()
     self.count_compile_fail=True
     self.fixminer_mode=False  # fixminer-mode: Fixminer patch space is seperated to 2 groups
     self.finish_top_method=False  # Finish if every patches in top-30 methods are searched. Should turn on for default SeAPR
-    self.use_unified_debugging=False  # Use unified debugging to generate more precise clusters
 
-    self.seapr_remain_cases:List[TbarCaseInfo]=[]
     self.seapr_layer:SeAPRMode=SeAPRMode.FUNCTION
-    self.ranking_map = dict()
 
-    self.c_patch_ranking:Dict[float,List[TbarCaseInfo]]=dict()
-    self.c_remain_patch_ranking:Dict[float,List[TbarCaseInfo]]=dict()
     self.java_patch_ranking:Dict[float,List[TbarCaseInfo]]=dict()
     self.java_remain_patch_ranking:Dict[float,List[TbarCaseInfo]]=dict()
     self.score_remain_line_map:Dict[float,List[LineInfo]]=dict()  # Remaining lines by each scores(FL, prophet score, ...)
 
     self.previous_score:float=0.0
     self.same_consecutive_score:Dict[float,int]=dict()
-    self.MAX_CONSECUTIVE_SAME_SCORE=50
-    self.max_prophet_score=-1000.
-    self.min_prophet_score=1000.
     self.max_epsilon_group_size=0  # Maximum size of group for epsilon-greedy
 
     self.not_use_guided_search=False  # Use only epsilon-greedy search
