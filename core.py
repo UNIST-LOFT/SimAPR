@@ -306,7 +306,7 @@ class MSVEnvVar:
     new_env["MSV_UUID"] = str(state.uuid)
     new_env["MSV_TEST"] = str(test)
     new_env["MSV_LOCATION"] = str(patch.tbar_case_info.location)
-    new_env["MSV_WORKDIR"] = state.work_dir if not state.fixminer_mode else state.work_dir[:-2]
+    new_env["MSV_WORKDIR"] = state.work_dir
     new_env["MSV_BUGGY_LOCATION"] = patch.file_info.file_name
     new_env["MSV_BUGGY_PROJECT"] = state.d4j_buggy_project
     new_env["MSV_OUTPUT_DISTANCE_FILE"] = f"/tmp/{uuid.uuid4()}.out"
@@ -588,7 +588,6 @@ class MSVState:
     self.finish_at_correct_patch=False
     self.func_list: List[FuncInfo] = list()
     self.count_compile_fail=True
-    self.fixminer_mode=False  # fixminer-mode: Fixminer patch space is seperated to 2 groups
     self.finish_top_method=False  # Finish if every patches in top-30 methods are searched. Should turn on for default SeAPR
 
     self.seapr_layer:SeAPRMode=SeAPRMode.FUNCTION

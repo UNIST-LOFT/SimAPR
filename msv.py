@@ -33,11 +33,7 @@ class MSVTbar():
 
   def is_alive(self) -> bool:
     if len(self.state.file_info_map) == 0:
-      if self.state.fixminer_mode and not self.state.fixminer_swapped:
-        self.state.msv_logger.info('First group searched, swap to second group')
-        self.state.fixminer_swap_info()
-      else:
-        self.state.is_alive = False
+      self.state.is_alive = False
     if self.state.cycle_limit > 0 and self.state.iteration >= self.state.cycle_limit:
       self.state.is_alive = False
     elif self.state.time_limit > 0 and (self.state.select_time+self.state.test_time) > self.state.time_limit:
