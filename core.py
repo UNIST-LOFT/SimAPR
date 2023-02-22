@@ -24,6 +24,7 @@ class MSVMode(Enum):
   seapr = 8
   tbar = 9
   recoder = 10
+  genprog = 11
 
 class PatchType(Enum):
   TightenConditionKind = 0
@@ -37,38 +38,13 @@ class PatchType(Enum):
   ReplaceFunctionKind = 8
   AddStmtKind=9
   AddStmtAndReplaceAtomKind=10
-  MSVExtAddIfStmtKind=11
-  MSVExtConditionKind=12
-  MSVExtFunctionReplaceKind=13
-  MSVExtReturnConditionKind=14
-  MSVExtAssignConditionKind=15
-  MSVExtReplaceFunctionInConditionKind=16
-  MSVExtRemoveStmtKind=17
-  MSVExtRemoveConditionKind=18
-  MSVExtRemoveAssignConditionKind=19
-  MSVExtReplaceAssignOperatorKind=20
-  MSVExtReplaceArrayIndexKind=21
-  MSVExtReplaceParenInConditionKind=22
-  MSVExtAddInitBackKind=23
-  MSVExtIfExitBackKind=24
-  MSVExtReplaceTrenaryOperatorKind=25
-  MSVExtMoveConditionKind=26
-  MSVExtLoopConditionKind=27
-  MSVExtParenTightenConditionKind=28
-  MSVExtParenLoosenConditionKind=29
-  Original = 101
-
-  @staticmethod
-  def is_msv_ext(patch_type):
-    return patch_type.value >= 11 and patch_type.value <=37
-  
-  @staticmethod
-  def is_condition_syn(patch_type):
-    return patch_type==PatchType.TightenConditionKind or patch_type==PatchType.LoosenConditionKind or patch_type==PatchType.GuardKind or \
-            patch_type==PatchType.SpecialGuardKind or patch_type==PatchType.IfExitKind or patch_type==PatchType.MSVExtConditionKind or \
-            patch_type==PatchType.MSVExtReturnConditionKind or patch_type==PatchType.MSVExtAssignConditionKind or \
-            patch_type==PatchType.MSVExtLoopConditionKind or patch_type==PatchType.MSVExtParenTightenConditionKind or \
-            patch_type==PatchType.MSVExtParenLoosenConditionKind
+  AddIfStmtKind=11
+  ConditionKind=12
+  MSVExtFunctionReplaceKind=21
+  MSVExtAddConditionKind=22
+  MSVExtReplaceFunctionInConditionKind=23
+  MSVExtRemoveStmtKind=24
+  Original = 31
 
 class OperatorType(Enum):
   EQ = 0
@@ -227,9 +203,11 @@ class PassFail:
     return 2 * ((1 - atzero) * x + atzero) - PassFail.concave_up(x, base)
   @staticmethod
   # fail function
-  def log_func(x: float, half: float = 50) -> float:
-    a = half + math.pow(half, 0.5)
-    if a-x<0:
+  def log_func(x: float, half: float = 51) -> float:
+    # a = half + math.pow(half, 0.5)
+    a=half
+    # a*=0.5
+    if a-x<=0:
       return 0.
     else:
       return max(np.log(a - x) / np.log(a), 0.)
@@ -262,6 +240,7 @@ class FileInfo:
     self.consecutive_fail_plausible_count:int=0
     self.patches_by_score:Dict[float,List[CaseInfo]]=dict()
     self.remain_patches_by_score:Dict[float,List[CaseInfo]]=dict()
+    self.remain_lines_by_score:Dict[float,List[LineInfo]]=dict()
   def __hash__(self) -> int:
     return hash(self.file_name)
   def __eq__(self, other) -> bool:
@@ -296,12 +275,16 @@ class FuncInfo:
     self.consecutive_fail_plausible_count:int=0
     self.patches_by_score:Dict[float,List[CaseInfo]]=dict()
     self.remain_patches_by_score:Dict[float,List[CaseInfo]]=dict()
+    self.remain_lines_by_score:Dict[float,List[LineInfo]]=dict()
 
     self.total_patches_by_score:Dict[float,int]=dict() # Total patches grouped by score
     self.searched_patches_by_score:Dict[float,int]=dict() # Total searched patches grouped by score
     self.same_seapr_pf = PassFail(1, 1)
     self.diff_seapr_pf = PassFail(1, 1)
     self.case_rank_list: List[str] = list()
+
+    # Unified debugging stuffs
+    self.ud_spectrum:List[int]=[0,0,0,0]  # [CleanFix, NoisyFix, NoneFix, NegFix]
   def __hash__(self) -> int:
     return hash(self.id)
   def __eq__(self, other) -> bool:
@@ -318,7 +301,7 @@ class LineInfo:
     self.critical_pf = PassFail()
     self.positive_pf = PassFail()
     self.output_pf = PassFail()
-    self.fl_score=0
+    self.fl_score=0.
     self.profile_diff: 'ProfileDiff' = None
     self.out_dist: float = -1.0
     self.out_dist_map: Dict[int, float] = dict()
@@ -339,6 +322,9 @@ class LineInfo:
     self.consecutive_fail_plausible_count:int=0
     self.patches_by_score:Dict[float,List[CaseInfo]]=dict()
     self.remain_patches_by_score:Dict[float,List[CaseInfo]]=dict()
+
+    # Unified debugging stuffs
+    self.ud_spectrum:List[int]=[0,0,0,0]  # [CleanFix, NoisyFix, NoneFix, NegFix]
   def __hash__(self) -> int:
     return hash(self.uuid)
   def __eq__(self, other) -> bool:
@@ -363,11 +349,10 @@ class TbarTypeInfo:
     self.consecutive_fail_plausible_count:int=0
     self.patches_by_score:Dict[float,List[CaseInfo]]=dict()
     self.remain_patches_by_score:Dict[float,List[CaseInfo]]=dict()
-    self.work_dir=''
   def __hash__(self) -> int:
     return hash(self.mutation)
   def __eq__(self, other) -> bool:
-    return self.mutation == other.mutation and self.parent==other.parent and self.work_dir==other.work_dir
+    return self.mutation == other.mutation and self.parent==other.parent
 
 class TbarCaseInfo:
   def __init__(self, parent: TbarTypeInfo, location: str, start: int, end: int) -> None:
@@ -389,7 +374,7 @@ class TbarCaseInfo:
   def __hash__(self) -> int:
     return hash(self.location)
   def __eq__(self, other) -> bool:
-    return self.location == other.location and self.parent.parent.uuid==other.parent.parent.uuid and self.parent==other.parent
+    return self.location == other.location
 
 class RecoderTypeInfo:
   def __init__(self, parent: LineInfo, act: str, prev: 'RecoderTypeInfo') -> None:
@@ -947,7 +932,7 @@ class MSVEnvVar:
     new_env["MSV_UUID"] = str(state.uuid)
     new_env["MSV_TEST"] = str(test)
     new_env["MSV_LOCATION"] = str(patch.tbar_case_info.location)
-    new_env["MSV_WORKDIR"] = patch.tbar_type_info.work_dir[:-2] if state.fixminer_mode and 'FixMiner' in patch.tbar_type_info.work_dir else patch.tbar_type_info.work_dir
+    new_env["MSV_WORKDIR"] = state.work_dir if not state.fixminer_mode else state.work_dir[:-2]
     new_env["MSV_BUGGY_LOCATION"] = patch.file_info.file_name
     new_env["MSV_BUGGY_PROJECT"] = state.d4j_buggy_project
     new_env["MSV_OUTPUT_DISTANCE_FILE"] = f"/tmp/{uuid.uuid4()}.out"
@@ -1293,6 +1278,15 @@ class PatchInfo:
       temp_loc=LocationScore(self.file_info.file_name,self.line_info.line_number,0,0)
       if not has_patch(self.file_info.file_name,self.line_info.line_number) and temp_loc in state.fl_score:
         state.fl_score.remove(LocationScore(self.file_info.file_name,self.line_info.line_number,0,0))
+      state.score_remain_line_map[self.line_info.fl_score].remove(self.line_info)
+      if len(state.score_remain_line_map[self.line_info.fl_score])==0:
+        state.score_remain_line_map.pop(self.line_info.fl_score)
+      self.func_info.remain_lines_by_score[self.line_info.fl_score].remove(self.line_info)
+      if len(self.func_info.remain_lines_by_score[self.line_info.fl_score])==0:
+        self.func_info.remain_lines_by_score.pop(self.line_info.fl_score)
+      self.file_info.remain_lines_by_score[self.line_info.fl_score].remove(self.line_info)
+      if len(self.file_info.remain_lines_by_score[self.line_info.fl_score])==0:
+        self.file_info.remain_lines_by_score.pop(self.line_info.fl_score)
     if len(self.func_info.line_info_map) == 0:
       del self.file_info.func_info_map[self.func_info.id]
       self.file_info.fl_score_list.remove(cur_fl_score)
@@ -1385,7 +1379,6 @@ class TbarPatchInfo:
     if self.tbar_case_info.location not in self.tbar_type_info.tbar_case_info_map:
       state.msv_logger.critical(f"{self.tbar_case_info.location} not in {self.tbar_type_info.tbar_case_info_map}")
     del self.tbar_type_info.tbar_case_info_map[self.tbar_case_info.location]
-    state.java_line_workdir_patches_map[f"{self.file_info.file_name}:{self.line_info.line_number}"][self.tbar_type_info.work_dir].remove(self.tbar_case_info)
     if len(self.tbar_type_info.tbar_case_info_map) == 0:
       del self.line_info.tbar_type_info_map[self.tbar_type_info.mutation]
     if len(self.line_info.tbar_type_info_map) == 0:
@@ -1393,6 +1386,15 @@ class TbarPatchInfo:
       self.func_info.fl_score_list.remove(score)
       self.file_info.fl_score_list.remove(score)
       del self.func_info.line_info_map[self.line_info.uuid]
+      state.score_remain_line_map[self.line_info.fl_score].remove(self.line_info)
+      if len(state.score_remain_line_map[self.line_info.fl_score])==0:
+        state.score_remain_line_map.pop(self.line_info.fl_score)
+      self.func_info.remain_lines_by_score[self.line_info.fl_score].remove(self.line_info)
+      if len(self.func_info.remain_lines_by_score[self.line_info.fl_score])==0:
+        self.func_info.remain_lines_by_score.pop(self.line_info.fl_score)
+      self.file_info.remain_lines_by_score[self.line_info.fl_score].remove(self.line_info)
+      if len(self.file_info.remain_lines_by_score[self.line_info.fl_score])==0:
+        self.file_info.remain_lines_by_score.pop(self.line_info.fl_score)
     if len(self.func_info.line_info_map) == 0:
       del self.file_info.func_info_map[self.func_info.id]
       state.func_list.remove(self.func_info)
@@ -1407,7 +1409,9 @@ class TbarPatchInfo:
     self.func_info.remain_patches_by_score[self.line_info.fl_score].remove(self.tbar_case_info)
     self.file_info.case_update_count += 1
     self.file_info.remain_patches_by_score[self.line_info.fl_score].remove(self.tbar_case_info)
-    state.java_remain_patch_ranking_list[self.tbar_type_info.work_dir][self.line_info.fl_score].remove(self.tbar_case_info)
+    state.java_remain_patch_ranking[self.line_info.fl_score].remove(self.tbar_case_info)
+    if len(state.java_remain_patch_ranking[self.line_info.fl_score])==0:
+      state.java_remain_patch_ranking.pop(self.line_info.fl_score)
     self.func_info.searched_patches_by_score[self.line_info.fl_score]+=1
 
   def to_json_object(self) -> dict:
@@ -1495,6 +1499,15 @@ class RecoderPatchInfo:
       self.func_info.fl_score_list.remove(score)
       self.file_info.fl_score_list.remove(score)
       del self.func_info.line_info_map[self.line_info.uuid]
+      state.score_remain_line_map[self.line_info.fl_score].remove(self.line_info)
+      if len(state.score_remain_line_map[self.line_info.fl_score])==0:
+        state.score_remain_line_map.pop(self.line_info.fl_score)
+      self.func_info.remain_lines_by_score[self.line_info.fl_score].remove(self.line_info)
+      if len(self.func_info.remain_lines_by_score[self.line_info.fl_score])==0:
+        self.func_info.remain_lines_by_score.pop(self.line_info.fl_score)
+      self.file_info.remain_lines_by_score[self.line_info.fl_score].remove(self.line_info)
+      if len(self.file_info.remain_lines_by_score[self.line_info.fl_score])==0:
+        self.file_info.remain_lines_by_score.pop(self.line_info.fl_score)
     if len(self.func_info.line_info_map) == 0:
       del self.file_info.func_info_map[self.func_info.id]
       state.func_list.remove(self.func_info)
@@ -1518,6 +1531,8 @@ class RecoderPatchInfo:
     self.file_info.case_update_count += 1
     self.file_info.remain_patches_by_score[fl_score].remove(self.recoder_case_info)
     state.java_remain_patch_ranking[fl_score].remove(self.recoder_case_info)
+    if len(state.java_remain_patch_ranking[self.line_info.fl_score])==0:
+      state.java_remain_patch_ranking.pop(self.line_info.fl_score)
     self.func_info.searched_patches_by_score[fl_score] += 1
   def to_json_object(self) -> dict:
     conf = dict()
@@ -1624,6 +1639,9 @@ class MSVState:
   critical_map: Dict[int, Dict[ProfileElement, List[int]]]
   negative_test: List[int]        # Negative test case
   positive_test: List[int]        # Positive test case
+  d4j_negative_test: List[str]
+  d4j_positive_test: List[str]
+  d4j_failed_passing_tests: Set[str]
   d4j_test_fail_num_map: Dict[str, int]
   profile_map: Dict[int, Profile] # test case number -> Profile (of original program)
   priority_list: List[Tuple[str, int, float]]  # (file_name, line_number, score)
@@ -1646,7 +1664,9 @@ class MSVState:
   recoder_mode: bool
   use_exp_alpha: bool
   patch_ranking: List[str]
+  ranking_map: Dict[str, int]
   total_basic_patch: int
+  bounded_seapr: bool
   def __init__(self) -> None:
     self.msv_version = "1.0.0"
     self.mode = MSVMode.guided
@@ -1703,10 +1723,8 @@ class MSVState:
     self.use_pattern = False
     self.use_simulation_mode = False
     self.prev_data = ""
-    self.prev_data_list: List[str] = list()
     self.ignore_compile_error = True
     self.simulation_data = dict()
-    self.simulation_data_list=dict()
     self.correct_patch_str: str = ""
     self.correct_case_info: CaseInfo = None
     self.watch_level: str = ""
@@ -1714,6 +1732,7 @@ class MSVState:
     self.total_passed_patch=0
     self.total_plausible_patch=0
     self.iteration=0
+    self.orig_rank_iter=0
     self.use_partial_validation = True
     self.max_initial_trial = 0
     self.c_map = {PT.basic: 1.0, PT.plau: 1.0, PT.fl: 1.0, PT.out: 0.0}
@@ -1723,6 +1742,7 @@ class MSVState:
     self.use_msv_ext=False
     self.tbar_mode = False
     self.recoder_mode = False
+    self.prapr_mode=False
     self.use_exp_alpha = False
     self.run_all_test=False
     self.regression_php_mode=''
@@ -1739,25 +1759,20 @@ class MSVState:
     self.count_compile_fail=True
     self.fixminer_mode=False  # fixminer-mode: Fixminer patch space is seperated to 2 groups
     self.spr_mode=False  # SPR mode: SPR uses FL+template instead of prophet score
-    self.work_dir_list=list()
-    self.switch_case_map_list:dict=dict()
-    self.patch_ranking_list=dict()
-    self.file_info_map_list=dict()
-    self.d4j_negative_test: List[str]=[]
-    self.d4j_positive_test: List[str]=[]
-    self.d4j_failed_passing_tests: Set[str]=set()
-    self.total_basic_patch_list:Dict[str,int]=dict()
+    self.sampling_mode=False  # sampling mode: use Thompson-sampling to select patch
+    self.finish_top_method=False  # Finish if every patches in top-30 methods are searched. Should turn on for default SeAPR
+    self.use_unified_debugging=False  # Use unified debugging to generate more precise clusters
 
     self.seapr_remain_cases:List[CaseInfo]=[]
     self.seapr_layer:SeAPRMode=SeAPRMode.FUNCTION
+    self.bounded_seapr = False
+    self.ranking_map = dict()
 
     self.c_patch_ranking:Dict[float,List[CaseInfo]]=dict()
     self.c_remain_patch_ranking:Dict[float,List[CaseInfo]]=dict()
     self.java_patch_ranking:Dict[float,List[TbarCaseInfo]]=dict()
     self.java_remain_patch_ranking:Dict[float,List[TbarCaseInfo]]=dict()
-    self.java_patch_ranking_list:Dict[str,Dict[float,List[TbarCaseInfo]]]=dict()
-    self.java_remain_patch_ranking_list:Dict[str,Dict[float,List[TbarCaseInfo]]]=dict()
-    self.java_line_workdir_patches_map:Dict[str,Dict[str,List[TbarCaseInfo]]]=dict()  # {fl_id: {work_dir: [patches, ...]}}
+    self.score_remain_line_map:Dict[float,List[LineInfo]]=dict()  # Remaining lines by each scores(FL, prophet score, ...)
 
     self.previous_score:float=0.0
     self.same_consecutive_score:Dict[float,int]=dict()
@@ -1765,11 +1780,10 @@ class MSVState:
     self.max_prophet_score=-1000.
     self.min_prophet_score=1000.
     self.max_epsilon_group_size=0  # Maximum size of group for epsilon-greedy
-    self.current_work_dir_index=0
-    self.current_fl_id=''
 
     self.not_use_guided_search=False  # Use only epsilon-greedy search
     self.not_use_epsilon_search=False  # Use only guided search and original
+    self.not_use_acceptance_prob=True  # Always use vertical search
     self.test_time=0.  # Total compile and test time
     self.select_time=0.  # Total select time
     self.total_methods=0  # Total methods
@@ -1834,29 +1848,16 @@ def append_java_cache_result(state:MSVState,case:TbarCaseInfo,fail_result:bool,p
     pass_time: pass time (second)
   """
   id=case.location
-  if state.tbar_mode:
-    file=state.simulation_data_list[case.parent.work_dir]
-    if id not in file:
-      current=dict()
-      current['basic']=fail_result
-      current['plausible']=pass_result
-      current['pass_all_fail']=pass_all_fail
-      current['compilable']=compilable
-      current['fail_time']=fail_time
-      current['pass_time']=pass_time
+  if id not in state.simulation_data:
+    current=dict()
+    current['basic']=fail_result
+    current['plausible']=pass_result
+    current['pass_all_fail']=pass_all_fail
+    current['compilable']=compilable
+    current['fail_time']=fail_time
+    current['pass_time']=pass_time
 
-      file[id]=current
-  else:
-    if id not in state.simulation_data:
-      current=dict()
-      current['basic']=fail_result
-      current['plausible']=pass_result
-      current['pass_all_fail']=pass_all_fail
-      current['compilable']=compilable
-      current['fail_time']=fail_time
-      current['pass_time']=pass_time
-
-      state.simulation_data[id]=current
+    state.simulation_data[id]=current
 
 def append_c_cache_result(state:MSVState,case:CaseInfo,fail_result:bool,pass_result:bool,pass_all_fail:bool,compilable:bool,
       fail_time:float,pass_time:float,operator:OperatorInfo=None,variable:VariableInfo=None,constant:ConstantInfo=None):

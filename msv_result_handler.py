@@ -1,6 +1,7 @@
 from operator import itemgetter
 from core import *
 from typing import List, Set, Dict, Tuple
+import shutil
 
 def get_ochiai(s_h: float, s_l: float, d_h: float, d_l: float) -> float:
   if s_h == 0.0:
@@ -275,15 +276,13 @@ def save_result(state: MSVState) -> None:
   #     obj[cs]["file"] = fi
   #   json.dump(obj, f, indent=2)
 
-  if state.use_simulation_mode: # Do not add more caches if we are in multi-tool mode
+  if state.use_simulation_mode:
     # Save cached result to file
-    if state.tbar_mode:
-      for i,workdir in enumerate(state.work_dir_list):
-        with open(state.prev_data_list[i],'w') as f:
-          json.dump(state.simulation_data_list[workdir], f, indent=2)
-    else:
-      with open(state.prev_data,'w') as f:
-        json.dump(state.simulation_data,f,indent=2)
+    tmp_sim_file = os.path.join(state.out_dir, "msv-sim-data.json")
+    with open(tmp_sim_file, "w") as f:
+      json.dump(state.simulation_data, f, indent=2)
+    # copy to the original file
+    shutil.move(tmp_sim_file, state.prev_data)
 
     if state.remove_cached_file:
       for key in state.simulation_data:
@@ -305,7 +304,7 @@ def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result:
   """
   save_interval = 1800 # 30 minutes
   tm = time.time()
-  tm_interval = tm - state.start_time
+  tm_interval=state.select_time+state.test_time
   result = MSVResult(state.cycle,state.iteration,tm_interval, selected_patch, 
           test_result, pass_test_result, selected_patch[0].out_dist, pass_all_neg_test, compilable=compilable)
   
@@ -318,7 +317,7 @@ def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result:
   state.msv_result.append(obj)
   state.used_patch.append(result)
 
-  if state.use_simulation_mode:
+  if state.use_simulation_mode and not state.prapr_mode:
     # Cache test result if option used
     for patch in selected_patch:
       if state.tbar_mode or state.recoder_mode:
@@ -338,19 +337,6 @@ def append_result(state: MSVState, selected_patch: List[PatchInfo], test_result:
   
   with open(os.path.join(state.out_dir, "msv-result.csv"), 'a') as f:
     f.write(json.dumps(obj) + "\n")
-  sim_data_file = os.path.join(state.out_dir, "msv-sim-data.csv")
-  update_sim_data = True
-  if state.use_simulation_mode:
-    if state.tbar_mode:
-      if obj["config"][0]["location"] in state.simulation_data:
-        update_sim_data = False
-    elif state.recoder_mode:
-      key = str(obj["config"][0]["id"]) + "-" + str(obj["config"][0]["case_id"])
-      if key in state.simulation_data:
-        update_sim_data = False
-  if update_sim_data:
-    with open(sim_data_file, "a") as f:
-      f.write(json.dumps(obj) + "\n")
   if (tm - state.last_save_time) > save_interval:
     save_result(state)
 
@@ -371,10 +357,12 @@ def remove_patch(state: MSVState, patches: List[PatchInfo]) -> None:
         del state.priority_map[loc_str]
 
 def update_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, result: bool) -> None:
-  selected_patch.update_result(result, 1, state.params[PT.b_dec],state.use_exp_alpha, state.use_fixed_beta)
+  if state.sampling_mode:
+    selected_patch.update_result(result, 1, 1,False, False)
+  else:
+    selected_patch.update_result(result, 1, state.params[PT.b_dec],state.use_exp_alpha, state.use_fixed_beta)
   if result:
     state.total_basic_patch += 1
-    state.total_basic_patch_list[selected_patch.tbar_type_info.work_dir]+=1
     selected_patch.tbar_type_info.children_basic_patches+=1
     selected_patch.line_info.children_basic_patches+=1
     selected_patch.func_info.children_basic_patches+=1
@@ -474,7 +462,10 @@ def update_positive_result_tbar(state: MSVState, selected_patch: TbarPatchInfo, 
     selected_patch.func_info.consecutive_fail_plausible_count+=1
     selected_patch.file_info.consecutive_fail_plausible_count+=1
     
-  selected_patch.update_result_positive(result, 1, state.params[PT.b_dec],state.use_exp_alpha, state.use_fixed_beta)
+  if state.sampling_mode:
+    selected_patch.update_result_positive(result, 1, 1,False, False)
+  else:  
+    selected_patch.update_result_positive(result, 1, state.params[PT.b_dec],state.use_exp_alpha, state.use_fixed_beta)
 
 def remove_patch_tbar(state: MSVState, selected_patch: TbarPatchInfo) -> None:
   selected_patch.remove_patch(state)

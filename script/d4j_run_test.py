@@ -10,7 +10,22 @@ from pathlib import Path
 from psutil import Popen
 import psutil
 
-def get_paths(project):
+def run_d4j_export(d4j_dir: str) -> tuple:
+  class_dir_file = d4j_dir + "/bin.classes"
+  test_dir_file = d4j_dir + "/bin.tests"
+  if not os.path.exists(class_dir_file):
+    cmd = ["defects4j", "export", "-p", "dir.bin.classes", "-w", d4j_dir, "-o", class_dir_file]
+    subprocess.run(cmd, check=True)
+  if not os.path.exists(test_dir_file):
+    cmd = ["defects4j", "export", "-p", "dir.bin.tests", "-w", d4j_dir, "-o", test_dir_file]
+    subprocess.run(cmd, check=True)
+  if not os.path.exists(class_dir_file) or not os.path.exists(test_dir_file):
+    raise Exception("d4j export failed")
+  class_dir = open(class_dir_file).read().strip()
+  test_dir = open(test_dir_file).read().strip()
+  return class_dir, test_dir
+
+def get_paths(project, buggy_dir):
   sep = "_"
   if "MSV_RECODER" in os.environ:
     sep = os.environ["MSV_RECODER"]
@@ -37,16 +52,16 @@ def get_paths(project):
     if 11 <= bug_id or 18 <= bug_id <= 21:
       return "/build/classes/main/", "/build/classes/test/"
     return "/target/classes/", "/target/test-classes/"
-  return None, None
+  return run_d4j_export(buggy_dir)
 
 def get_classpath(work_dir, buggy_project):
   # Todo for all defects4j projects
-  classpath, _ = get_paths(buggy_project)
+  classpath, _ = get_paths(buggy_project, work_dir)
   return work_dir + classpath
 
 def get_test_classpath(work_dir, buggy_project):
   # Todo for all defects4j projects
-  _, test_classpath = get_paths(buggy_project)
+  _, test_classpath = get_paths(buggy_project, work_dir)
   return work_dir + test_classpath
 
 def junit_classpath(tbar):
@@ -127,7 +142,7 @@ def run_single_test(work_dir: str, buggy_project: str, test: str = "") -> Tuple[
     so, se = test_proc.communicate()
   result_str = so.decode('utf-8').strip()
   err_str = se.decode('utf-8').strip()
-  print(err_str, file=sys.stderr)
+  # print(err_str, file=sys.stderr)
   error_num = -1
   failed_tests = list()
   for line in result_str.splitlines():
@@ -158,6 +173,7 @@ def test_patched_project(patch_location: str, buggy_location: str, work_dir: str
     os.remove(class_file)
   else:
     deleteDirectory(get_classpath(work_dir, buggy_project))
+    deleteDirectory(get_test_classpath(work_dir, buggy_project))
   try:
     if not compile_project_updated(work_dir, buggy_project):
       print("FAIL")

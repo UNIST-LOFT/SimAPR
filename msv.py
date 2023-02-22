@@ -16,19 +16,20 @@ import condition
 import select_patch
 import msv_result_handler as result_handler
 import run_test
-
+import ud
 
 class MSV:
   def __init__(self, state: MSVState) -> None:
     self.state = state
     self.patch_str="some init patch"
+    self.is_initialized = False
 
   def is_alive(self) -> bool:
     if len(self.state.file_info_map) == 0:
       self.state.is_alive = False
     if self.state.cycle_limit > 0 and self.state.iteration >= self.state.cycle_limit:
       self.state.is_alive = False
-    elif self.state.time_limit > 0 and (time.time() - self.state.start_time) > self.state.time_limit:
+    elif self.state.time_limit > 0 and (self.state.select_time+self.state.test_time) > self.state.time_limit:
       self.state.is_alive = False
     elif len(self.state.priority_map) == 0 or len(self.state.priority_list) == 0:
       self.state.is_alive = False
@@ -108,6 +109,7 @@ class MSV:
     return pass_exist
     
   def initialize(self) -> None:
+    self.is_initialized = True
     self.state.seapr_remain_cases.sort(key=lambda x: max(x.prophet_score), reverse=True)
     # run original program and get original profile
     cs = self.state.switch_case_map["0-0"]
@@ -360,30 +362,34 @@ class MSV:
       # self.remove_patch(patch)
 
 class MSVTbar(MSV):
+  def _is_method_over(self) -> bool:
+    """Check the ranks of every remaining methods are over then 30"""
+    if not self.state.finish_top_method: return False
+    
+    min_method_rank=10000 # Some large rank
+    for p in self.state.patch_ranking:
+      if self.state.switch_case_map[p].parent.parent.parent.func_rank < min_method_rank:
+        min_method_rank=self.state.switch_case_map[p].parent.parent.parent.func_rank
+    
+    return min_method_rank>30
+
   def is_alive(self) -> bool:
-    total_ranking=0
-    for workdir in self.state.patch_ranking_list:
-      total_ranking+=len(self.state.patch_ranking_list[workdir])
     if len(self.state.file_info_map) == 0:
       if self.state.fixminer_mode and not self.state.fixminer_swapped:
         self.state.msv_logger.info('First group searched, swap to second group')
         self.state.fixminer_swap_info()
-        self.state.is_alive=False
       else:
         self.state.is_alive = False
     if self.state.cycle_limit > 0 and self.state.iteration >= self.state.cycle_limit:
       self.state.is_alive = False
-    elif self.state.time_limit > 0 and (time.time() - self.state.start_time) > self.state.time_limit:
+    elif self.state.time_limit > 0 and (self.state.select_time+self.state.test_time) > self.state.time_limit:
       self.state.is_alive = False
-    elif total_ranking == 0:
-      if self.state.fixminer_mode and not self.state.fixminer_swapped:
-        self.state.msv_logger.info('First group searched, swap to second group')
-        self.state.fixminer_swap_info()
-        self.state.is_alive=False
-      else:
-        self.state.is_alive = False
+    elif len(self.state.patch_ranking) == 0:
+      self.state.is_alive = False
     elif self.state.finish_at_correct_patch and self.patch_str in self.state.correct_patch_str:
       self.state.is_alive = False
+    elif self._is_method_over():
+      self.state.is_alive=False
     return self.state.is_alive
   def save_result(self) -> None:
     # TODO change
@@ -399,6 +405,7 @@ class MSVTbar(MSV):
     run_time=time.time()-start_time
     return run_result,run_time
   def initialize(self) -> None:
+    self.is_initialized = True
     self.state.msv_logger.info("Initializing...")
     original = self.state.patch_location_map["original"]
     op = TbarPatchInfo(original)
@@ -435,7 +442,7 @@ class MSVTbar(MSV):
           #   continue
           # fail_set.add(key)
           # self.state.d4j_positive_test.remove(key)
-          self.state.msv_logger.warning(f"FAIL at {ft}!!!!")
+          self.state.msv_logger.warning(f"FAIL at {ft}!!!!")    
   def run(self) -> None:
     if self.state.use_simulation_mode:
       self.run_sim()
@@ -474,11 +481,13 @@ class MSVTbar(MSV):
 
       if is_compilable or self.state.count_compile_fail:
         self.state.iteration += 1
+      if self.state.use_unified_debugging and is_compilable:
+        ud.update_ud_tbar(self.state, patch, pass_exists, pass_result)
       result_handler.append_result(self.state, [patch], pass_exists, pass_result, result, is_compilable,fail_time,pass_time)
       result_handler.remove_patch_tbar(self.state, patch)
   
   def run_sim(self) -> None:
-    self.initialize()
+    # self.initialize()
     self.state.start_time = time.time()
     self.state.cycle = 0
     while(self.is_alive()):
@@ -493,7 +502,9 @@ class MSVTbar(MSV):
       is_compilable = True
       pass_time=0
       key = patch.tbar_case_info.location
-      if key not in self.state.simulation_data_list[patch.tbar_type_info.work_dir]:
+      if key not in self.state.simulation_data:
+        if not self.is_initialized:
+          self.initialize()
         for neg in self.state.d4j_negative_test:
           compilable, run_result,fail_time = self.run_test(patch, neg)
           self.state.test_time+=fail_time
@@ -515,14 +526,14 @@ class MSVTbar(MSV):
           self.state.iteration += 1
 
       else:
-        msv_result = self.state.simulation_data_list[patch.tbar_type_info.work_dir][key]
+        msv_result = self.state.simulation_data[key]
         pass_exists = msv_result['basic']
         result = msv_result['pass_all_fail']
         pass_result = msv_result['plausible']
         fail_time=msv_result['fail_time']
-        pass_time=msv_result['pass_time']
         self.state.test_time+=fail_time
         self.state.test_time+=pass_time
+        pass_time=msv_result['pass_time']
         is_compilable=msv_result['compilable']
         if is_compilable or self.state.ignore_compile_error:
           result_handler.update_result_tbar(self.state, patch, pass_exists)
@@ -530,6 +541,8 @@ class MSVTbar(MSV):
             result_handler.update_positive_result_tbar(self.state, patch, pass_result)
         if is_compilable or self.state.count_compile_fail:
           self.state.iteration += 1
+      if self.state.use_unified_debugging and is_compilable:
+        ud.update_ud_tbar(self.state, patch, pass_exists, pass_result)
       result_handler.append_result(self.state, [patch], pass_exists, pass_result, result, is_compilable,fail_time,pass_time)
       result_handler.remove_patch_tbar(self.state, patch)
 
@@ -540,12 +553,14 @@ class MSVRecoder(MSVTbar):
       self.state.is_alive = False
     if self.state.cycle_limit > 0 and self.state.iteration >= self.state.cycle_limit:
       self.state.is_alive = False
-    elif self.state.time_limit > 0 and (time.time() - self.state.start_time) > self.state.time_limit:
+    elif self.state.time_limit > 0 and (self.state.select_time+self.state.test_time) > self.state.time_limit:
       self.state.is_alive = False
     elif len(self.state.patch_ranking) == 0:
       self.state.is_alive = False
     elif self.state.finish_at_correct_patch and (self.patch_str == self.state.correct_patch_str):
       self.state.is_alive = False
+    elif self._is_method_over():
+      self.state.is_alive=False
     return self.state.is_alive
   def run_test(self, patch: RecoderPatchInfo, test: int) -> Tuple[int, bool, float]:
     start_time=time.time()
@@ -558,6 +573,7 @@ class MSVRecoder(MSVTbar):
     run_time=time.time()-start_time
     return run_result,run_time
   def initialize(self) -> None:
+    self.is_initialized = True
     self.state.msv_logger.info("Initializing...")
     original = self.state.patch_location_map["original"]
     op = RecoderPatchInfo(original)
@@ -582,6 +598,7 @@ class MSVRecoder(MSVTbar):
       run_result, failed_tests = run_test.run_pass_test_d4j_exec(self.state, new_env, self.state.d4j_positive_test)
       if not run_result:
         for ft in failed_tests:
+          # self.state.failed_positive_test.add(ft)
           self.state.msv_logger.info("Removing {} from positive test".format(ft))
           # self.state.d4j_positive_test.remove(ft)
   def run(self) -> None:
@@ -624,7 +641,7 @@ class MSVRecoder(MSVTbar):
       result_handler.append_result(self.state, [patch], pass_exists, pass_result, result, is_compilable,fail_time,pass_time)
       result_handler.remove_patch_recoder(self.state, patch)
   def run_sim(self) -> None:
-    self.initialize()
+    # self.initialize()
     self.state.start_time = time.time()
     self.state.cycle = 0
     while(self.is_alive()):
@@ -640,6 +657,8 @@ class MSVRecoder(MSVTbar):
       pass_time=0
       key = patch.recoder_case_info.location
       if key not in self.state.simulation_data:
+        if not self.is_initialized:
+          self.initialize()
         for neg in self.state.d4j_negative_test:
           compilable, run_result,fail_time = self.run_test(patch, neg)
           self.state.test_time+=fail_time
@@ -675,3 +694,72 @@ class MSVRecoder(MSVTbar):
         self.state.iteration += 1
       result_handler.append_result(self.state, [patch], pass_exists, pass_result, result, is_compilable,fail_time,pass_time)
       result_handler.remove_patch_recoder(self.state, patch)
+
+class MSVPraPR(MSV):
+  def _is_method_over(self) -> bool:
+    """Check the ranks of every remaining methods are over then 30"""
+    if not self.state.finish_top_method: return False
+    
+    min_method_rank=10000 # Some large rank
+    for p in self.state.patch_ranking:
+      if self.state.switch_case_map[p].parent.parent.parent.func_rank < min_method_rank:
+        min_method_rank=self.state.switch_case_map[p].parent.parent.parent.func_rank
+    
+    return min_method_rank>30
+
+  def is_alive(self) -> bool:
+    if len(self.state.file_info_map) == 0:
+      self.state.is_alive = False
+    if self.state.cycle_limit > 0 and self.state.iteration >= self.state.cycle_limit:
+      self.state.is_alive = False
+    elif self.state.time_limit > 0 and (self.state.select_time+self.state.test_time) > self.state.time_limit:
+      self.state.is_alive = False
+    elif len(self.state.patch_ranking) == 0:
+      self.state.is_alive = False
+    elif self.state.finish_at_correct_patch and self.patch_str in self.state.correct_patch_str:
+      self.state.is_alive = False
+    elif self._is_method_over():
+      self.state.is_alive=False
+    return self.state.is_alive
+  def save_result(self) -> None:
+    # TODO change
+    result_handler.save_result(self.state)
+  def run(self) -> None:
+    assert self.state.use_simulation_mode,'PraPR needs cache files always'
+    self.run_sim()
+  
+  def run_sim(self) -> None:
+    self.state.start_time = time.time()
+    self.state.cycle = 0
+    while(self.is_alive()):
+      self.state.msv_logger.info(f'[{self.state.cycle}]: executing')
+      patch = select_patch.select_patch_tbar_mode(self.state)
+      self.patch_str=patch.tbar_case_info.location
+      self.state.msv_logger.info(f"Patch: {patch.tbar_case_info.location}")
+      self.state.msv_logger.info(f"{patch.file_info.file_name}${patch.func_info.id}${patch.line_info.line_number}")
+      pass_exists = False
+      result = True
+      pass_result = False
+      is_compilable = True
+      pass_time=0
+      key = patch.tbar_case_info.location
+
+      msv_result = self.state.simulation_data[key]
+      pass_exists = msv_result['basic']
+      result = msv_result['pass_all_fail']
+      pass_result = msv_result['plausible']
+      fail_time=msv_result['fail_time']
+      self.state.test_time+=fail_time
+      self.state.test_time+=pass_time
+      pass_time=msv_result['pass_time']
+      is_compilable=msv_result['compilable']
+      if is_compilable or self.state.ignore_compile_error:
+        result_handler.update_result_tbar(self.state, patch, pass_exists)
+        if result:
+          result_handler.update_positive_result_tbar(self.state, patch, pass_result)
+      if is_compilable or self.state.count_compile_fail:
+        self.state.iteration += 1
+      if self.state.use_unified_debugging and is_compilable:
+        ud.update_ud_tbar(self.state, patch, pass_exists, pass_result)
+      result_handler.append_result(self.state, [patch], pass_exists, pass_result, result, is_compilable,fail_time,pass_time)
+      result_handler.remove_patch_tbar(self.state, patch)

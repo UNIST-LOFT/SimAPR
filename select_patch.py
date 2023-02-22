@@ -4,7 +4,7 @@ from core import *
 import numpy as np
 
 SPR_TYPE_PRIORITY=(PatchType.TightenConditionKind,PatchType.LoosenConditionKind,PatchType.IfExitKind,PatchType.GuardKind,PatchType.SpecialGuardKind,
-        PatchType.AddInitKind,PatchType.ReplaceFunctionKind,PatchType.AddStmtKind,PatchType.AddStmtAndReplaceAtomKind,PatchType.ReplaceKind,PatchType.ReplaceStringKind)
+        PatchType.AddInitKind,PatchType.ReplaceFunctionKind,PatchType.AddStmtKind,PatchType.AddStmtAndReplaceAtomKind,PatchType.AddIfStmtKind,PatchType.ReplaceKind,PatchType.ReplaceStringKind)
 def epsilon_greedy(total:int,x:int):
   """
     Compute epsilin value of Epsilon-greedy algorithm
@@ -32,7 +32,7 @@ def weighted_harmonic_mean(a: float, b: float, weight_a: int=1, weight_b: int=10
   return ((weight_a*(a**-1)+weight_b*(b**-1))/(weight_a+weight_b))**-1
 
 def get_static_score(state:MSVState,element):
-  if state.tbar_mode or state.recoder_mode:
+  if state.tbar_mode or state.recoder_mode or state.prapr_mode:
     if type(element)==FileInfo or type(element)==FuncInfo:
       return max(element.fl_score_list)
     elif type(element)==LineInfo:
@@ -159,57 +159,13 @@ def epsilon_search(state:MSVState):
   top_all_patches=[] # All top scored patches, include searched or not searched
   next_top_fl_patches:List[TbarCaseInfo]=[] # All 'not searched' top scored patches
   next_top_all_patches=[] # All top scored patches, include searched or not searched
-  total_patches=0
-  total_searched=0
   cur_score=-100.
 
   start_time=time.time()
   # Get all top fl patches
-  if state.recoder_mode:
+  if state.tbar_mode or state.recoder_mode or state.prapr_mode:
     cur_list=state.java_patch_ranking
     cur_remain_list=state.java_remain_patch_ranking
-  elif state.tbar_mode:
-    is_finished=False
-    while True:
-      for id in state.java_line_workdir_patches_map:
-        for workdir in state.java_line_workdir_patches_map[id]:
-          if len(state.java_line_workdir_patches_map[id][workdir])>0:
-            state.current_fl_id=id
-            is_finished=True
-            break
-        if is_finished: break
-      if is_finished: break
-
-    cur_index=0
-    while True:
-      temp_score=0
-      temp_list=state.java_patch_ranking_list[state.work_dir_list[state.current_work_dir_index]]
-      temp_remain_list=state.java_remain_patch_ranking_list[state.work_dir_list[state.current_work_dir_index]]
-      temp_remain_list_sorted=sorted(temp_remain_list.keys(),reverse=True)
-      for score in temp_remain_list_sorted:
-        if len(temp_remain_list[score])>0:
-          temp_score=score
-          break
-
-      if cur_score<temp_score:
-        cur_score=temp_score
-        cur_index=0
-        cur_list=temp_list
-        cur_remain_list=temp_remain_list
-        total_patches=len(temp_list[temp_score])
-        total_searched=total_patches-len(temp_remain_list[temp_score])
-      elif cur_score==temp_score:
-        total_patches+=len(temp_list[temp_score])
-        total_searched+=(len(temp_list[temp_score])-len(temp_remain_list[temp_score]))
-      cur_index+=1
-
-      if cur_index==len(state.work_dir_list):
-        break
-
-      state.current_work_dir_index+=1
-      if state.current_work_dir_index>=len(state.work_dir_list):
-        state.current_work_dir_index=0
-
   else:
     cur_list=state.c_patch_ranking
     cur_remain_list=state.c_remain_patch_ranking
@@ -218,14 +174,14 @@ def epsilon_search(state:MSVState):
   for i,score in enumerate(cur_remain_list_sorted):
     normalized=normalized_score[i]
     if len(cur_remain_list[score])>0 and cur_score==-100.:
-      if state.tbar_mode or state.recoder_mode:
+      if state.tbar_mode or state.recoder_mode or state.prapr_mode:
         cur_score=score
       else:
         cur_score=normalized
       top_fl_patches+=cur_remain_list[score]
       top_all_patches+=cur_list[score]
       break
-    elif (cur_score > -100.0) and ((cur_score - (score if state.tbar_mode or state.recoder_mode else normalized)) < (cur_score * EPSILON_THRESHOLD)):
+    elif (cur_score > -100.0) and ((cur_score - (score if state.tbar_mode or state.recoder_mode or state.prapr_mode else normalized)) < (cur_score * EPSILON_THRESHOLD)):
       top_fl_patches+=cur_remain_list[score]
       top_all_patches+=cur_list[score]
 
@@ -237,9 +193,8 @@ def epsilon_search(state:MSVState):
   state.same_consecutive_score[cur_score]+=1
   if not is_secondary or len(next_top_fl_patches)==0:
     state.msv_logger.debug(f'Use original order, score: {cur_score}')
-    if not state.tbar_mode:
-      total_patches=len(top_all_patches)
-      total_searched=len(top_all_patches)-len(top_fl_patches)
+    total_patches=len(top_all_patches)
+    total_searched=len(top_all_patches)-len(top_fl_patches)
     epsilon=epsilon_greedy(total_patches,total_searched)
     if state.not_use_epsilon_search:
       is_epsilon_greedy=False
@@ -251,21 +206,12 @@ def epsilon_search(state:MSVState):
       state.msv_logger.debug(f'Use epsilon greedy method, epsilon: {epsilon}')
       # index=random.randint(0,len(top_fl_patches)-1)
       # selected_case_info = top_fl_patches[index]
-      if state.tbar_mode:
-        while True:
-          work_dir_index=random.randint(0,len(state.work_dir_list)-1)
-          if cur_score in state.java_remain_patch_ranking_list[state.work_dir_list[work_dir_index]] and len(state.java_remain_patch_ranking_list[state.work_dir_list[work_dir_index]][cur_score])>0:
-            state.msv_logger.debug(f'Select patch in {state.work_dir_list[work_dir_index]}')
-            top_fl_patches=state.java_remain_patch_ranking_list[state.work_dir_list[work_dir_index]][cur_score]
-            top_all_patches=state.java_patch_ranking_list[state.work_dir_list[work_dir_index]][cur_score]
-
-            break
       lines = set()
       for case_info in top_fl_patches:
         if case_info.parent not in lines:
           if state.recoder_mode:
             lines.add(case_info.parent)
-          elif state.tbar_mode:
+          elif state.tbar_mode or state.prapr_mode:
             lines.add(case_info.parent.parent)
           else:
             lines.add(case_info.parent.parent.parent)
@@ -275,7 +221,7 @@ def epsilon_search(state:MSVState):
       case_info_list=[]
       if state.recoder_mode:
         case_info_list = list(line_info.recoder_case_info_map.values())
-      elif state.tbar_mode:
+      elif state.tbar_mode or state.prapr_mode:
         for case_info in top_fl_patches:
           if case_info.parent.parent==line_info:
             case_info_list.append(case_info)
@@ -291,7 +237,7 @@ def epsilon_search(state:MSVState):
     else:
       state.msv_logger.debug(f'Use original order, epsilon: {epsilon}')
       if state.spr_mode:
-        cur_type=PatchType.Original
+        cur_type=PatchType.MSVExtRemoveStmtKind
         final_case=top_fl_patches[0]
         for patch in top_fl_patches:
           if patch.parent.patch_type.value<cur_type.value:
@@ -335,37 +281,7 @@ def epsilon_select(state:MSVState,source=None):
   start_time=time.time()
   # Get all top fl patches
   if source is None:
-    if state.tbar_mode:
-      cur_index=0
-      while True:
-        temp_score=0
-        temp_list=state.java_patch_ranking_list[state.work_dir_list[state.current_work_dir_index]]
-        temp_remain_list=state.java_remain_patch_ranking_list[state.work_dir_list[state.current_work_dir_index]]
-        temp_remain_list_sorted=sorted(temp_remain_list.keys(),reverse=True)
-        for score in temp_remain_list_sorted:
-          if len(temp_remain_list[score])>0:
-            temp_score=score
-            break
-
-        if cur_score<temp_score:
-          cur_score=temp_score
-          cur_index=0
-          cur_list=temp_list
-          cur_remain_list=temp_remain_list
-          total_patches=len(temp_list[temp_score])
-          total_searched=total_patches-len(temp_remain_list[temp_score])
-        elif cur_score==temp_score:
-          total_patches+=len(temp_list[temp_score])
-          total_searched+=(len(temp_list[temp_score])-len(temp_remain_list[temp_score]))
-        cur_index+=1
-
-        if cur_index==len(state.work_dir_list):
-          break
-
-        state.current_work_dir_index+=1
-        if state.current_work_dir_index>=len(state.work_dir_list):
-          state.current_work_dir_index=0
-    elif state.recoder_mode:
+    if state.tbar_mode or state.recoder_mode or state.prapr_mode:
       cur_list=state.java_patch_ranking
       cur_remain_list=state.java_remain_patch_ranking
     else:
@@ -376,14 +292,14 @@ def epsilon_select(state:MSVState,source=None):
     for i,score in enumerate(cur_remain_list_sorted):
       normalized=normalized_score[i]
       if len(cur_remain_list[score])>0 and cur_score==-100.:
-        if state.tbar_mode or state.recoder_mode:
+        if state.tbar_mode or state.recoder_mode or state.prapr_mode:
           cur_score=score
         else:
           cur_score=normalized
         top_fl_patches+=cur_remain_list[score]
         top_all_patches+=cur_list[score]
         break
-      elif (cur_score > -100.0) and ((cur_score - (score if state.tbar_mode or state.recoder_mode else normalized)) < (cur_score * EPSILON_THRESHOLD)):
+      elif (cur_score > -100.0) and ((cur_score - (score if state.tbar_mode or state.recoder_mode or state.prapr_mode else normalized)) < (cur_score * EPSILON_THRESHOLD)):
         top_fl_patches += cur_remain_list[score]
         top_all_patches += cur_list[score]
   else:
@@ -392,14 +308,14 @@ def epsilon_select(state:MSVState,source=None):
     for i,score in enumerate(cur_remain_list_sorted):
       normalized=normalized_score[i]
       if len(source.remain_patches_by_score[score])>0 and cur_score==-100.:
-        if state.tbar_mode or state.recoder_mode:
+        if state.tbar_mode or state.recoder_mode or state.prapr_mode:
           cur_score=score
         else:
           cur_score=normalized
         top_fl_patches+=source.remain_patches_by_score[score]
         top_all_patches+=source.patches_by_score[score]
         break
-      elif (cur_score > -100.0) and ((cur_score - (score if state.tbar_mode or state.recoder_mode else normalized)) < (cur_score * EPSILON_THRESHOLD)):
+      elif (cur_score > -100.0) and ((cur_score - (score if state.tbar_mode or state.recoder_mode or state.prapr_mode else normalized)) < (cur_score * EPSILON_THRESHOLD)):
         top_fl_patches += source.remain_patches_by_score[score]
         top_all_patches += source.patches_by_score[score]
   
@@ -418,7 +334,7 @@ def epsilon_select(state:MSVState,source=None):
     # Get all top scored data in source
     cur_fl_patches=top_fl_patches
     for case_info in cur_fl_patches:
-      if state.tbar_mode:
+      if state.tbar_mode or state.prapr_mode:
         # For java
         if source is None:
           if case_info.parent.parent.parent.parent in state.file_info_map.values():
@@ -484,7 +400,7 @@ def epsilon_select(state:MSVState,source=None):
     state.msv_logger.debug(f'Use original order, epsilon: {epsilon}')
     cur_fl_patches=top_fl_patches
     state.select_time+=time.time()-start_time
-    if state.tbar_mode:
+    if state.tbar_mode or state.prapr_mode:
       # For java
       if source is None:
         return cur_fl_patches[0].parent.parent.parent.parent
@@ -519,7 +435,7 @@ def epsilon_select(state:MSVState,source=None):
         return cur_fl_patches[0].parent.parent
       elif type(source) == SwitchInfo:
         if state.spr_mode:
-          cur_type=PatchType.Original
+          cur_type=PatchType.MSVExtRemoveStmtKind
           final_case=None
           for template in source.type_info_map:
             if template.value<cur_type.value:
@@ -533,22 +449,256 @@ def epsilon_select(state:MSVState,source=None):
       else:
         raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
 
+FORCE_THRESHOLD=0.1
+def use_stochastic(state:MSVState):
+  """
+    Decide to use stochastic search or follow original tool
+  """
+  return True
+  state.msv_logger.debug('Decide approach')
+  start_time=time.time()
+  
+  if state.orig_rank_iter==0 or state.orig_rank_iter*(1.+FORCE_THRESHOLD)<state.iteration+1:
+    # Force to select first patch
+    state.select_time+=(time.time()-start_time)
+    state.msv_logger.debug('Force to use original rank')
+    state.msv_logger.debug(f'Follow original rank: {state.orig_rank_iter} vs {state.iteration+1}')
+    state.msv_logger.debug(f'Threshold value: {state.orig_rank_iter*(1.+FORCE_THRESHOLD)}')
+    state.orig_rank_iter+=1
+    return False
+  else:
+    state.select_time+=(time.time()-start_time)
+    state.msv_logger.debug('Use stochastic approach')
+    state.msv_logger.debug(f'Use stochastic approach: {state.orig_rank_iter} vs {state.iteration+1}')
+    state.msv_logger.debug(f'Threshold value: {state.orig_rank_iter*(1.+FORCE_THRESHOLD)}')
+    return True
+
+def epsilon_search_new(state: MSVState):
+  """
+    Select patch in entire patch space at no guidance.
+    New Horizontal search when the guide is not exist.
+  """
+  state.msv_logger.debug('Use no guide horizontal search for entire space')
+  start_time=time.time()
+
+  remain_lines:List[LineInfo]=[]
+  for score in state.score_remain_line_map:
+    for line in state.score_remain_line_map[score]:
+      remain_lines.append(line)
+
+  if state.use_unified_debugging:
+    # Select group
+    scores_list=list(state.score_remain_line_map.keys())
+    scores_norm=PassFail.normalize(scores_list)
+    # selected_group=PassFail.select_by_probability(scores_norm)
+    max_score=max(scores_list)
+    selected_group=scores_list.index(max_score)
+    selected_score=scores_list[selected_group]
+    state.msv_logger.debug(f'Selected score: {selected_score}')
+    selected_lines:List[LineInfo]=[]
+    for line in remain_lines:
+      if line.fl_score==selected_score:
+        selected_lines.append(line)
+    total_lines:Set[LineInfo]=set()
+    if not state.tbar_mode and not state.recoder_mode and not state.prapr_mode:
+      # For C
+      for i in range(len(state.c_patch_ranking[selected_score])):
+        patch=state.c_patch_ranking[selected_score][i]
+        if patch.parent.parent.parent in remain_lines:
+          total_lines.add(selected_score)
+    else:
+      for i in range(len(state.java_patch_ranking[selected_score])):
+        patch=state.java_patch_ranking[selected_score][i]
+        if state.recoder_mode:
+          if patch.parent in remain_lines:
+            total_lines.add(selected_score)
+        else:
+          if patch.parent.parent in remain_lines:
+            total_lines.add(selected_score)
+
+    # Select line
+    ud_scores=[]
+    for line in selected_lines:
+      if line.ud_spectrum[0]>0: # CleanFix
+        ud_scores.append(3)
+      elif line.ud_spectrum[1]>0: # NoisyFix
+        ud_scores.append(2)
+      elif line.ud_spectrum[2]>0: # NoneFix
+        ud_scores.append(1)
+      else:
+        ud_scores.append(0)
+
+    ud_scores_norm=PassFail.normalize(ud_scores)
+    selected_ud=PassFail.select_by_probability(ud_scores_norm)
+    selected_line=selected_lines[selected_ud]
+  else:
+    total_lines_list:List[LineInfo]=list(remain_lines)
+    line_score=[]
+    for line_info in total_lines_list:
+      line_score.append(line_info.fl_score)
+
+    # Normalize and apply softmax function
+    line_norm=PassFail.normalize(line_score)
+    line_prob=PassFail.softmax(line_norm)
+
+    # Select line randomly
+    selected_line_i=PassFail.select_by_probability(line_prob)
+    selected_line=total_lines_list[selected_line_i]
+    selected_score=selected_line.fl_score
+    
+  # Select actual patch randomly
+  selected_index=random.randint(0,len(selected_line.remain_patches_by_score[selected_score])-1)
+  selected_patch=selected_line.remain_patches_by_score[selected_score][selected_index]
+  state.select_time+=(time.time()-start_time)
+  state.msv_logger.debug(f'{selected_patch.location} is selected by horizontal search')
+  return selected_patch
+
+def epsilon_select_new(state:MSVState,source=None):
+  """
+    Select patch in entire patch space at guidance exist.
+    New Horizontal search when the guide is exist.
+  """
+  state.msv_logger.debug('Use guide horizontal search for given patch space')
+  start_time=time.time()
+
+  if source is None:
+    selected_patch=epsilon_search(state)
+    if state.recoder_mode:
+      return selected_patch.parent.parent.parent
+    else:
+      return selected_patch.parent.parent.parent.parent # TBAR
+  else:
+    target_lines:List[LineInfo]=[]
+    if type(source)==FileInfo:
+      source:FileInfo=source
+      remain_lines=source.remain_lines_by_score
+      for func in source.func_info_map:
+        for line in source.func_info_map[func].line_info_map:
+          target_lines.append(source.func_info_map[func].line_info_map[line])
+    elif type(source)==FuncInfo:
+      source:FuncInfo=source
+      remain_lines=source.remain_lines_by_score
+      for line in source.line_info_map:
+        target_lines.append(source.line_info_map[line])
+    elif type(source)==LineInfo:
+      source:LineInfo=source
+      target_lines.append(source)
+      remain_lines={source.fl_score:[source]}
+
+    if len(target_lines)>0:
+      remain_line:List[LineInfo]=[]
+      for score in remain_lines:
+        for line in remain_lines[score]:
+          remain_line.append(line)
+
+      if state.use_unified_debugging:
+        # Select group
+        scores_list=list(remain_line.keys())
+        scores_norm=PassFail.normalize(scores_list)
+        # selected_group=PassFail.select_by_probability(scores_norm)
+        max_score=max(scores_list)
+        selected_group=scores_list.index(max_score)
+        selected_score=scores_list[selected_group]
+        state.msv_logger.debug(f'Selected score: {selected_score}')
+        selected_lines:List[LineInfo]=[]
+        for line in remain_line:
+          if line.fl_score==selected_score:
+            selected_lines.append(line)
+        total_lines:Set[LineInfo]=set()
+        if not state.tbar_mode and not state.recoder_mode and not state.prapr_mode:
+          # For C
+          for i in range(len(state.c_patch_ranking[selected_score])):
+            patch=state.c_patch_ranking[selected_score][i]
+            if patch.parent.parent.parent in remain_line and patch.parent.parent.parent in target_lines:
+              total_lines.add(selected_score)
+        else:
+          for i in range(len(state.java_patch_ranking[selected_score])):
+            patch=state.java_patch_ranking[selected_score][i]
+            if state.recoder_mode:
+              if patch.parent in remain_line and patch.parent in target_lines:
+                total_lines.add(selected_score)
+            else:
+              if patch.parent.parent in remain_line and patch.parent.parent in target_lines:
+                total_lines.add(selected_score)
+
+        # Select line
+        ud_scores=[]
+        for line in selected_lines:
+          if line.ud_spectrum[0]>0: # CleanFix
+            ud_scores.append(3)
+          elif line.ud_spectrum[1]>0: # NoisyFix
+            ud_scores.append(2)
+          elif line.ud_spectrum[2]>0: # NoneFix
+            ud_scores.append(1)
+          else:
+            ud_scores.append(0)
+
+        ud_scores_norm=PassFail.normalize(ud_scores)
+        selected_ud=PassFail.select_by_probability(ud_scores_norm)
+        selected_line=selected_lines[selected_ud]
+      else:
+        total_lines_list:List[LineInfo]=list(remain_line)
+        line_score=[]
+        for line_info in total_lines_list:
+          line_score.append(line_info.fl_score)
+
+        # Normalize and apply softmax function
+        line_norm=PassFail.normalize(line_score)
+        line_prob=PassFail.softmax(line_norm)
+
+        # Select line randomly
+        selected_line_i=PassFail.select_by_probability(line_prob)
+        selected_line=total_lines_list[selected_line_i]
+        selected_score=selected_line.fl_score
+        
+      selected_index=random.randint(0,len(selected_line.remain_patches_by_score[selected_score])-1)
+      selected_patch=selected_line.remain_patches_by_score[selected_score][selected_index]
+    elif type(source)==TbarTypeInfo:
+      selected_index=random.randint(0,len(source.remain_patches_by_score[source.parent.fl_score])-1)
+      selected_patch=source.remain_patches_by_score[source.parent.fl_score][selected_index]
+    elif type(source)==SwitchInfo:
+      selected_index=random.randint(0,len(source.remain_patches_by_score[source.parent.fl_score])-1)
+      selected_patch=source.remain_patches_by_score[source.parent.fl_score][selected_index]
+    elif type(source)==TypeInfo:
+      selected_index=random.randint(0,len(source.remain_patches_by_score[source.parent.parent.fl_score])-1)
+      selected_patch=source.remain_patches_by_score[source.parent.parent.fl_score][selected_index]
+    else:
+      raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
+
+    state.msv_logger.debug(f'{selected_patch.location} is selected by horizontal search')
+    state.select_time+=(time.time()-start_time)
+    if type(source)==FileInfo:
+      if state.recoder_mode:
+        return selected_patch.parent.parent
+      return selected_patch.parent.parent.parent
+    elif type(source)==FuncInfo:
+      if state.recoder_mode:
+        return selected_patch.parent
+      return selected_patch.parent.parent
+    elif type(source)==LineInfo:
+      if state.recoder_mode:
+        return selected_patch
+      return selected_patch.parent
+    elif type(source)==TbarTypeInfo:
+      return selected_patch
+    elif type(source)==SwitchInfo:
+      return selected_patch.parent
+    elif type(source)==TypeInfo:
+      return selected_patch
+    else:
+      raise ValueError(f'Unknown type at horizontal search: {type(source)}')
+
 def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
   FL_CONST=0.25
   start_time=time.time()
-  def normalize_one(score:float):
-    # return (score-state.min_prophet_score)/(state.max_prophet_score-state.min_prophet_score)
-    return abs(state.min_prophet_score)+score+0.0001
 
   for element in elements:
     element_type=type(elements[element])
   selected=[]
   p_p=[]
   p_b=[]
-  if state.recoder_mode:
+  if state.tbar_mode or state.recoder_mode or state.prapr_mode:
     min_score=min(state.java_remain_patch_ranking.keys())
-  elif state.tbar_mode:
-    min_score=min(state.java_remain_patch_ranking_list[state.work_dir_list[state.current_work_dir_index]].keys())
   else:
     min_score=min(state.c_remain_patch_ranking.keys())
   if element_type==FileInfo:
@@ -586,10 +736,10 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
         state.msv_logger.debug(f'Try plausible patch with a: {selected[max_index].positive_pf.pass_count}, b: {selected[max_index].positive_pf.fail_count}')
         freq=selected[max_index].children_plausible_patches/state.total_plausible_patch if state.total_plausible_patch > 0 else 0.
         bp_freq=selected[max_index].consecutive_fail_plausible_count
-        cur_score=get_static_score(state,selected[max_index]) if state.tbar_mode or state.recoder_mode or state.spr_mode else PassFail.normalize(scores)[max_index]
-        prev_score=state.previous_score if state.tbar_mode or state.recoder_mode or state.spr_mode else PassFail.normalize(scores)[-1]
+        cur_score=get_static_score(state,selected[max_index]) if state.tbar_mode or state.recoder_mode or state.spr_mode or state.prapr_mode else PassFail.normalize(scores)[max_index]
+        prev_score=state.previous_score if state.tbar_mode or state.recoder_mode or state.spr_mode or state.prapr_mode else PassFail.normalize(scores)[-1]
         score_rate=min(cur_score/prev_score,1.) if prev_score!=0. else 0.
-        if random.random()< (weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq))*(score_rate*FL_CONST if score_rate!=1.0 else 1.0)):
+        if state.not_use_acceptance_prob or random.random()< (weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq))*(score_rate*FL_CONST if score_rate!=1.0 else 1.0)):
           state.msv_logger.debug(f'Use guidance with plausible patch: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}, {cur_score}/{prev_score}')
 
           state.select_time+=time.time()-start_time
@@ -621,10 +771,10 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
         state.msv_logger.debug(f'Try basic patch with a: {selected[max_index].pf.pass_count}, b: {selected[max_index].pf.fail_count}')
         freq=selected[max_index].children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0.
         bp_freq=selected[max_index].consecutive_fail_count
-        cur_score=get_static_score(state,selected[max_index]) if state.tbar_mode or state.recoder_mode or state.spr_mode else PassFail.normalize(scores)[max_index]
-        prev_score=state.previous_score if state.tbar_mode or state.recoder_mode or state.spr_mode else PassFail.normalize(scores)[-1]
+        cur_score=get_static_score(state,selected[max_index]) if state.tbar_mode or state.recoder_mode or state.spr_mode or state.prapr_mode else PassFail.normalize(scores)[max_index]
+        prev_score=state.previous_score if state.tbar_mode or state.recoder_mode or state.spr_mode or state.prapr_mode else PassFail.normalize(scores)[-1]
         score_rate=min(cur_score/prev_score,1.) if prev_score!=0. else 0.
-        if random.random()< (weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq))*(score_rate*FL_CONST if score_rate!=1.0 else 1.0)):
+        if state.not_use_acceptance_prob or random.random()< (weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq))*(score_rate*FL_CONST if score_rate!=1.0 else 1.0)):
           state.msv_logger.debug(f'Use guidance with basic patch: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}, {cur_score}/{prev_score}')
 
           state.select_time+=time.time()-start_time
@@ -633,11 +783,13 @@ def select_patch_guide_algorithm(state: MSVState,elements:dict,parent=None):
       if not is_decided:
         state.msv_logger.debug(f'Do not use guide, use original order!')   
         state.select_time+=time.time()-start_time
-        return epsilon_select(state,parent),False  
+        # return epsilon_select(state,parent),False
+        return epsilon_select(state,parent),False
   else:
     # No guide in this layer, use top ranked patch
     state.msv_logger.debug(f'No guided found in this layer, use original order!')
-    return epsilon_select(state,parent),False   
+    # return epsilon_select(state,parent),False
+    return epsilon_select(state,parent),False
 
 def select_patch_SPR(state: MSVState) -> PatchInfo:
   # Select file and line by priority
@@ -1223,6 +1375,9 @@ def select_patch_seapr(state: MSVState, test: int) -> PatchInfo:
   #   case_info = target.case_map[cs]
 
   # In SPR mode, use SPR algorithm for select candidate
+  if state.bounded_seapr and not check_in_bound(state):
+    state.msv_logger.debug('Previous selection was out of bound, follow original order!')
+    return select_patch_SPR(state)
   start_time=time.time()
   if state.spr_mode:
     max_score = 0.0
@@ -1462,43 +1617,20 @@ def select_patch(state: MSVState, mode: MSVMode, test: int) -> List[PatchInfo]:
 def select_patch_tbar_mode(state: MSVState) -> TbarPatchInfo:
   if state.mode == MSVMode.tbar:
     return select_patch_tbar(state)
+  elif state.mode==MSVMode.genprog:
+    return select_patch_tbar_genprog(state)
   elif state.mode == MSVMode.seapr:
     return select_patch_tbar_seapr(state)
   else:
-    return select_patch_tbar_guided(state)
+    if use_stochastic(state): 
+      return select_patch_tbar_guided(state)
+    else:
+      return select_patch_tbar(state)
 
 def select_patch_tbar(state: MSVState) -> TbarPatchInfo:
-  # loc = state.patch_ranking_list[state.work_dir_list[state.current_work_dir_index]].pop(0)
-  # caseinfo = state.switch_case_map_list[state.work_dir_list[state.current_work_dir_index]][loc]
-  if state.current_fl_id=='':
-    for id in state.java_line_workdir_patches_map:
-      state.current_fl_id=id
-      break
-  
-  caseinfo=None
-  current_index=state.current_work_dir_index
-  while caseinfo is None:
-    if state.work_dir_list[current_index] in state.java_line_workdir_patches_map[state.current_fl_id] and state.work_dir_list[current_index] in state.java_line_workdir_patches_map[state.current_fl_id] and len(state.java_line_workdir_patches_map[state.current_fl_id][state.work_dir_list[current_index]])>0:
-      caseinfo=state.java_line_workdir_patches_map[state.current_fl_id][state.work_dir_list[current_index]][0]
-      state.current_work_dir_index+=1
-      if state.current_work_dir_index>=len(state.work_dir_list):
-        state.current_work_dir_index=0
-    else:
-      current_index+=1
-      if current_index>=len(state.work_dir_list):
-        current_index=0
-      if current_index==state.current_work_dir_index:
-        is_current=False
-        for id in state.java_line_workdir_patches_map:
-          if is_current:
-            state.current_fl_id=id
-            break
-          if id==state.current_fl_id:
-            is_current=True
-  # caseinfo=state.java_line_workdir_patches_map[f"{case_info.parent.parent.parent.parent.file_name}:{case_info.parent.parent.line_number}"]
-  # state.current_work_dir_index+=1
-  # if state.current_work_dir_index>=len(state.work_dir_list):
-  #   state.current_work_dir_index=0
+  loc = state.patch_ranking.pop(0)
+  caseinfo = state.switch_case_map[loc]
+  caseinfo.parent.parent.parent.case_rank_list.pop(0)
   return TbarPatchInfo(caseinfo)
 
 def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
@@ -1550,13 +1682,11 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
 
   # Select file
   if state.total_basic_patch==0 or state.not_use_guided_search:
+    # selected_switch_info=epsilon_search(state)
     selected_switch_info=epsilon_search(state)
     result = TbarPatchInfo(selected_switch_info)
+    state.patch_ranking.remove(selected_switch_info.location)
     return result
-
-  # state.current_work_dir_index+=1
-  # if state.current_work_dir_index>=len(state.work_dir_list):
-  #   state.current_work_dir_index=0
 
   selected_file_info,is_guided = select_patch_guide_algorithm(state,state.file_info_map,None)
   for file_name in state.file_info_map:
@@ -1577,12 +1707,11 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   if is_guided:
     is_correct_guide=False
     for cor in state.correct_patch_list:
-      if cor in state.switch_case_map_list[state.work_dir_list[state.current_work_dir_index]]:
-        cor_patch=state.switch_case_map_list[state.work_dir_list[state.current_work_dir_index]][cor]
-        if cor_patch.parent.parent.parent.parent==selected_file_info:
-          state.msv_logger.debug(f'Correct guide at func')
-          is_correct_guide=True
-          break
+      cor_patch=state.switch_case_map[cor]
+      if cor_patch.parent.parent.parent.parent==selected_file_info:
+        state.msv_logger.debug(f'Correct guide at file')
+        is_correct_guide=True
+        break
     if not is_correct_guide:
       state.msv_logger.debug(f'Misguide at file')
     
@@ -1609,12 +1738,11 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   if is_guided:
     is_correct_guide=False
     for cor in state.correct_patch_list:
-      if cor in state.switch_case_map_list[state.work_dir_list[state.current_work_dir_index]]:
-        cor_patch=state.switch_case_map_list[state.work_dir_list[state.current_work_dir_index]][cor]
-        if cor_patch.parent.parent.parent==selected_func_info:
-          state.msv_logger.debug(f'Correct guide at func')
-          is_correct_guide=True
-          break
+      cor_patch=state.switch_case_map[cor]
+      if cor_patch.parent.parent.parent==selected_func_info:
+        state.msv_logger.debug(f'Correct guide at func')
+        is_correct_guide=True
+        break
     if not is_correct_guide:
       state.msv_logger.debug(f'Misguide at func')
     
@@ -1641,12 +1769,11 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   if is_guided:
     is_correct_guide=False
     for cor in state.correct_patch_list:
-      if cor in state.switch_case_map_list[state.work_dir_list[state.current_work_dir_index]]:
-        cor_patch=state.switch_case_map_list[state.work_dir_list[state.current_work_dir_index]][cor]
-        if cor_patch.parent.parent==selected_line_info:
-          state.msv_logger.debug(f'Correct guide at line')
-          is_correct_guide=True
-          break
+      cor_patch=state.switch_case_map[cor]
+      if cor_patch.parent.parent==selected_line_info:
+        state.msv_logger.debug(f'Correct guide at line')
+        is_correct_guide=True
+        break
     if not is_correct_guide:
       state.msv_logger.debug(f'Misguide at line')
 
@@ -1671,35 +1798,35 @@ def select_patch_tbar_guided(state: MSVState) -> TbarPatchInfo:
   if is_guided:
     is_correct_guide=False
     for cor in state.correct_patch_list:
-      if cor in state.switch_case_map_list[state.work_dir_list[state.current_work_dir_index]]:
-        cor_patch=state.switch_case_map_list[state.work_dir_list[state.current_work_dir_index]][cor]
-        if cor_patch.parent==selected_type_info:
-          state.msv_logger.debug(f'Correct guide at type')
-          is_correct_guide=True
-          break
+      cor_patch=state.switch_case_map[cor]
+      if cor_patch.parent==selected_type_info:
+        state.msv_logger.debug(f'Correct guide at type')
+        is_correct_guide=True
+        break
     if not is_correct_guide:
       state.msv_logger.debug(f'Misguide at type')
 
   clear_list(state, p_map)
 
   # select tbar switch
+  # selected_switch_info:TbarCaseInfo=epsilon_select(state,selected_type_info)
   selected_switch_info:TbarCaseInfo=epsilon_select(state,selected_type_info)
   clear_list(state, p_map)
   result = TbarPatchInfo(selected_switch_info)
-
-  state.current_work_dir_index+=1
-  if state.current_work_dir_index>=len(state.work_dir_list):
-    state.current_work_dir_index=0
+  state.patch_ranking.remove(selected_switch_info.location)
   return result
 
 def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
   selected_patch: TbarCaseInfo = None
   max_score = 0.0
   has_high_qual_patch = False
+  # if state.bounded_seapr and not check_in_bound(state):
+  #   state.msv_logger.debug('Previous selection was out of bound, follow original order!')
+  #   return select_patch_tbar(state)
 
   def get_first_case_info(state: MSVState, func: FuncInfo) -> TbarCaseInfo:
     loc = func.case_rank_list[0]
-    case_info: TbarCaseInfo = state.switch_case_map_list[state.work_dir_list[state.current_work_dir_index]][loc]
+    case_info: TbarCaseInfo = state.switch_case_map[loc]
     return case_info
 
   state.func_list.sort(key=lambda x: max(x.fl_score_list), reverse=True)
@@ -1713,31 +1840,69 @@ def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
     seapr_ranks[cur_score].append(func)
   seapr_ranks_sorted=sorted(seapr_ranks.keys(), reverse=True)
 
-  for cor_patch in state.correct_patch_list:
-    counter=0
-    is_finish=False
-    for score in seapr_ranks_sorted:
-      for func in seapr_ranks[score]:
-        if cor_patch not in func.case_rank_list:
-          counter+=len(func.case_rank_list)
+  if not state.use_pattern and state.seapr_layer == SeAPRMode.FUNCTION:
+    for cor_patch in state.correct_patch_list:
+      counter=0
+      is_finish=False
+      for score in seapr_ranks_sorted:
+        for func in seapr_ranks[score]:
+          if func.func_rank > 30:
+            continue
+          if cor_patch not in func.case_rank_list:
+            counter+=len(func.case_rank_list)
+          else:
+            for patch in func.case_rank_list:
+              if patch!=cor_patch:
+                counter+=1
+              else:
+                is_finish=True
+                state.msv_logger.debug(f'Correct patch {cor_patch} is ranked {counter+1}')
+                break
+          if is_finish:
+            break
+        if is_finish:
+          break
+  else:
+    patch_ranking:Dict[float,List[str]]=dict()
+    for loc in state.patch_ranking:
+      tbar_case_info: TbarCaseInfo = state.switch_case_map[loc]
+      if tbar_case_info.parent.parent.parent.func_rank > 30:
+        continue
+      if loc not in tbar_case_info.parent.tbar_case_info_map:
+        # state.msv_logger.warning(f"No switch info  {tbar_case_info.location} in patch: {tbar_case_info.parent.tbar_case_info_map}")
+        continue
+      cur_score = get_ochiai(tbar_case_info.same_seapr_pf.pass_count, tbar_case_info.same_seapr_pf.fail_count,
+        tbar_case_info.diff_seapr_pf.pass_count, tbar_case_info.diff_seapr_pf.fail_count)
+      if cur_score not in patch_ranking:
+        patch_ranking[cur_score]=[]
+      patch_ranking[cur_score].append(loc)
+    
+    patch_ranking_sort=sorted(list(patch_ranking.keys()),reverse=True)
+    for cor_patch in state.correct_patch_list:
+      counter=0
+      is_finish=False
+      for score in patch_ranking_sort:
+        if cor_patch not in patch_ranking[score]:
+          counter+=len(patch_ranking[score])
         else:
-          for patch in func.case_rank_list:
+          for patch in patch_ranking[score]:
             if patch!=cor_patch:
               counter+=1
             else:
               is_finish=True
               state.msv_logger.debug(f'Correct patch {cor_patch} is ranked {counter+1}')
               break
+          if is_finish:
+            break
         if is_finish:
           break
-      if is_finish:
-        break
+
 
   # Optimization for default SeAPR
   start_time = time.time()
   if not state.use_pattern and state.seapr_layer == SeAPRMode.FUNCTION:
     state.func_list.sort(key=lambda x: max(x.fl_score_list), reverse=True)
-    min_patch_rank = len(state.switch_case_map_list[state.work_dir]) + 1
+    min_patch_rank = len(state.switch_case_map) + 1
     for func in state.func_list:
       if func.func_rank > 30:
         continue
@@ -1754,7 +1919,7 @@ def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
       has_high_qual_patch = True
   else:
     for loc in state.patch_ranking:
-      tbar_case_info: TbarCaseInfo = state.switch_case_map_list[state.work_dir][loc]
+      tbar_case_info: TbarCaseInfo = state.switch_case_map[loc]
       if tbar_case_info.parent.parent.parent.func_rank > 30:
         continue
       if loc not in tbar_case_info.parent.tbar_case_info_map:
@@ -1767,26 +1932,84 @@ def select_patch_tbar_seapr(state: MSVState) -> TbarPatchInfo:
         selected_patch = tbar_case_info
         has_high_qual_patch = True
   if not has_high_qual_patch:
+    state.msv_logger.debug('Every top-30 methods are searched, follow original order!')
     state.select_time+=time.time()-start_time
     return select_patch_tbar(state)
-  
+  if state.bounded_seapr and not check_in_bound(state, selected_patch.location):
+    state.msv_logger.debug('Selection was out of bound, follow original order!')
+    return select_patch_tbar(state)
   selected_patch.parent.parent.parent.case_rank_list.pop(0)
   state.select_time+=time.time()-start_time
   state.msv_logger.debug(f'SeAPR score: {max_score}')
-  state.patch_ranking_list[state.work_dir_list[state.current_work_dir_index]].remove(selected_patch.location)
+  state.patch_ranking.remove(selected_patch.location)
+  return TbarPatchInfo(selected_patch)
+
+def select_patch_tbar_genprog(state: MSVState) -> TbarPatchInfo:
+  start_time = time.time()
+  # Select file
+  state.msv_logger.debug(f'Select with simple stochastic')
+  file_score_list=[]
+  file_list=[]
+  for file in state.file_info_map:
+    file_score_list.append(max(state.file_info_map[file].fl_score_list))
+    file_list.append(state.file_info_map[file])
+  file_score_norm=PassFail.normalize(file_score_list)
+  selected_file_index=PassFail.select_by_probability(file_score_norm)
+  selected_file:FileInfo=file_list[selected_file_index]
+
+  # Select method
+  method_score_list=[]
+  method_list=[]
+  for method in selected_file.func_info_map.values():
+    method_score_list.append(max(method.fl_score_list))
+    method_list.append(method)
+  method_score_norm=PassFail.normalize(method_score_list)
+  selected_method_index=PassFail.select_by_probability(method_score_norm)
+  selected_method:FuncInfo=method_list[selected_method_index]
+
+  # Select Line
+  line_score_list=[]
+  line_list=[]
+  for line in selected_method.line_info_map.values():
+    line_score_list.append(line.fl_score)
+    line_list.append(line)
+  line_score_norm=PassFail.normalize(line_score_list)
+  selected_line_index=PassFail.select_by_probability(line_score_norm)
+  selected_line:LineInfo=line_list[selected_line_index]
+
+  # Select template
+  template_list=list(selected_line.tbar_type_info_map.values())
+  selected_template_index=random.randint(0,len(template_list)-1)
+  selected_template:TbarTypeInfo=template_list[selected_template_index]
+
+  # Select patch
+  patch_list=list(selected_template.tbar_case_info_map.values())
+  selected_patch_index=random.randint(0,len(patch_list)-1)
+  selected_patch=patch_list[selected_patch_index]
+
+  state.select_time+=time.time()-start_time
+  state.msv_logger.debug(f'{selected_patch.location} selected')
+  state.patch_ranking.remove(selected_patch.location)
   return TbarPatchInfo(selected_patch)
 
 def select_patch_recoder_mode(state: MSVState) -> RecoderPatchInfo:
   if state.mode == MSVMode.recoder:
     return select_patch_recoder(state)
+  elif state.mode==MSVMode.genprog:
+    return select_patch_recoder_genprog(state)
   elif state.mode == MSVMode.seapr:
     return select_patch_recoder_seapr(state)
   else:
-    return select_patch_recoder_guided(state)
+    if use_stochastic(state):
+      return select_patch_recoder_guided(state)
+    else:
+      return select_patch_recoder(state)
 
 def select_patch_recoder(state: MSVState) -> RecoderPatchInfo:
   p = state.patch_ranking.pop(0)
   caseinfo = state.switch_case_map[p]
+  if not state.use_pattern and state.seapr_layer == SeAPRMode.FUNCTION:
+    caseinfo.parent.parent.case_rank_list.pop(0)
   return RecoderPatchInfo(caseinfo)
 
 def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
@@ -1836,6 +2059,7 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
   
   if state.total_basic_patch == 0 or state.not_use_guided_search:
     selected_switch_info = epsilon_search(state)
+    state.patch_ranking.remove(selected_switch_info.to_str())
     result = RecoderPatchInfo(selected_switch_info)
     return result
   
@@ -1930,6 +2154,7 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
   del c_map[PT.fl] # No fl below line
   
   selected_case_info: RecoderCaseInfo = epsilon_select(state, selected_line_info)
+  state.patch_ranking.remove(selected_case_info.to_str())
   result = RecoderPatchInfo(selected_case_info)
   return result
   for file_name in state.file_info_map:
@@ -2035,6 +2260,34 @@ def select_patch_recoder_guided(state: MSVState) -> RecoderPatchInfo:
   result = RecoderPatchInfo(selected_case_info)
   return result  
 
+def check_in_bound(state: MSVState, patch_str: str = "", bound_limit: float = 0.1) -> bool:
+  """ Check if previous patch is in bound."""
+  results = state.msv_result
+  total = len(results)
+  if total == 0:
+    return True
+  # if patch == "":
+  #   patch = results[-1]
+  # conf = patch["config"][0]
+  rank = 0
+  if patch_str in state.ranking_map:
+    rank = state.ranking_map[patch_str]
+  else:
+    state.msv_logger.warning(f"Patch {patch_str} is not in ranking map.")
+  # if state.recoder_mode:
+  #   prev_str = f"{conf['id']}-{conf['case_id']}"
+  #   # prev = state.switch_case_map[prev_str]
+  #   rank = state.ranking_map[prev_str]
+  # elif state.tbar_mode or state.prapr_mode:
+  #   prev_str = conf['location']
+  #   rank = state.ranking_map[prev_str]
+  # else:
+  #   pass
+  if rank > total * (1 + bound_limit):
+    return False
+  return True
+
+
 def select_patch_recoder_seapr(state: MSVState) -> RecoderPatchInfo:
   selected_patch: RecoderCaseInfo = None
   max_score = 0.0
@@ -2044,8 +2297,11 @@ def select_patch_recoder_seapr(state: MSVState) -> RecoderPatchInfo:
     loc = func.case_rank_list[0]
     case_info: RecoderCaseInfo = state.switch_case_map[loc]
     return case_info
-
+  patch_ranking: Dict[float,List[str]]=dict()
   start_time = time.time()
+  # if state.bounded_seapr and not check_in_bound(state):
+  #   state.msv_logger.debug('Previous selection was out of bound, follow original order!')
+  #   return select_patch_recoder(state)
   if not state.use_pattern and state.seapr_layer == SeAPRMode.FUNCTION:
     state.func_list.sort(key=lambda x: max(x.fl_score_list), reverse=True)
     min_patch_rank = len(state.switch_case_map) + 1
@@ -2054,6 +2310,9 @@ def select_patch_recoder_seapr(state: MSVState) -> RecoderPatchInfo:
         continue
       cur_score = get_ochiai(func.same_seapr_pf.pass_count, func.same_seapr_pf.fail_count,
                              func.diff_seapr_pf.pass_count, func.diff_seapr_pf.fail_count)
+      if cur_score not in patch_ranking:
+        patch_ranking[cur_score] = list()
+      patch_ranking[cur_score].extend(func.case_rank_list)
       if cur_score > max_score:
         max_score = cur_score
         selected_patch = get_first_case_info(state, func)
@@ -2076,12 +2335,78 @@ def select_patch_recoder_seapr(state: MSVState) -> RecoderPatchInfo:
         max_score = cur_score
         selected_patch = recoder_case_info
         has_high_qual_patch = True
+
+  patch_ranking_sort = sorted(list(patch_ranking.keys()), reverse=True)
+  seapr_rank = 0
+  is_finished = False
+  print(patch_ranking_sort)
+  for score in patch_ranking_sort:
+    if state.correct_patch_str not in patch_ranking[score]:
+      seapr_rank += len(patch_ranking[score])
+    else:
+      for patch in patch_ranking[score]:
+        if patch != state.correct_patch_str:
+          seapr_rank += 1
+        else:
+          state.msv_logger.info(f"Correct patch {state.correct_patch_str} is ranked {seapr_rank}")
+          is_finished = True
+          break
+    if is_finished:
+      break
   if not has_high_qual_patch:
+    state.msv_logger.debug('Every top-30 methods are searched, follow original order!')
     state.select_time+=time.time()-start_time
+    return select_patch_recoder(state)
+  if state.bounded_seapr and not check_in_bound(state, selected_patch.to_str()):
+    state.msv_logger.debug('Selection was out of bound, follow original order!')
     return select_patch_recoder(state)
   state.patch_ranking.remove(selected_patch.to_str())
   state.msv_logger.debug(f"Selected patch: {selected_patch.to_str()}, seapr score: {max_score}")
   if not state.use_pattern and state.seapr_layer == SeAPRMode.FUNCTION:
     selected_patch.parent.parent.case_rank_list.pop(0)
   state.select_time+=time.time()-start_time
+
+  return RecoderPatchInfo(selected_patch)
+
+def select_patch_recoder_genprog(state: MSVState) -> TbarPatchInfo:
+  start_time = time.time()
+  # Select file
+  state.msv_logger.debug(f'Select with simple stochastic')
+  file_score_list=[]
+  file_list=[]
+  for file in state.file_info_map:
+    file_score_list.append(max(state.file_info_map[file].fl_score_list))
+    file_list.append(state.file_info_map[file])
+  file_score_norm=PassFail.normalize(file_score_list)
+  selected_file_index=PassFail.select_by_probability(file_score_norm)
+  selected_file:FileInfo=file_list[selected_file_index]
+
+  # Select method
+  method_score_list=[]
+  method_list=[]
+  for method in selected_file.func_info_map.values():
+    method_score_list.append(max(method.fl_score_list))
+    method_list.append(method)
+  method_score_norm=PassFail.normalize(method_score_list)
+  selected_method_index=PassFail.select_by_probability(method_score_norm)
+  selected_method:FuncInfo=method_list[selected_method_index]
+
+  # Select Line
+  line_score_list=[]
+  line_list=[]
+  for line in selected_method.line_info_map.values():
+    line_score_list.append(line.fl_score)
+    line_list.append(line)
+  line_score_norm=PassFail.normalize(line_score_list)
+  selected_line_index=PassFail.select_by_probability(line_score_norm)
+  selected_line:LineInfo=line_list[selected_line_index]
+
+  # Select patch
+  patch_list=list(selected_line.recoder_case_info_map.values())
+  selected_patch_index=random.randint(0,len(patch_list)-1)
+  selected_patch=patch_list[selected_patch_index]
+
+  state.select_time+=time.time()-start_time
+  state.msv_logger.debug(f'{selected_patch.to_str()} selected')
+  state.patch_ranking.remove(selected_patch.to_str())
   return RecoderPatchInfo(selected_patch)
