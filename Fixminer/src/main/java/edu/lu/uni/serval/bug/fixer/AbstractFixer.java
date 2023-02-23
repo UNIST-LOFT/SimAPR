@@ -91,7 +91,6 @@ public abstract class AbstractFixer implements IFixer {
 	protected Map<String, List<FunctionLocation>> methodLists = new HashMap<>();
 	public boolean useSubTemplate = false;
 
-	protected boolean isSecondLoop=false;
 	protected List<String> actualFailedTests;
 	protected List<String> actualPassedTests;
 	protected List<String> failedPassingTests;
@@ -301,20 +300,17 @@ public abstract class AbstractFixer implements IFixer {
 			String mutatorName=patch.mutator.getSimpleName();
 
 			// Save patched source file to temp dir
-			String loopId=this.isSecondLoop? "1":"0";
 			File tempDir=new File("d4j");
 			if(!tempDir.exists()) tempDir.mkdir();
 			tempDir=new File("d4j/"+buggyProject);
 			if(!tempDir.exists()) tempDir.mkdir();
-			tempDir=new File("d4j/"+buggyProject+"/"+loopId);
+			tempDir=new File("d4j/"+buggyProject+"/"+Integer.toString(scn.rank));
 			if(!tempDir.exists()) tempDir.mkdir();
-			tempDir=new File("d4j/"+buggyProject+"/"+loopId+"/"+Integer.toString(scn.rank));
-			if(!tempDir.exists()) tempDir.mkdir();
-			tempDir=new File("d4j/"+buggyProject+"/"+loopId+"/"+Integer.toString(scn.rank)+"/"+mutatorName);
+			tempDir=new File("d4j/"+buggyProject+"/"+Integer.toString(scn.rank)+"/"+mutatorName);
 			if(!tempDir.exists()) tempDir.mkdir();
 
 			if (!countOfLocationMutator.containsKey(mutatorName)) countOfLocationMutator.put(mutatorName, 0);
-			String fixedDir="d4j/"+buggyProject+"/"+loopId+"/"+Integer.toString(scn.rank)+"/"+
+			String fixedDir="d4j/"+buggyProject+"/"+Integer.toString(scn.rank)+"/"+
 						mutatorName+"/"+Integer.toString(patchId)+"/";
 			String fixedPath=fixedDir+scn.suspiciousJavaFile;
 			tempDir=new File(fixedDir);
@@ -360,7 +356,7 @@ public abstract class AbstractFixer implements IFixer {
 			SwitchInfo newInfo=new SwitchInfo();
 			newInfo.startOffset=startPos;
 			newInfo.endOffset=endPos;
-			newInfo.fixedSourcePath=loopId+"/"+Integer.toString(scn.rank)+"/"+
+			newInfo.fixedSourcePath=Integer.toString(scn.rank)+"/"+
 							mutatorName+"/"+Integer.toString(patchId)+"/"+sourceFile;
 			newInfo.score=score;
 			newInfo.mutator=patch.mutator;
@@ -393,9 +389,8 @@ public abstract class AbstractFixer implements IFixer {
 				continue;
 			}
 			this.triedPatchCandidates.add(patch);
-			String loopId=this.isSecondLoop? "1":"0";
 			String mutatorName=patch.mutator.getSimpleName();
-			String fixedDir="d4j/"+buggyProject+"/"+loopId+"/"+Integer.toString(scn.rank)+"/"+
+			String fixedDir="d4j/"+buggyProject+"/"+Integer.toString(scn.rank)+"/"+
 						mutatorName+"/"+Integer.toString(patch.id)+"/";
 			log.info(fixedDir);
 			String fixedPath=fixedDir+scn.suspiciousJavaFile;
@@ -404,7 +399,7 @@ public abstract class AbstractFixer implements IFixer {
 			String sourceFile=dirs.get(dirs.size()-1);
 			sourceFile=removeInnerClassFromSourcePath(sourceFile);
 
-			String patchID=loopId+"/"+Integer.toString(scn.rank)+"/"+
+			String patchID=Integer.toString(scn.rank)+"/"+
 						mutatorName+"/"+Integer.toString(patch.id)+"/"+sourceFile;
 			
 			boolean isCompilable=true;

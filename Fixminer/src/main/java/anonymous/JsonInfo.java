@@ -61,9 +61,8 @@ public class JsonInfo {
      * Save current informations.
      * @param fullProjectPath full path of current project (e.g. /.../Math_50)
      */
-    public void saveToFile(String buggyProject,boolean isSecondLoop){
-        String isSecond=isSecondLoop?"1":"0";
-        FileHelper.createFile(new File("d4j/"+buggyProject+"/"+isSecond+"/switch-info.json"), gson.toJson(root));
+    public void saveToFile(String buggyProject){
+        FileHelper.createFile(new File("d4j/"+buggyProject+"/switch-info.json"), gson.toJson(root));
     }
 
     /**

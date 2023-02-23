@@ -104,7 +104,7 @@ public class FixMinerFixer extends AbstractFixer {
         }
 		jsonInfo.setSwitchInfos(switchInfos);
 		jsonInfo.setMethodInfo(methodLists);
-		jsonInfo.saveToFile(buggyProject,false);
+		jsonInfo.saveToFile(buggyProject);
 		
 		if (useSubTemplate) {
 			// Reset Json Info for second group
@@ -139,7 +139,7 @@ public class FixMinerFixer extends AbstractFixer {
 
 			jsonInfo.setSwitchInfos(switchInfos);
 			jsonInfo.setMethodInfo(methodLists);
-			jsonInfo.saveToFile(buggyProject,true);	
+			jsonInfo.saveToFile(buggyProject);	
 			cacheInfo.saveCache(cachePath);
 		}
 		log.info("=======Finish off Fixing======");
@@ -275,7 +275,6 @@ public class FixMinerFixer extends AbstractFixer {
 	}
 
 	private void subFixTemplates(List<SuspCodeNode> scns,int maxLocation) {
-		this.isSecondLoop=true;
 		for (SuspCodeNode scn : scns) {
 			FixTemplate ft = null;
 			ft = new ModifyMethodInvocation(scn.suspCodeAstNode, ModifyType.DEFAULT);
