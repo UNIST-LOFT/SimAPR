@@ -1,9 +1,0 @@
-__pycache__
-*.pyc
-.vscode
-build
-venv
-env
-out
-Google-word2vec.txt
-result.csv
