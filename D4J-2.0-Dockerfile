@@ -1,0 +1,73 @@
+FROM ubuntu:22.04
+
+MAINTAINER Youngjae Kim <kyj1411@unist.ac.kr>
+
+RUN echo 'root:root' | chpasswd
+#############################################################################
+# Requirements
+#############################################################################
+
+RUN \
+  apt-get update -y && \
+  apt-get install software-properties-common -y && \
+  apt-get update -y && \
+  apt-get install -y openjdk-8-jdk \
+                git \
+                build-essential \
+				subversion \
+				perl \
+				curl \
+				unzip \
+				cpanminus \
+				make \
+				nano python3-pip python3 screen htop maven
+
+# Java version
+ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
+
+# Timezone
+ENV TZ=America/Los_Angeles
+RUN ln -snf /usr/share/zoneinfo/$TZ /etc/localtime && echo $TZ > /etc/timezone
+
+RUN apt-get update
+RUN apt-get install -y openssh-server
+RUN service ssh start
+EXPOSE 22
+#############################################################################
+# Setup Defects4J
+#############################################################################
+
+# ----------- Step 1. Clone defects4j from github --------------
+WORKDIR /
+RUN git clone https://github.com/rjust/defects4j.git defects4j
+
+# ----------- Step 2. Initialize Defects4J ---------------------
+WORKDIR /defects4j
+RUN git checkout v2.0.0
+RUN cpanm --installdeps .
+RUN ./init.sh
+
+# ----------- Step 3. Add Defects4J's executables to PATH: ------
+ENV PATH="/defects4j/framework/bin:${PATH}"  
+#--------------
+
+RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
+RUN sed -i 's/#force_color_prompt=yes/force_color_prompt=yes/g' /root/.bashrc
+RUN sed '92 aexport PATH=/defects4j/framework/bin:$PATH' /root/.bashrc
+
+WORKDIR /root
+RUN git clone https://FreddyYJ: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@github.com/FreddyYJ/SimAPR.git
+WORKDIR /root/SimAPR/Avatar
+RUN ./compile.sh
+WORKDIR /root/SimAPR/Fixminer
+RUN ./compile.sh
+WORKDIR /root/SimAPR/kPar
+RUN ./compile.sh
+WORKDIR /root/SimAPR/TBar
+RUN ./compile.sh
+WORKDIR /root/SimAPR/SimAPR
+RUN python3 -m pip install -r requirements.txt
+
+WORKDIR /root
+
+CMD ["/usr/sbin/sshd","-D"]
