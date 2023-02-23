@@ -1,0 +1,2 @@
+- char c = str.charAt(i++);
++ char c = str.charAt(i);

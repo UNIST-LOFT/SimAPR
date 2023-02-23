@@ -1,0 +1,2 @@
+- return true;
++ return  ( depth == 0 )? true : false ;

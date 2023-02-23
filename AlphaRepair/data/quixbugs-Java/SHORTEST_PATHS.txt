@@ -1,0 +1,2 @@
+- weight_by_edge.put(edge, update_weight);
++ weight_by_edge.put(edge.get(1), updateweight);

@@ -1,0 +1,2 @@
++ nodesvisited.add(node);
+  for (Node successornodes : node.getSuccessors()) {

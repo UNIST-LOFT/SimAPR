@@ -1,0 +1,2 @@
+- if (element.equals(search))
++ if (element == search)

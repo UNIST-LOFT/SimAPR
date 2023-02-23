@@ -1,0 +1,2 @@
+- } else if (StringUtil.in(name, "base", "basefont", "bgsound", "command", "link", "meta", "noframes", "style", "title")) {
++ } else if (StringUtil.in(name, "base", "basefont", "bgsound", "command", "script", "style", "link", "meta", "noframes", "style", "title")) {

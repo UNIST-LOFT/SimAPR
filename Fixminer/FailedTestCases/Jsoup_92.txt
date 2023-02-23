@@ -1,0 +1,4 @@
+Failing tests: 3
+  - org.jsoup.parser.HtmlParserTest::retainsAttributesOfDifferentCaseIfSensitive
+  - org.jsoup.parser.HtmlParserTest::dropsDuplicateAttributes
+  - org.jsoup.parser.XmlTreeBuilderTest::dropsDuplicateAttributes

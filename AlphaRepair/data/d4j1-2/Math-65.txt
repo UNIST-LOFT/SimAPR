@@ -1,0 +1,2 @@
+- chiSquare += residual * residual / residualsWeights[i];
++ chiSquare += residual * residualsWeights[i] * residual;

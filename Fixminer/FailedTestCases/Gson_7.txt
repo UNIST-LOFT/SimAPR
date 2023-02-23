@@ -1,0 +1,4 @@
+Failing tests: 3
+  - com.google.gson.functional.MapTest::testMapDeserializationWithUnquotedLongKeys
+  - com.google.gson.functional.MapTest::testMapDeserializationWithUnquotedIntegerKeys
+  - com.google.gson.stream.JsonReaderTest::testPeekingUnquotedStringsPrefixedWithIntegers

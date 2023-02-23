@@ -1,0 +1,2 @@
+- } else if (type == ArrayList.class) {
++ } else if (type == ArrayList.class || type == Iterable.class) {

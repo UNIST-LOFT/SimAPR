@@ -1,0 +1,7 @@
+org.apache.commons.math.MathRuntimeException@132@0.7071067812
+org.apache.commons.math.MathRuntimeException@40@0.7071067812
+org.apache.commons.math.linear.OpenMapRealVector@33@0.7071067812
+org.apache.commons.math.linear.OpenMapRealVector@373@0.5
+org.apache.commons.math.linear.OpenMapRealVector@372@0.5
+org.apache.commons.math.linear.OpenMapRealVector@371@0.5
+org.apache.commons.math.linear.OpenMapRealVector@370@0.5

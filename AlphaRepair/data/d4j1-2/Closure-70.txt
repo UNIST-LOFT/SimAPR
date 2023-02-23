@@ -1,0 +1,2 @@
+- jsDocParameter.getJSType(), true);
++ jsDocParameter.getJSType(), false);

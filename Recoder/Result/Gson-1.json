@@ -1,0 +1,6558 @@
+[
+ {
+  "filename": "FieldAttributes.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "FieldAttributes",
+    "methods": [
+     {
+      "params": [],
+      "type": "int",
+      "name": "getMaxCacheSize"
+     },
+     {
+      "params": [],
+      "type": "Class",
+      "name": "getDeclaringClass"
+     },
+     {
+      "params": [],
+      "type": "String",
+      "name": "getName"
+     },
+     {
+      "params": [],
+      "type": "Type",
+      "name": "getDeclaredType"
+     },
+     {
+      "params": [],
+      "type": "Class",
+      "name": "getDeclaredClass"
+     },
+     {
+      "params": [
+       {
+        "type": "Class",
+        "name": "annotation"
+       }
+      ],
+      "type": "T",
+      "name": "getAnnotation"
+     },
+     {
+      "params": [],
+      "type": "Collection",
+      "name": "getAnnotations"
+     },
+     {
+      "params": [
+       {
+        "type": "int",
+        "name": "modifier"
+       }
+      ],
+      "type": "boolean",
+      "name": "hasModifier"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "instance"
+       },
+       {
+        "type": "Object",
+        "name": "value"
+       }
+      ],
+      "type": null,
+      "name": "set"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "instance"
+       }
+      ],
+      "type": "Object",
+      "name": "get"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "isSynthetic"
+     },
+     {
+      "params": [],
+      "type": "Field",
+      "name": "getFieldObject"
+     },
+     {
+      "params": [
+       {
+        "type": "Collection",
+        "name": "annotations"
+       },
+       {
+        "type": "Class",
+        "name": "annotation"
+       }
+      ],
+      "type": "T",
+      "name": "getAnnotationFromArray"
+     }
+    ],
+    "fields": [
+     {
+      "type": "String",
+      "name": "MAX_CACHE_PROPERTY_NAME"
+     },
+     {
+      "type": "Cache",
+      "name": "ANNOTATION_CACHE"
+     },
+     {
+      "type": "Class",
+      "name": "declaringClazz"
+     },
+     {
+      "type": "Field",
+      "name": "field"
+     },
+     {
+      "type": "Class",
+      "name": "declaredType"
+     },
+     {
+      "type": "boolean",
+      "name": "isSynthetic"
+     },
+     {
+      "type": "int",
+      "name": "modifiers"
+     },
+     {
+      "type": "String",
+      "name": "name"
+     },
+     {
+      "type": "Type",
+      "name": "genericType"
+     },
+     {
+      "type": "Collection",
+      "name": "annotations"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "UpperCaseNamingPolicy.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "UpperCaseNamingPolicy",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "target"
+       },
+       {
+        "type": "Type",
+        "name": "fieldType"
+       },
+       {
+        "type": "Collection",
+        "name": "annotations"
+       }
+      ],
+      "type": "String",
+      "name": "translateName"
+     }
+    ],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "LowerCamelCaseSeparatorNamingPolicy.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "LowerCamelCaseSeparatorNamingPolicy",
+    "methods": [],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "InnerClassExclusionStrategy.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "InnerClassExclusionStrategy",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "FieldAttributes",
+        "name": "f"
+       }
+      ],
+      "type": "boolean",
+      "name": "shouldSkipField"
+     },
+     {
+      "params": [
+       {
+        "type": "Class",
+        "name": "clazz"
+       }
+      ],
+      "type": "boolean",
+      "name": "shouldSkipClass"
+     },
+     {
+      "params": [
+       {
+        "type": "Class",
+        "name": "clazz"
+       }
+      ],
+      "type": "boolean",
+      "name": "isInnerClass"
+     },
+     {
+      "params": [
+       {
+        "type": "Class",
+        "name": "clazz"
+       }
+      ],
+      "type": "boolean",
+      "name": "isStatic"
+     }
+    ],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "LongSerializationPolicy.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "LongSerializationPolicy",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "Long",
+        "name": "value"
+       }
+      ],
+      "type": "JsonElement",
+      "name": "serialize"
+     }
+    ],
+    "fields": [
+     {
+      "type": "Strategy",
+      "name": "strategy"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "FieldNamingStrategy2.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "FieldNamingStrategy2",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "FieldAttributes",
+        "name": "f"
+       }
+      ],
+      "type": "String",
+      "name": "translateName"
+     }
+    ],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "JsonElement.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "JsonElement",
+    "methods": [
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "isJsonArray"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "isJsonObject"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "isJsonPrimitive"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "isJsonNull"
+     },
+     {
+      "params": [],
+      "type": "JsonObject",
+      "name": "getAsJsonObject"
+     },
+     {
+      "params": [],
+      "type": "JsonArray",
+      "name": "getAsJsonArray"
+     },
+     {
+      "params": [],
+      "type": "JsonPrimitive",
+      "name": "getAsJsonPrimitive"
+     },
+     {
+      "params": [],
+      "type": "JsonNull",
+      "name": "getAsJsonNull"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "getAsBoolean"
+     },
+     {
+      "params": [],
+      "type": "Boolean",
+      "name": "getAsBooleanWrapper"
+     },
+     {
+      "params": [],
+      "type": "Number",
+      "name": "getAsNumber"
+     },
+     {
+      "params": [],
+      "type": "String",
+      "name": "getAsString"
+     },
+     {
+      "params": [],
+      "type": "double",
+      "name": "getAsDouble"
+     },
+     {
+      "params": [],
+      "type": "float",
+      "name": "getAsFloat"
+     },
+     {
+      "params": [],
+      "type": "long",
+      "name": "getAsLong"
+     },
+     {
+      "params": [],
+      "type": "int",
+      "name": "getAsInt"
+     },
+     {
+      "params": [],
+      "type": "byte",
+      "name": "getAsByte"
+     },
+     {
+      "params": [],
+      "type": "char",
+      "name": "getAsCharacter"
+     },
+     {
+      "params": [],
+      "type": "BigDecimal",
+      "name": "getAsBigDecimal"
+     },
+     {
+      "params": [],
+      "type": "BigInteger",
+      "name": "getAsBigInteger"
+     },
+     {
+      "params": [],
+      "type": "short",
+      "name": "getAsShort"
+     },
+     {
+      "params": [],
+      "type": "Object",
+      "name": "getAsObject"
+     },
+     {
+      "params": [],
+      "type": "String",
+      "name": "toString"
+     },
+     {
+      "params": [
+       {
+        "type": "Appendable",
+        "name": "sb"
+       },
+       {
+        "type": "Escaper",
+        "name": "escaper"
+       }
+      ],
+      "type": null,
+      "name": "toString"
+     }
+    ],
+    "fields": [
+     {
+      "type": "Escaper",
+      "name": "BASIC_ESCAPER"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "DisjunctionExclusionStrategy.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "DisjunctionExclusionStrategy",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "FieldAttributes",
+        "name": "f"
+       }
+      ],
+      "type": "boolean",
+      "name": "shouldSkipField"
+     },
+     {
+      "params": [
+       {
+        "type": "Class",
+        "name": "clazz"
+       }
+      ],
+      "type": "boolean",
+      "name": "shouldSkipClass"
+     }
+    ],
+    "fields": [
+     {
+      "type": "Collection",
+      "name": "strategies"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "JsonFieldNameValidator.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "JsonFieldNameValidator",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "fieldName"
+       }
+      ],
+      "type": "String",
+      "name": "validate"
+     }
+    ],
+    "fields": [
+     {
+      "type": "String",
+      "name": "COMMON_PATTERN"
+     },
+     {
+      "type": "Pattern",
+      "name": "JSON_FIELD_NAME_PATTERN"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "JsonTreeNavigator.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "JsonTreeNavigator",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "JsonElement",
+        "name": "element"
+       }
+      ],
+      "type": null,
+      "name": "navigate"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonObject",
+        "name": "parent"
+       },
+       {
+        "type": "String",
+        "name": "childName"
+       },
+       {
+        "type": "JsonElement",
+        "name": "child"
+       },
+       {
+        "type": "boolean",
+        "name": "isFirst"
+       }
+      ],
+      "type": "boolean",
+      "name": "visitChild"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonArray",
+        "name": "parent"
+       },
+       {
+        "type": "JsonElement",
+        "name": "child"
+       },
+       {
+        "type": "boolean",
+        "name": "isFirst"
+       }
+      ],
+      "type": null,
+      "name": "visitChild"
+     }
+    ],
+    "fields": [
+     {
+      "type": "JsonElementVisitor",
+      "name": "visitor"
+     },
+     {
+      "type": "boolean",
+      "name": "visitNulls"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "ParameterizedTypeHandlerMap.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "ParameterizedTypeHandlerMap",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "Class",
+        "name": "typeOfT"
+       },
+       {
+        "type": "T",
+        "name": "value"
+       }
+      ],
+      "type": null,
+      "name": "registerForTypeHierarchy"
+     },
+     {
+      "params": [
+       {
+        "type": "Pair",
+        "name": "pair"
+       }
+      ],
+      "type": null,
+      "name": "registerForTypeHierarchy"
+     },
+     {
+      "params": [
+       {
+        "type": "Class",
+        "name": "type"
+       }
+      ],
+      "type": "int",
+      "name": "getIndexOfAnOverriddenHandler"
+     },
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "typeOfT"
+       },
+       {
+        "type": "T",
+        "name": "value"
+       }
+      ],
+      "type": null,
+      "name": "register"
+     },
+     {
+      "params": [
+       {
+        "type": "ParameterizedTypeHandlerMap",
+        "name": "other"
+       }
+      ],
+      "type": null,
+      "name": "registerIfAbsent"
+     },
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "typeOfT"
+       },
+       {
+        "type": "T",
+        "name": "value"
+       }
+      ],
+      "type": null,
+      "name": "registerIfAbsent"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "makeUnmodifiable"
+     },
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "type"
+       }
+      ],
+      "type": "T",
+      "name": "getHandlerFor"
+     },
+     {
+      "params": [
+       {
+        "type": "Class",
+        "name": "type"
+       }
+      ],
+      "type": "T",
+      "name": "getHandlerForTypeHierarchy"
+     },
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "type"
+       }
+      ],
+      "type": "boolean",
+      "name": "hasSpecificHandlerFor"
+     },
+     {
+      "params": [
+       {
+        "type": "Class",
+        "name": "type"
+       }
+      ],
+      "type": "int",
+      "name": "getIndexOfSpecificHandlerForTypeHierarchy"
+     },
+     {
+      "params": [],
+      "type": "ParameterizedTypeHandlerMap",
+      "name": "copyOf"
+     },
+     {
+      "params": [],
+      "type": "String",
+      "name": "toString"
+     },
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "type"
+       }
+      ],
+      "type": "String",
+      "name": "typeToString"
+     }
+    ],
+    "fields": [
+     {
+      "type": "Logger",
+      "name": "logger"
+     },
+     {
+      "type": "Map",
+      "name": "map"
+     },
+     {
+      "type": "List",
+      "name": "typeHierarchyList"
+     },
+     {
+      "type": "boolean",
+      "name": "modifiable"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "MemoryRefStack.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "MemoryRefStack",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "ObjectTypePair",
+        "name": "obj"
+       }
+      ],
+      "type": "ObjectTypePair",
+      "name": "push"
+     },
+     {
+      "params": [],
+      "type": "ObjectTypePair",
+      "name": "pop"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "isEmpty"
+     },
+     {
+      "params": [],
+      "type": "ObjectTypePair",
+      "name": "peek"
+     },
+     {
+      "params": [
+       {
+        "type": "ObjectTypePair",
+        "name": "obj"
+       }
+      ],
+      "type": "boolean",
+      "name": "contains"
+     }
+    ],
+    "fields": [
+     {
+      "type": "Stack",
+      "name": "stack"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "JavaFieldNamingPolicy.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "JavaFieldNamingPolicy",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "target"
+       },
+       {
+        "type": "Type",
+        "name": "fieldType"
+       },
+       {
+        "type": "Collection",
+        "name": "annotations"
+       }
+      ],
+      "type": "String",
+      "name": "translateName"
+     }
+    ],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "Gson.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "Gson",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "ExclusionStrategy",
+        "name": "strategy"
+       }
+      ],
+      "type": "ObjectNavigatorFactory",
+      "name": "createDefaultObjectNavigatorFactory"
+     },
+     {
+      "params": [
+       {
+        "type": "double",
+        "name": "version"
+       }
+      ],
+      "type": "ExclusionStrategy",
+      "name": "createExclusionStrategy"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "src"
+       }
+      ],
+      "type": "JsonElement",
+      "name": "toJsonTree"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "src"
+       },
+       {
+        "type": "Type",
+        "name": "typeOfSrc"
+       }
+      ],
+      "type": "JsonElement",
+      "name": "toJsonTree"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "src"
+       }
+      ],
+      "type": "String",
+      "name": "toJson"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "src"
+       },
+       {
+        "type": "Type",
+        "name": "typeOfSrc"
+       }
+      ],
+      "type": "String",
+      "name": "toJson"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "src"
+       },
+       {
+        "type": "Appendable",
+        "name": "writer"
+       }
+      ],
+      "type": null,
+      "name": "toJson"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "src"
+       },
+       {
+        "type": "Type",
+        "name": "typeOfSrc"
+       },
+       {
+        "type": "Appendable",
+        "name": "writer"
+       }
+      ],
+      "type": null,
+      "name": "toJson"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "src"
+       },
+       {
+        "type": "Type",
+        "name": "typeOfSrc"
+       },
+       {
+        "type": "JsonWriter",
+        "name": "writer"
+       }
+      ],
+      "type": null,
+      "name": "toJson"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonElement",
+        "name": "jsonElement"
+       }
+      ],
+      "type": "String",
+      "name": "toJson"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonElement",
+        "name": "jsonElement"
+       },
+       {
+        "type": "Appendable",
+        "name": "writer"
+       }
+      ],
+      "type": null,
+      "name": "toJson"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonElement",
+        "name": "jsonElement"
+       },
+       {
+        "type": "JsonWriter",
+        "name": "writer"
+       }
+      ],
+      "type": null,
+      "name": "toJson"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "json"
+       },
+       {
+        "type": "Class",
+        "name": "classOfT"
+       }
+      ],
+      "type": "T",
+      "name": "fromJson"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "json"
+       },
+       {
+        "type": "Type",
+        "name": "typeOfT"
+       }
+      ],
+      "type": "T",
+      "name": "fromJson"
+     },
+     {
+      "params": [
+       {
+        "type": "Reader",
+        "name": "json"
+       },
+       {
+        "type": "Class",
+        "name": "classOfT"
+       }
+      ],
+      "type": "T",
+      "name": "fromJson"
+     },
+     {
+      "params": [
+       {
+        "type": "Reader",
+        "name": "json"
+       },
+       {
+        "type": "Type",
+        "name": "typeOfT"
+       }
+      ],
+      "type": "T",
+      "name": "fromJson"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonReader",
+        "name": "reader"
+       },
+       {
+        "type": "Type",
+        "name": "typeOfT"
+       }
+      ],
+      "type": "T",
+      "name": "fromJson"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonElement",
+        "name": "json"
+       },
+       {
+        "type": "Class",
+        "name": "classOfT"
+       }
+      ],
+      "type": "T",
+      "name": "fromJson"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonElement",
+        "name": "json"
+       },
+       {
+        "type": "Type",
+        "name": "typeOfT"
+       }
+      ],
+      "type": "T",
+      "name": "fromJson"
+     },
+     {
+      "params": [
+       {
+        "type": "Appendable",
+        "name": "writer"
+       }
+      ],
+      "type": null,
+      "name": "writeOutNullString"
+     },
+     {
+      "params": [],
+      "type": "String",
+      "name": "toString"
+     }
+    ],
+    "fields": [
+     {
+      "type": "String",
+      "name": "NULL_STRING"
+     },
+     {
+      "type": "boolean",
+      "name": "DEFAULT_JSON_NON_EXECUTABLE"
+     },
+     {
+      "type": "AnonymousAndLocalClassExclusionStrategy",
+      "name": "DEFAULT_ANON_LOCAL_CLASS_EXCLUSION_STRATEGY"
+     },
+     {
+      "type": "SyntheticFieldExclusionStrategy",
+      "name": "DEFAULT_SYNTHETIC_FIELD_EXCLUSION_STRATEGY"
+     },
+     {
+      "type": "ModifierBasedExclusionStrategy",
+      "name": "DEFAULT_MODIFIER_BASED_EXCLUSION_STRATEGY"
+     },
+     {
+      "type": "FieldNamingStrategy2",
+      "name": "DEFAULT_NAMING_POLICY"
+     },
+     {
+      "type": "ExclusionStrategy",
+      "name": "DEFAULT_EXCLUSION_STRATEGY"
+     },
+     {
+      "type": "String",
+      "name": "JSON_NON_EXECUTABLE_PREFIX"
+     },
+     {
+      "type": "ExclusionStrategy",
+      "name": "serializationStrategy"
+     },
+     {
+      "type": "ExclusionStrategy",
+      "name": "deserializationStrategy"
+     },
+     {
+      "type": "FieldNamingStrategy2",
+      "name": "fieldNamingPolicy"
+     },
+     {
+      "type": "MappedObjectConstructor",
+      "name": "objectConstructor"
+     },
+     {
+      "type": "ParameterizedTypeHandlerMap",
+      "name": "serializers"
+     },
+     {
+      "type": "ParameterizedTypeHandlerMap",
+      "name": "deserializers"
+     },
+     {
+      "type": "boolean",
+      "name": "serializeNulls"
+     },
+     {
+      "type": "boolean",
+      "name": "htmlSafe"
+     },
+     {
+      "type": "boolean",
+      "name": "generateNonExecutableJson"
+     },
+     {
+      "type": "boolean",
+      "name": "prettyPrinting"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "InstanceCreator.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "InstanceCreator",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "type"
+       }
+      ],
+      "type": "T",
+      "name": "createInstance"
+     }
+    ],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "ObjectNavigatorFactory.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "ObjectNavigatorFactory",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "ObjectTypePair",
+        "name": "objTypePair"
+       }
+      ],
+      "type": "ObjectNavigator",
+      "name": "create"
+     },
+     {
+      "params": [],
+      "type": "FieldNamingStrategy2",
+      "name": "getFieldNamingPolicy"
+     }
+    ],
+    "fields": [
+     {
+      "type": "ExclusionStrategy",
+      "name": "strategy"
+     },
+     {
+      "type": "FieldNamingStrategy2",
+      "name": "fieldNamingPolicy"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "TypeAdapter.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "TypeAdapter",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "from"
+       },
+       {
+        "type": "Class",
+        "name": "to"
+       }
+      ],
+      "type": "T",
+      "name": "adaptType"
+     }
+    ],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "ExclusionStrategy.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "ExclusionStrategy",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "FieldAttributes",
+        "name": "f"
+       }
+      ],
+      "type": "boolean",
+      "name": "shouldSkipField"
+     },
+     {
+      "params": [
+       {
+        "type": "Class",
+        "name": "clazz"
+       }
+      ],
+      "type": "boolean",
+      "name": "shouldSkipClass"
+     }
+    ],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "JsonDeserializerExceptionWrapper.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "JsonDeserializerExceptionWrapper",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "JsonElement",
+        "name": "json"
+       },
+       {
+        "type": "Type",
+        "name": "typeOfT"
+       },
+       {
+        "type": "JsonDeserializationContext",
+        "name": "context"
+       }
+      ],
+      "type": "T",
+      "name": "deserialize"
+     },
+     {
+      "params": [],
+      "type": "String",
+      "name": "toString"
+     }
+    ],
+    "fields": [
+     {
+      "type": "JsonDeserializer",
+      "name": "delegate"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "RecursiveFieldNamingPolicy.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "RecursiveFieldNamingPolicy",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "FieldAttributes",
+        "name": "f"
+       }
+      ],
+      "type": "String",
+      "name": "translateName"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "target"
+       },
+       {
+        "type": "Type",
+        "name": "fieldType"
+       },
+       {
+        "type": "Collection",
+        "name": "annotations"
+       }
+      ],
+      "type": "String",
+      "name": "translateName"
+     }
+    ],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "NullExclusionStrategy.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "NullExclusionStrategy",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "FieldAttributes",
+        "name": "f"
+       }
+      ],
+      "type": "boolean",
+      "name": "shouldSkipField"
+     },
+     {
+      "params": [
+       {
+        "type": "Class",
+        "name": "clazz"
+       }
+      ],
+      "type": "boolean",
+      "name": "shouldSkipClass"
+     }
+    ],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "MappedObjectConstructor.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "MappedObjectConstructor",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "typeOfT"
+       }
+      ],
+      "type": "T",
+      "name": "construct"
+     },
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "type"
+       },
+       {
+        "type": "int",
+        "name": "length"
+       }
+      ],
+      "type": "Object",
+      "name": "constructArray"
+     },
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "typeOfT"
+       }
+      ],
+      "type": "T",
+      "name": "constructWithNoArgConstructor"
+     },
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "typeOfT"
+       }
+      ],
+      "type": "Constructor",
+      "name": "getNoArgsConstructor"
+     },
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "typeOfT"
+       },
+       {
+        "type": "InstanceCreator",
+        "name": "creator"
+       }
+      ],
+      "type": null,
+      "name": "register"
+     },
+     {
+      "params": [],
+      "type": "String",
+      "name": "toString"
+     }
+    ],
+    "fields": [
+     {
+      "type": "Logger",
+      "name": "log"
+     },
+     {
+      "type": "ParameterizedTypeHandlerMap",
+      "name": "instanceCreatorMap"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "LruCache.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "LruCache",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "K",
+        "name": "key"
+       },
+       {
+        "type": "V",
+        "name": "value"
+       }
+      ],
+      "type": null,
+      "name": "addElement"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "clear"
+     },
+     {
+      "params": [
+       {
+        "type": "K",
+        "name": "key"
+       }
+      ],
+      "type": "V",
+      "name": "getElement"
+     },
+     {
+      "params": [
+       {
+        "type": "K",
+        "name": "key"
+       }
+      ],
+      "type": "V",
+      "name": "removeElement"
+     },
+     {
+      "params": [],
+      "type": "int",
+      "name": "size"
+     },
+     {
+      "params": [
+       {
+        "type": "Map",
+        "name": "entry"
+       }
+      ],
+      "type": "boolean",
+      "name": "removeEldestEntry"
+     }
+    ],
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "int",
+      "name": "maxCapacity"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "JsonStreamParser.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "JsonStreamParser",
+    "methods": [
+     {
+      "params": [],
+      "type": "JsonElement",
+      "name": "next"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "hasNext"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "remove"
+     }
+    ],
+    "fields": [
+     {
+      "type": "JsonReader",
+      "name": "parser"
+     },
+     {
+      "type": "Object",
+      "name": "lock"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "JsonObject.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "JsonObject",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "property"
+       },
+       {
+        "type": "JsonElement",
+        "name": "value"
+       }
+      ],
+      "type": null,
+      "name": "add"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "property"
+       }
+      ],
+      "type": "JsonElement",
+      "name": "remove"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "property"
+       },
+       {
+        "type": "String",
+        "name": "value"
+       }
+      ],
+      "type": null,
+      "name": "addProperty"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "property"
+       },
+       {
+        "type": "Number",
+        "name": "value"
+       }
+      ],
+      "type": null,
+      "name": "addProperty"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "property"
+       },
+       {
+        "type": "Boolean",
+        "name": "value"
+       }
+      ],
+      "type": null,
+      "name": "addProperty"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "property"
+       },
+       {
+        "type": "Character",
+        "name": "value"
+       }
+      ],
+      "type": null,
+      "name": "addProperty"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "value"
+       }
+      ],
+      "type": "JsonElement",
+      "name": "createJsonElement"
+     },
+     {
+      "params": [],
+      "type": "Set",
+      "name": "entrySet"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "memberName"
+       }
+      ],
+      "type": "boolean",
+      "name": "has"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "memberName"
+       }
+      ],
+      "type": "JsonElement",
+      "name": "get"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "memberName"
+       }
+      ],
+      "type": "JsonPrimitive",
+      "name": "getAsJsonPrimitive"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "memberName"
+       }
+      ],
+      "type": "JsonArray",
+      "name": "getAsJsonArray"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "memberName"
+       }
+      ],
+      "type": "JsonObject",
+      "name": "getAsJsonObject"
+     },
+     {
+      "params": [
+       {
+        "type": "Appendable",
+        "name": "sb"
+       },
+       {
+        "type": "Escaper",
+        "name": "escaper"
+       }
+      ],
+      "type": null,
+      "name": "toString"
+     }
+    ],
+    "fields": [
+     {
+      "type": "Map",
+      "name": "members"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "CompositionFieldNamingPolicy.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "CompositionFieldNamingPolicy",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "target"
+       },
+       {
+        "type": "Type",
+        "name": "fieldType"
+       },
+       {
+        "type": "Collection",
+        "name": "annotations"
+       }
+      ],
+      "type": "String",
+      "name": "translateName"
+     }
+    ],
+    "fields": [
+     {
+      "type": "RecursiveFieldNamingPolicy",
+      "name": "fieldPolicies"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "ExposeAnnotationDeserializationExclusionStrategy.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "ExposeAnnotationDeserializationExclusionStrategy",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "Class",
+        "name": "clazz"
+       }
+      ],
+      "type": "boolean",
+      "name": "shouldSkipClass"
+     },
+     {
+      "params": [
+       {
+        "type": "FieldAttributes",
+        "name": "f"
+       }
+      ],
+      "type": "boolean",
+      "name": "shouldSkipField"
+     }
+    ],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "JsonObjectDeserializationVisitor.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "JsonObjectDeserializationVisitor",
+    "methods": [
+     {
+      "params": [],
+      "type": "T",
+      "name": "constructTarget"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "node"
+       }
+      ],
+      "type": null,
+      "name": "startVisitingObject"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "array"
+       },
+       {
+        "type": "Type",
+        "name": "componentType"
+       }
+      ],
+      "type": null,
+      "name": "visitArray"
+     },
+     {
+      "params": [
+       {
+        "type": "FieldAttributes",
+        "name": "f"
+       },
+       {
+        "type": "Type",
+        "name": "typeOfF"
+       },
+       {
+        "type": "Object",
+        "name": "obj"
+       }
+      ],
+      "type": null,
+      "name": "visitObjectField"
+     },
+     {
+      "params": [
+       {
+        "type": "FieldAttributes",
+        "name": "f"
+       },
+       {
+        "type": "Type",
+        "name": "typeOfF"
+       },
+       {
+        "type": "Object",
+        "name": "obj"
+       }
+      ],
+      "type": null,
+      "name": "visitArrayField"
+     },
+     {
+      "params": [
+       {
+        "type": "FieldAttributes",
+        "name": "f"
+       }
+      ],
+      "type": "String",
+      "name": "getFieldName"
+     },
+     {
+      "params": [
+       {
+        "type": "FieldAttributes",
+        "name": "f"
+       },
+       {
+        "type": "Type",
+        "name": "declaredTypeOfField"
+       },
+       {
+        "type": "Object",
+        "name": "parent"
+       }
+      ],
+      "type": "boolean",
+      "name": "visitFieldUsingCustomHandler"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "primitive"
+       }
+      ],
+      "type": null,
+      "name": "visitPrimitive"
+     }
+    ],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "JsonDeserializationVisitor.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "JsonDeserializationVisitor",
+    "methods": [
+     {
+      "params": [],
+      "type": "T",
+      "name": "getTarget"
+     },
+     {
+      "params": [],
+      "type": "T",
+      "name": "constructTarget"
+     },
+     {
+      "params": [
+       {
+        "type": "ObjectTypePair",
+        "name": "node"
+       }
+      ],
+      "type": null,
+      "name": "start"
+     },
+     {
+      "params": [
+       {
+        "type": "ObjectTypePair",
+        "name": "node"
+       }
+      ],
+      "type": null,
+      "name": "end"
+     },
+     {
+      "params": [
+       {
+        "type": "ObjectTypePair",
+        "name": "objTypePair"
+       }
+      ],
+      "type": "boolean",
+      "name": "visitUsingCustomHandler"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonElement",
+        "name": "element"
+       },
+       {
+        "type": "Pair",
+        "name": "pair"
+       }
+      ],
+      "type": "Object",
+      "name": "invokeCustomDeserializer"
+     },
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "childType"
+       },
+       {
+        "type": "JsonElement",
+        "name": "jsonChild"
+       }
+      ],
+      "type": "Object",
+      "name": "visitChildAsObject"
+     },
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "childType"
+       },
+       {
+        "type": "JsonArray",
+        "name": "jsonChild"
+       }
+      ],
+      "type": "Object",
+      "name": "visitChildAsArray"
+     },
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "type"
+       },
+       {
+        "type": "JsonDeserializationVisitor",
+        "name": "childVisitor"
+       }
+      ],
+      "type": "Object",
+      "name": "visitChild"
+     }
+    ],
+    "fields": [
+     {
+      "type": "ObjectNavigatorFactory",
+      "name": "factory"
+     },
+     {
+      "type": "ObjectConstructor",
+      "name": "objectConstructor"
+     },
+     {
+      "type": "ParameterizedTypeHandlerMap",
+      "name": "deserializers"
+     },
+     {
+      "type": "T",
+      "name": "target"
+     },
+     {
+      "type": "JsonElement",
+      "name": "json"
+     },
+     {
+      "type": "Type",
+      "name": "targetType"
+     },
+     {
+      "type": "JsonDeserializationContext",
+      "name": "context"
+     },
+     {
+      "type": "boolean",
+      "name": "constructed"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "JsonDeserializationContextDefault.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "JsonDeserializationContextDefault",
+    "methods": [
+     {
+      "params": [],
+      "type": "ObjectConstructor",
+      "name": "getObjectConstructor"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonElement",
+        "name": "json"
+       },
+       {
+        "type": "Type",
+        "name": "typeOfT"
+       }
+      ],
+      "type": "T",
+      "name": "deserialize"
+     },
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "arrayType"
+       },
+       {
+        "type": "JsonArray",
+        "name": "jsonArray"
+       },
+       {
+        "type": "JsonDeserializationContext",
+        "name": "context"
+       }
+      ],
+      "type": "T",
+      "name": "fromJsonArray"
+     },
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "typeOfT"
+       },
+       {
+        "type": "JsonObject",
+        "name": "jsonObject"
+       },
+       {
+        "type": "JsonDeserializationContext",
+        "name": "context"
+       }
+      ],
+      "type": "T",
+      "name": "fromJsonObject"
+     },
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "typeOfT"
+       },
+       {
+        "type": "JsonPrimitive",
+        "name": "json"
+       },
+       {
+        "type": "JsonDeserializationContext",
+        "name": "context"
+       }
+      ],
+      "type": "T",
+      "name": "fromJsonPrimitive"
+     }
+    ],
+    "fields": [
+     {
+      "type": "ObjectNavigatorFactory",
+      "name": "navigatorFactory"
+     },
+     {
+      "type": "ParameterizedTypeHandlerMap",
+      "name": "deserializers"
+     },
+     {
+      "type": "MappedObjectConstructor",
+      "name": "objectConstructor"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "SerializedNameAnnotationInterceptingNamingPolicy.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "SerializedNameAnnotationInterceptingNamingPolicy",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "FieldAttributes",
+        "name": "f"
+       }
+      ],
+      "type": "String",
+      "name": "translateName"
+     }
+    ],
+    "fields": [
+     {
+      "type": "JsonFieldNameValidator",
+      "name": "fieldNameValidator"
+     },
+     {
+      "type": "FieldNamingStrategy2",
+      "name": "delegate"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "JsonSyntaxException.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "JsonSyntaxException",
+    "methods": [],
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "ModifyFirstLetterNamingPolicy.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "ModifyFirstLetterNamingPolicy",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "target"
+       },
+       {
+        "type": "Type",
+        "name": "fieldType"
+       },
+       {
+        "type": "Collection",
+        "name": "annotations"
+       }
+      ],
+      "type": "String",
+      "name": "translateName"
+     },
+     {
+      "params": [
+       {
+        "type": "char",
+        "name": "firstCharacter"
+       },
+       {
+        "type": "String",
+        "name": "srcString"
+       },
+       {
+        "type": "int",
+        "name": "indexOfSubstring"
+       }
+      ],
+      "type": "String",
+      "name": "modifyString"
+     }
+    ],
+    "fields": [
+     {
+      "type": "LetterModifier",
+      "name": "letterModifier"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "TypeInfo.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "TypeInfo",
+    "methods": [
+     {
+      "params": [],
+      "type": "Type",
+      "name": "getActualType"
+     },
+     {
+      "params": [],
+      "type": "Class",
+      "name": "getWrappedClass"
+     },
+     {
+      "params": [],
+      "type": "Class",
+      "name": "getRawClass"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "isCollectionOrArray"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "isArray"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "isEnum"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "isPrimitive"
+     }
+    ],
+    "fields": [
+     {
+      "type": "Type",
+      "name": "actualType"
+     },
+     {
+      "type": "Class",
+      "name": "rawClass"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "TypeUtils.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "TypeUtils",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "type"
+       }
+      ],
+      "type": "Type",
+      "name": "getActualTypeForFirstTypeVariable"
+     },
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "type"
+       }
+      ],
+      "type": "boolean",
+      "name": "isArray"
+     },
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "type"
+       }
+      ],
+      "type": "Class",
+      "name": "toRawClass"
+     },
+     {
+      "params": [
+       {
+        "type": "Class",
+        "name": "rawClass"
+       }
+      ],
+      "type": "Class",
+      "name": "wrapWithArray"
+     }
+    ],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "JsonElementVisitor.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "JsonElementVisitor",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "JsonPrimitive",
+        "name": "primitive"
+       }
+      ],
+      "type": null,
+      "name": "visitPrimitive"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "visitNull"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonArray",
+        "name": "array"
+       }
+      ],
+      "type": null,
+      "name": "startArray"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonArray",
+        "name": "parent"
+       },
+       {
+        "type": "JsonPrimitive",
+        "name": "member"
+       },
+       {
+        "type": "boolean",
+        "name": "isFirst"
+       }
+      ],
+      "type": null,
+      "name": "visitArrayMember"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonArray",
+        "name": "parent"
+       },
+       {
+        "type": "JsonArray",
+        "name": "member"
+       },
+       {
+        "type": "boolean",
+        "name": "isFirst"
+       }
+      ],
+      "type": null,
+      "name": "visitArrayMember"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonArray",
+        "name": "parent"
+       },
+       {
+        "type": "JsonObject",
+        "name": "member"
+       },
+       {
+        "type": "boolean",
+        "name": "isFirst"
+       }
+      ],
+      "type": null,
+      "name": "visitArrayMember"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonArray",
+        "name": "parent"
+       },
+       {
+        "type": "boolean",
+        "name": "isFirst"
+       }
+      ],
+      "type": null,
+      "name": "visitNullArrayMember"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonArray",
+        "name": "array"
+       }
+      ],
+      "type": null,
+      "name": "endArray"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonObject",
+        "name": "object"
+       }
+      ],
+      "type": null,
+      "name": "startObject"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonObject",
+        "name": "parent"
+       },
+       {
+        "type": "String",
+        "name": "memberName"
+       },
+       {
+        "type": "JsonPrimitive",
+        "name": "member"
+       },
+       {
+        "type": "boolean",
+        "name": "isFirst"
+       }
+      ],
+      "type": null,
+      "name": "visitObjectMember"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonObject",
+        "name": "parent"
+       },
+       {
+        "type": "String",
+        "name": "memberName"
+       },
+       {
+        "type": "JsonArray",
+        "name": "member"
+       },
+       {
+        "type": "boolean",
+        "name": "isFirst"
+       }
+      ],
+      "type": null,
+      "name": "visitObjectMember"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonObject",
+        "name": "parent"
+       },
+       {
+        "type": "String",
+        "name": "memberName"
+       },
+       {
+        "type": "JsonObject",
+        "name": "member"
+       },
+       {
+        "type": "boolean",
+        "name": "isFirst"
+       }
+      ],
+      "type": null,
+      "name": "visitObjectMember"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonObject",
+        "name": "parent"
+       },
+       {
+        "type": "String",
+        "name": "memberName"
+       },
+       {
+        "type": "boolean",
+        "name": "isFirst"
+       }
+      ],
+      "type": null,
+      "name": "visitNullObjectMember"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonObject",
+        "name": "object"
+       }
+      ],
+      "type": null,
+      "name": "endObject"
+     }
+    ],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "Cache.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "Cache",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "K",
+        "name": "key"
+       },
+       {
+        "type": "V",
+        "name": "value"
+       }
+      ],
+      "type": null,
+      "name": "addElement"
+     },
+     {
+      "params": [
+       {
+        "type": "K",
+        "name": "key"
+       }
+      ],
+      "type": "V",
+      "name": "getElement"
+     },
+     {
+      "params": [
+       {
+        "type": "K",
+        "name": "key"
+       }
+      ],
+      "type": "V",
+      "name": "removeElement"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "clear"
+     },
+     {
+      "params": [],
+      "type": "int",
+      "name": "size"
+     }
+    ],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "Escaper.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "Escaper",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "CharSequence",
+        "name": "plainText"
+       }
+      ],
+      "type": "String",
+      "name": "escapeJsonString"
+     },
+     {
+      "params": [
+       {
+        "type": "CharSequence",
+        "name": "plainText"
+       },
+       {
+        "type": "StringBuffer",
+        "name": "out"
+       }
+      ],
+      "type": null,
+      "name": "escapeJsonString"
+     },
+     {
+      "params": [
+       {
+        "type": "int",
+        "name": "codepoint"
+       }
+      ],
+      "type": "boolean",
+      "name": "mustEscapeCharInJsString"
+     },
+     {
+      "params": [
+       {
+        "type": "int",
+        "name": "codePoint"
+       }
+      ],
+      "type": "boolean",
+      "name": "isControlCharacter"
+     },
+     {
+      "params": [
+       {
+        "type": "int",
+        "name": "codePoint"
+       },
+       {
+        "type": "Appendable",
+        "name": "out"
+       }
+      ],
+      "type": null,
+      "name": "appendHexJavaScriptRepresentation"
+     }
+    ],
+    "fields": [
+     {
+      "type": "char",
+      "name": "HEX_CHARS"
+     },
+     {
+      "type": "Set",
+      "name": "JS_ESCAPE_CHARS"
+     },
+     {
+      "type": "Set",
+      "name": "HTML_ESCAPE_CHARS"
+     },
+     {
+      "type": "boolean",
+      "name": "escapeHtmlCharacters"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "FieldNamingPolicy.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "FieldNamingPolicy",
+    "methods": [
+     {
+      "params": [],
+      "type": "FieldNamingStrategy2",
+      "name": "getFieldNamingPolicy"
+     }
+    ],
+    "fields": [
+     {
+      "type": "FieldNamingStrategy2",
+      "name": "namingPolicy"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "Streams.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "Streams",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "JsonReader",
+        "name": "reader"
+       }
+      ],
+      "type": "JsonElement",
+      "name": "parse"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonElement",
+        "name": "element"
+       },
+       {
+        "type": "boolean",
+        "name": "serializeNulls"
+       },
+       {
+        "type": "JsonWriter",
+        "name": "writer"
+       }
+      ],
+      "type": null,
+      "name": "write"
+     },
+     {
+      "params": [
+       {
+        "type": "Appendable",
+        "name": "appendable"
+       }
+      ],
+      "type": "Writer",
+      "name": "writerForAppendable"
+     }
+    ],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "TypeInfoCollection.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "TypeInfoCollection",
+    "methods": [
+     {
+      "params": [],
+      "type": "Type",
+      "name": "getElementType"
+     }
+    ],
+    "fields": [
+     {
+      "type": "ParameterizedType",
+      "name": "collectionType"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "JsonSerializer.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "JsonSerializer",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "T",
+        "name": "src"
+       },
+       {
+        "type": "Type",
+        "name": "typeOfSrc"
+       },
+       {
+        "type": "JsonSerializationContext",
+        "name": "context"
+       }
+      ],
+      "type": "JsonElement",
+      "name": "serialize"
+     }
+    ],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "LowerCaseNamingPolicy.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "LowerCaseNamingPolicy",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "target"
+       },
+       {
+        "type": "Type",
+        "name": "fieldType"
+       },
+       {
+        "type": "Collection",
+        "name": "annotations"
+       }
+      ],
+      "type": "String",
+      "name": "translateName"
+     }
+    ],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "VersionConstants.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "VersionConstants",
+    "methods": [],
+    "fields": [
+     {
+      "type": "double",
+      "name": "IGNORE_VERSIONS"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "package-info.java",
+  "package_name": "com.google.gson",
+  "classes": []
+ },
+ {
+  "filename": "JsonArray.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "JsonArray",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "JsonElement",
+        "name": "element"
+       }
+      ],
+      "type": null,
+      "name": "add"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonArray",
+        "name": "array"
+       }
+      ],
+      "type": null,
+      "name": "addAll"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "reverse"
+     },
+     {
+      "params": [],
+      "type": "int",
+      "name": "size"
+     },
+     {
+      "params": [],
+      "type": "Iterator",
+      "name": "iterator"
+     },
+     {
+      "params": [
+       {
+        "type": "int",
+        "name": "i"
+       }
+      ],
+      "type": "JsonElement",
+      "name": "get"
+     },
+     {
+      "params": [],
+      "type": "Number",
+      "name": "getAsNumber"
+     },
+     {
+      "params": [],
+      "type": "String",
+      "name": "getAsString"
+     },
+     {
+      "params": [],
+      "type": "double",
+      "name": "getAsDouble"
+     },
+     {
+      "params": [],
+      "type": "BigDecimal",
+      "name": "getAsBigDecimal"
+     },
+     {
+      "params": [],
+      "type": "BigInteger",
+      "name": "getAsBigInteger"
+     },
+     {
+      "params": [],
+      "type": "float",
+      "name": "getAsFloat"
+     },
+     {
+      "params": [],
+      "type": "long",
+      "name": "getAsLong"
+     },
+     {
+      "params": [],
+      "type": "int",
+      "name": "getAsInt"
+     },
+     {
+      "params": [],
+      "type": "byte",
+      "name": "getAsByte"
+     },
+     {
+      "params": [],
+      "type": "char",
+      "name": "getAsCharacter"
+     },
+     {
+      "params": [],
+      "type": "short",
+      "name": "getAsShort"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "getAsBoolean"
+     },
+     {
+      "params": [],
+      "type": "Object",
+      "name": "getAsObject"
+     },
+     {
+      "params": [
+       {
+        "type": "Appendable",
+        "name": "sb"
+       },
+       {
+        "type": "Escaper",
+        "name": "escaper"
+       }
+      ],
+      "type": null,
+      "name": "toString"
+     }
+    ],
+    "fields": [
+     {
+      "type": "List",
+      "name": "elements"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "CamelCaseSeparatorNamingPolicy.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "CamelCaseSeparatorNamingPolicy",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "target"
+       },
+       {
+        "type": "Type",
+        "name": "fieldType"
+       },
+       {
+        "type": "Collection",
+        "name": "annnotations"
+       }
+      ],
+      "type": "String",
+      "name": "translateName"
+     }
+    ],
+    "fields": [
+     {
+      "type": "String",
+      "name": "separatorString"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "TypeInfoArray.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "TypeInfoArray",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "actualType"
+       },
+       {
+        "type": "Class",
+        "name": "rawClass"
+       }
+      ],
+      "type": "Type",
+      "name": "extractSecondLevelType"
+     },
+     {
+      "params": [],
+      "type": "Type",
+      "name": "getSecondLevelType"
+     },
+     {
+      "params": [],
+      "type": "Class",
+      "name": "getComponentRawType"
+     }
+    ],
+    "fields": [
+     {
+      "type": "Class",
+      "name": "componentRawType"
+     },
+     {
+      "type": "Type",
+      "name": "secondLevel"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "Primitives.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "Primitives",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "Map",
+        "name": "forward"
+       },
+       {
+        "type": "Map",
+        "name": "backward"
+       },
+       {
+        "type": "Class",
+        "name": "key"
+       },
+       {
+        "type": "Class",
+        "name": "value"
+       }
+      ],
+      "type": null,
+      "name": "add"
+     },
+     {
+      "params": [
+       {
+        "type": "Class",
+        "name": "type"
+       }
+      ],
+      "type": "boolean",
+      "name": "isWrapperType"
+     },
+     {
+      "params": [
+       {
+        "type": "Class",
+        "name": "type"
+       }
+      ],
+      "type": "Class",
+      "name": "checkNotNull"
+     },
+     {
+      "params": [
+       {
+        "type": "Class",
+        "name": "type"
+       }
+      ],
+      "type": "Class",
+      "name": "wrap"
+     },
+     {
+      "params": [
+       {
+        "type": "Class",
+        "name": "type"
+       }
+      ],
+      "type": "Class",
+      "name": "unwrap"
+     }
+    ],
+    "fields": [
+     {
+      "type": "Map",
+      "name": "PRIMITIVE_TO_WRAPPER_TYPE"
+     },
+     {
+      "type": "Map",
+      "name": "WRAPPER_TO_PRIMITIVE_TYPE"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "ParameterizedTypeImpl.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "ParameterizedTypeImpl",
+    "methods": [
+     {
+      "params": [],
+      "type": "Type",
+      "name": "getRawType"
+     },
+     {
+      "params": [],
+      "type": "Type",
+      "name": "getActualTypeArguments"
+     },
+     {
+      "params": [],
+      "type": "Type",
+      "name": "getOwnerType"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "o"
+       }
+      ],
+      "type": "boolean",
+      "name": "equals"
+     },
+     {
+      "params": [],
+      "type": "int",
+      "name": "hashCode"
+     }
+    ],
+    "fields": [
+     {
+      "type": "Type",
+      "name": "rawType"
+     },
+     {
+      "type": "Type",
+      "name": "actualTypeArguments"
+     },
+     {
+      "type": "Type",
+      "name": "owner"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "ObjectNavigator.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "ObjectNavigator",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "Visitor",
+        "name": "visitor"
+       }
+      ],
+      "type": null,
+      "name": "accept"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "objectToVisit"
+       }
+      ],
+      "type": "boolean",
+      "name": "isPrimitiveOrString"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "obj"
+       },
+       {
+        "type": "Class",
+        "name": "clazz"
+       },
+       {
+        "type": "Visitor",
+        "name": "visitor"
+       }
+      ],
+      "type": null,
+      "name": "navigateClassFields"
+     }
+    ],
+    "fields": [
+     {
+      "type": "ExclusionStrategy",
+      "name": "exclusionStrategy"
+     },
+     {
+      "type": "ObjectTypePair",
+      "name": "objTypePair"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "TypeInfoFactory.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "TypeInfoFactory",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "type"
+       }
+      ],
+      "type": "TypeInfoArray",
+      "name": "getTypeInfoForArray"
+     },
+     {
+      "params": [
+       {
+        "type": "Field",
+        "name": "f"
+       },
+       {
+        "type": "Type",
+        "name": "typeDefiningF"
+       }
+      ],
+      "type": "TypeInfo",
+      "name": "getTypeInfoForField"
+     },
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "typeToEvaluate"
+       },
+       {
+        "type": "Type",
+        "name": "parentType"
+       },
+       {
+        "type": "Class",
+        "name": "rawParentClass"
+       }
+      ],
+      "type": "Type",
+      "name": "getActualType"
+     },
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "actualTypeArguments"
+       },
+       {
+        "type": "Type",
+        "name": "parentType"
+       },
+       {
+        "type": "Class",
+        "name": "rawParentClass"
+       }
+      ],
+      "type": "Type",
+      "name": "extractRealTypes"
+     },
+     {
+      "params": [
+       {
+        "type": "TypeVariable",
+        "name": "types"
+       },
+       {
+        "type": "TypeVariable",
+        "name": "type"
+       }
+      ],
+      "type": "int",
+      "name": "getIndex"
+     }
+    ],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "JsonDeserializationContext.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "JsonDeserializationContext",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "JsonElement",
+        "name": "json"
+       },
+       {
+        "type": "Type",
+        "name": "typeOfT"
+       }
+      ],
+      "type": "T",
+      "name": "deserialize"
+     }
+    ],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "JsonSerializationContextDefault.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "JsonSerializationContextDefault",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "src"
+       }
+      ],
+      "type": "JsonElement",
+      "name": "serialize"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "src"
+       },
+       {
+        "type": "Type",
+        "name": "typeOfSrc"
+       }
+      ],
+      "type": "JsonElement",
+      "name": "serialize"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "src"
+       },
+       {
+        "type": "Type",
+        "name": "typeOfSrc"
+       },
+       {
+        "type": "boolean",
+        "name": "preserveType"
+       }
+      ],
+      "type": "JsonElement",
+      "name": "serialize"
+     }
+    ],
+    "fields": [
+     {
+      "type": "ObjectNavigatorFactory",
+      "name": "factory"
+     },
+     {
+      "type": "ParameterizedTypeHandlerMap",
+      "name": "serializers"
+     },
+     {
+      "type": "boolean",
+      "name": "serializeNulls"
+     },
+     {
+      "type": "MemoryRefStack",
+      "name": "ancestors"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "DelegatingJsonElementVisitor.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "DelegatingJsonElementVisitor",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "JsonArray",
+        "name": "array"
+       }
+      ],
+      "type": null,
+      "name": "endArray"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonObject",
+        "name": "object"
+       }
+      ],
+      "type": null,
+      "name": "endObject"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonArray",
+        "name": "array"
+       }
+      ],
+      "type": null,
+      "name": "startArray"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonObject",
+        "name": "object"
+       }
+      ],
+      "type": null,
+      "name": "startObject"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonArray",
+        "name": "parent"
+       },
+       {
+        "type": "JsonPrimitive",
+        "name": "member"
+       },
+       {
+        "type": "boolean",
+        "name": "isFirst"
+       }
+      ],
+      "type": null,
+      "name": "visitArrayMember"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonArray",
+        "name": "parent"
+       },
+       {
+        "type": "JsonArray",
+        "name": "member"
+       },
+       {
+        "type": "boolean",
+        "name": "isFirst"
+       }
+      ],
+      "type": null,
+      "name": "visitArrayMember"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonArray",
+        "name": "parent"
+       },
+       {
+        "type": "JsonObject",
+        "name": "member"
+       },
+       {
+        "type": "boolean",
+        "name": "isFirst"
+       }
+      ],
+      "type": null,
+      "name": "visitArrayMember"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonObject",
+        "name": "parent"
+       },
+       {
+        "type": "String",
+        "name": "memberName"
+       },
+       {
+        "type": "JsonPrimitive",
+        "name": "member"
+       },
+       {
+        "type": "boolean",
+        "name": "isFirst"
+       }
+      ],
+      "type": null,
+      "name": "visitObjectMember"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonObject",
+        "name": "parent"
+       },
+       {
+        "type": "String",
+        "name": "memberName"
+       },
+       {
+        "type": "JsonArray",
+        "name": "member"
+       },
+       {
+        "type": "boolean",
+        "name": "isFirst"
+       }
+      ],
+      "type": null,
+      "name": "visitObjectMember"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonObject",
+        "name": "parent"
+       },
+       {
+        "type": "String",
+        "name": "memberName"
+       },
+       {
+        "type": "JsonObject",
+        "name": "member"
+       },
+       {
+        "type": "boolean",
+        "name": "isFirst"
+       }
+      ],
+      "type": null,
+      "name": "visitObjectMember"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonObject",
+        "name": "parent"
+       },
+       {
+        "type": "String",
+        "name": "memberName"
+       },
+       {
+        "type": "boolean",
+        "name": "isFirst"
+       }
+      ],
+      "type": null,
+      "name": "visitNullObjectMember"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonPrimitive",
+        "name": "primitive"
+       }
+      ],
+      "type": null,
+      "name": "visitPrimitive"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "visitNull"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonArray",
+        "name": "parent"
+       },
+       {
+        "type": "boolean",
+        "name": "isFirst"
+       }
+      ],
+      "type": null,
+      "name": "visitNullArrayMember"
+     }
+    ],
+    "fields": [
+     {
+      "type": "JsonElementVisitor",
+      "name": "delegate"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "Preconditions.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "Preconditions",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "obj"
+       }
+      ],
+      "type": null,
+      "name": "checkNotNull"
+     },
+     {
+      "params": [
+       {
+        "type": "boolean",
+        "name": "condition"
+       }
+      ],
+      "type": null,
+      "name": "checkArgument"
+     },
+     {
+      "params": [
+       {
+        "type": "boolean",
+        "name": "condition"
+       }
+      ],
+      "type": null,
+      "name": "checkState"
+     }
+    ],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "FieldNamingStrategy2Adapter.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "FieldNamingStrategy2Adapter",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "FieldAttributes",
+        "name": "f"
+       }
+      ],
+      "type": "String",
+      "name": "translateName"
+     }
+    ],
+    "fields": [
+     {
+      "type": "FieldNamingStrategy",
+      "name": "adaptee"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "CircularReferenceException.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "CircularReferenceException",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "FieldAttributes",
+        "name": "offendingField"
+       }
+      ],
+      "type": "IllegalStateException",
+      "name": "createDetailedException"
+     }
+    ],
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "Object",
+      "name": "offendingNode"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "JsonIOException.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "JsonIOException",
+    "methods": [],
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "JsonParseException.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "JsonParseException",
+    "methods": [],
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "SyntheticFieldExclusionStrategy.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "SyntheticFieldExclusionStrategy",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "Class",
+        "name": "clazz"
+       }
+      ],
+      "type": "boolean",
+      "name": "shouldSkipClass"
+     },
+     {
+      "params": [
+       {
+        "type": "FieldAttributes",
+        "name": "f"
+       }
+      ],
+      "type": "boolean",
+      "name": "shouldSkipField"
+     }
+    ],
+    "fields": [
+     {
+      "type": "boolean",
+      "name": "skipSyntheticFields"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "JsonSerializationVisitor.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "JsonSerializationVisitor",
+    "methods": [
+     {
+      "params": [],
+      "type": "Object",
+      "name": "getTarget"
+     },
+     {
+      "params": [
+       {
+        "type": "ObjectTypePair",
+        "name": "node"
+       }
+      ],
+      "type": null,
+      "name": "start"
+     },
+     {
+      "params": [
+       {
+        "type": "ObjectTypePair",
+        "name": "node"
+       }
+      ],
+      "type": null,
+      "name": "end"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "node"
+       }
+      ],
+      "type": null,
+      "name": "startVisitingObject"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "array"
+       },
+       {
+        "type": "Type",
+        "name": "arrayType"
+       }
+      ],
+      "type": null,
+      "name": "visitArray"
+     },
+     {
+      "params": [
+       {
+        "type": "FieldAttributes",
+        "name": "f"
+       },
+       {
+        "type": "Type",
+        "name": "typeOfF"
+       },
+       {
+        "type": "Object",
+        "name": "obj"
+       }
+      ],
+      "type": null,
+      "name": "visitArrayField"
+     },
+     {
+      "params": [
+       {
+        "type": "FieldAttributes",
+        "name": "f"
+       },
+       {
+        "type": "Type",
+        "name": "typeOfF"
+       },
+       {
+        "type": "Object",
+        "name": "obj"
+       }
+      ],
+      "type": null,
+      "name": "visitObjectField"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "obj"
+       }
+      ],
+      "type": null,
+      "name": "visitPrimitive"
+     },
+     {
+      "params": [
+       {
+        "type": "FieldAttributes",
+        "name": "f"
+       },
+       {
+        "type": "ObjectTypePair",
+        "name": "fieldValuePair"
+       }
+      ],
+      "type": null,
+      "name": "addAsChildOfObject"
+     },
+     {
+      "params": [
+       {
+        "type": "FieldAttributes",
+        "name": "f"
+       },
+       {
+        "type": "JsonElement",
+        "name": "childElement"
+       }
+      ],
+      "type": null,
+      "name": "addChildAsElement"
+     },
+     {
+      "params": [
+       {
+        "type": "ObjectTypePair",
+        "name": "elementTypePair"
+       }
+      ],
+      "type": null,
+      "name": "addAsArrayElement"
+     },
+     {
+      "params": [
+       {
+        "type": "ObjectTypePair",
+        "name": "fieldValueTypePair"
+       }
+      ],
+      "type": "JsonElement",
+      "name": "getJsonElementForChild"
+     },
+     {
+      "params": [
+       {
+        "type": "ObjectTypePair",
+        "name": "objTypePair"
+       }
+      ],
+      "type": "boolean",
+      "name": "visitUsingCustomHandler"
+     },
+     {
+      "params": [
+       {
+        "type": "ObjectTypePair",
+        "name": "objTypePair"
+       }
+      ],
+      "type": "JsonElement",
+      "name": "findAndInvokeCustomSerializer"
+     },
+     {
+      "params": [
+       {
+        "type": "FieldAttributes",
+        "name": "f"
+       },
+       {
+        "type": "Type",
+        "name": "declaredTypeOfField"
+       },
+       {
+        "type": "Object",
+        "name": "parent"
+       }
+      ],
+      "type": "boolean",
+      "name": "visitFieldUsingCustomHandler"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonElement",
+        "name": "newRoot"
+       }
+      ],
+      "type": null,
+      "name": "assignToRoot"
+     },
+     {
+      "params": [
+       {
+        "type": "FieldAttributes",
+        "name": "f"
+       },
+       {
+        "type": "Object",
+        "name": "obj"
+       }
+      ],
+      "type": "boolean",
+      "name": "isFieldNull"
+     },
+     {
+      "params": [
+       {
+        "type": "FieldAttributes",
+        "name": "f"
+       },
+       {
+        "type": "Object",
+        "name": "obj"
+       }
+      ],
+      "type": "Object",
+      "name": "getFieldValue"
+     },
+     {
+      "params": [],
+      "type": "JsonElement",
+      "name": "getJsonElement"
+     }
+    ],
+    "fields": [
+     {
+      "type": "ObjectNavigatorFactory",
+      "name": "factory"
+     },
+     {
+      "type": "ParameterizedTypeHandlerMap",
+      "name": "serializers"
+     },
+     {
+      "type": "boolean",
+      "name": "serializeNulls"
+     },
+     {
+      "type": "JsonSerializationContext",
+      "name": "context"
+     },
+     {
+      "type": "MemoryRefStack",
+      "name": "ancestors"
+     },
+     {
+      "type": "JsonElement",
+      "name": "root"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "JsonParser.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "JsonParser",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "json"
+       }
+      ],
+      "type": "JsonElement",
+      "name": "parse"
+     },
+     {
+      "params": [
+       {
+        "type": "Reader",
+        "name": "json"
+       }
+      ],
+      "type": "JsonElement",
+      "name": "parse"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonReader",
+        "name": "json"
+       }
+      ],
+      "type": "JsonElement",
+      "name": "parse"
+     }
+    ],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "ObjectConstructor.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "ObjectConstructor",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "typeOfT"
+       }
+      ],
+      "type": "T",
+      "name": "construct"
+     },
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "typeOfArrayElements"
+       },
+       {
+        "type": "int",
+        "name": "length"
+       }
+      ],
+      "type": "Object",
+      "name": "constructArray"
+     }
+    ],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "JsonDeserializer.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "JsonDeserializer",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "JsonElement",
+        "name": "json"
+       },
+       {
+        "type": "Type",
+        "name": "typeOfT"
+       },
+       {
+        "type": "JsonDeserializationContext",
+        "name": "context"
+       }
+      ],
+      "type": "T",
+      "name": "deserialize"
+     }
+    ],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "UpperCamelCaseSeparatorNamingPolicy.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "UpperCamelCaseSeparatorNamingPolicy",
+    "methods": [],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "GenericArrayTypeImpl.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "GenericArrayTypeImpl",
+    "methods": [
+     {
+      "params": [],
+      "type": "Type",
+      "name": "getGenericComponentType"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "o"
+       }
+      ],
+      "type": "boolean",
+      "name": "equals"
+     },
+     {
+      "params": [],
+      "type": "int",
+      "name": "hashCode"
+     }
+    ],
+    "fields": [
+     {
+      "type": "Type",
+      "name": "genericComponentType"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "ModifierBasedExclusionStrategy.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "ModifierBasedExclusionStrategy",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "FieldAttributes",
+        "name": "f"
+       }
+      ],
+      "type": "boolean",
+      "name": "shouldSkipField"
+     },
+     {
+      "params": [
+       {
+        "type": "Class",
+        "name": "clazz"
+       }
+      ],
+      "type": "boolean",
+      "name": "shouldSkipClass"
+     }
+    ],
+    "fields": [
+     {
+      "type": "Collection",
+      "name": "modifiers"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "GsonBuilder.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "GsonBuilder",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "double",
+        "name": "ignoreVersionsAfter"
+       }
+      ],
+      "type": "GsonBuilder",
+      "name": "setVersion"
+     },
+     {
+      "params": [
+       {
+        "type": "int",
+        "name": "modifiers"
+       }
+      ],
+      "type": "GsonBuilder",
+      "name": "excludeFieldsWithModifiers"
+     },
+     {
+      "params": [],
+      "type": "GsonBuilder",
+      "name": "generateNonExecutableJson"
+     },
+     {
+      "params": [],
+      "type": "GsonBuilder",
+      "name": "excludeFieldsWithoutExposeAnnotation"
+     },
+     {
+      "params": [],
+      "type": "GsonBuilder",
+      "name": "serializeNulls"
+     },
+     {
+      "params": [],
+      "type": "GsonBuilder",
+      "name": "disableInnerClassSerialization"
+     },
+     {
+      "params": [
+       {
+        "type": "LongSerializationPolicy",
+        "name": "serializationPolicy"
+       }
+      ],
+      "type": "GsonBuilder",
+      "name": "setLongSerializationPolicy"
+     },
+     {
+      "params": [
+       {
+        "type": "FieldNamingPolicy",
+        "name": "namingConvention"
+       }
+      ],
+      "type": "GsonBuilder",
+      "name": "setFieldNamingPolicy"
+     },
+     {
+      "params": [
+       {
+        "type": "FieldNamingStrategy",
+        "name": "fieldNamingStrategy"
+       }
+      ],
+      "type": "GsonBuilder",
+      "name": "setFieldNamingStrategy"
+     },
+     {
+      "params": [
+       {
+        "type": "FieldNamingStrategy2",
+        "name": "fieldNamingStrategy"
+       }
+      ],
+      "type": "GsonBuilder",
+      "name": "setFieldNamingStrategy"
+     },
+     {
+      "params": [
+       {
+        "type": "ExclusionStrategy",
+        "name": "strategies"
+       }
+      ],
+      "type": "GsonBuilder",
+      "name": "setExclusionStrategies"
+     },
+     {
+      "params": [],
+      "type": "GsonBuilder",
+      "name": "setPrettyPrinting"
+     },
+     {
+      "params": [],
+      "type": "GsonBuilder",
+      "name": "disableHtmlEscaping"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "pattern"
+       }
+      ],
+      "type": "GsonBuilder",
+      "name": "setDateFormat"
+     },
+     {
+      "params": [
+       {
+        "type": "int",
+        "name": "style"
+       }
+      ],
+      "type": "GsonBuilder",
+      "name": "setDateFormat"
+     },
+     {
+      "params": [
+       {
+        "type": "int",
+        "name": "dateStyle"
+       },
+       {
+        "type": "int",
+        "name": "timeStyle"
+       }
+      ],
+      "type": "GsonBuilder",
+      "name": "setDateFormat"
+     },
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "type"
+       },
+       {
+        "type": "Object",
+        "name": "typeAdapter"
+       }
+      ],
+      "type": "GsonBuilder",
+      "name": "registerTypeAdapter"
+     },
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "typeOfT"
+       },
+       {
+        "type": "InstanceCreator",
+        "name": "instanceCreator"
+       }
+      ],
+      "type": "GsonBuilder",
+      "name": "registerInstanceCreator"
+     },
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "typeOfT"
+       },
+       {
+        "type": "JsonSerializer",
+        "name": "serializer"
+       }
+      ],
+      "type": "GsonBuilder",
+      "name": "registerSerializer"
+     },
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "typeOfT"
+       },
+       {
+        "type": "JsonDeserializer",
+        "name": "deserializer"
+       }
+      ],
+      "type": "GsonBuilder",
+      "name": "registerDeserializer"
+     },
+     {
+      "params": [
+       {
+        "type": "Class",
+        "name": "baseType"
+       },
+       {
+        "type": "Object",
+        "name": "typeAdapter"
+       }
+      ],
+      "type": "GsonBuilder",
+      "name": "registerTypeHierarchyAdapter"
+     },
+     {
+      "params": [
+       {
+        "type": "Class",
+        "name": "classOfT"
+       },
+       {
+        "type": "InstanceCreator",
+        "name": "instanceCreator"
+       }
+      ],
+      "type": "GsonBuilder",
+      "name": "registerInstanceCreatorForTypeHierarchy"
+     },
+     {
+      "params": [
+       {
+        "type": "Class",
+        "name": "classOfT"
+       },
+       {
+        "type": "JsonSerializer",
+        "name": "serializer"
+       }
+      ],
+      "type": "GsonBuilder",
+      "name": "registerSerializerForTypeHierarchy"
+     },
+     {
+      "params": [
+       {
+        "type": "Class",
+        "name": "classOfT"
+       },
+       {
+        "type": "JsonDeserializer",
+        "name": "deserializer"
+       }
+      ],
+      "type": "GsonBuilder",
+      "name": "registerDeserializerForTypeHierarchy"
+     },
+     {
+      "params": [],
+      "type": "GsonBuilder",
+      "name": "serializeSpecialFloatingPointValues"
+     },
+     {
+      "params": [],
+      "type": "Gson",
+      "name": "create"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "datePattern"
+       },
+       {
+        "type": "int",
+        "name": "dateStyle"
+       },
+       {
+        "type": "int",
+        "name": "timeStyle"
+       },
+       {
+        "type": "ParameterizedTypeHandlerMap",
+        "name": "serializers"
+       },
+       {
+        "type": "ParameterizedTypeHandlerMap",
+        "name": "deserializers"
+       }
+      ],
+      "type": null,
+      "name": "addTypeAdaptersForDate"
+     }
+    ],
+    "fields": [
+     {
+      "type": "InnerClassExclusionStrategy",
+      "name": "innerClassExclusionStrategy"
+     },
+     {
+      "type": "ExposeAnnotationSerializationExclusionStrategy",
+      "name": "exposeAnnotationSerializationExclusionStrategy"
+     },
+     {
+      "type": "ExposeAnnotationDeserializationExclusionStrategy",
+      "name": "exposeAnnotationDeserializationExclusionStrategy"
+     },
+     {
+      "type": "Collection",
+      "name": "exclusionStrategies"
+     },
+     {
+      "type": "double",
+      "name": "ignoreVersionsAfter"
+     },
+     {
+      "type": "ModifierBasedExclusionStrategy",
+      "name": "modifierBasedExclusionStrategy"
+     },
+     {
+      "type": "boolean",
+      "name": "serializeInnerClasses"
+     },
+     {
+      "type": "boolean",
+      "name": "excludeFieldsWithoutExposeAnnotation"
+     },
+     {
+      "type": "LongSerializationPolicy",
+      "name": "longSerializationPolicy"
+     },
+     {
+      "type": "FieldNamingStrategy2",
+      "name": "fieldNamingPolicy"
+     },
+     {
+      "type": "ParameterizedTypeHandlerMap",
+      "name": "instanceCreators"
+     },
+     {
+      "type": "ParameterizedTypeHandlerMap",
+      "name": "serializers"
+     },
+     {
+      "type": "ParameterizedTypeHandlerMap",
+      "name": "deserializers"
+     },
+     {
+      "type": "boolean",
+      "name": "serializeNulls"
+     },
+     {
+      "type": "String",
+      "name": "datePattern"
+     },
+     {
+      "type": "int",
+      "name": "dateStyle"
+     },
+     {
+      "type": "int",
+      "name": "timeStyle"
+     },
+     {
+      "type": "boolean",
+      "name": "serializeSpecialFloatingPointValues"
+     },
+     {
+      "type": "boolean",
+      "name": "escapeHtmlChars"
+     },
+     {
+      "type": "boolean",
+      "name": "prettyPrinting"
+     },
+     {
+      "type": "boolean",
+      "name": "generateNonExecutableJson"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "DefaultTypeAdapters.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "DefaultTypeAdapters",
+    "methods": [
+     {
+      "params": [],
+      "type": "ParameterizedTypeHandlerMap",
+      "name": "createDefaultSerializers"
+     },
+     {
+      "params": [],
+      "type": "ParameterizedTypeHandlerMap",
+      "name": "createDefaultDeserializers"
+     },
+     {
+      "params": [],
+      "type": "ParameterizedTypeHandlerMap",
+      "name": "createDefaultInstanceCreators"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonDeserializer",
+        "name": "deserializer"
+       }
+      ],
+      "type": "JsonDeserializer",
+      "name": "wrapDeserializer"
+     },
+     {
+      "params": [],
+      "type": "ParameterizedTypeHandlerMap",
+      "name": "getDefaultSerializers"
+     },
+     {
+      "params": [
+       {
+        "type": "boolean",
+        "name": "serializeSpecialFloatingPointValues"
+       },
+       {
+        "type": "LongSerializationPolicy",
+        "name": "longSerializationPolicy"
+       }
+      ],
+      "type": "ParameterizedTypeHandlerMap",
+      "name": "getDefaultSerializers"
+     },
+     {
+      "params": [],
+      "type": "ParameterizedTypeHandlerMap",
+      "name": "getDefaultDeserializers"
+     },
+     {
+      "params": [],
+      "type": "ParameterizedTypeHandlerMap",
+      "name": "getDefaultInstanceCreators"
+     }
+    ],
+    "fields": [
+     {
+      "type": "DefaultDateTypeAdapter",
+      "name": "DATE_TYPE_ADAPTER"
+     },
+     {
+      "type": "DefaultJavaSqlDateTypeAdapter",
+      "name": "JAVA_SQL_DATE_TYPE_ADAPTER"
+     },
+     {
+      "type": "DefaultTimeTypeAdapter",
+      "name": "TIME_TYPE_ADAPTER"
+     },
+     {
+      "type": "DefaultTimestampDeserializer",
+      "name": "TIMESTAMP_DESERIALIZER"
+     },
+     {
+      "type": "EnumTypeAdapter",
+      "name": "ENUM_TYPE_ADAPTER"
+     },
+     {
+      "type": "UrlTypeAdapter",
+      "name": "URL_TYPE_ADAPTER"
+     },
+     {
+      "type": "UriTypeAdapter",
+      "name": "URI_TYPE_ADAPTER"
+     },
+     {
+      "type": "UuidTypeAdapter",
+      "name": "UUUID_TYPE_ADAPTER"
+     },
+     {
+      "type": "LocaleTypeAdapter",
+      "name": "LOCALE_TYPE_ADAPTER"
+     },
+     {
+      "type": "CollectionTypeAdapter",
+      "name": "COLLECTION_TYPE_ADAPTER"
+     },
+     {
+      "type": "MapTypeAdapter",
+      "name": "MAP_TYPE_ADAPTER"
+     },
+     {
+      "type": "BigDecimalTypeAdapter",
+      "name": "BIG_DECIMAL_TYPE_ADAPTER"
+     },
+     {
+      "type": "BigIntegerTypeAdapter",
+      "name": "BIG_INTEGER_TYPE_ADAPTER"
+     },
+     {
+      "type": "BooleanTypeAdapter",
+      "name": "BOOLEAN_TYPE_ADAPTER"
+     },
+     {
+      "type": "ByteTypeAdapter",
+      "name": "BYTE_TYPE_ADAPTER"
+     },
+     {
+      "type": "CharacterTypeAdapter",
+      "name": "CHARACTER_TYPE_ADAPTER"
+     },
+     {
+      "type": "DoubleDeserializer",
+      "name": "DOUBLE_TYPE_ADAPTER"
+     },
+     {
+      "type": "FloatDeserializer",
+      "name": "FLOAT_TYPE_ADAPTER"
+     },
+     {
+      "type": "IntegerTypeAdapter",
+      "name": "INTEGER_TYPE_ADAPTER"
+     },
+     {
+      "type": "LongDeserializer",
+      "name": "LONG_DESERIALIZER"
+     },
+     {
+      "type": "NumberTypeAdapter",
+      "name": "NUMBER_TYPE_ADAPTER"
+     },
+     {
+      "type": "ShortTypeAdapter",
+      "name": "SHORT_TYPE_ADAPTER"
+     },
+     {
+      "type": "StringTypeAdapter",
+      "name": "STRING_TYPE_ADAPTER"
+     },
+     {
+      "type": "PropertiesCreator",
+      "name": "PROPERTIES_CREATOR"
+     },
+     {
+      "type": "TreeSetCreator",
+      "name": "TREE_SET_CREATOR"
+     },
+     {
+      "type": "HashSetCreator",
+      "name": "HASH_SET_CREATOR"
+     },
+     {
+      "type": "GregorianCalendarTypeAdapter",
+      "name": "GREGORIAN_CALENDAR_TYPE_ADAPTER"
+     },
+     {
+      "type": "ParameterizedTypeHandlerMap",
+      "name": "DEFAULT_SERIALIZERS"
+     },
+     {
+      "type": "ParameterizedTypeHandlerMap",
+      "name": "DEFAULT_DESERIALIZERS"
+     },
+     {
+      "type": "ParameterizedTypeHandlerMap",
+      "name": "DEFAULT_INSTANCE_CREATORS"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "AnonymousAndLocalClassExclusionStrategy.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "AnonymousAndLocalClassExclusionStrategy",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "FieldAttributes",
+        "name": "f"
+       }
+      ],
+      "type": "boolean",
+      "name": "shouldSkipField"
+     },
+     {
+      "params": [
+       {
+        "type": "Class",
+        "name": "clazz"
+       }
+      ],
+      "type": "boolean",
+      "name": "shouldSkipClass"
+     },
+     {
+      "params": [
+       {
+        "type": "Class",
+        "name": "clazz"
+       }
+      ],
+      "type": "boolean",
+      "name": "isAnonymousOrLocal"
+     }
+    ],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "JsonNull.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "JsonNull",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "Appendable",
+        "name": "sb"
+       },
+       {
+        "type": "Escaper",
+        "name": "escaper"
+       }
+      ],
+      "type": null,
+      "name": "toString"
+     },
+     {
+      "params": [],
+      "type": "int",
+      "name": "hashCode"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "other"
+       }
+      ],
+      "type": "boolean",
+      "name": "equals"
+     },
+     {
+      "params": [],
+      "type": "JsonNull",
+      "name": "createJsonNull"
+     }
+    ],
+    "fields": [
+     {
+      "type": "JsonNull",
+      "name": "INSTANCE"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "JsonSerializationContext.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "JsonSerializationContext",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "src"
+       }
+      ],
+      "type": "JsonElement",
+      "name": "serialize"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "src"
+       },
+       {
+        "type": "Type",
+        "name": "typeOfSrc"
+       }
+      ],
+      "type": "JsonElement",
+      "name": "serialize"
+     }
+    ],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "VersionExclusionStrategy.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "VersionExclusionStrategy",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "FieldAttributes",
+        "name": "f"
+       }
+      ],
+      "type": "boolean",
+      "name": "shouldSkipField"
+     },
+     {
+      "params": [
+       {
+        "type": "Class",
+        "name": "clazz"
+       }
+      ],
+      "type": "boolean",
+      "name": "shouldSkipClass"
+     },
+     {
+      "params": [
+       {
+        "type": "Since",
+        "name": "since"
+       },
+       {
+        "type": "Until",
+        "name": "until"
+       }
+      ],
+      "type": "boolean",
+      "name": "isValidVersion"
+     },
+     {
+      "params": [
+       {
+        "type": "Since",
+        "name": "annotation"
+       }
+      ],
+      "type": "boolean",
+      "name": "isValidSince"
+     },
+     {
+      "params": [
+       {
+        "type": "Until",
+        "name": "annotation"
+       }
+      ],
+      "type": "boolean",
+      "name": "isValidUntil"
+     }
+    ],
+    "fields": [
+     {
+      "type": "double",
+      "name": "version"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "ObjectTypePair.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "ObjectTypePair",
+    "methods": [
+     {
+      "params": [],
+      "type": "Object",
+      "name": "getObject"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "obj"
+       }
+      ],
+      "type": null,
+      "name": "setObject"
+     },
+     {
+      "params": [],
+      "type": "Type",
+      "name": "getType"
+     },
+     {
+      "params": [],
+      "type": "String",
+      "name": "toString"
+     },
+     {
+      "params": [
+       {
+        "type": "ParameterizedTypeHandlerMap",
+        "name": "handlers"
+       }
+      ],
+      "type": "Pair",
+      "name": "getMatchingHandler"
+     },
+     {
+      "params": [],
+      "type": "ObjectTypePair",
+      "name": "toMoreSpecificType"
+     },
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "type"
+       },
+       {
+        "type": "Class",
+        "name": "actualClass"
+       }
+      ],
+      "type": "Type",
+      "name": "getActualTypeIfMoreSpecific"
+     },
+     {
+      "params": [],
+      "type": "int",
+      "name": "hashCode"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "obj"
+       }
+      ],
+      "type": "boolean",
+      "name": "equals"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "isPreserveType"
+     }
+    ],
+    "fields": [
+     {
+      "type": "Object",
+      "name": "obj"
+     },
+     {
+      "type": "Type",
+      "name": "type"
+     },
+     {
+      "type": "boolean",
+      "name": "preserveType"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "TypeInfoMap.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "TypeInfoMap",
+    "methods": [
+     {
+      "params": [],
+      "type": "Type",
+      "name": "getKeyType"
+     },
+     {
+      "params": [],
+      "type": "Type",
+      "name": "getValueType"
+     }
+    ],
+    "fields": [
+     {
+      "type": "Type",
+      "name": "keyType"
+     },
+     {
+      "type": "Type",
+      "name": "valueType"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "JsonArrayDeserializationVisitor.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "JsonArrayDeserializationVisitor",
+    "methods": [
+     {
+      "params": [],
+      "type": "T",
+      "name": "constructTarget"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "array"
+       },
+       {
+        "type": "Type",
+        "name": "arrayType"
+       }
+      ],
+      "type": null,
+      "name": "visitArray"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "node"
+       }
+      ],
+      "type": null,
+      "name": "startVisitingObject"
+     },
+     {
+      "params": [
+       {
+        "type": "FieldAttributes",
+        "name": "f"
+       },
+       {
+        "type": "Type",
+        "name": "typeOfF"
+       },
+       {
+        "type": "Object",
+        "name": "obj"
+       }
+      ],
+      "type": null,
+      "name": "visitArrayField"
+     },
+     {
+      "params": [
+       {
+        "type": "FieldAttributes",
+        "name": "f"
+       },
+       {
+        "type": "Type",
+        "name": "typeOfF"
+       },
+       {
+        "type": "Object",
+        "name": "obj"
+       }
+      ],
+      "type": null,
+      "name": "visitObjectField"
+     },
+     {
+      "params": [
+       {
+        "type": "FieldAttributes",
+        "name": "f"
+       },
+       {
+        "type": "Type",
+        "name": "actualTypeOfField"
+       },
+       {
+        "type": "Object",
+        "name": "parent"
+       }
+      ],
+      "type": "boolean",
+      "name": "visitFieldUsingCustomHandler"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "primitive"
+       }
+      ],
+      "type": null,
+      "name": "visitPrimitive"
+     }
+    ],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "JsonPrimitive.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "JsonPrimitive",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "primitive"
+       }
+      ],
+      "type": null,
+      "name": "setValue"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "isBoolean"
+     },
+     {
+      "params": [],
+      "type": "Boolean",
+      "name": "getAsBooleanWrapper"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "getAsBoolean"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "isNumber"
+     },
+     {
+      "params": [],
+      "type": "Number",
+      "name": "getAsNumber"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "value"
+       }
+      ],
+      "type": "Number",
+      "name": "stringToNumber"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "isString"
+     },
+     {
+      "params": [],
+      "type": "String",
+      "name": "getAsString"
+     },
+     {
+      "params": [],
+      "type": "double",
+      "name": "getAsDouble"
+     },
+     {
+      "params": [],
+      "type": "BigDecimal",
+      "name": "getAsBigDecimal"
+     },
+     {
+      "params": [],
+      "type": "BigInteger",
+      "name": "getAsBigInteger"
+     },
+     {
+      "params": [],
+      "type": "float",
+      "name": "getAsFloat"
+     },
+     {
+      "params": [],
+      "type": "long",
+      "name": "getAsLong"
+     },
+     {
+      "params": [],
+      "type": "short",
+      "name": "getAsShort"
+     },
+     {
+      "params": [],
+      "type": "int",
+      "name": "getAsInt"
+     },
+     {
+      "params": [],
+      "type": "byte",
+      "name": "getAsByte"
+     },
+     {
+      "params": [],
+      "type": "char",
+      "name": "getAsCharacter"
+     },
+     {
+      "params": [],
+      "type": "Object",
+      "name": "getAsObject"
+     },
+     {
+      "params": [
+       {
+        "type": "Appendable",
+        "name": "sb"
+       },
+       {
+        "type": "Escaper",
+        "name": "escaper"
+       }
+      ],
+      "type": null,
+      "name": "toString"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "target"
+       }
+      ],
+      "type": "boolean",
+      "name": "isPrimitiveOrString"
+     },
+     {
+      "params": [],
+      "type": "int",
+      "name": "hashCode"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "obj"
+       }
+      ],
+      "type": "boolean",
+      "name": "equals"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonPrimitive",
+        "name": "primitive"
+       }
+      ],
+      "type": "boolean",
+      "name": "isIntegral"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonPrimitive",
+        "name": "primitive"
+       }
+      ],
+      "type": "boolean",
+      "name": "isFloatingPoint"
+     }
+    ],
+    "fields": [
+     {
+      "type": "Class",
+      "name": "PRIMITIVE_TYPES"
+     },
+     {
+      "type": "BigInteger",
+      "name": "INTEGER_MAX"
+     },
+     {
+      "type": "BigInteger",
+      "name": "LONG_MAX"
+     },
+     {
+      "type": "Object",
+      "name": "value"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "FieldNamingStrategy.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "FieldNamingStrategy",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "Field",
+        "name": "f"
+       }
+      ],
+      "type": "String",
+      "name": "translateName"
+     }
+    ],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "ExposeAnnotationSerializationExclusionStrategy.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "ExposeAnnotationSerializationExclusionStrategy",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "Class",
+        "name": "clazz"
+       }
+      ],
+      "type": "boolean",
+      "name": "shouldSkipClass"
+     },
+     {
+      "params": [
+       {
+        "type": "FieldAttributes",
+        "name": "f"
+       }
+      ],
+      "type": "boolean",
+      "name": "shouldSkipField"
+     }
+    ],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "Pair.java",
+  "package_name": "com.google.gson",
+  "classes": [
+   {
+    "name": "Pair",
+    "methods": [
+     {
+      "params": [],
+      "type": "int",
+      "name": "hashCode"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "o"
+       }
+      ],
+      "type": "boolean",
+      "name": "equals"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "a"
+       },
+       {
+        "type": "Object",
+        "name": "b"
+       }
+      ],
+      "type": "boolean",
+      "name": "equal"
+     },
+     {
+      "params": [],
+      "type": "String",
+      "name": "toString"
+     }
+    ],
+    "fields": [
+     {
+      "type": "FIRST",
+      "name": "first"
+     },
+     {
+      "type": "SECOND",
+      "name": "second"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "JsonToken.java",
+  "package_name": "com.google.gson.stream",
+  "classes": [
+   {
+    "name": "JsonToken",
+    "methods": [],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "MalformedJsonException.java",
+  "package_name": "com.google.gson.stream",
+  "classes": [
+   {
+    "name": "MalformedJsonException",
+    "methods": [],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "JsonScope.java",
+  "package_name": "com.google.gson.stream",
+  "classes": [
+   {
+    "name": "JsonScope",
+    "methods": [],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "JsonWriter.java",
+  "package_name": "com.google.gson.stream",
+  "classes": [
+   {
+    "name": "JsonWriter",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "indent"
+       }
+      ],
+      "type": null,
+      "name": "setIndent"
+     },
+     {
+      "params": [
+       {
+        "type": "boolean",
+        "name": "lenient"
+       }
+      ],
+      "type": null,
+      "name": "setLenient"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "isLenient"
+     },
+     {
+      "params": [
+       {
+        "type": "boolean",
+        "name": "htmlSafe"
+       }
+      ],
+      "type": null,
+      "name": "setHtmlSafe"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "isHtmlSafe"
+     },
+     {
+      "params": [],
+      "type": "JsonWriter",
+      "name": "beginArray"
+     },
+     {
+      "params": [],
+      "type": "JsonWriter",
+      "name": "endArray"
+     },
+     {
+      "params": [],
+      "type": "JsonWriter",
+      "name": "beginObject"
+     },
+     {
+      "params": [],
+      "type": "JsonWriter",
+      "name": "endObject"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonScope",
+        "name": "empty"
+       },
+       {
+        "type": "String",
+        "name": "openBracket"
+       }
+      ],
+      "type": "JsonWriter",
+      "name": "open"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonScope",
+        "name": "empty"
+       },
+       {
+        "type": "JsonScope",
+        "name": "nonempty"
+       },
+       {
+        "type": "String",
+        "name": "closeBracket"
+       }
+      ],
+      "type": "JsonWriter",
+      "name": "close"
+     },
+     {
+      "params": [],
+      "type": "JsonScope",
+      "name": "peek"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonScope",
+        "name": "topOfStack"
+       }
+      ],
+      "type": null,
+      "name": "replaceTop"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "name"
+       }
+      ],
+      "type": "JsonWriter",
+      "name": "name"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "value"
+       }
+      ],
+      "type": "JsonWriter",
+      "name": "value"
+     },
+     {
+      "params": [],
+      "type": "JsonWriter",
+      "name": "nullValue"
+     },
+     {
+      "params": [
+       {
+        "type": "boolean",
+        "name": "value"
+       }
+      ],
+      "type": "JsonWriter",
+      "name": "value"
+     },
+     {
+      "params": [
+       {
+        "type": "double",
+        "name": "value"
+       }
+      ],
+      "type": "JsonWriter",
+      "name": "value"
+     },
+     {
+      "params": [
+       {
+        "type": "long",
+        "name": "value"
+       }
+      ],
+      "type": "JsonWriter",
+      "name": "value"
+     },
+     {
+      "params": [
+       {
+        "type": "Number",
+        "name": "value"
+       }
+      ],
+      "type": "JsonWriter",
+      "name": "value"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "flush"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "close"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "value"
+       }
+      ],
+      "type": null,
+      "name": "string"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "newline"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "beforeName"
+     },
+     {
+      "params": [
+       {
+        "type": "boolean",
+        "name": "root"
+       }
+      ],
+      "type": null,
+      "name": "beforeValue"
+     }
+    ],
+    "fields": [
+     {
+      "type": "Writer",
+      "name": "out"
+     },
+     {
+      "type": "List",
+      "name": "stack"
+     },
+     {
+      "type": "String",
+      "name": "indent"
+     },
+     {
+      "type": "String",
+      "name": "separator"
+     },
+     {
+      "type": "boolean",
+      "name": "lenient"
+     },
+     {
+      "type": "boolean",
+      "name": "htmlSafe"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "JsonReader.java",
+  "package_name": "com.google.gson.stream",
+  "classes": [
+   {
+    "name": "JsonReader",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "boolean",
+        "name": "lenient"
+       }
+      ],
+      "type": null,
+      "name": "setLenient"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "isLenient"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "beginArray"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "endArray"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "beginObject"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "endObject"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonToken",
+        "name": "expected"
+       }
+      ],
+      "type": null,
+      "name": "expect"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "hasNext"
+     },
+     {
+      "params": [],
+      "type": "JsonToken",
+      "name": "peek"
+     },
+     {
+      "params": [],
+      "type": "JsonToken",
+      "name": "quickPeek"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "consumeNonExecutePrefix"
+     },
+     {
+      "params": [],
+      "type": "JsonToken",
+      "name": "advance"
+     },
+     {
+      "params": [],
+      "type": "String",
+      "name": "nextName"
+     },
+     {
+      "params": [],
+      "type": "String",
+      "name": "nextString"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "nextBoolean"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "nextNull"
+     },
+     {
+      "params": [],
+      "type": "double",
+      "name": "nextDouble"
+     },
+     {
+      "params": [],
+      "type": "long",
+      "name": "nextLong"
+     },
+     {
+      "params": [],
+      "type": "int",
+      "name": "nextInt"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "close"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "skipValue"
+     },
+     {
+      "params": [],
+      "type": "JsonScope",
+      "name": "peekStack"
+     },
+     {
+      "params": [],
+      "type": "JsonScope",
+      "name": "pop"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonScope",
+        "name": "newTop"
+       }
+      ],
+      "type": null,
+      "name": "push"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonScope",
+        "name": "newTop"
+       }
+      ],
+      "type": null,
+      "name": "replaceTop"
+     },
+     {
+      "params": [
+       {
+        "type": "boolean",
+        "name": "firstElement"
+       }
+      ],
+      "type": "JsonToken",
+      "name": "nextInArray"
+     },
+     {
+      "params": [
+       {
+        "type": "boolean",
+        "name": "firstElement"
+       }
+      ],
+      "type": "JsonToken",
+      "name": "nextInObject"
+     },
+     {
+      "params": [],
+      "type": "JsonToken",
+      "name": "objectValue"
+     },
+     {
+      "params": [],
+      "type": "JsonToken",
+      "name": "nextValue"
+     },
+     {
+      "params": [
+       {
+        "type": "int",
+        "name": "minimum"
+       }
+      ],
+      "type": "boolean",
+      "name": "fillBuffer"
+     },
+     {
+      "params": [],
+      "type": "int",
+      "name": "nextNonWhitespace"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "checkLenient"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "skipToEndOfLine"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "toFind"
+       }
+      ],
+      "type": "boolean",
+      "name": "skipTo"
+     },
+     {
+      "params": [
+       {
+        "type": "char",
+        "name": "quote"
+       }
+      ],
+      "type": "String",
+      "name": "nextString"
+     },
+     {
+      "params": [],
+      "type": "String",
+      "name": "nextLiteral"
+     },
+     {
+      "params": [],
+      "type": "String",
+      "name": "toString"
+     },
+     {
+      "params": [],
+      "type": "char",
+      "name": "readEscapeCharacter"
+     },
+     {
+      "params": [],
+      "type": "JsonToken",
+      "name": "readLiteral"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "decodeLiteral"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "message"
+       }
+      ],
+      "type": "IOException",
+      "name": "syntaxError"
+     },
+     {
+      "params": [],
+      "type": "CharSequence",
+      "name": "getSnippet"
+     }
+    ],
+    "fields": [
+     {
+      "type": "char",
+      "name": "NON_EXECUTE_PREFIX"
+     },
+     {
+      "type": "Reader",
+      "name": "in"
+     },
+     {
+      "type": "boolean",
+      "name": "lenient"
+     },
+     {
+      "type": "char",
+      "name": "buffer"
+     },
+     {
+      "type": "int",
+      "name": "pos"
+     },
+     {
+      "type": "int",
+      "name": "limit"
+     },
+     {
+      "type": "List",
+      "name": "stack"
+     },
+     {
+      "type": "boolean",
+      "name": "hasToken"
+     },
+     {
+      "type": "JsonToken",
+      "name": "token"
+     },
+     {
+      "type": "String",
+      "name": "name"
+     },
+     {
+      "type": "String",
+      "name": "value"
+     },
+     {
+      "type": "boolean",
+      "name": "skipping"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "TypeToken.java",
+  "package_name": "com.google.gson.reflect",
+  "classes": [
+   {
+    "name": "TypeToken",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "T",
+        "name": "o"
+       },
+       {
+        "type": "String",
+        "name": "message"
+       }
+      ],
+      "type": "T",
+      "name": "nonNull"
+     },
+     {
+      "params": [
+       {
+        "type": "Class",
+        "name": "subclass"
+       }
+      ],
+      "type": "Type",
+      "name": "getSuperclassTypeParameter"
+     },
+     {
+      "params": [
+       {
+        "type": "Class",
+        "name": "subclass"
+       }
+      ],
+      "type": "TypeToken",
+      "name": "fromSuperclassTypeParameter"
+     },
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "type"
+       }
+      ],
+      "type": "Class",
+      "name": "getRawType"
+     },
+     {
+      "params": [],
+      "type": "Class",
+      "name": "getRawType"
+     },
+     {
+      "params": [],
+      "type": "Type",
+      "name": "getType"
+     },
+     {
+      "params": [
+       {
+        "type": "Class",
+        "name": "cls"
+       }
+      ],
+      "type": "boolean",
+      "name": "isAssignableFrom"
+     },
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "from"
+       }
+      ],
+      "type": "boolean",
+      "name": "isAssignableFrom"
+     },
+     {
+      "params": [
+       {
+        "type": "TypeToken",
+        "name": "token"
+       }
+      ],
+      "type": "boolean",
+      "name": "isAssignableFrom"
+     },
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "from"
+       },
+       {
+        "type": "GenericArrayType",
+        "name": "to"
+       }
+      ],
+      "type": "boolean",
+      "name": "isAssignableFrom"
+     },
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "from"
+       },
+       {
+        "type": "ParameterizedType",
+        "name": "to"
+       },
+       {
+        "type": "Map",
+        "name": "typeVarMap"
+       }
+      ],
+      "type": "boolean",
+      "name": "isAssignableFrom"
+     },
+     {
+      "params": [
+       {
+        "type": "ParameterizedType",
+        "name": "from"
+       },
+       {
+        "type": "ParameterizedType",
+        "name": "to"
+       },
+       {
+        "type": "Map",
+        "name": "typeVarMap"
+       }
+      ],
+      "type": "boolean",
+      "name": "typeEquals"
+     },
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "from"
+       },
+       {
+        "type": "Type",
+        "name": "to"
+       },
+       {
+        "type": "Map",
+        "name": "typeMap"
+       }
+      ],
+      "type": "boolean",
+      "name": "matches"
+     },
+     {
+      "params": [],
+      "type": "int",
+      "name": "hashCode"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "o"
+       }
+      ],
+      "type": "boolean",
+      "name": "equals"
+     },
+     {
+      "params": [],
+      "type": "String",
+      "name": "toString"
+     },
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "token"
+       },
+       {
+        "type": "Class",
+        "name": "expected"
+       }
+      ],
+      "type": "AssertionError",
+      "name": "buildUnexpectedTypeError"
+     },
+     {
+      "params": [
+       {
+        "type": "Type",
+        "name": "type"
+       }
+      ],
+      "type": "TypeToken",
+      "name": "get"
+     },
+     {
+      "params": [
+       {
+        "type": "Class",
+        "name": "type"
+       }
+      ],
+      "type": "TypeToken",
+      "name": "get"
+     }
+    ],
+    "fields": [
+     {
+      "type": "Class",
+      "name": "rawType"
+     },
+     {
+      "type": "Type",
+      "name": "type"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "package-info.java",
+  "package_name": "com.google.gson.reflect",
+  "classes": []
+ },
+ {
+  "filename": "SerializedName.java",
+  "package_name": "com.google.gson.annotations",
+  "classes": []
+ },
+ {
+  "filename": "Expose.java",
+  "package_name": "com.google.gson.annotations",
+  "classes": []
+ },
+ {
+  "filename": "package-info.java",
+  "package_name": "com.google.gson.annotations",
+  "classes": []
+ },
+ {
+  "filename": "Until.java",
+  "package_name": "com.google.gson.annotations",
+  "classes": []
+ },
+ {
+  "filename": "Since.java",
+  "package_name": "com.google.gson.annotations",
+  "classes": []
+ }
+]

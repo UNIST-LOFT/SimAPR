@@ -1,0 +1,6 @@
+com.google.javascript.rhino.jstype.PrototypeObjectType@385@0.2886751346
+com.google.javascript.rhino.jstype.PrototypeObjectType@384@0.2886751346
+com.google.javascript.rhino.jstype.PrototypeObjectType@375@0.2132007164
+com.google.javascript.rhino.jstype.ProxyObjectType@258@0.2041241452
+com.google.javascript.rhino.jstype.JSType@1165@0.1690308509
+com.google.javascript.rhino.jstype.PrototypeObjectType@394@0.1507556723

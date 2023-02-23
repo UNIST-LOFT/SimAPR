@@ -1,0 +1,2 @@
+- if (!_hasSegments)  return _currentSegment;
++ if (_currentSegment!= null) if (!_hasSegments)  return _currentSegment;

@@ -1,0 +1,2 @@
++ nodesvisited.add(node) #
+  return any(

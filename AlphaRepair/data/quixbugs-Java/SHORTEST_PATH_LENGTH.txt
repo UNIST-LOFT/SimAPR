@@ -1,0 +1,2 @@
+- unvisitedNodes.get(nextnode) + length_by_edge.get(Arrays.asList(node, nextnode))));
++ distance+length_by_edge.get(Arrays.asList(node, nextnode))));

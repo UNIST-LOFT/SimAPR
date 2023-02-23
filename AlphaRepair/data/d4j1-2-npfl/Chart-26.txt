@@ -1,0 +1,2 @@
++ if (owner!= null) {
+  EntityCollection entities = owner.getEntityCollection();

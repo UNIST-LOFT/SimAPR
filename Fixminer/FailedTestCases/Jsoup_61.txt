@@ -1,0 +1,3 @@
+Failing tests: 2
+  - org.jsoup.select.ElementsTest::hasClassCaseInsensitive
+  - org.jsoup.select.SelectorTest::testByClassCaseInsensitive

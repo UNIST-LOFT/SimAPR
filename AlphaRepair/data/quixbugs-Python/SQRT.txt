@@ -1,0 +1,2 @@
+- while abs(x - approx) > epsilon:
++ while abs(x - approx * approx) > epsilon:

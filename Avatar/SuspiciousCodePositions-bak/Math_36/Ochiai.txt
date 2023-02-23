@@ -1,0 +1,6 @@
+org.apache.commons.math.fraction.BigFraction@735@0.4082482905
+org.apache.commons.math.fraction.BigFraction@732@0.4082482905
+org.apache.commons.math.util.MathUtils@247@0.1702513062
+org.apache.commons.math.util.MathUtils@244@0.1684303842
+org.apache.commons.math.fraction.BigFraction@688@0.1111111111
+org.apache.commons.math.fraction.BigFraction@685@0.1111111111

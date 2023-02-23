@@ -1,0 +1,10861 @@
+[
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "MockingProgress",
+      "name": "mockingProgress"
+     }
+    ],
+    "name": "Matchers",
+    "methods": [
+     {
+      "type": "boolean",
+      "name": "anyBoolean",
+      "params": []
+     },
+     {
+      "type": "byte",
+      "name": "anyByte",
+      "params": []
+     },
+     {
+      "type": "char",
+      "name": "anyChar",
+      "params": []
+     },
+     {
+      "type": "int",
+      "name": "anyInt",
+      "params": []
+     },
+     {
+      "type": "long",
+      "name": "anyLong",
+      "params": []
+     },
+     {
+      "type": "float",
+      "name": "anyFloat",
+      "params": []
+     },
+     {
+      "type": "double",
+      "name": "anyDouble",
+      "params": []
+     },
+     {
+      "type": "short",
+      "name": "anyShort",
+      "params": []
+     },
+     {
+      "type": "T",
+      "name": "anyObject",
+      "params": []
+     },
+     {
+      "type": "T",
+      "name": "anyVararg",
+      "params": []
+     },
+     {
+      "type": "T",
+      "name": "any",
+      "params": [
+       {
+        "type": "Class",
+        "name": "clazz"
+       }
+      ]
+     },
+     {
+      "type": "T",
+      "name": "any",
+      "params": []
+     },
+     {
+      "type": "String",
+      "name": "anyString",
+      "params": []
+     },
+     {
+      "type": "List",
+      "name": "anyList",
+      "params": []
+     },
+     {
+      "type": "List",
+      "name": "anyListOf",
+      "params": [
+       {
+        "type": "Class",
+        "name": "clazz"
+       }
+      ]
+     },
+     {
+      "type": "Set",
+      "name": "anySet",
+      "params": []
+     },
+     {
+      "type": "Set",
+      "name": "anySetOf",
+      "params": [
+       {
+        "type": "Class",
+        "name": "clazz"
+       }
+      ]
+     },
+     {
+      "type": "Map",
+      "name": "anyMap",
+      "params": []
+     },
+     {
+      "type": "Collection",
+      "name": "anyCollection",
+      "params": []
+     },
+     {
+      "type": "Collection",
+      "name": "anyCollectionOf",
+      "params": [
+       {
+        "type": "Class",
+        "name": "clazz"
+       }
+      ]
+     },
+     {
+      "type": "T",
+      "name": "isA",
+      "params": [
+       {
+        "type": "Class",
+        "name": "clazz"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "eq",
+      "params": [
+       {
+        "type": "boolean",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "byte",
+      "name": "eq",
+      "params": [
+       {
+        "type": "byte",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "char",
+      "name": "eq",
+      "params": [
+       {
+        "type": "char",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "double",
+      "name": "eq",
+      "params": [
+       {
+        "type": "double",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "float",
+      "name": "eq",
+      "params": [
+       {
+        "type": "float",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "int",
+      "name": "eq",
+      "params": [
+       {
+        "type": "int",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "long",
+      "name": "eq",
+      "params": [
+       {
+        "type": "long",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "short",
+      "name": "eq",
+      "params": [
+       {
+        "type": "short",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "T",
+      "name": "eq",
+      "params": [
+       {
+        "type": "T",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "T",
+      "name": "refEq",
+      "params": [
+       {
+        "type": "T",
+        "name": "value"
+       },
+       {
+        "type": "String",
+        "name": "excludeFields"
+       }
+      ]
+     },
+     {
+      "type": "T",
+      "name": "same",
+      "params": [
+       {
+        "type": "T",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "Object",
+      "name": "isNull",
+      "params": []
+     },
+     {
+      "type": "Object",
+      "name": "notNull",
+      "params": []
+     },
+     {
+      "type": "Object",
+      "name": "isNotNull",
+      "params": []
+     },
+     {
+      "type": "String",
+      "name": "contains",
+      "params": [
+       {
+        "type": "String",
+        "name": "substring"
+       }
+      ]
+     },
+     {
+      "type": "String",
+      "name": "matches",
+      "params": [
+       {
+        "type": "String",
+        "name": "regex"
+       }
+      ]
+     },
+     {
+      "type": "String",
+      "name": "endsWith",
+      "params": [
+       {
+        "type": "String",
+        "name": "suffix"
+       }
+      ]
+     },
+     {
+      "type": "String",
+      "name": "startsWith",
+      "params": [
+       {
+        "type": "String",
+        "name": "prefix"
+       }
+      ]
+     },
+     {
+      "type": "T",
+      "name": "argThat",
+      "params": [
+       {
+        "type": "Matcher",
+        "name": "matcher"
+       }
+      ]
+     },
+     {
+      "type": "char",
+      "name": "charThat",
+      "params": [
+       {
+        "type": "Matcher",
+        "name": "matcher"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "booleanThat",
+      "params": [
+       {
+        "type": "Matcher",
+        "name": "matcher"
+       }
+      ]
+     },
+     {
+      "type": "byte",
+      "name": "byteThat",
+      "params": [
+       {
+        "type": "Matcher",
+        "name": "matcher"
+       }
+      ]
+     },
+     {
+      "type": "short",
+      "name": "shortThat",
+      "params": [
+       {
+        "type": "Matcher",
+        "name": "matcher"
+       }
+      ]
+     },
+     {
+      "type": "int",
+      "name": "intThat",
+      "params": [
+       {
+        "type": "Matcher",
+        "name": "matcher"
+       }
+      ]
+     },
+     {
+      "type": "long",
+      "name": "longThat",
+      "params": [
+       {
+        "type": "Matcher",
+        "name": "matcher"
+       }
+      ]
+     },
+     {
+      "type": "float",
+      "name": "floatThat",
+      "params": [
+       {
+        "type": "Matcher",
+        "name": "matcher"
+       }
+      ]
+     },
+     {
+      "type": "double",
+      "name": "doubleThat",
+      "params": [
+       {
+        "type": "Matcher",
+        "name": "matcher"
+       }
+      ]
+     },
+     {
+      "type": "HandyReturnValues",
+      "name": "reportMatcher",
+      "params": [
+       {
+        "type": "Matcher",
+        "name": "matcher"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito",
+  "filename": "Matchers.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "MockSettings",
+    "methods": [
+     {
+      "type": "MockSettings",
+      "name": "extraInterfaces",
+      "params": [
+       {
+        "type": "Class",
+        "name": "interfaces"
+       }
+      ]
+     },
+     {
+      "type": "MockSettings",
+      "name": "name",
+      "params": [
+       {
+        "type": "String",
+        "name": "name"
+       }
+      ]
+     },
+     {
+      "type": "MockSettings",
+      "name": "spiedInstance",
+      "params": [
+       {
+        "type": "Object",
+        "name": "instance"
+       }
+      ]
+     },
+     {
+      "type": "MockSettings",
+      "name": "defaultAnswer",
+      "params": [
+       {
+        "type": "Answer",
+        "name": "defaultAnswer"
+       }
+      ]
+     },
+     {
+      "type": "MockSettings",
+      "name": "serializable",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito",
+  "filename": "MockSettings.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "BDDMockito",
+    "methods": [
+     {
+      "type": "BDDMyOngoingStubbing",
+      "name": "given",
+      "params": [
+       {
+        "type": "T",
+        "name": "methodCall"
+       }
+      ]
+     },
+     {
+      "type": "BDDStubber",
+      "name": "willThrow",
+      "params": [
+       {
+        "type": "Throwable",
+        "name": "toBeThrown"
+       }
+      ]
+     },
+     {
+      "type": "BDDStubber",
+      "name": "willAnswer",
+      "params": [
+       {
+        "type": "Answer",
+        "name": "answer"
+       }
+      ]
+     },
+     {
+      "type": "BDDStubber",
+      "name": "willDoNothing",
+      "params": []
+     },
+     {
+      "type": "BDDStubber",
+      "name": "willReturn",
+      "params": [
+       {
+        "type": "Object",
+        "name": "toBeReturned"
+       }
+      ]
+     },
+     {
+      "type": "BDDStubber",
+      "name": "willCallRealMethod",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito",
+  "filename": "BDDMockito.java"
+ },
+ {
+  "classes": [],
+  "package_name": "org.mockito",
+  "filename": "Mock.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "MockitoDebugger",
+    "methods": [
+     {
+      "type": "String",
+      "name": "printInvocations",
+      "params": [
+       {
+        "type": "Object",
+        "name": "mocks"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito",
+  "filename": "MockitoDebugger.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ],
+    "name": "ArgumentMatcher",
+    "methods": [
+     {
+      "type": "boolean",
+      "name": "matches",
+      "params": [
+       {
+        "type": "Object",
+        "name": "argument"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "describeTo",
+      "params": [
+       {
+        "type": "Description",
+        "name": "description"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito",
+  "filename": "ArgumentMatcher.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "InOrder",
+    "methods": [
+     {
+      "type": "T",
+      "name": "verify",
+      "params": [
+       {
+        "type": "T",
+        "name": "mock"
+       }
+      ]
+     },
+     {
+      "type": "T",
+      "name": "verify",
+      "params": [
+       {
+        "type": "T",
+        "name": "mock"
+       },
+       {
+        "type": "VerificationMode",
+        "name": "mode"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito",
+  "filename": "InOrder.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "MockingProgress",
+      "name": "mockingProgress"
+     }
+    ],
+    "name": "AdditionalMatchers",
+    "methods": [
+     {
+      "type": "T",
+      "name": "geq",
+      "params": [
+       {
+        "type": "Comparable",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "byte",
+      "name": "geq",
+      "params": [
+       {
+        "type": "byte",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "double",
+      "name": "geq",
+      "params": [
+       {
+        "type": "double",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "float",
+      "name": "geq",
+      "params": [
+       {
+        "type": "float",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "int",
+      "name": "geq",
+      "params": [
+       {
+        "type": "int",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "long",
+      "name": "geq",
+      "params": [
+       {
+        "type": "long",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "short",
+      "name": "geq",
+      "params": [
+       {
+        "type": "short",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "T",
+      "name": "leq",
+      "params": [
+       {
+        "type": "Comparable",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "byte",
+      "name": "leq",
+      "params": [
+       {
+        "type": "byte",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "double",
+      "name": "leq",
+      "params": [
+       {
+        "type": "double",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "float",
+      "name": "leq",
+      "params": [
+       {
+        "type": "float",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "int",
+      "name": "leq",
+      "params": [
+       {
+        "type": "int",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "long",
+      "name": "leq",
+      "params": [
+       {
+        "type": "long",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "short",
+      "name": "leq",
+      "params": [
+       {
+        "type": "short",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "T",
+      "name": "gt",
+      "params": [
+       {
+        "type": "Comparable",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "byte",
+      "name": "gt",
+      "params": [
+       {
+        "type": "byte",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "double",
+      "name": "gt",
+      "params": [
+       {
+        "type": "double",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "float",
+      "name": "gt",
+      "params": [
+       {
+        "type": "float",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "int",
+      "name": "gt",
+      "params": [
+       {
+        "type": "int",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "long",
+      "name": "gt",
+      "params": [
+       {
+        "type": "long",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "short",
+      "name": "gt",
+      "params": [
+       {
+        "type": "short",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "T",
+      "name": "lt",
+      "params": [
+       {
+        "type": "Comparable",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "byte",
+      "name": "lt",
+      "params": [
+       {
+        "type": "byte",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "double",
+      "name": "lt",
+      "params": [
+       {
+        "type": "double",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "float",
+      "name": "lt",
+      "params": [
+       {
+        "type": "float",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "int",
+      "name": "lt",
+      "params": [
+       {
+        "type": "int",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "long",
+      "name": "lt",
+      "params": [
+       {
+        "type": "long",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "short",
+      "name": "lt",
+      "params": [
+       {
+        "type": "short",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "T",
+      "name": "cmpEq",
+      "params": [
+       {
+        "type": "Comparable",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "String",
+      "name": "find",
+      "params": [
+       {
+        "type": "String",
+        "name": "regex"
+       }
+      ]
+     },
+     {
+      "type": "T",
+      "name": "aryEq",
+      "params": [
+       {
+        "type": "T",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "short",
+      "name": "aryEq",
+      "params": [
+       {
+        "type": "short",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "long",
+      "name": "aryEq",
+      "params": [
+       {
+        "type": "long",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "int",
+      "name": "aryEq",
+      "params": [
+       {
+        "type": "int",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "float",
+      "name": "aryEq",
+      "params": [
+       {
+        "type": "float",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "double",
+      "name": "aryEq",
+      "params": [
+       {
+        "type": "double",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "char",
+      "name": "aryEq",
+      "params": [
+       {
+        "type": "char",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "byte",
+      "name": "aryEq",
+      "params": [
+       {
+        "type": "byte",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "aryEq",
+      "params": [
+       {
+        "type": "boolean",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "and",
+      "params": [
+       {
+        "type": "boolean",
+        "name": "first"
+       },
+       {
+        "type": "boolean",
+        "name": "second"
+       }
+      ]
+     },
+     {
+      "type": "byte",
+      "name": "and",
+      "params": [
+       {
+        "type": "byte",
+        "name": "first"
+       },
+       {
+        "type": "byte",
+        "name": "second"
+       }
+      ]
+     },
+     {
+      "type": "char",
+      "name": "and",
+      "params": [
+       {
+        "type": "char",
+        "name": "first"
+       },
+       {
+        "type": "char",
+        "name": "second"
+       }
+      ]
+     },
+     {
+      "type": "double",
+      "name": "and",
+      "params": [
+       {
+        "type": "double",
+        "name": "first"
+       },
+       {
+        "type": "double",
+        "name": "second"
+       }
+      ]
+     },
+     {
+      "type": "float",
+      "name": "and",
+      "params": [
+       {
+        "type": "float",
+        "name": "first"
+       },
+       {
+        "type": "float",
+        "name": "second"
+       }
+      ]
+     },
+     {
+      "type": "int",
+      "name": "and",
+      "params": [
+       {
+        "type": "int",
+        "name": "first"
+       },
+       {
+        "type": "int",
+        "name": "second"
+       }
+      ]
+     },
+     {
+      "type": "long",
+      "name": "and",
+      "params": [
+       {
+        "type": "long",
+        "name": "first"
+       },
+       {
+        "type": "long",
+        "name": "second"
+       }
+      ]
+     },
+     {
+      "type": "short",
+      "name": "and",
+      "params": [
+       {
+        "type": "short",
+        "name": "first"
+       },
+       {
+        "type": "short",
+        "name": "second"
+       }
+      ]
+     },
+     {
+      "type": "T",
+      "name": "and",
+      "params": [
+       {
+        "type": "T",
+        "name": "first"
+       },
+       {
+        "type": "T",
+        "name": "second"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "or",
+      "params": [
+       {
+        "type": "boolean",
+        "name": "first"
+       },
+       {
+        "type": "boolean",
+        "name": "second"
+       }
+      ]
+     },
+     {
+      "type": "T",
+      "name": "or",
+      "params": [
+       {
+        "type": "T",
+        "name": "first"
+       },
+       {
+        "type": "T",
+        "name": "second"
+       }
+      ]
+     },
+     {
+      "type": "short",
+      "name": "or",
+      "params": [
+       {
+        "type": "short",
+        "name": "first"
+       },
+       {
+        "type": "short",
+        "name": "second"
+       }
+      ]
+     },
+     {
+      "type": "long",
+      "name": "or",
+      "params": [
+       {
+        "type": "long",
+        "name": "first"
+       },
+       {
+        "type": "long",
+        "name": "second"
+       }
+      ]
+     },
+     {
+      "type": "int",
+      "name": "or",
+      "params": [
+       {
+        "type": "int",
+        "name": "first"
+       },
+       {
+        "type": "int",
+        "name": "second"
+       }
+      ]
+     },
+     {
+      "type": "float",
+      "name": "or",
+      "params": [
+       {
+        "type": "float",
+        "name": "first"
+       },
+       {
+        "type": "float",
+        "name": "second"
+       }
+      ]
+     },
+     {
+      "type": "double",
+      "name": "or",
+      "params": [
+       {
+        "type": "double",
+        "name": "first"
+       },
+       {
+        "type": "double",
+        "name": "second"
+       }
+      ]
+     },
+     {
+      "type": "char",
+      "name": "or",
+      "params": [
+       {
+        "type": "char",
+        "name": "first"
+       },
+       {
+        "type": "char",
+        "name": "second"
+       }
+      ]
+     },
+     {
+      "type": "byte",
+      "name": "or",
+      "params": [
+       {
+        "type": "byte",
+        "name": "first"
+       },
+       {
+        "type": "byte",
+        "name": "second"
+       }
+      ]
+     },
+     {
+      "type": "T",
+      "name": "not",
+      "params": [
+       {
+        "type": "T",
+        "name": "first"
+       }
+      ]
+     },
+     {
+      "type": "short",
+      "name": "not",
+      "params": [
+       {
+        "type": "short",
+        "name": "first"
+       }
+      ]
+     },
+     {
+      "type": "int",
+      "name": "not",
+      "params": [
+       {
+        "type": "int",
+        "name": "first"
+       }
+      ]
+     },
+     {
+      "type": "long",
+      "name": "not",
+      "params": [
+       {
+        "type": "long",
+        "name": "first"
+       }
+      ]
+     },
+     {
+      "type": "float",
+      "name": "not",
+      "params": [
+       {
+        "type": "float",
+        "name": "first"
+       }
+      ]
+     },
+     {
+      "type": "double",
+      "name": "not",
+      "params": [
+       {
+        "type": "double",
+        "name": "first"
+       }
+      ]
+     },
+     {
+      "type": "char",
+      "name": "not",
+      "params": [
+       {
+        "type": "char",
+        "name": "first"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "not",
+      "params": [
+       {
+        "type": "boolean",
+        "name": "first"
+       }
+      ]
+     },
+     {
+      "type": "byte",
+      "name": "not",
+      "params": [
+       {
+        "type": "byte",
+        "name": "first"
+       }
+      ]
+     },
+     {
+      "type": "double",
+      "name": "eq",
+      "params": [
+       {
+        "type": "double",
+        "name": "value"
+       },
+       {
+        "type": "double",
+        "name": "delta"
+       }
+      ]
+     },
+     {
+      "type": "float",
+      "name": "eq",
+      "params": [
+       {
+        "type": "float",
+        "name": "value"
+       },
+       {
+        "type": "float",
+        "name": "delta"
+       }
+      ]
+     },
+     {
+      "type": "HandyReturnValues",
+      "name": "reportMatcher",
+      "params": [
+       {
+        "type": "ArgumentMatcher",
+        "name": "matcher"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito",
+  "filename": "AdditionalMatchers.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "ReturnValues",
+    "methods": [
+     {
+      "type": "Object",
+      "name": "valueFor",
+      "params": [
+       {
+        "type": "InvocationOnMock",
+        "name": "invocation"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito",
+  "filename": "ReturnValues.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "MockitoAnnotations",
+    "methods": [
+     {
+      "type": null,
+      "name": "initMocks",
+      "params": [
+       {
+        "type": "Object",
+        "name": "testClass"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "scan",
+      "params": [
+       {
+        "type": "Object",
+        "name": "testClass"
+       },
+       {
+        "type": "Class",
+        "name": "clazz"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito",
+  "filename": "MockitoAnnotations.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "MockitoCore",
+      "name": "MOCKITO_CORE"
+     },
+     {
+      "type": "Answer",
+      "name": "RETURNS_DEFAULTS"
+     },
+     {
+      "type": "Answer",
+      "name": "RETURNS_SMART_NULLS"
+     },
+     {
+      "type": "Answer",
+      "name": "RETURNS_MOCKS"
+     },
+     {
+      "type": "Answer",
+      "name": "CALLS_REAL_METHODS"
+     }
+    ],
+    "name": "Mockito",
+    "methods": [
+     {
+      "type": "T",
+      "name": "mock",
+      "params": [
+       {
+        "type": "Class",
+        "name": "classToMock"
+       }
+      ]
+     },
+     {
+      "type": "T",
+      "name": "mock",
+      "params": [
+       {
+        "type": "Class",
+        "name": "classToMock"
+       },
+       {
+        "type": "String",
+        "name": "name"
+       }
+      ]
+     },
+     {
+      "type": "T",
+      "name": "mock",
+      "params": [
+       {
+        "type": "Class",
+        "name": "classToMock"
+       },
+       {
+        "type": "ReturnValues",
+        "name": "returnValues"
+       }
+      ]
+     },
+     {
+      "type": "T",
+      "name": "mock",
+      "params": [
+       {
+        "type": "Class",
+        "name": "classToMock"
+       },
+       {
+        "type": "Answer",
+        "name": "defaultAnswer"
+       }
+      ]
+     },
+     {
+      "type": "T",
+      "name": "mock",
+      "params": [
+       {
+        "type": "Class",
+        "name": "classToMock"
+       },
+       {
+        "type": "MockSettings",
+        "name": "mockSettings"
+       }
+      ]
+     },
+     {
+      "type": "T",
+      "name": "spy",
+      "params": [
+       {
+        "type": "T",
+        "name": "object"
+       }
+      ]
+     },
+     {
+      "type": "DeprecatedOngoingStubbing",
+      "name": "stub",
+      "params": [
+       {
+        "type": "T",
+        "name": "methodCall"
+       }
+      ]
+     },
+     {
+      "type": "OngoingStubbing",
+      "name": "when",
+      "params": [
+       {
+        "type": "T",
+        "name": "methodCall"
+       }
+      ]
+     },
+     {
+      "type": "T",
+      "name": "verify",
+      "params": [
+       {
+        "type": "T",
+        "name": "mock"
+       }
+      ]
+     },
+     {
+      "type": "T",
+      "name": "verify",
+      "params": [
+       {
+        "type": "T",
+        "name": "mock"
+       },
+       {
+        "type": "VerificationMode",
+        "name": "mode"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "reset",
+      "params": [
+       {
+        "type": "T",
+        "name": "mocks"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "verifyNoMoreInteractions",
+      "params": [
+       {
+        "type": "Object",
+        "name": "mocks"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "verifyZeroInteractions",
+      "params": [
+       {
+        "type": "Object",
+        "name": "mocks"
+       }
+      ]
+     },
+     {
+      "type": "VoidMethodStubbable",
+      "name": "stubVoid",
+      "params": [
+       {
+        "type": "T",
+        "name": "mock"
+       }
+      ]
+     },
+     {
+      "type": "Stubber",
+      "name": "doThrow",
+      "params": [
+       {
+        "type": "Throwable",
+        "name": "toBeThrown"
+       }
+      ]
+     },
+     {
+      "type": "Stubber",
+      "name": "doCallRealMethod",
+      "params": []
+     },
+     {
+      "type": "Stubber",
+      "name": "doAnswer",
+      "params": [
+       {
+        "type": "Answer",
+        "name": "answer"
+       }
+      ]
+     },
+     {
+      "type": "Stubber",
+      "name": "doNothing",
+      "params": []
+     },
+     {
+      "type": "Stubber",
+      "name": "doReturn",
+      "params": [
+       {
+        "type": "Object",
+        "name": "toBeReturned"
+       }
+      ]
+     },
+     {
+      "type": "InOrder",
+      "name": "inOrder",
+      "params": [
+       {
+        "type": "Object",
+        "name": "mocks"
+       }
+      ]
+     },
+     {
+      "type": "VerificationMode",
+      "name": "times",
+      "params": [
+       {
+        "type": "int",
+        "name": "wantedNumberOfInvocations"
+       }
+      ]
+     },
+     {
+      "type": "VerificationMode",
+      "name": "never",
+      "params": []
+     },
+     {
+      "type": "VerificationMode",
+      "name": "atLeastOnce",
+      "params": []
+     },
+     {
+      "type": "VerificationMode",
+      "name": "atLeast",
+      "params": [
+       {
+        "type": "int",
+        "name": "minNumberOfInvocations"
+       }
+      ]
+     },
+     {
+      "type": "VerificationMode",
+      "name": "atMost",
+      "params": [
+       {
+        "type": "int",
+        "name": "maxNumberOfInvocations"
+       }
+      ]
+     },
+     {
+      "type": "VerificationMode",
+      "name": "only",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "validateMockitoUsage",
+      "params": []
+     },
+     {
+      "type": "MockSettings",
+      "name": "withSettings",
+      "params": []
+     },
+     {
+      "type": "MockitoDebugger",
+      "name": "debug",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito",
+  "filename": "Mockito.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "HandyReturnValues",
+      "name": "handyReturnValues"
+     },
+     {
+      "type": "CapturingMatcher",
+      "name": "capturingMatcher"
+     },
+     {
+      "type": "Class",
+      "name": "clazz"
+     }
+    ],
+    "name": "ArgumentCaptor",
+    "methods": [
+     {
+      "type": "T",
+      "name": "capture",
+      "params": []
+     },
+     {
+      "type": "T",
+      "name": "getValue",
+      "params": []
+     },
+     {
+      "type": "List",
+      "name": "getAllValues",
+      "params": []
+     },
+     {
+      "type": "ArgumentCaptor",
+      "name": "forClass",
+      "params": [
+       {
+        "type": "Class",
+        "name": "clazz"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito",
+  "filename": "ArgumentCaptor.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "IMockitoConfiguration",
+    "methods": [
+     {
+      "type": "ReturnValues",
+      "name": "getReturnValues",
+      "params": []
+     },
+     {
+      "type": "Answer",
+      "name": "getDefaultAnswer",
+      "params": []
+     },
+     {
+      "type": "AnnotationEngine",
+      "name": "getAnnotationEngine",
+      "params": []
+     },
+     {
+      "type": "boolean",
+      "name": "cleansStackTrace",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.configuration",
+  "filename": "IMockitoConfiguration.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "AnnotationEngine",
+    "methods": [
+     {
+      "type": "Object",
+      "name": "createMockFor",
+      "params": [
+       {
+        "type": "Annotation",
+        "name": "annotation"
+       },
+       {
+        "type": "Field",
+        "name": "field"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.configuration",
+  "filename": "AnnotationEngine.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "DefaultMockitoConfiguration",
+    "methods": [
+     {
+      "type": "ReturnValues",
+      "name": "getReturnValues",
+      "params": []
+     },
+     {
+      "type": "Answer",
+      "name": "getDefaultAnswer",
+      "params": []
+     },
+     {
+      "type": "AnnotationEngine",
+      "name": "getAnnotationEngine",
+      "params": []
+     },
+     {
+      "type": "boolean",
+      "name": "cleansStackTrace",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.configuration",
+  "filename": "DefaultMockitoConfiguration.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "ClonesArguments",
+    "methods": [
+     {
+      "type": "Object",
+      "name": "answer",
+      "params": [
+       {
+        "type": "InvocationOnMock",
+        "name": "invocation"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.stubbing",
+  "filename": "ClonesArguments.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "Answer",
+    "methods": [
+     {
+      "type": "T",
+      "name": "answer",
+      "params": [
+       {
+        "type": "InvocationOnMock",
+        "name": "invocation"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.stubbing",
+  "filename": "Answer.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "VoidMethodStubbable",
+    "methods": [
+     {
+      "type": "VoidMethodStubbable",
+      "name": "toThrow",
+      "params": [
+       {
+        "type": "Throwable",
+        "name": "throwable"
+       }
+      ]
+     },
+     {
+      "type": "VoidMethodStubbable",
+      "name": "toReturn",
+      "params": []
+     },
+     {
+      "type": "VoidMethodStubbable",
+      "name": "toAnswer",
+      "params": [
+       {
+        "type": "Answer",
+        "name": "answer"
+       }
+      ]
+     },
+     {
+      "type": "T",
+      "name": "on",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.stubbing",
+  "filename": "VoidMethodStubbable.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "DeprecatedOngoingStubbing",
+    "methods": [
+     {
+      "type": "DeprecatedOngoingStubbing",
+      "name": "toReturn",
+      "params": [
+       {
+        "type": "T",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "DeprecatedOngoingStubbing",
+      "name": "toThrow",
+      "params": [
+       {
+        "type": "Throwable",
+        "name": "throwable"
+       }
+      ]
+     },
+     {
+      "type": "DeprecatedOngoingStubbing",
+      "name": "toAnswer",
+      "params": [
+       {
+        "type": "Answer",
+        "name": "answer"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.stubbing",
+  "filename": "DeprecatedOngoingStubbing.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "OngoingStubbing",
+    "methods": [
+     {
+      "type": "OngoingStubbing",
+      "name": "thenReturn",
+      "params": [
+       {
+        "type": "T",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "OngoingStubbing",
+      "name": "thenReturn",
+      "params": [
+       {
+        "type": "T",
+        "name": "value"
+       },
+       {
+        "type": "T",
+        "name": "values"
+       }
+      ]
+     },
+     {
+      "type": "OngoingStubbing",
+      "name": "thenThrow",
+      "params": [
+       {
+        "type": "Throwable",
+        "name": "throwables"
+       }
+      ]
+     },
+     {
+      "type": "OngoingStubbing",
+      "name": "thenCallRealMethod",
+      "params": []
+     },
+     {
+      "type": "OngoingStubbing",
+      "name": "thenAnswer",
+      "params": [
+       {
+        "type": "Answer",
+        "name": "answer"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.stubbing",
+  "filename": "OngoingStubbing.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "Stubber",
+    "methods": [
+     {
+      "type": "T",
+      "name": "when",
+      "params": [
+       {
+        "type": "T",
+        "name": "mock"
+       }
+      ]
+     },
+     {
+      "type": "Stubber",
+      "name": "doThrow",
+      "params": [
+       {
+        "type": "Throwable",
+        "name": "toBeThrown"
+       }
+      ]
+     },
+     {
+      "type": "Stubber",
+      "name": "doAnswer",
+      "params": [
+       {
+        "type": "Answer",
+        "name": "answer"
+       }
+      ]
+     },
+     {
+      "type": "Stubber",
+      "name": "doNothing",
+      "params": []
+     },
+     {
+      "type": "Stubber",
+      "name": "doReturn",
+      "params": [
+       {
+        "type": "Object",
+        "name": "toBeReturned"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.stubbing",
+  "filename": "Stubber.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "InvocationContainerImpl",
+      "name": "invocationContainerImpl"
+     },
+     {
+      "type": "MatchersBinder",
+      "name": "matchersBinder"
+     },
+     {
+      "type": "MockingProgress",
+      "name": "mockingProgress"
+     },
+     {
+      "type": "MockSettingsImpl",
+      "name": "mockSettings"
+     }
+    ],
+    "name": "MockHandler",
+    "methods": [
+     {
+      "type": "Object",
+      "name": "handle",
+      "params": [
+       {
+        "type": "Invocation",
+        "name": "invocation"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "verifyNoMoreInteractions",
+      "params": []
+     },
+     {
+      "type": "VoidMethodStubbable",
+      "name": "voidMethodStubbable",
+      "params": [
+       {
+        "type": "T",
+        "name": "mock"
+       }
+      ]
+     },
+     {
+      "type": "MockSettingsImpl",
+      "name": "getMockSettings",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "setAnswersForStubbing",
+      "params": [
+       {
+        "type": "List",
+        "name": "answers"
+       }
+      ]
+     },
+     {
+      "type": "InvocationContainer",
+      "name": "getInvocationContainer",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal",
+  "filename": "MockHandler.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "MockitoCore",
+      "name": "mockitoCore"
+     },
+     {
+      "type": "Reporter",
+      "name": "reporter"
+     },
+     {
+      "type": "List",
+      "name": "mocksToBeVerifiedInOrder"
+     }
+    ],
+    "name": "InOrderImpl",
+    "methods": [
+     {
+      "type": "T",
+      "name": "verify",
+      "params": [
+       {
+        "type": "T",
+        "name": "mock"
+       }
+      ]
+     },
+     {
+      "type": "T",
+      "name": "verify",
+      "params": [
+       {
+        "type": "T",
+        "name": "mock"
+       },
+       {
+        "type": "VerificationMode",
+        "name": "mode"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal",
+  "filename": "InOrderImpl.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "Reporter",
+      "name": "reporter"
+     },
+     {
+      "type": "MockUtil",
+      "name": "mockUtil"
+     },
+     {
+      "type": "MockingProgress",
+      "name": "mockingProgress"
+     }
+    ],
+    "name": "MockitoCore",
+    "methods": [
+     {
+      "type": "T",
+      "name": "mock",
+      "params": [
+       {
+        "type": "Class",
+        "name": "classToMock"
+       },
+       {
+        "type": "MockSettings",
+        "name": "mockSettings"
+       }
+      ]
+     },
+     {
+      "type": "IOngoingStubbing",
+      "name": "stub",
+      "params": []
+     },
+     {
+      "type": "DeprecatedOngoingStubbing",
+      "name": "stub",
+      "params": [
+       {
+        "type": "T",
+        "name": "methodCall"
+       }
+      ]
+     },
+     {
+      "type": "OngoingStubbing",
+      "name": "when",
+      "params": [
+       {
+        "type": "T",
+        "name": "methodCall"
+       }
+      ]
+     },
+     {
+      "type": "T",
+      "name": "verify",
+      "params": [
+       {
+        "type": "T",
+        "name": "mock"
+       },
+       {
+        "type": "VerificationMode",
+        "name": "mode"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "reset",
+      "params": [
+       {
+        "type": "T",
+        "name": "mocks"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "verifyNoMoreInteractions",
+      "params": [
+       {
+        "type": "Object",
+        "name": "mocks"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "assertMocksNotEmpty",
+      "params": [
+       {
+        "type": "Object",
+        "name": "mocks"
+       }
+      ]
+     },
+     {
+      "type": "InOrder",
+      "name": "inOrder",
+      "params": [
+       {
+        "type": "Object",
+        "name": "mocks"
+       }
+      ]
+     },
+     {
+      "type": "Stubber",
+      "name": "doAnswer",
+      "params": [
+       {
+        "type": "Answer",
+        "name": "answer"
+       }
+      ]
+     },
+     {
+      "type": "VoidMethodStubbable",
+      "name": "stubVoid",
+      "params": [
+       {
+        "type": "T",
+        "name": "mock"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "validateMockitoUsage",
+      "params": []
+     },
+     {
+      "type": "Invocation",
+      "name": "getLastInvocation",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal",
+  "filename": "MockitoCore.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "MockitoInvocationHandler",
+    "methods": [
+     {
+      "type": "Object",
+      "name": "handle",
+      "params": [
+       {
+        "type": "Invocation",
+        "name": "invocation"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal",
+  "filename": "MockitoInvocationHandler.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "MockHandlerInterface",
+    "methods": [
+     {
+      "type": "MockSettingsImpl",
+      "name": "getMockSettings",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "verifyNoMoreInteractions",
+      "params": []
+     },
+     {
+      "type": "VoidMethodStubbable",
+      "name": "voidMethodStubbable",
+      "params": [
+       {
+        "type": "T",
+        "name": "mock"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "setAnswersForStubbing",
+      "params": [
+       {
+        "type": "List",
+        "name": "answers"
+       }
+      ]
+     },
+     {
+      "type": "InvocationContainer",
+      "name": "getInvocationContainer",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal",
+  "filename": "MockHandlerInterface.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "Comparable",
+      "name": "wanted"
+     }
+    ],
+    "name": "CompareTo",
+    "methods": [
+     {
+      "type": "boolean",
+      "name": "matches",
+      "params": [
+       {
+        "type": "Object",
+        "name": "actual"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "describeTo",
+      "params": [
+       {
+        "type": "Description",
+        "name": "description"
+       }
+      ]
+     },
+     {
+      "type": "String",
+      "name": "getName",
+      "params": []
+     },
+     {
+      "type": "boolean",
+      "name": "matchResult",
+      "params": [
+       {
+        "type": "int",
+        "name": "result"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.matchers",
+  "filename": "CompareTo.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "Object",
+      "name": "wanted"
+     }
+    ],
+    "name": "Same",
+    "methods": [
+     {
+      "type": "boolean",
+      "name": "matches",
+      "params": [
+       {
+        "type": "Object",
+        "name": "actual"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "describeTo",
+      "params": [
+       {
+        "type": "Description",
+        "name": "description"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "appendQuoting",
+      "params": [
+       {
+        "type": "Description",
+        "name": "description"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.matchers",
+  "filename": "Same.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ],
+    "name": "GreaterThan",
+    "methods": [
+     {
+      "type": "String",
+      "name": "getName",
+      "params": []
+     },
+     {
+      "type": "boolean",
+      "name": "matchResult",
+      "params": [
+       {
+        "type": "int",
+        "name": "result"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.matchers",
+  "filename": "GreaterThan.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "Null",
+      "name": "NULL"
+     }
+    ],
+    "name": "Null",
+    "methods": [
+     {
+      "type": "boolean",
+      "name": "matches",
+      "params": [
+       {
+        "type": "Object",
+        "name": "actual"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "describeTo",
+      "params": [
+       {
+        "type": "Description",
+        "name": "description"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.matchers",
+  "filename": "Null.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ],
+    "name": "LessThan",
+    "methods": [
+     {
+      "type": "String",
+      "name": "getName",
+      "params": []
+     },
+     {
+      "type": "boolean",
+      "name": "matchResult",
+      "params": [
+       {
+        "type": "int",
+        "name": "result"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.matchers",
+  "filename": "LessThan.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ],
+    "name": "LessOrEqual",
+    "methods": [
+     {
+      "type": "String",
+      "name": "getName",
+      "params": []
+     },
+     {
+      "type": "boolean",
+      "name": "matchResult",
+      "params": [
+       {
+        "type": "int",
+        "name": "result"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.matchers",
+  "filename": "LessOrEqual.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "Matcher",
+      "name": "first"
+     }
+    ],
+    "name": "Not",
+    "methods": [
+     {
+      "type": "boolean",
+      "name": "matches",
+      "params": [
+       {
+        "type": "Object",
+        "name": "actual"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "describeTo",
+      "params": [
+       {
+        "type": "Description",
+        "name": "description"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.matchers",
+  "filename": "Not.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "Any",
+      "name": "ANY"
+     }
+    ],
+    "name": "Any",
+    "methods": [
+     {
+      "type": "boolean",
+      "name": "matches",
+      "params": [
+       {
+        "type": "Object",
+        "name": "actual"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "describeTo",
+      "params": [
+       {
+        "type": "Description",
+        "name": "description"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.matchers",
+  "filename": "Any.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "List",
+      "name": "matchers"
+     }
+    ],
+    "name": "And",
+    "methods": [
+     {
+      "type": "boolean",
+      "name": "matches",
+      "params": [
+       {
+        "type": "Object",
+        "name": "actual"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "describeTo",
+      "params": [
+       {
+        "type": "Description",
+        "name": "description"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.matchers",
+  "filename": "And.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "Object",
+      "name": "wanted"
+     }
+    ],
+    "name": "Equals",
+    "methods": [
+     {
+      "type": "boolean",
+      "name": "matches",
+      "params": [
+       {
+        "type": "Object",
+        "name": "actual"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "describeTo",
+      "params": [
+       {
+        "type": "Description",
+        "name": "description"
+       }
+      ]
+     },
+     {
+      "type": "String",
+      "name": "describe",
+      "params": [
+       {
+        "type": "Object",
+        "name": "object"
+       }
+      ]
+     },
+     {
+      "type": "String",
+      "name": "quoting",
+      "params": []
+     },
+     {
+      "type": "Object",
+      "name": "getWanted",
+      "params": []
+     },
+     {
+      "type": "boolean",
+      "name": "equals",
+      "params": [
+       {
+        "type": "Object",
+        "name": "o"
+       }
+      ]
+     },
+     {
+      "type": "int",
+      "name": "hashCode",
+      "params": []
+     },
+     {
+      "type": "SelfDescribing",
+      "name": "withExtraTypeInfo",
+      "params": []
+     },
+     {
+      "type": "boolean",
+      "name": "typeMatches",
+      "params": [
+       {
+        "type": "Object",
+        "name": "object"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.matchers",
+  "filename": "Equals.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "String",
+      "name": "prefix"
+     }
+    ],
+    "name": "StartsWith",
+    "methods": [
+     {
+      "type": "boolean",
+      "name": "matches",
+      "params": [
+       {
+        "type": "Object",
+        "name": "actual"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "describeTo",
+      "params": [
+       {
+        "type": "Description",
+        "name": "description"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.matchers",
+  "filename": "StartsWith.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "CapturesArguments",
+    "methods": [
+     {
+      "type": null,
+      "name": "captureFrom",
+      "params": [
+       {
+        "type": "Object",
+        "name": "argument"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.matchers",
+  "filename": "CapturesArguments.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "MatcherDecorator",
+    "methods": [
+     {
+      "type": "Matcher",
+      "name": "getActualMatcher",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.matchers",
+  "filename": "MatcherDecorator.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "List",
+      "name": "matchers"
+     }
+    ],
+    "name": "Or",
+    "methods": [
+     {
+      "type": "boolean",
+      "name": "matches",
+      "params": [
+       {
+        "type": "Object",
+        "name": "actual"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "describeTo",
+      "params": [
+       {
+        "type": "Description",
+        "name": "description"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.matchers",
+  "filename": "Or.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "MatchersPrinter",
+    "methods": [
+     {
+      "type": "String",
+      "name": "getArgumentsLine",
+      "params": [
+       {
+        "type": "List",
+        "name": "matchers"
+       },
+       {
+        "type": "PrintSettings",
+        "name": "printSettings"
+       }
+      ]
+     },
+     {
+      "type": "String",
+      "name": "getArgumentsBlock",
+      "params": [
+       {
+        "type": "List",
+        "name": "matchers"
+       },
+       {
+        "type": "PrintSettings",
+        "name": "printSettings"
+       }
+      ]
+     },
+     {
+      "type": "List",
+      "name": "applyPrintSettings",
+      "params": [
+       {
+        "type": "List",
+        "name": "matchers"
+       },
+       {
+        "type": "PrintSettings",
+        "name": "printSettings"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.matchers",
+  "filename": "MatchersPrinter.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "LinkedList",
+      "name": "arguments"
+     }
+    ],
+    "name": "CapturingMatcher",
+    "methods": [
+     {
+      "type": "boolean",
+      "name": "matches",
+      "params": [
+       {
+        "type": "Object",
+        "name": "argument"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "describeTo",
+      "params": [
+       {
+        "type": "Description",
+        "name": "description"
+       }
+      ]
+     },
+     {
+      "type": "T",
+      "name": "getLastValue",
+      "params": []
+     },
+     {
+      "type": "List",
+      "name": "getAllValues",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "captureFrom",
+      "params": [
+       {
+        "type": "Object",
+        "name": "argument"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.matchers",
+  "filename": "CapturingMatcher.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "Equality",
+    "methods": [
+     {
+      "type": "boolean",
+      "name": "areEqual",
+      "params": [
+       {
+        "type": "Object",
+        "name": "o1"
+       },
+       {
+        "type": "Object",
+        "name": "o2"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "areArraysEqual",
+      "params": [
+       {
+        "type": "Object",
+        "name": "o1"
+       },
+       {
+        "type": "Object",
+        "name": "o2"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "areArrayLengthsEqual",
+      "params": [
+       {
+        "type": "Object",
+        "name": "o1"
+       },
+       {
+        "type": "Object",
+        "name": "o2"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "areArrayElementsEqual",
+      "params": [
+       {
+        "type": "Object",
+        "name": "o1"
+       },
+       {
+        "type": "Object",
+        "name": "o2"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "isArray",
+      "params": [
+       {
+        "type": "Object",
+        "name": "o"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.matchers",
+  "filename": "Equality.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ],
+    "name": "ArrayEquals",
+    "methods": [
+     {
+      "type": "boolean",
+      "name": "matches",
+      "params": [
+       {
+        "type": "Object",
+        "name": "actual"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "describeTo",
+      "params": [
+       {
+        "type": "Description",
+        "name": "description"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "appendArray",
+      "params": [
+       {
+        "type": "Object",
+        "name": "array"
+       },
+       {
+        "type": "Description",
+        "name": "description"
+       }
+      ]
+     },
+     {
+      "type": "Object",
+      "name": "createObjectArray",
+      "params": [
+       {
+        "type": "Object",
+        "name": "array"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.matchers",
+  "filename": "ArrayEquals.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "String",
+      "name": "regex"
+     }
+    ],
+    "name": "Find",
+    "methods": [
+     {
+      "type": "boolean",
+      "name": "matches",
+      "params": [
+       {
+        "type": "Object",
+        "name": "actual"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "describeTo",
+      "params": [
+       {
+        "type": "Description",
+        "name": "description"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.matchers",
+  "filename": "Find.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "Matcher",
+      "name": "ANY_VARARG"
+     }
+    ],
+    "name": "AnyVararg",
+    "methods": [
+     {
+      "type": "boolean",
+      "name": "matches",
+      "params": [
+       {
+        "type": "Object",
+        "name": "arg"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.matchers",
+  "filename": "AnyVararg.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "String",
+      "name": "suffix"
+     }
+    ],
+    "name": "EndsWith",
+    "methods": [
+     {
+      "type": "boolean",
+      "name": "matches",
+      "params": [
+       {
+        "type": "Object",
+        "name": "actual"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "describeTo",
+      "params": [
+       {
+        "type": "Description",
+        "name": "description"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.matchers",
+  "filename": "EndsWith.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "String",
+      "name": "regex"
+     }
+    ],
+    "name": "Matches",
+    "methods": [
+     {
+      "type": "boolean",
+      "name": "matches",
+      "params": [
+       {
+        "type": "Object",
+        "name": "actual"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "describeTo",
+      "params": [
+       {
+        "type": "Description",
+        "name": "description"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.matchers",
+  "filename": "Matches.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "VarargMatcher",
+    "methods": []
+   }
+  ],
+  "package_name": "org.mockito.internal.matchers",
+  "filename": "VarargMatcher.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "NotNull",
+      "name": "NOT_NULL"
+     }
+    ],
+    "name": "NotNull",
+    "methods": [
+     {
+      "type": "boolean",
+      "name": "matches",
+      "params": [
+       {
+        "type": "Object",
+        "name": "actual"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "describeTo",
+      "params": [
+       {
+        "type": "Description",
+        "name": "description"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.matchers",
+  "filename": "NotNull.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "ContainsExtraTypeInformation",
+    "methods": [
+     {
+      "type": "SelfDescribing",
+      "name": "withExtraTypeInfo",
+      "params": []
+     },
+     {
+      "type": "boolean",
+      "name": "typeMatches",
+      "params": [
+       {
+        "type": "Object",
+        "name": "object"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.matchers",
+  "filename": "ContainsExtraTypeInformation.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ],
+    "name": "GreaterOrEqual",
+    "methods": [
+     {
+      "type": "String",
+      "name": "getName",
+      "params": []
+     },
+     {
+      "type": "boolean",
+      "name": "matchResult",
+      "params": [
+       {
+        "type": "int",
+        "name": "result"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.matchers",
+  "filename": "GreaterOrEqual.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "Class",
+      "name": "clazz"
+     }
+    ],
+    "name": "InstanceOf",
+    "methods": [
+     {
+      "type": "boolean",
+      "name": "matches",
+      "params": [
+       {
+        "type": "Object",
+        "name": "actual"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "describeTo",
+      "params": [
+       {
+        "type": "Description",
+        "name": "description"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.matchers",
+  "filename": "InstanceOf.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "String",
+      "name": "substring"
+     }
+    ],
+    "name": "Contains",
+    "methods": [
+     {
+      "type": "boolean",
+      "name": "matches",
+      "params": [
+       {
+        "type": "Object",
+        "name": "actual"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "describeTo",
+      "params": [
+       {
+        "type": "Description",
+        "name": "description"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.matchers",
+  "filename": "Contains.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "Matcher",
+      "name": "actualMatcher"
+     },
+     {
+      "type": "Location",
+      "name": "location"
+     }
+    ],
+    "name": "LocalizedMatcher",
+    "methods": [
+     {
+      "type": null,
+      "name": "_dont_implement_Matcher___instead_extend_BaseMatcher_",
+      "params": []
+     },
+     {
+      "type": "boolean",
+      "name": "matches",
+      "params": [
+       {
+        "type": "Object",
+        "name": "item"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "describeTo",
+      "params": [
+       {
+        "type": "Description",
+        "name": "description"
+       }
+      ]
+     },
+     {
+      "type": "Location",
+      "name": "getLocation",
+      "params": []
+     },
+     {
+      "type": "String",
+      "name": "toString",
+      "params": []
+     },
+     {
+      "type": "SelfDescribing",
+      "name": "withExtraTypeInfo",
+      "params": []
+     },
+     {
+      "type": "boolean",
+      "name": "typeMatches",
+      "params": [
+       {
+        "type": "Object",
+        "name": "object"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "captureFrom",
+      "params": [
+       {
+        "type": "Object",
+        "name": "argument"
+       }
+      ]
+     },
+     {
+      "type": "Matcher",
+      "name": "getActualMatcher",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.matchers",
+  "filename": "LocalizedMatcher.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "Number",
+      "name": "wanted"
+     },
+     {
+      "type": "Number",
+      "name": "delta"
+     }
+    ],
+    "name": "EqualsWithDelta",
+    "methods": [
+     {
+      "type": "boolean",
+      "name": "matches",
+      "params": [
+       {
+        "type": "Object",
+        "name": "actual"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "describeTo",
+      "params": [
+       {
+        "type": "Description",
+        "name": "description"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.matchers",
+  "filename": "EqualsWithDelta.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ],
+    "name": "CompareEqual",
+    "methods": [
+     {
+      "type": "String",
+      "name": "getName",
+      "params": []
+     },
+     {
+      "type": "boolean",
+      "name": "matchResult",
+      "params": [
+       {
+        "type": "int",
+        "name": "result"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.matchers",
+  "filename": "CompareEqual.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "boolean",
+      "name": "isEquals"
+     }
+    ],
+    "name": "EqualsBuilder",
+    "methods": [
+     {
+      "type": "boolean",
+      "name": "reflectionEquals",
+      "params": [
+       {
+        "type": "Object",
+        "name": "lhs"
+       },
+       {
+        "type": "Object",
+        "name": "rhs"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "reflectionEquals",
+      "params": [
+       {
+        "type": "Object",
+        "name": "lhs"
+       },
+       {
+        "type": "Object",
+        "name": "rhs"
+       },
+       {
+        "type": "String",
+        "name": "excludeFields"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "reflectionEquals",
+      "params": [
+       {
+        "type": "Object",
+        "name": "lhs"
+       },
+       {
+        "type": "Object",
+        "name": "rhs"
+       },
+       {
+        "type": "boolean",
+        "name": "testTransients"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "reflectionEquals",
+      "params": [
+       {
+        "type": "Object",
+        "name": "lhs"
+       },
+       {
+        "type": "Object",
+        "name": "rhs"
+       },
+       {
+        "type": "boolean",
+        "name": "testTransients"
+       },
+       {
+        "type": "Class",
+        "name": "reflectUpToClass"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "reflectionEquals",
+      "params": [
+       {
+        "type": "Object",
+        "name": "lhs"
+       },
+       {
+        "type": "Object",
+        "name": "rhs"
+       },
+       {
+        "type": "boolean",
+        "name": "testTransients"
+       },
+       {
+        "type": "Class",
+        "name": "reflectUpToClass"
+       },
+       {
+        "type": "String",
+        "name": "excludeFields"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "reflectionAppend",
+      "params": [
+       {
+        "type": "Object",
+        "name": "lhs"
+       },
+       {
+        "type": "Object",
+        "name": "rhs"
+       },
+       {
+        "type": "Class",
+        "name": "clazz"
+       },
+       {
+        "type": "EqualsBuilder",
+        "name": "builder"
+       },
+       {
+        "type": "boolean",
+        "name": "useTransients"
+       },
+       {
+        "type": "String",
+        "name": "excludeFields"
+       }
+      ]
+     },
+     {
+      "type": "EqualsBuilder",
+      "name": "appendSuper",
+      "params": [
+       {
+        "type": "boolean",
+        "name": "superEquals"
+       }
+      ]
+     },
+     {
+      "type": "EqualsBuilder",
+      "name": "append",
+      "params": [
+       {
+        "type": "Object",
+        "name": "lhs"
+       },
+       {
+        "type": "Object",
+        "name": "rhs"
+       }
+      ]
+     },
+     {
+      "type": "EqualsBuilder",
+      "name": "append",
+      "params": [
+       {
+        "type": "long",
+        "name": "lhs"
+       },
+       {
+        "type": "long",
+        "name": "rhs"
+       }
+      ]
+     },
+     {
+      "type": "EqualsBuilder",
+      "name": "append",
+      "params": [
+       {
+        "type": "int",
+        "name": "lhs"
+       },
+       {
+        "type": "int",
+        "name": "rhs"
+       }
+      ]
+     },
+     {
+      "type": "EqualsBuilder",
+      "name": "append",
+      "params": [
+       {
+        "type": "short",
+        "name": "lhs"
+       },
+       {
+        "type": "short",
+        "name": "rhs"
+       }
+      ]
+     },
+     {
+      "type": "EqualsBuilder",
+      "name": "append",
+      "params": [
+       {
+        "type": "char",
+        "name": "lhs"
+       },
+       {
+        "type": "char",
+        "name": "rhs"
+       }
+      ]
+     },
+     {
+      "type": "EqualsBuilder",
+      "name": "append",
+      "params": [
+       {
+        "type": "byte",
+        "name": "lhs"
+       },
+       {
+        "type": "byte",
+        "name": "rhs"
+       }
+      ]
+     },
+     {
+      "type": "EqualsBuilder",
+      "name": "append",
+      "params": [
+       {
+        "type": "double",
+        "name": "lhs"
+       },
+       {
+        "type": "double",
+        "name": "rhs"
+       }
+      ]
+     },
+     {
+      "type": "EqualsBuilder",
+      "name": "append",
+      "params": [
+       {
+        "type": "float",
+        "name": "lhs"
+       },
+       {
+        "type": "float",
+        "name": "rhs"
+       }
+      ]
+     },
+     {
+      "type": "EqualsBuilder",
+      "name": "append",
+      "params": [
+       {
+        "type": "boolean",
+        "name": "lhs"
+       },
+       {
+        "type": "boolean",
+        "name": "rhs"
+       }
+      ]
+     },
+     {
+      "type": "EqualsBuilder",
+      "name": "append",
+      "params": [
+       {
+        "type": "Object",
+        "name": "lhs"
+       },
+       {
+        "type": "Object",
+        "name": "rhs"
+       }
+      ]
+     },
+     {
+      "type": "EqualsBuilder",
+      "name": "append",
+      "params": [
+       {
+        "type": "long",
+        "name": "lhs"
+       },
+       {
+        "type": "long",
+        "name": "rhs"
+       }
+      ]
+     },
+     {
+      "type": "EqualsBuilder",
+      "name": "append",
+      "params": [
+       {
+        "type": "int",
+        "name": "lhs"
+       },
+       {
+        "type": "int",
+        "name": "rhs"
+       }
+      ]
+     },
+     {
+      "type": "EqualsBuilder",
+      "name": "append",
+      "params": [
+       {
+        "type": "short",
+        "name": "lhs"
+       },
+       {
+        "type": "short",
+        "name": "rhs"
+       }
+      ]
+     },
+     {
+      "type": "EqualsBuilder",
+      "name": "append",
+      "params": [
+       {
+        "type": "char",
+        "name": "lhs"
+       },
+       {
+        "type": "char",
+        "name": "rhs"
+       }
+      ]
+     },
+     {
+      "type": "EqualsBuilder",
+      "name": "append",
+      "params": [
+       {
+        "type": "byte",
+        "name": "lhs"
+       },
+       {
+        "type": "byte",
+        "name": "rhs"
+       }
+      ]
+     },
+     {
+      "type": "EqualsBuilder",
+      "name": "append",
+      "params": [
+       {
+        "type": "double",
+        "name": "lhs"
+       },
+       {
+        "type": "double",
+        "name": "rhs"
+       }
+      ]
+     },
+     {
+      "type": "EqualsBuilder",
+      "name": "append",
+      "params": [
+       {
+        "type": "float",
+        "name": "lhs"
+       },
+       {
+        "type": "float",
+        "name": "rhs"
+       }
+      ]
+     },
+     {
+      "type": "EqualsBuilder",
+      "name": "append",
+      "params": [
+       {
+        "type": "boolean",
+        "name": "lhs"
+       },
+       {
+        "type": "boolean",
+        "name": "rhs"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "isEquals",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "setEquals",
+      "params": [
+       {
+        "type": "boolean",
+        "name": "isEquals"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.matchers.apachecommons",
+  "filename": "EqualsBuilder.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "Object",
+      "name": "wanted"
+     },
+     {
+      "type": "String",
+      "name": "excludeFields"
+     }
+    ],
+    "name": "ReflectionEquals",
+    "methods": [
+     {
+      "type": "boolean",
+      "name": "matches",
+      "params": [
+       {
+        "type": "Object",
+        "name": "actual"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "describeTo",
+      "params": [
+       {
+        "type": "Description",
+        "name": "description"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.matchers.apachecommons",
+  "filename": "ReflectionEquals.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "PrintingFriendlyInvocation",
+    "methods": [
+     {
+      "type": "String",
+      "name": "toString",
+      "params": [
+       {
+        "type": "PrintSettings",
+        "name": "printSettings"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.reporting",
+  "filename": "PrintingFriendlyInvocation.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "boolean",
+      "name": "multiline"
+     },
+     {
+      "type": "List",
+      "name": "withTypeInfo"
+     }
+    ],
+    "name": "PrintSettings",
+    "methods": [
+     {
+      "type": null,
+      "name": "setMultiline",
+      "params": [
+       {
+        "type": "boolean",
+        "name": "multiline"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "isMultiline",
+      "params": []
+     },
+     {
+      "type": "PrintSettings",
+      "name": "verboseMatchers",
+      "params": [
+       {
+        "type": "Integer",
+        "name": "indexesOfMatchers"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "extraTypeInfoFor",
+      "params": [
+       {
+        "type": "int",
+        "name": "argumentIndex"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "setMatchersToBeDescribedWithExtraTypeInfo",
+      "params": [
+       {
+        "type": "Integer",
+        "name": "indexesOfMatchers"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.reporting",
+  "filename": "PrintSettings.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "String",
+      "name": "wanted"
+     },
+     {
+      "type": "String",
+      "name": "actual"
+     }
+    ],
+    "name": "SmartPrinter",
+    "methods": [
+     {
+      "type": "String",
+      "name": "getWanted",
+      "params": []
+     },
+     {
+      "type": "String",
+      "name": "getActual",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.reporting",
+  "filename": "SmartPrinter.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "MockingProgress",
+    "methods": [
+     {
+      "type": null,
+      "name": "reportOngoingStubbing",
+      "params": [
+       {
+        "type": "IOngoingStubbing",
+        "name": "iOngoingStubbing"
+       }
+      ]
+     },
+     {
+      "type": "IOngoingStubbing",
+      "name": "pullOngoingStubbing",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "verificationStarted",
+      "params": [
+       {
+        "type": "VerificationMode",
+        "name": "verificationMode"
+       }
+      ]
+     },
+     {
+      "type": "VerificationMode",
+      "name": "pullVerificationMode",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "stubbingStarted",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "stubbingCompleted",
+      "params": [
+       {
+        "type": "Invocation",
+        "name": "invocation"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "validateState",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "reset",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "resetOngoingStubbing",
+      "params": []
+     },
+     {
+      "type": "ArgumentMatcherStorage",
+      "name": "getArgumentMatcherStorage",
+      "params": []
+     },
+     {
+      "type": "DebuggingInfo",
+      "name": "getDebuggingInfo",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.progress",
+  "filename": "MockingProgress.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "Stack",
+      "name": "matcherStack"
+     }
+    ],
+    "name": "ArgumentMatcherStorageImpl",
+    "methods": [
+     {
+      "type": "HandyReturnValues",
+      "name": "reportMatcher",
+      "params": [
+       {
+        "type": "Matcher",
+        "name": "matcher"
+       }
+      ]
+     },
+     {
+      "type": "List",
+      "name": "pullMatchers",
+      "params": []
+     },
+     {
+      "type": "HandyReturnValues",
+      "name": "reportAnd",
+      "params": []
+     },
+     {
+      "type": "HandyReturnValues",
+      "name": "reportNot",
+      "params": []
+     },
+     {
+      "type": "List",
+      "name": "popLastArgumentMatchers",
+      "params": [
+       {
+        "type": "int",
+        "name": "count"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "assertState",
+      "params": [
+       {
+        "type": "boolean",
+        "name": "toAssert"
+       },
+       {
+        "type": "String",
+        "name": "message"
+       }
+      ]
+     },
+     {
+      "type": "HandyReturnValues",
+      "name": "reportOr",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "validateState",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "reset",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.progress",
+  "filename": "ArgumentMatcherStorageImpl.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "HandyReturnValues",
+    "methods": [
+     {
+      "type": "byte",
+      "name": "returnZero",
+      "params": []
+     },
+     {
+      "type": "char",
+      "name": "returnChar",
+      "params": []
+     },
+     {
+      "type": "T",
+      "name": "returnNull",
+      "params": []
+     },
+     {
+      "type": "boolean",
+      "name": "returnFalse",
+      "params": []
+     },
+     {
+      "type": "String",
+      "name": "returnString",
+      "params": []
+     },
+     {
+      "type": "T",
+      "name": "returnFor",
+      "params": [
+       {
+        "type": "Class",
+        "name": "clazz"
+       }
+      ]
+     },
+     {
+      "type": "Map",
+      "name": "returnMap",
+      "params": []
+     },
+     {
+      "type": "List",
+      "name": "returnList",
+      "params": []
+     },
+     {
+      "type": "Set",
+      "name": "returnSet",
+      "params": []
+     },
+     {
+      "type": "T",
+      "name": "returnFor",
+      "params": [
+       {
+        "type": "T",
+        "name": "instance"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.progress",
+  "filename": "HandyReturnValues.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "ArgumentMatcherStorage",
+    "methods": [
+     {
+      "type": "HandyReturnValues",
+      "name": "reportMatcher",
+      "params": [
+       {
+        "type": "Matcher",
+        "name": "matcher"
+       }
+      ]
+     },
+     {
+      "type": "List",
+      "name": "pullMatchers",
+      "params": []
+     },
+     {
+      "type": "HandyReturnValues",
+      "name": "reportAnd",
+      "params": []
+     },
+     {
+      "type": "HandyReturnValues",
+      "name": "reportNot",
+      "params": []
+     },
+     {
+      "type": "HandyReturnValues",
+      "name": "reportOr",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "validateState",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "reset",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.progress",
+  "filename": "ArgumentMatcherStorage.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "ThreadLocal",
+      "name": "mockingProgress"
+     }
+    ],
+    "name": "ThreadSafeMockingProgress",
+    "methods": [
+     {
+      "type": "MockingProgress",
+      "name": "threadSafely",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "reportOngoingStubbing",
+      "params": [
+       {
+        "type": "IOngoingStubbing",
+        "name": "iOngoingStubbing"
+       }
+      ]
+     },
+     {
+      "type": "IOngoingStubbing",
+      "name": "pullOngoingStubbing",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "verificationStarted",
+      "params": [
+       {
+        "type": "VerificationMode",
+        "name": "verify"
+       }
+      ]
+     },
+     {
+      "type": "VerificationMode",
+      "name": "pullVerificationMode",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "stubbingStarted",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "validateState",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "stubbingCompleted",
+      "params": [
+       {
+        "type": "Invocation",
+        "name": "invocation"
+       }
+      ]
+     },
+     {
+      "type": "String",
+      "name": "toString",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "reset",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "resetOngoingStubbing",
+      "params": []
+     },
+     {
+      "type": "ArgumentMatcherStorage",
+      "name": "getArgumentMatcherStorage",
+      "params": []
+     },
+     {
+      "type": "DebuggingInfo",
+      "name": "getDebuggingInfo",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.progress",
+  "filename": "ThreadSafeMockingProgress.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "IOngoingStubbing",
+    "methods": []
+   }
+  ],
+  "package_name": "org.mockito.internal.progress",
+  "filename": "IOngoingStubbing.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "int",
+      "name": "sequenceNumber"
+     }
+    ],
+    "name": "SequenceNumber",
+    "methods": [
+     {
+      "type": "int",
+      "name": "next",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.progress",
+  "filename": "SequenceNumber.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "Reporter",
+      "name": "reporter"
+     },
+     {
+      "type": "ArgumentMatcherStorage",
+      "name": "argumentMatcherStorage"
+     },
+     {
+      "type": "DebuggingInfo",
+      "name": "debuggingInfo"
+     },
+     {
+      "type": "IOngoingStubbing",
+      "name": "iOngoingStubbing"
+     },
+     {
+      "type": "Localized",
+      "name": "verificationMode"
+     },
+     {
+      "type": "Location",
+      "name": "stubbingInProgress"
+     }
+    ],
+    "name": "MockingProgressImpl",
+    "methods": [
+     {
+      "type": null,
+      "name": "reportOngoingStubbing",
+      "params": [
+       {
+        "type": "IOngoingStubbing",
+        "name": "iOngoingStubbing"
+       }
+      ]
+     },
+     {
+      "type": "IOngoingStubbing",
+      "name": "pullOngoingStubbing",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "verificationStarted",
+      "params": [
+       {
+        "type": "VerificationMode",
+        "name": "verify"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "resetOngoingStubbing",
+      "params": []
+     },
+     {
+      "type": "VerificationMode",
+      "name": "pullVerificationMode",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "stubbingStarted",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "validateState",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "stubbingCompleted",
+      "params": [
+       {
+        "type": "Invocation",
+        "name": "invocation"
+       }
+      ]
+     },
+     {
+      "type": "String",
+      "name": "toString",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "reset",
+      "params": []
+     },
+     {
+      "type": "ArgumentMatcherStorage",
+      "name": "getArgumentMatcherStorage",
+      "params": []
+     },
+     {
+      "type": "DebuggingInfo",
+      "name": "getDebuggingInfo",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.progress",
+  "filename": "MockingProgressImpl.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "int",
+      "name": "wantedCount"
+     }
+    ],
+    "name": "AtLeast",
+    "methods": [
+     {
+      "type": null,
+      "name": "verify",
+      "params": [
+       {
+        "type": "VerificationData",
+        "name": "data"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "verifyInOrder",
+      "params": [
+       {
+        "type": "VerificationData",
+        "name": "data"
+       }
+      ]
+     },
+     {
+      "type": "String",
+      "name": "toString",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.verification",
+  "filename": "AtLeast.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "List",
+      "name": "invocations"
+     }
+    ],
+    "name": "RegisteredInvocations",
+    "methods": [
+     {
+      "type": null,
+      "name": "add",
+      "params": [
+       {
+        "type": "Invocation",
+        "name": "invocation"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "removeLast",
+      "params": []
+     },
+     {
+      "type": "List",
+      "name": "getAll",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.verification",
+  "filename": "RegisteredInvocations.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "VerificationModeFactory",
+    "methods": [
+     {
+      "type": "VerificationMode",
+      "name": "atLeastOnce",
+      "params": []
+     },
+     {
+      "type": "VerificationMode",
+      "name": "atLeast",
+      "params": [
+       {
+        "type": "int",
+        "name": "minNumberOfInvocations"
+       }
+      ]
+     },
+     {
+      "type": "VerificationMode",
+      "name": "only",
+      "params": []
+     },
+     {
+      "type": "Times",
+      "name": "times",
+      "params": [
+       {
+        "type": "int",
+        "name": "wantedNumberOfInvocations"
+       }
+      ]
+     },
+     {
+      "type": "NoMoreInteractions",
+      "name": "noMoreInteractions",
+      "params": []
+     },
+     {
+      "type": "VerificationMode",
+      "name": "atMost",
+      "params": [
+       {
+        "type": "int",
+        "name": "maxNumberOfInvocations"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.verification",
+  "filename": "VerificationModeFactory.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "int",
+      "name": "wantedCount"
+     }
+    ],
+    "name": "Times",
+    "methods": [
+     {
+      "type": null,
+      "name": "verify",
+      "params": [
+       {
+        "type": "VerificationData",
+        "name": "data"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "verifyInOrder",
+      "params": [
+       {
+        "type": "VerificationData",
+        "name": "data"
+       }
+      ]
+     },
+     {
+      "type": "String",
+      "name": "toString",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.verification",
+  "filename": "Times.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "int",
+      "name": "maxNumberOfInvocations"
+     },
+     {
+      "type": "InvocationMarker",
+      "name": "invocationMarker"
+     }
+    ],
+    "name": "AtMost",
+    "methods": [
+     {
+      "type": null,
+      "name": "verify",
+      "params": [
+       {
+        "type": "VerificationData",
+        "name": "data"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.verification",
+  "filename": "AtMost.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "InvocationsFinder",
+      "name": "finder"
+     },
+     {
+      "type": "InvocationMarker",
+      "name": "marker"
+     },
+     {
+      "type": "Reporter",
+      "name": "reporter"
+     }
+    ],
+    "name": "Only",
+    "methods": [
+     {
+      "type": null,
+      "name": "verify",
+      "params": [
+       {
+        "type": "VerificationData",
+        "name": "data"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.verification",
+  "filename": "Only.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "VerificationInOrderMode",
+      "name": "mode"
+     },
+     {
+      "type": "List",
+      "name": "mocksToBeVerifiedInOrder"
+     }
+    ],
+    "name": "InOrderWrapper",
+    "methods": [
+     {
+      "type": null,
+      "name": "verify",
+      "params": [
+       {
+        "type": "VerificationData",
+        "name": "data"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.verification",
+  "filename": "InOrderWrapper.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "NoMoreInteractions",
+    "methods": [
+     {
+      "type": null,
+      "name": "verify",
+      "params": [
+       {
+        "type": "VerificationData",
+        "name": "data"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.verification",
+  "filename": "NoMoreInteractions.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "List",
+      "name": "allInvocations"
+     },
+     {
+      "type": "InvocationMatcher",
+      "name": "wanted"
+     }
+    ],
+    "name": "VerificationDataImpl",
+    "methods": [
+     {
+      "type": "List",
+      "name": "getAllInvocations",
+      "params": []
+     },
+     {
+      "type": "InvocationMatcher",
+      "name": "getWanted",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.verification",
+  "filename": "VerificationDataImpl.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "Reporter",
+      "name": "reporter"
+     },
+     {
+      "type": "InvocationsFinder",
+      "name": "finder"
+     },
+     {
+      "type": "InvocationMarker",
+      "name": "invocationMarker"
+     }
+    ],
+    "name": "NumberOfInvocationsChecker",
+    "methods": [
+     {
+      "type": null,
+      "name": "check",
+      "params": [
+       {
+        "type": "List",
+        "name": "invocations"
+       },
+       {
+        "type": "InvocationMatcher",
+        "name": "wanted"
+       },
+       {
+        "type": "int",
+        "name": "wantedCount"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.verification.checkers",
+  "filename": "NumberOfInvocationsChecker.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "AtLeastDiscrepancy",
+    "methods": [
+     {
+      "type": "String",
+      "name": "getPluralizedWantedCount",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.verification.checkers",
+  "filename": "AtLeastDiscrepancy.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "Reporter",
+      "name": "reporter"
+     },
+     {
+      "type": "InvocationsFinder",
+      "name": "finder"
+     },
+     {
+      "type": "InvocationMarker",
+      "name": "invocationMarker"
+     }
+    ],
+    "name": "AtLeastXNumberOfInvocationsInOrderChecker",
+    "methods": [
+     {
+      "type": null,
+      "name": "check",
+      "params": [
+       {
+        "type": "List",
+        "name": "invocations"
+       },
+       {
+        "type": "InvocationMatcher",
+        "name": "wanted"
+       },
+       {
+        "type": "int",
+        "name": "wantedCount"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.verification.checkers",
+  "filename": "AtLeastXNumberOfInvocationsInOrderChecker.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "Reporter",
+      "name": "reporter"
+     },
+     {
+      "type": "InvocationsFinder",
+      "name": "finder"
+     },
+     {
+      "type": "InvocationMarker",
+      "name": "invocationMarker"
+     }
+    ],
+    "name": "AtLeastXNumberOfInvocationsChecker",
+    "methods": [
+     {
+      "type": null,
+      "name": "check",
+      "params": [
+       {
+        "type": "List",
+        "name": "invocations"
+       },
+       {
+        "type": "InvocationMatcher",
+        "name": "wanted"
+       },
+       {
+        "type": "int",
+        "name": "wantedCount"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.verification.checkers",
+  "filename": "AtLeastXNumberOfInvocationsChecker.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "Reporter",
+      "name": "reporter"
+     },
+     {
+      "type": "InvocationsFinder",
+      "name": "finder"
+     },
+     {
+      "type": "InvocationMarker",
+      "name": "invocationMarker"
+     }
+    ],
+    "name": "NumberOfInvocationsInOrderChecker",
+    "methods": [
+     {
+      "type": null,
+      "name": "check",
+      "params": [
+       {
+        "type": "List",
+        "name": "invocations"
+       },
+       {
+        "type": "InvocationMatcher",
+        "name": "wanted"
+       },
+       {
+        "type": "int",
+        "name": "wantedCount"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.verification.checkers",
+  "filename": "NumberOfInvocationsInOrderChecker.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "Reporter",
+      "name": "reporter"
+     },
+     {
+      "type": "InvocationsFinder",
+      "name": "finder"
+     }
+    ],
+    "name": "MissingInvocationInOrderChecker",
+    "methods": [
+     {
+      "type": null,
+      "name": "check",
+      "params": [
+       {
+        "type": "List",
+        "name": "invocations"
+       },
+       {
+        "type": "InvocationMatcher",
+        "name": "wanted"
+       },
+       {
+        "type": "VerificationMode",
+        "name": "mode"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.verification.checkers",
+  "filename": "MissingInvocationInOrderChecker.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "Reporter",
+      "name": "reporter"
+     },
+     {
+      "type": "InvocationsFinder",
+      "name": "finder"
+     }
+    ],
+    "name": "MissingInvocationChecker",
+    "methods": [
+     {
+      "type": null,
+      "name": "check",
+      "params": [
+       {
+        "type": "List",
+        "name": "invocations"
+       },
+       {
+        "type": "InvocationMatcher",
+        "name": "wanted"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.verification.checkers",
+  "filename": "MissingInvocationChecker.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "VerificationMode",
+    "methods": [
+     {
+      "type": null,
+      "name": "verify",
+      "params": [
+       {
+        "type": "VerificationData",
+        "name": "data"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.verification.api",
+  "filename": "VerificationMode.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "VerificationInOrderMode",
+    "methods": [
+     {
+      "type": null,
+      "name": "verifyInOrder",
+      "params": [
+       {
+        "type": "VerificationData",
+        "name": "data"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.verification.api",
+  "filename": "VerificationInOrderMode.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "VerificationData",
+    "methods": [
+     {
+      "type": "List",
+      "name": "getAllInvocations",
+      "params": []
+     },
+     {
+      "type": "InvocationMatcher",
+      "name": "getWanted",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.verification.api",
+  "filename": "VerificationData.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "ArgumentMatchingTool",
+    "methods": [
+     {
+      "type": "Integer",
+      "name": "getSuspiciouslyNotMatchingArgsIndexes",
+      "params": [
+       {
+        "type": "List",
+        "name": "matchers"
+       },
+       {
+        "type": "Object",
+        "name": "arguments"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "safelyMatches",
+      "params": [
+       {
+        "type": "Matcher",
+        "name": "m"
+       },
+       {
+        "type": "Object",
+        "name": "arg"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "toStringEquals",
+      "params": [
+       {
+        "type": "Matcher",
+        "name": "m"
+       },
+       {
+        "type": "Object",
+        "name": "arg"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.verification.argumentmatching",
+  "filename": "ArgumentMatchingTool.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "ThreadLocal",
+      "name": "globalConfiguration"
+     }
+    ],
+    "name": "GlobalConfiguration",
+    "methods": [
+     {
+      "type": "IMockitoConfiguration",
+      "name": "getIt",
+      "params": []
+     },
+     {
+      "type": "IMockitoConfiguration",
+      "name": "createConfig",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "validate",
+      "params": []
+     },
+     {
+      "type": "ReturnValues",
+      "name": "getReturnValues",
+      "params": []
+     },
+     {
+      "type": "AnnotationEngine",
+      "name": "getAnnotationEngine",
+      "params": []
+     },
+     {
+      "type": "boolean",
+      "name": "cleansStackTrace",
+      "params": []
+     },
+     {
+      "type": "Answer",
+      "name": "getDefaultAnswer",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.configuration",
+  "filename": "GlobalConfiguration.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "DefaultAnnotationEngine",
+    "methods": [
+     {
+      "type": "Object",
+      "name": "createMockFor",
+      "params": [
+       {
+        "type": "Annotation",
+        "name": "annotation"
+       },
+       {
+        "type": "Field",
+        "name": "field"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.configuration",
+  "filename": "DefaultAnnotationEngine.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "ClassPathLoader",
+    "methods": [
+     {
+      "type": "IMockitoConfiguration",
+      "name": "loadConfiguration",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.configuration",
+  "filename": "ClassPathLoader.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "T",
+      "name": "object"
+     },
+     {
+      "type": "Location",
+      "name": "location"
+     }
+    ],
+    "name": "Localized",
+    "methods": [
+     {
+      "type": "T",
+      "name": "getObject",
+      "params": []
+     },
+     {
+      "type": "Location",
+      "name": "getLocation",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.debugging",
+  "filename": "Localized.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "List",
+      "name": "unusedStubs"
+     },
+     {
+      "type": "List",
+      "name": "unstubbedInvocations"
+     },
+     {
+      "type": "boolean",
+      "name": "warnAboutUnstubbed"
+     }
+    ],
+    "name": "WarningsPrinterImpl",
+    "methods": [
+     {
+      "type": null,
+      "name": "print",
+      "params": [
+       {
+        "type": "MockitoLogger",
+        "name": "logger"
+       }
+      ]
+     },
+     {
+      "type": "String",
+      "name": "thisStubWasNotUsed",
+      "params": [
+       {
+        "type": "Invocation",
+        "name": "i"
+       }
+      ]
+     },
+     {
+      "type": "String",
+      "name": "thisMethodWasNotStubbed",
+      "params": [
+       {
+        "type": "InvocationMatcher",
+        "name": "i"
+       }
+      ]
+     },
+     {
+      "type": "String",
+      "name": "stubbedMethodCalledWithDifferentArguments",
+      "params": [
+       {
+        "type": "Invocation",
+        "name": "unused"
+       },
+       {
+        "type": "InvocationMatcher",
+        "name": "unstubbed"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.debugging",
+  "filename": "WarningsPrinterImpl.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "String",
+      "name": "where"
+     }
+    ],
+    "name": "Location",
+    "methods": [
+     {
+      "type": "String",
+      "name": "toString",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.debugging",
+  "filename": "Location.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "MockitoDebuggerImpl",
+    "methods": [
+     {
+      "type": "String",
+      "name": "printInvocations",
+      "params": [
+       {
+        "type": "Object",
+        "name": "mocks"
+       }
+      ]
+     },
+     {
+      "type": "String",
+      "name": "line",
+      "params": [
+       {
+        "type": "String",
+        "name": "text"
+       }
+      ]
+     },
+     {
+      "type": "String",
+      "name": "print",
+      "params": [
+       {
+        "type": "String",
+        "name": "out"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.debugging",
+  "filename": "MockitoDebuggerImpl.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "List",
+      "name": "unusedStubs"
+     },
+     {
+      "type": "List",
+      "name": "unstubbedInvocations"
+     },
+     {
+      "type": "boolean",
+      "name": "collectingData"
+     }
+    ],
+    "name": "DebuggingInfo",
+    "methods": [
+     {
+      "type": null,
+      "name": "addStubbedInvocation",
+      "params": [
+       {
+        "type": "Invocation",
+        "name": "invocation"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "addPotentiallyUnstubbed",
+      "params": [
+       {
+        "type": "InvocationMatcher",
+        "name": "invocationMatcher"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "reportUsedStub",
+      "params": [
+       {
+        "type": "InvocationMatcher",
+        "name": "invocationMatcher"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "collectData",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "clearData",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "printWarnings",
+      "params": [
+       {
+        "type": "MockitoLogger",
+        "name": "logger"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "hasData",
+      "params": []
+     },
+     {
+      "type": "String",
+      "name": "getWarnings",
+      "params": [
+       {
+        "type": "boolean",
+        "name": "warnAboutUnstubbed"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.debugging",
+  "filename": "DebuggingInfo.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "Queue",
+      "name": "answers"
+     },
+     {
+      "type": "PrintableInvocation",
+      "name": "usedAt"
+     }
+    ],
+    "name": "StubbedInvocationMatcher",
+    "methods": [
+     {
+      "type": "Object",
+      "name": "answer",
+      "params": [
+       {
+        "type": "InvocationOnMock",
+        "name": "invocation"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "addAnswer",
+      "params": [
+       {
+        "type": "Answer",
+        "name": "answer"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "markStubUsed",
+      "params": [
+       {
+        "type": "PrintableInvocation",
+        "name": "usedAt"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "wasUsed",
+      "params": []
+     },
+     {
+      "type": "String",
+      "name": "toString",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.stubbing",
+  "filename": "StubbedInvocationMatcher.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "BaseStubbing",
+    "methods": [
+     {
+      "type": "OngoingStubbing",
+      "name": "thenReturn",
+      "params": [
+       {
+        "type": "T",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "OngoingStubbing",
+      "name": "thenReturn",
+      "params": [
+       {
+        "type": "T",
+        "name": "value"
+       },
+       {
+        "type": "T",
+        "name": "values"
+       }
+      ]
+     },
+     {
+      "type": "OngoingStubbing",
+      "name": "thenThrow",
+      "params": [
+       {
+        "type": "Throwable",
+        "name": "throwable"
+       }
+      ]
+     },
+     {
+      "type": "OngoingStubbing",
+      "name": "thenThrow",
+      "params": [
+       {
+        "type": "Throwable",
+        "name": "throwables"
+       }
+      ]
+     },
+     {
+      "type": "OngoingStubbing",
+      "name": "thenCallRealMethod",
+      "params": []
+     },
+     {
+      "type": "DeprecatedOngoingStubbing",
+      "name": "toReturn",
+      "params": [
+       {
+        "type": "T",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "DeprecatedOngoingStubbing",
+      "name": "toThrow",
+      "params": [
+       {
+        "type": "Throwable",
+        "name": "throwable"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.stubbing",
+  "filename": "BaseStubbing.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "InvocationContainer",
+    "methods": [
+     {
+      "type": "List",
+      "name": "getInvocations",
+      "params": []
+     },
+     {
+      "type": "List",
+      "name": "getStubbedInvocations",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.stubbing",
+  "filename": "InvocationContainer.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "InvocationContainerImpl",
+      "name": "invocationContainerImpl"
+     }
+    ],
+    "name": "ConsecutiveStubbing",
+    "methods": [
+     {
+      "type": "OngoingStubbing",
+      "name": "thenAnswer",
+      "params": [
+       {
+        "type": "Answer",
+        "name": "answer"
+       }
+      ]
+     },
+     {
+      "type": "DeprecatedOngoingStubbing",
+      "name": "toAnswer",
+      "params": [
+       {
+        "type": "Answer",
+        "name": "answer"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.stubbing",
+  "filename": "ConsecutiveStubbing.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "List",
+      "name": "answers"
+     },
+     {
+      "type": "Reporter",
+      "name": "reporter"
+     }
+    ],
+    "name": "StubberImpl",
+    "methods": [
+     {
+      "type": "T",
+      "name": "when",
+      "params": [
+       {
+        "type": "T",
+        "name": "mock"
+       }
+      ]
+     },
+     {
+      "type": "Stubber",
+      "name": "doReturn",
+      "params": [
+       {
+        "type": "Object",
+        "name": "toBeReturned"
+       }
+      ]
+     },
+     {
+      "type": "Stubber",
+      "name": "doThrow",
+      "params": [
+       {
+        "type": "Throwable",
+        "name": "toBeThrown"
+       }
+      ]
+     },
+     {
+      "type": "Stubber",
+      "name": "doNothing",
+      "params": []
+     },
+     {
+      "type": "Stubber",
+      "name": "doAnswer",
+      "params": [
+       {
+        "type": "Answer",
+        "name": "answer"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.stubbing",
+  "filename": "StubberImpl.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "InvocationContainerImpl",
+      "name": "invocationContainerImpl"
+     }
+    ],
+    "name": "OngoingStubbingImpl",
+    "methods": [
+     {
+      "type": "OngoingStubbing",
+      "name": "thenAnswer",
+      "params": [
+       {
+        "type": "Answer",
+        "name": "answer"
+       }
+      ]
+     },
+     {
+      "type": "DeprecatedOngoingStubbing",
+      "name": "toAnswer",
+      "params": [
+       {
+        "type": "Answer",
+        "name": "answer"
+       }
+      ]
+     },
+     {
+      "type": "List",
+      "name": "getRegisteredInvocations",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.stubbing",
+  "filename": "OngoingStubbingImpl.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "T",
+      "name": "mock"
+     },
+     {
+      "type": "InvocationContainerImpl",
+      "name": "invocationContainerImpl"
+     }
+    ],
+    "name": "VoidMethodStubbableImpl",
+    "methods": [
+     {
+      "type": "VoidMethodStubbable",
+      "name": "toThrow",
+      "params": [
+       {
+        "type": "Throwable",
+        "name": "throwable"
+       }
+      ]
+     },
+     {
+      "type": "VoidMethodStubbable",
+      "name": "toReturn",
+      "params": []
+     },
+     {
+      "type": "VoidMethodStubbable",
+      "name": "toAnswer",
+      "params": [
+       {
+        "type": "Answer",
+        "name": "answer"
+       }
+      ]
+     },
+     {
+      "type": "T",
+      "name": "on",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.stubbing",
+  "filename": "VoidMethodStubbableImpl.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "LinkedList",
+      "name": "stubbed"
+     },
+     {
+      "type": "MockingProgress",
+      "name": "mockingProgress"
+     },
+     {
+      "type": "List",
+      "name": "answersForStubbing"
+     },
+     {
+      "type": "RegisteredInvocations",
+      "name": "registeredInvocations"
+     },
+     {
+      "type": "InvocationMatcher",
+      "name": "invocationForStubbing"
+     }
+    ],
+    "name": "InvocationContainerImpl",
+    "methods": [
+     {
+      "type": null,
+      "name": "setInvocationForPotentialStubbing",
+      "params": [
+       {
+        "type": "InvocationMatcher",
+        "name": "invocation"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "resetInvocationForPotentialStubbing",
+      "params": [
+       {
+        "type": "InvocationMatcher",
+        "name": "invocationMatcher"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "addAnswer",
+      "params": [
+       {
+        "type": "Answer",
+        "name": "answer"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "addConsecutiveAnswer",
+      "params": [
+       {
+        "type": "Answer",
+        "name": "answer"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "addAnswer",
+      "params": [
+       {
+        "type": "Answer",
+        "name": "answer"
+       },
+       {
+        "type": "boolean",
+        "name": "isConsecutive"
+       }
+      ]
+     },
+     {
+      "type": "Object",
+      "name": "answerTo",
+      "params": [
+       {
+        "type": "Invocation",
+        "name": "invocation"
+       }
+      ]
+     },
+     {
+      "type": "StubbedInvocationMatcher",
+      "name": "findAnswerFor",
+      "params": [
+       {
+        "type": "Invocation",
+        "name": "invocation"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "addAnswerForVoidMethod",
+      "params": [
+       {
+        "type": "Answer",
+        "name": "answer"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "setAnswersForStubbing",
+      "params": [
+       {
+        "type": "List",
+        "name": "answers"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "hasAnswersForStubbing",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "setMethodForStubbing",
+      "params": [
+       {
+        "type": "InvocationMatcher",
+        "name": "invocation"
+       }
+      ]
+     },
+     {
+      "type": "String",
+      "name": "toString",
+      "params": []
+     },
+     {
+      "type": "List",
+      "name": "getInvocations",
+      "params": []
+     },
+     {
+      "type": "List",
+      "name": "getStubbedInvocations",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.stubbing",
+  "filename": "InvocationContainerImpl.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "Answer",
+      "name": "delegate"
+     }
+    ],
+    "name": "ReturnsMoreEmptyValues",
+    "methods": [
+     {
+      "type": "Object",
+      "name": "answer",
+      "params": [
+       {
+        "type": "InvocationOnMock",
+        "name": "invocation"
+       }
+      ]
+     },
+     {
+      "type": "Object",
+      "name": "returnValueFor",
+      "params": [
+       {
+        "type": "Class",
+        "name": "type"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.stubbing.defaultanswers",
+  "filename": "ReturnsMoreEmptyValues.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "MockitoCore",
+      "name": "mockitoCore"
+     },
+     {
+      "type": "Answer",
+      "name": "delegate"
+     }
+    ],
+    "name": "ReturnsMocks",
+    "methods": [
+     {
+      "type": "Object",
+      "name": "answer",
+      "params": [
+       {
+        "type": "InvocationOnMock",
+        "name": "invocation"
+       }
+      ]
+     },
+     {
+      "type": "Object",
+      "name": "returnValueFor",
+      "params": [
+       {
+        "type": "Class",
+        "name": "clazz"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.stubbing.defaultanswers",
+  "filename": "ReturnsMocks.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "Answer",
+      "name": "delegate"
+     }
+    ],
+    "name": "ReturnsSmartNulls",
+    "methods": [
+     {
+      "type": "Object",
+      "name": "answer",
+      "params": [
+       {
+        "type": "InvocationOnMock",
+        "name": "invocation"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.stubbing.defaultanswers",
+  "filename": "ReturnsSmartNulls.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ],
+    "name": "ReturnsEmptyValues",
+    "methods": [
+     {
+      "type": "Object",
+      "name": "answer",
+      "params": [
+       {
+        "type": "InvocationOnMock",
+        "name": "invocation"
+       }
+      ]
+     },
+     {
+      "type": "Object",
+      "name": "returnValueFor",
+      "params": [
+       {
+        "type": "Class",
+        "name": "type"
+       }
+      ]
+     },
+     {
+      "type": "Object",
+      "name": "primitiveOf",
+      "params": [
+       {
+        "type": "Class",
+        "name": "type"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.stubbing.defaultanswers",
+  "filename": "ReturnsEmptyValues.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ],
+    "name": "GloballyConfiguredAnswer",
+    "methods": [
+     {
+      "type": "Object",
+      "name": "answer",
+      "params": [
+       {
+        "type": "InvocationOnMock",
+        "name": "invocation"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.stubbing.defaultanswers",
+  "filename": "GloballyConfiguredAnswer.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ],
+    "name": "CallsRealMethods",
+    "methods": [
+     {
+      "type": "Object",
+      "name": "answer",
+      "params": [
+       {
+        "type": "InvocationOnMock",
+        "name": "invocation"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.stubbing.answers",
+  "filename": "CallsRealMethods.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "Reporter",
+      "name": "reporter"
+     }
+    ],
+    "name": "AnswersValidator",
+    "methods": [
+     {
+      "type": null,
+      "name": "validate",
+      "params": [
+       {
+        "type": "Answer",
+        "name": "answer"
+       },
+       {
+        "type": "Invocation",
+        "name": "invocation"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "validateMockingConcreteClass",
+      "params": [
+       {
+        "type": "CallsRealMethods",
+        "name": "answer"
+       },
+       {
+        "type": "Invocation",
+        "name": "invocation"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "validateDoNothing",
+      "params": [
+       {
+        "type": "DoesNothing",
+        "name": "answer"
+       },
+       {
+        "type": "Invocation",
+        "name": "invocation"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "validateReturnValue",
+      "params": [
+       {
+        "type": "Returns",
+        "name": "answer"
+       },
+       {
+        "type": "Invocation",
+        "name": "invocation"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "validateException",
+      "params": [
+       {
+        "type": "ThrowsException",
+        "name": "answer"
+       },
+       {
+        "type": "Invocation",
+        "name": "invocation"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.stubbing.answers",
+  "filename": "AnswersValidator.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "ReturnValues",
+      "name": "returnValues"
+     }
+    ],
+    "name": "AnswerReturnValuesAdapter",
+    "methods": [
+     {
+      "type": "Object",
+      "name": "answer",
+      "params": [
+       {
+        "type": "InvocationOnMock",
+        "name": "invocation"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.stubbing.answers",
+  "filename": "AnswerReturnValuesAdapter.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "Object",
+      "name": "value"
+     }
+    ],
+    "name": "Returns",
+    "methods": [
+     {
+      "type": "Object",
+      "name": "answer",
+      "params": [
+       {
+        "type": "InvocationOnMock",
+        "name": "invocation"
+       }
+      ]
+     },
+     {
+      "type": "String",
+      "name": "printReturnType",
+      "params": []
+     },
+     {
+      "type": "Class",
+      "name": "getReturnType",
+      "params": []
+     },
+     {
+      "type": "boolean",
+      "name": "returnsNull",
+      "params": []
+     },
+     {
+      "type": "String",
+      "name": "toString",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.stubbing.answers",
+  "filename": "Returns.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "Throwable",
+      "name": "throwable"
+     },
+     {
+      "type": "ConditionalStackTraceFilter",
+      "name": "filter"
+     }
+    ],
+    "name": "ThrowsException",
+    "methods": [
+     {
+      "type": "Object",
+      "name": "answer",
+      "params": [
+       {
+        "type": "InvocationOnMock",
+        "name": "invocation"
+       }
+      ]
+     },
+     {
+      "type": "Throwable",
+      "name": "getThrowable",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.stubbing.answers",
+  "filename": "ThrowsException.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ],
+    "name": "DoesNothing",
+    "methods": [
+     {
+      "type": "Object",
+      "name": "answer",
+      "params": [
+       {
+        "type": "InvocationOnMock",
+        "name": "invocation"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.stubbing.answers",
+  "filename": "DoesNothing.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "Pattern",
+      "name": "CAPS"
+     }
+    ],
+    "name": "Decamelizer",
+    "methods": [
+     {
+      "type": "String",
+      "name": "decamelizeMatcher",
+      "params": [
+       {
+        "type": "String",
+        "name": "className"
+       }
+      ]
+     },
+     {
+      "type": "String",
+      "name": "decamelizeClassName",
+      "params": [
+       {
+        "type": "String",
+        "name": "className"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.util",
+  "filename": "Decamelizer.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "CreationValidator",
+    "methods": [
+     {
+      "type": null,
+      "name": "validateType",
+      "params": [
+       {
+        "type": "Class",
+        "name": "classToMock"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "validateExtraInterfaces",
+      "params": [
+       {
+        "type": "Class",
+        "name": "classToMock"
+       },
+       {
+        "type": "Class",
+        "name": "extraInterfaces"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "validateMockedType",
+      "params": [
+       {
+        "type": "Class",
+        "name": "classToMock"
+       },
+       {
+        "type": "Object",
+        "name": "spiedInstance"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.util",
+  "filename": "CreationValidator.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "ArrayUtils",
+    "methods": [
+     {
+      "type": "Class",
+      "name": "concat",
+      "params": [
+       {
+        "type": "Class",
+        "name": "interfaces"
+       },
+       {
+        "type": "Class",
+        "name": "clazz"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.util",
+  "filename": "ArrayUtils.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ],
+    "name": "ObjectMethodsGuru",
+    "methods": [
+     {
+      "type": "boolean",
+      "name": "isToString",
+      "params": [
+       {
+        "type": "Method",
+        "name": "method"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "isToString",
+      "params": [
+       {
+        "type": "MockitoMethod",
+        "name": "method"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "isEqualsMethod",
+      "params": [
+       {
+        "type": "Method",
+        "name": "method"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "isHashCodeMethod",
+      "params": [
+       {
+        "type": "Method",
+        "name": "method"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.util",
+  "filename": "ObjectMethodsGuru.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "Map",
+      "name": "wrapperReturnValues"
+     },
+     {
+      "type": "Map",
+      "name": "primitiveTypes"
+     },
+     {
+      "type": "Map",
+      "name": "primitiveValues"
+     }
+    ],
+    "name": "Primitives",
+    "methods": [
+     {
+      "type": "boolean",
+      "name": "isPrimitiveWrapper",
+      "params": [
+       {
+        "type": "Class",
+        "name": "type"
+       }
+      ]
+     },
+     {
+      "type": "T",
+      "name": "primitiveWrapperOf",
+      "params": [
+       {
+        "type": "Class",
+        "name": "type"
+       }
+      ]
+     },
+     {
+      "type": "Class",
+      "name": "primitiveTypeOf",
+      "params": [
+       {
+        "type": "Class",
+        "name": "clazz"
+       }
+      ]
+     },
+     {
+      "type": "T",
+      "name": "primitiveValueOrNullFor",
+      "params": [
+       {
+        "type": "Class",
+        "name": "primitiveType"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.util",
+  "filename": "Primitives.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "MockitoLogger",
+    "methods": [
+     {
+      "type": null,
+      "name": "log",
+      "params": [
+       {
+        "type": "Object",
+        "name": "what"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.util",
+  "filename": "MockitoLogger.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "ListUtil",
+    "methods": [
+     {
+      "type": "LinkedList",
+      "name": "filter",
+      "params": [
+       {
+        "type": "Collection",
+        "name": "collection"
+       },
+       {
+        "type": "Filter",
+        "name": "filter"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.util",
+  "filename": "ListUtil.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "StringJoiner",
+    "methods": [
+     {
+      "type": "String",
+      "name": "join",
+      "params": [
+       {
+        "type": "Object",
+        "name": "linesToBreak"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.util",
+  "filename": "StringJoiner.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "RemoveFirstLine",
+    "methods": [
+     {
+      "type": "String",
+      "name": "of",
+      "params": [
+       {
+        "type": "String",
+        "name": "text"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.util",
+  "filename": "RemoveFirstLine.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "CreationValidator",
+      "name": "creationValidator"
+     }
+    ],
+    "name": "MockUtil",
+    "methods": [
+     {
+      "type": "T",
+      "name": "createMock",
+      "params": [
+       {
+        "type": "Class",
+        "name": "classToMock"
+       },
+       {
+        "type": "MockSettingsImpl",
+        "name": "settings"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "resetMock",
+      "params": [
+       {
+        "type": "T",
+        "name": "mock"
+       }
+      ]
+     },
+     {
+      "type": "MockHandlerInterface",
+      "name": "getMockHandler",
+      "params": [
+       {
+        "type": "T",
+        "name": "mock"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "isMockitoMock",
+      "params": [
+       {
+        "type": "T",
+        "name": "mock"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "isMock",
+      "params": [
+       {
+        "type": "Object",
+        "name": "mock"
+       }
+      ]
+     },
+     {
+      "type": "MethodInterceptorFilter",
+      "name": "getInterceptor",
+      "params": [
+       {
+        "type": "T",
+        "name": "mock"
+       }
+      ]
+     },
+     {
+      "type": "MockName",
+      "name": "getMockName",
+      "params": [
+       {
+        "type": "Object",
+        "name": "mock"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.util",
+  "filename": "MockUtil.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "String",
+      "name": "mockName"
+     },
+     {
+      "type": "boolean",
+      "name": "surrogate"
+     }
+    ],
+    "name": "MockName",
+    "methods": [
+     {
+      "type": "String",
+      "name": "toInstanceName",
+      "params": [
+       {
+        "type": "Class",
+        "name": "clazz"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "isSurrogate",
+      "params": []
+     },
+     {
+      "type": "String",
+      "name": "toString",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.util",
+  "filename": "MockName.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "MockitoLoggerImpl",
+    "methods": [
+     {
+      "type": null,
+      "name": "log",
+      "params": [
+       {
+        "type": "Object",
+        "name": "what"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.util",
+  "filename": "MockitoLoggerImpl.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "FieldCopier",
+    "methods": [
+     {
+      "type": null,
+      "name": "copyValue",
+      "params": [
+       {
+        "type": "T",
+        "name": "from"
+       },
+       {
+        "type": "T",
+        "name": "to"
+       },
+       {
+        "type": "Field",
+        "name": "field"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.util.reflection",
+  "filename": "FieldCopier.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "Boolean",
+      "name": "wasAccessible"
+     }
+    ],
+    "name": "AccessibilityChanger",
+    "methods": [
+     {
+      "type": null,
+      "name": "safelyDisableAccess",
+      "params": [
+       {
+        "type": "Field",
+        "name": "field"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "enableAccess",
+      "params": [
+       {
+        "type": "Field",
+        "name": "field"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.util.reflection",
+  "filename": "AccessibilityChanger.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "Whitebox",
+    "methods": [
+     {
+      "type": "Object",
+      "name": "getInternalState",
+      "params": [
+       {
+        "type": "Object",
+        "name": "target"
+       },
+       {
+        "type": "String",
+        "name": "field"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "setInternalState",
+      "params": [
+       {
+        "type": "Object",
+        "name": "target"
+       },
+       {
+        "type": "String",
+        "name": "field"
+       },
+       {
+        "type": "Object",
+        "name": "value"
+       }
+      ]
+     },
+     {
+      "type": "Field",
+      "name": "getFieldFromHierarchy",
+      "params": [
+       {
+        "type": "Class",
+        "name": "clazz"
+       },
+       {
+        "type": "String",
+        "name": "field"
+       }
+      ]
+     },
+     {
+      "type": "Field",
+      "name": "getField",
+      "params": [
+       {
+        "type": "Class",
+        "name": "clazz"
+       },
+       {
+        "type": "String",
+        "name": "field"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.util.reflection",
+  "filename": "Whitebox.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "FieldCopier",
+      "name": "fieldCopier"
+     }
+    ],
+    "name": "LenientCopyTool",
+    "methods": [
+     {
+      "type": null,
+      "name": "copyToMock",
+      "params": [
+       {
+        "type": "T",
+        "name": "from"
+       },
+       {
+        "type": "T",
+        "name": "mock"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "copyToRealObject",
+      "params": [
+       {
+        "type": "T",
+        "name": "from"
+       },
+       {
+        "type": "T",
+        "name": "to"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "copy",
+      "params": [
+       {
+        "type": "T",
+        "name": "from"
+       },
+       {
+        "type": "T",
+        "name": "to"
+       },
+       {
+        "type": "Class",
+        "name": "fromClazz"
+       },
+       {
+        "type": "Class",
+        "name": "toClass"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "copyValues",
+      "params": [
+       {
+        "type": "T",
+        "name": "from"
+       },
+       {
+        "type": "T",
+        "name": "mock"
+       },
+       {
+        "type": "Class",
+        "name": "classFrom"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.util.reflection",
+  "filename": "LenientCopyTool.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "Method",
+      "name": "method"
+     }
+    ],
+    "name": "DelegatingMethod",
+    "methods": [
+     {
+      "type": "Class",
+      "name": "getExceptionTypes",
+      "params": []
+     },
+     {
+      "type": "Method",
+      "name": "getJavaMethod",
+      "params": []
+     },
+     {
+      "type": "String",
+      "name": "getName",
+      "params": []
+     },
+     {
+      "type": "Class",
+      "name": "getParameterTypes",
+      "params": []
+     },
+     {
+      "type": "Class",
+      "name": "getReturnType",
+      "params": []
+     },
+     {
+      "type": "boolean",
+      "name": "isVarArgs",
+      "params": []
+     },
+     {
+      "type": "int",
+      "name": "hashCode",
+      "params": []
+     },
+     {
+      "type": "boolean",
+      "name": "equals",
+      "params": [
+       {
+        "type": "Object",
+        "name": "obj"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.creation",
+  "filename": "DelegatingMethod.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "Class",
+      "name": "c1"
+     },
+     {
+      "type": "Class",
+      "name": "c2"
+     },
+     {
+      "type": "String",
+      "name": "desc"
+     },
+     {
+      "type": "String",
+      "name": "name"
+     },
+     {
+      "type": "String",
+      "name": "superName"
+     },
+     {
+      "type": "MethodProxy",
+      "name": "methodProxy"
+     }
+    ],
+    "name": "SerializableMockitoMethodProxy",
+    "methods": [
+     {
+      "type": "MethodProxy",
+      "name": "getMethodProxy",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.creation",
+  "filename": "SerializableMockitoMethodProxy.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "Class",
+      "name": "extraInterfaces"
+     },
+     {
+      "type": "String",
+      "name": "name"
+     },
+     {
+      "type": "Object",
+      "name": "spiedInstance"
+     },
+     {
+      "type": "Answer",
+      "name": "defaultAnswer"
+     },
+     {
+      "type": "MockName",
+      "name": "mockName"
+     },
+     {
+      "type": "boolean",
+      "name": "serializable"
+     }
+    ],
+    "name": "MockSettingsImpl",
+    "methods": [
+     {
+      "type": "MockSettings",
+      "name": "serializable",
+      "params": []
+     },
+     {
+      "type": "MockSettings",
+      "name": "extraInterfaces",
+      "params": [
+       {
+        "type": "Class",
+        "name": "extraInterfaces"
+       }
+      ]
+     },
+     {
+      "type": "MockName",
+      "name": "getMockName",
+      "params": []
+     },
+     {
+      "type": "Class",
+      "name": "getExtraInterfaces",
+      "params": []
+     },
+     {
+      "type": "Object",
+      "name": "getSpiedInstance",
+      "params": []
+     },
+     {
+      "type": "MockSettings",
+      "name": "name",
+      "params": [
+       {
+        "type": "String",
+        "name": "name"
+       }
+      ]
+     },
+     {
+      "type": "MockSettings",
+      "name": "spiedInstance",
+      "params": [
+       {
+        "type": "Object",
+        "name": "spiedInstance"
+       }
+      ]
+     },
+     {
+      "type": "MockSettings",
+      "name": "defaultAnswer",
+      "params": [
+       {
+        "type": "Answer",
+        "name": "defaultAnswer"
+       }
+      ]
+     },
+     {
+      "type": "Answer",
+      "name": "getDefaultAnswer",
+      "params": []
+     },
+     {
+      "type": "boolean",
+      "name": "isSerializable",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "initiateMockName",
+      "params": [
+       {
+        "type": "Class",
+        "name": "classToMock"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.creation",
+  "filename": "MockSettingsImpl.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "MockitoInvocationHandler",
+      "name": "handler"
+     },
+     {
+      "type": "CGLIBHacker",
+      "name": "cglibHacker"
+     },
+     {
+      "type": "ObjectMethodsGuru",
+      "name": "objectMethodsGuru"
+     },
+     {
+      "type": "MockSettingsImpl",
+      "name": "mockSettings"
+     }
+    ],
+    "name": "MethodInterceptorFilter",
+    "methods": [
+     {
+      "type": "Object",
+      "name": "intercept",
+      "params": [
+       {
+        "type": "Object",
+        "name": "proxy"
+       },
+       {
+        "type": "Method",
+        "name": "method"
+       },
+       {
+        "type": "Object",
+        "name": "args"
+       },
+       {
+        "type": "MethodProxy",
+        "name": "methodProxy"
+       }
+      ]
+     },
+     {
+      "type": "MockitoInvocationHandler",
+      "name": "getHandler",
+      "params": []
+     },
+     {
+      "type": "int",
+      "name": "hashCodeForMock",
+      "params": [
+       {
+        "type": "Object",
+        "name": "mock"
+       }
+      ]
+     },
+     {
+      "type": "MockitoMethodProxy",
+      "name": "createMockitoMethodProxy",
+      "params": [
+       {
+        "type": "MethodProxy",
+        "name": "methodProxy"
+       }
+      ]
+     },
+     {
+      "type": "MockitoMethod",
+      "name": "createMockitoMethod",
+      "params": [
+       {
+        "type": "Method",
+        "name": "method"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.creation",
+  "filename": "MethodInterceptorFilter.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "ClassNameFinder",
+    "methods": [
+     {
+      "type": "String",
+      "name": "classNameForMock",
+      "params": [
+       {
+        "type": "Object",
+        "name": "mock"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.creation",
+  "filename": "ClassNameFinder.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "MockitoMethodProxy",
+    "methods": [
+     {
+      "type": "Object",
+      "name": "invokeSuper",
+      "params": [
+       {
+        "type": "Object",
+        "name": "target"
+       },
+       {
+        "type": "Object",
+        "name": "arguments"
+       }
+      ]
+     },
+     {
+      "type": "MethodProxy",
+      "name": "getMethodProxy",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.creation",
+  "filename": "MockitoMethodProxy.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "MethodProxy",
+      "name": "methodProxy"
+     }
+    ],
+    "name": "DelegatingMockitoMethodProxy",
+    "methods": [
+     {
+      "type": "MethodProxy",
+      "name": "getMethodProxy",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.creation",
+  "filename": "DelegatingMockitoMethodProxy.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "AbstractMockitoMethodProxy",
+    "methods": [
+     {
+      "type": "Object",
+      "name": "invokeSuper",
+      "params": [
+       {
+        "type": "Object",
+        "name": "target"
+       },
+       {
+        "type": "Object",
+        "name": "arguments"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.creation",
+  "filename": "AbstractMockitoMethodProxy.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "MockitoNamingPolicy",
+      "name": "INSTANCE"
+     }
+    ],
+    "name": "MockitoNamingPolicy",
+    "methods": [
+     {
+      "type": "String",
+      "name": "getTag",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.creation.cglib",
+  "filename": "MockitoNamingPolicy.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ],
+    "name": "CGLIBHacker",
+    "methods": [
+     {
+      "type": null,
+      "name": "setMockitoNamingPolicy",
+      "params": [
+       {
+        "type": "MockitoMethodProxy",
+        "name": "mockitoMethodProxy"
+       }
+      ]
+     },
+     {
+      "type": "Field",
+      "name": "reflectOnCreateInfo",
+      "params": [
+       {
+        "type": "MethodProxy",
+        "name": "methodProxy"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.creation.cglib",
+  "filename": "CGLIBHacker.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "Callback",
+      "name": "SERIALIZABLE_INSTANCE"
+     }
+    ],
+    "name": "SerializableNoOp",
+    "methods": []
+   }
+  ],
+  "package_name": "org.mockito.internal.creation.jmock",
+  "filename": "SerializableNoOp.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "ClassImposterizer",
+      "name": "INSTANCE"
+     },
+     {
+      "type": "ObjenesisStd",
+      "name": "objenesis"
+     },
+     {
+      "type": "NamingPolicy",
+      "name": "NAMING_POLICY_THAT_ALLOWS_IMPOSTERISATION_OF_CLASSES_IN_SIGNED_PACKAGES"
+     },
+     {
+      "type": "CallbackFilter",
+      "name": "IGNORE_BRIDGE_METHODS"
+     }
+    ],
+    "name": "ClassImposterizer",
+    "methods": [
+     {
+      "type": "boolean",
+      "name": "canImposterise",
+      "params": [
+       {
+        "type": "Class",
+        "name": "type"
+       }
+      ]
+     },
+     {
+      "type": "T",
+      "name": "imposterise",
+      "params": [
+       {
+        "type": "MethodInterceptor",
+        "name": "interceptor"
+       },
+       {
+        "type": "Class",
+        "name": "mockedType"
+       },
+       {
+        "type": "Class",
+        "name": "ancillaryTypes"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "setConstructorsAccessible",
+      "params": [
+       {
+        "type": "Class",
+        "name": "mockedType"
+       },
+       {
+        "type": "boolean",
+        "name": "accessible"
+       }
+      ]
+     },
+     {
+      "type": "Class",
+      "name": "createProxyClass",
+      "params": [
+       {
+        "type": "Class",
+        "name": "mockedType"
+       },
+       {
+        "type": "Class",
+        "name": "interfaces"
+       }
+      ]
+     },
+     {
+      "type": "Object",
+      "name": "createProxy",
+      "params": [
+       {
+        "type": "Class",
+        "name": "proxyClass"
+       },
+       {
+        "type": "MethodInterceptor",
+        "name": "interceptor"
+       }
+      ]
+     },
+     {
+      "type": "Class",
+      "name": "prepend",
+      "params": [
+       {
+        "type": "Class",
+        "name": "first"
+       },
+       {
+        "type": "Class",
+        "name": "rest"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.creation.jmock",
+  "filename": "ClassImposterizer.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "ClassLoader",
+      "name": "nextToSearch"
+     }
+    ],
+    "name": "SearchingClassLoader",
+    "methods": [
+     {
+      "type": "ClassLoader",
+      "name": "combineLoadersOf",
+      "params": [
+       {
+        "type": "Class",
+        "name": "classes"
+       }
+      ]
+     },
+     {
+      "type": "ClassLoader",
+      "name": "combineLoadersOf",
+      "params": [
+       {
+        "type": "Class",
+        "name": "first"
+       },
+       {
+        "type": "Class",
+        "name": "others"
+       }
+      ]
+     },
+     {
+      "type": "ClassLoader",
+      "name": "combine",
+      "params": [
+       {
+        "type": "List",
+        "name": "parentLoaders"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "addIfNewElement",
+      "params": [
+       {
+        "type": "List",
+        "name": "loaders"
+       },
+       {
+        "type": "ClassLoader",
+        "name": "c"
+       }
+      ]
+     },
+     {
+      "type": "Class",
+      "name": "findClass",
+      "params": [
+       {
+        "type": "String",
+        "name": "name"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.creation.jmock",
+  "filename": "SearchingClassLoader.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ],
+    "name": "MatchersBinder",
+    "methods": [
+     {
+      "type": "InvocationMatcher",
+      "name": "bindMatchers",
+      "params": [
+       {
+        "type": "ArgumentMatcherStorage",
+        "name": "argumentMatcherStorage"
+       },
+       {
+        "type": "Invocation",
+        "name": "invocation"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "validateMatchers",
+      "params": [
+       {
+        "type": "Invocation",
+        "name": "invocation"
+       },
+       {
+        "type": "List",
+        "name": "matchers"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.invocation",
+  "filename": "MatchersBinder.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "ArgumentsComparator",
+    "methods": [
+     {
+      "type": "boolean",
+      "name": "argumentsMatch",
+      "params": [
+       {
+        "type": "InvocationMatcher",
+        "name": "invocationMatcher"
+       },
+       {
+        "type": "Invocation",
+        "name": "actual"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "argumentsMatch",
+      "params": [
+       {
+        "type": "InvocationMatcher",
+        "name": "invocationMatcher"
+       },
+       {
+        "type": "Object",
+        "name": "actualArgs"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "varArgsMatch",
+      "params": [
+       {
+        "type": "InvocationMatcher",
+        "name": "invocationMatcher"
+       },
+       {
+        "type": "Invocation",
+        "name": "actual"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.invocation",
+  "filename": "ArgumentsComparator.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "int",
+      "name": "MAX_LINE_LENGTH"
+     },
+     {
+      "type": "int",
+      "name": "sequenceNumber"
+     },
+     {
+      "type": "Object",
+      "name": "mock"
+     },
+     {
+      "type": "MockitoMethod",
+      "name": "method"
+     },
+     {
+      "type": "Object",
+      "name": "arguments"
+     },
+     {
+      "type": "Object",
+      "name": "rawArguments"
+     },
+     {
+      "type": "Location",
+      "name": "location"
+     },
+     {
+      "type": "boolean",
+      "name": "verified"
+     },
+     {
+      "type": "boolean",
+      "name": "verifiedInOrder"
+     },
+     {
+      "type": "RealMethod",
+      "name": "realMethod"
+     },
+     {
+      "type": "StubInfo",
+      "name": "stubInfo"
+     }
+    ],
+    "name": "Invocation",
+    "methods": [
+     {
+      "type": "Object",
+      "name": "expandVarArgs",
+      "params": [
+       {
+        "type": "boolean",
+        "name": "isVarArgs"
+       },
+       {
+        "type": "Object",
+        "name": "args"
+       }
+      ]
+     },
+     {
+      "type": "Object",
+      "name": "getMock",
+      "params": []
+     },
+     {
+      "type": "Method",
+      "name": "getMethod",
+      "params": []
+     },
+     {
+      "type": "Object",
+      "name": "getArguments",
+      "params": []
+     },
+     {
+      "type": "boolean",
+      "name": "isVerified",
+      "params": []
+     },
+     {
+      "type": "Integer",
+      "name": "getSequenceNumber",
+      "params": []
+     },
+     {
+      "type": "boolean",
+      "name": "isVerifiedInOrder",
+      "params": []
+     },
+     {
+      "type": "boolean",
+      "name": "equals",
+      "params": [
+       {
+        "type": "Object",
+        "name": "o"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "equalArguments",
+      "params": [
+       {
+        "type": "Object",
+        "name": "arguments"
+       }
+      ]
+     },
+     {
+      "type": "int",
+      "name": "hashCode",
+      "params": []
+     },
+     {
+      "type": "String",
+      "name": "toString",
+      "params": []
+     },
+     {
+      "type": "String",
+      "name": "toString",
+      "params": [
+       {
+        "type": "List",
+        "name": "matchers"
+       },
+       {
+        "type": "PrintSettings",
+        "name": "printSettings"
+       }
+      ]
+     },
+     {
+      "type": "String",
+      "name": "qualifiedMethodName",
+      "params": []
+     },
+     {
+      "type": "List",
+      "name": "argumentsToMatchers",
+      "params": []
+     },
+     {
+      "type": "boolean",
+      "name": "isToString",
+      "params": [
+       {
+        "type": "InvocationOnMock",
+        "name": "invocation"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "isValidException",
+      "params": [
+       {
+        "type": "Throwable",
+        "name": "throwable"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "isValidReturnType",
+      "params": [
+       {
+        "type": "Class",
+        "name": "clazz"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "isVoid",
+      "params": []
+     },
+     {
+      "type": "String",
+      "name": "printMethodReturnType",
+      "params": []
+     },
+     {
+      "type": "String",
+      "name": "getMethodName",
+      "params": []
+     },
+     {
+      "type": "boolean",
+      "name": "returnsPrimitive",
+      "params": []
+     },
+     {
+      "type": "Location",
+      "name": "getLocation",
+      "params": []
+     },
+     {
+      "type": "int",
+      "name": "getArgumentsCount",
+      "params": []
+     },
+     {
+      "type": "Object",
+      "name": "getRawArguments",
+      "params": []
+     },
+     {
+      "type": "Object",
+      "name": "callRealMethod",
+      "params": []
+     },
+     {
+      "type": "boolean",
+      "name": "isDeclaredOnInterface",
+      "params": []
+     },
+     {
+      "type": "String",
+      "name": "toString",
+      "params": [
+       {
+        "type": "PrintSettings",
+        "name": "printSettings"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "markVerified",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "markVerifiedInOrder",
+      "params": []
+     },
+     {
+      "type": "StubInfo",
+      "name": "stubInfo",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "markStubbed",
+      "params": [
+       {
+        "type": "StubInfo",
+        "name": "stubInfo"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.invocation",
+  "filename": "Invocation.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "AllInvocationsFinder",
+    "methods": [
+     {
+      "type": "List",
+      "name": "getAllInvocations",
+      "params": [
+       {
+        "type": "List",
+        "name": "mocks"
+       }
+      ]
+     },
+     {
+      "type": "List",
+      "name": "getAllUnusedStubs",
+      "params": [
+       {
+        "type": "List",
+        "name": "mocks"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.invocation",
+  "filename": "AllInvocationsFinder.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "Invocation",
+      "name": "invocation"
+     },
+     {
+      "type": "List",
+      "name": "matchers"
+     }
+    ],
+    "name": "InvocationMatcher",
+    "methods": [
+     {
+      "type": "Method",
+      "name": "getMethod",
+      "params": []
+     },
+     {
+      "type": "Invocation",
+      "name": "getInvocation",
+      "params": []
+     },
+     {
+      "type": "List",
+      "name": "getMatchers",
+      "params": []
+     },
+     {
+      "type": "String",
+      "name": "toString",
+      "params": []
+     },
+     {
+      "type": "boolean",
+      "name": "matches",
+      "params": [
+       {
+        "type": "Invocation",
+        "name": "actual"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "safelyArgumentsMatch",
+      "params": [
+       {
+        "type": "Object",
+        "name": "actualArgs"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "hasSimilarMethod",
+      "params": [
+       {
+        "type": "Invocation",
+        "name": "candidate"
+       }
+      ]
+     },
+     {
+      "type": "boolean",
+      "name": "hasSameMethod",
+      "params": [
+       {
+        "type": "Invocation",
+        "name": "candidate"
+       }
+      ]
+     },
+     {
+      "type": "Location",
+      "name": "getLocation",
+      "params": []
+     },
+     {
+      "type": "String",
+      "name": "toString",
+      "params": [
+       {
+        "type": "PrintSettings",
+        "name": "printSettings"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "captureArgumentsFrom",
+      "params": [
+       {
+        "type": "Invocation",
+        "name": "i"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.invocation",
+  "filename": "InvocationMatcher.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "InvocationMarker",
+    "methods": [
+     {
+      "type": null,
+      "name": "markVerified",
+      "params": [
+       {
+        "type": "List",
+        "name": "invocations"
+       },
+       {
+        "type": "CapturesArgumensFromInvocation",
+        "name": "wanted"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "markVerified",
+      "params": [
+       {
+        "type": "Invocation",
+        "name": "invocation"
+       },
+       {
+        "type": "CapturesArgumensFromInvocation",
+        "name": "wanted"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "markVerifiedInOrder",
+      "params": [
+       {
+        "type": "List",
+        "name": "chunk"
+       },
+       {
+        "type": "CapturesArgumensFromInvocation",
+        "name": "wanted"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.invocation",
+  "filename": "InvocationMarker.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "Class",
+      "name": "declaringClass"
+     },
+     {
+      "type": "String",
+      "name": "methodName"
+     },
+     {
+      "type": "Class",
+      "name": "parameterTypes"
+     },
+     {
+      "type": "Class",
+      "name": "returnType"
+     },
+     {
+      "type": "Class",
+      "name": "exceptionTypes"
+     },
+     {
+      "type": "boolean",
+      "name": "isVarArgs"
+     }
+    ],
+    "name": "SerializableMethod",
+    "methods": [
+     {
+      "type": "String",
+      "name": "getName",
+      "params": []
+     },
+     {
+      "type": "Class",
+      "name": "getReturnType",
+      "params": []
+     },
+     {
+      "type": "Class",
+      "name": "getParameterTypes",
+      "params": []
+     },
+     {
+      "type": "Class",
+      "name": "getExceptionTypes",
+      "params": []
+     },
+     {
+      "type": "boolean",
+      "name": "isVarArgs",
+      "params": []
+     },
+     {
+      "type": "Method",
+      "name": "getJavaMethod",
+      "params": []
+     },
+     {
+      "type": "int",
+      "name": "hashCode",
+      "params": []
+     },
+     {
+      "type": "boolean",
+      "name": "equals",
+      "params": [
+       {
+        "type": "Object",
+        "name": "obj"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.invocation",
+  "filename": "SerializableMethod.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "PrintableInvocation",
+      "name": "stubbedAt"
+     }
+    ],
+    "name": "StubInfo",
+    "methods": [
+     {
+      "type": "String",
+      "name": "stubbedAt",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.invocation",
+  "filename": "StubInfo.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "MockitoMethod",
+    "methods": [
+     {
+      "type": "String",
+      "name": "getName",
+      "params": []
+     },
+     {
+      "type": "Class",
+      "name": "getReturnType",
+      "params": []
+     },
+     {
+      "type": "Class",
+      "name": "getParameterTypes",
+      "params": []
+     },
+     {
+      "type": "Class",
+      "name": "getExceptionTypes",
+      "params": []
+     },
+     {
+      "type": "boolean",
+      "name": "isVarArgs",
+      "params": []
+     },
+     {
+      "type": "Method",
+      "name": "getJavaMethod",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.invocation",
+  "filename": "MockitoMethod.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "CapturesArgumensFromInvocation",
+    "methods": [
+     {
+      "type": null,
+      "name": "captureArgumentsFrom",
+      "params": [
+       {
+        "type": "Invocation",
+        "name": "i"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.invocation",
+  "filename": "CapturesArgumensFromInvocation.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "InvocationsFinder",
+    "methods": [
+     {
+      "type": "List",
+      "name": "findInvocations",
+      "params": [
+       {
+        "type": "List",
+        "name": "invocations"
+       },
+       {
+        "type": "InvocationMatcher",
+        "name": "wanted"
+       }
+      ]
+     },
+     {
+      "type": "List",
+      "name": "findAllMatchingUnverifiedChunks",
+      "params": [
+       {
+        "type": "List",
+        "name": "invocations"
+       },
+       {
+        "type": "InvocationMatcher",
+        "name": "wanted"
+       }
+      ]
+     },
+     {
+      "type": "List",
+      "name": "findMatchingChunk",
+      "params": [
+       {
+        "type": "List",
+        "name": "invocations"
+       },
+       {
+        "type": "InvocationMatcher",
+        "name": "wanted"
+       },
+       {
+        "type": "int",
+        "name": "wantedCount"
+       }
+      ]
+     },
+     {
+      "type": "List",
+      "name": "getFirstMatchingChunk",
+      "params": [
+       {
+        "type": "InvocationMatcher",
+        "name": "wanted"
+       },
+       {
+        "type": "List",
+        "name": "unverified"
+       }
+      ]
+     },
+     {
+      "type": "Invocation",
+      "name": "findSimilarInvocation",
+      "params": [
+       {
+        "type": "List",
+        "name": "invocations"
+       },
+       {
+        "type": "InvocationMatcher",
+        "name": "wanted"
+       }
+      ]
+     },
+     {
+      "type": "Invocation",
+      "name": "findFirstUnverified",
+      "params": [
+       {
+        "type": "List",
+        "name": "invocations"
+       }
+      ]
+     },
+     {
+      "type": "Invocation",
+      "name": "findFirstUnverified",
+      "params": [
+       {
+        "type": "List",
+        "name": "invocations"
+       },
+       {
+        "type": "Object",
+        "name": "mock"
+       }
+      ]
+     },
+     {
+      "type": "Location",
+      "name": "getLastLocation",
+      "params": [
+       {
+        "type": "List",
+        "name": "invocations"
+       }
+      ]
+     },
+     {
+      "type": "Invocation",
+      "name": "findPreviousVerifiedInOrder",
+      "params": [
+       {
+        "type": "List",
+        "name": "invocations"
+       }
+      ]
+     },
+     {
+      "type": "List",
+      "name": "removeVerifiedInOrder",
+      "params": [
+       {
+        "type": "List",
+        "name": "invocations"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.invocation",
+  "filename": "InvocationsFinder.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "MockitoMethodProxy",
+      "name": "methodProxy"
+     }
+    ],
+    "name": "CGLIBProxyRealMethod",
+    "methods": [
+     {
+      "type": "Object",
+      "name": "invoke",
+      "params": [
+       {
+        "type": "Object",
+        "name": "target"
+       },
+       {
+        "type": "Object",
+        "name": "arguments"
+       }
+      ]
+     },
+     {
+      "type": "MockitoMethodProxy",
+      "name": "getMethodProxy",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.invocation.realmethod",
+  "filename": "CGLIBProxyRealMethod.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "HasCGLIBMethodProxy",
+    "methods": [
+     {
+      "type": "MockitoMethodProxy",
+      "name": "getMethodProxy",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.invocation.realmethod",
+  "filename": "HasCGLIBMethodProxy.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "RealMethod",
+    "methods": [
+     {
+      "type": "Object",
+      "name": "invoke",
+      "params": [
+       {
+        "type": "Object",
+        "name": "target"
+       },
+       {
+        "type": "Object",
+        "name": "arguments"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.invocation.realmethod",
+  "filename": "RealMethod.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "RealMethod",
+      "name": "realMethod"
+     }
+    ],
+    "name": "FilteredCGLIBProxyRealMethod",
+    "methods": [
+     {
+      "type": "Object",
+      "name": "invoke",
+      "params": [
+       {
+        "type": "Object",
+        "name": "target"
+       },
+       {
+        "type": "Object",
+        "name": "arguments"
+       }
+      ]
+     },
+     {
+      "type": "MockitoMethodProxy",
+      "name": "getMethodProxy",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.invocation.realmethod",
+  "filename": "FilteredCGLIBProxyRealMethod.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "IMockitoConfiguration",
+      "name": "config"
+     },
+     {
+      "type": "StackTraceFilter",
+      "name": "filter"
+     }
+    ],
+    "name": "ConditionalStackTraceFilter",
+    "methods": [
+     {
+      "type": null,
+      "name": "filter",
+      "params": [
+       {
+        "type": "Throwable",
+        "name": "throwable"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.exceptions.base",
+  "filename": "ConditionalStackTraceFilter.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "StackTraceFilter",
+    "methods": [
+     {
+      "type": "boolean",
+      "name": "isBad",
+      "params": [
+       {
+        "type": "StackTraceElement",
+        "name": "e"
+       }
+      ]
+     },
+     {
+      "type": "StackTraceElement",
+      "name": "filter",
+      "params": [
+       {
+        "type": "StackTraceElement",
+        "name": "target"
+       },
+       {
+        "type": "boolean",
+        "name": "keepTop"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.exceptions.base",
+  "filename": "StackTraceFilter.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "RunnerProvider",
+      "name": "runnerProvider"
+     }
+    ],
+    "name": "RunnerFactory",
+    "methods": [
+     {
+      "type": "RunnerImpl",
+      "name": "create",
+      "params": [
+       {
+        "type": "Class",
+        "name": "klass"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.runners",
+  "filename": "RunnerFactory.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "JUnit4ClassRunner",
+      "name": "runner"
+     }
+    ],
+    "name": "JUnit44RunnerImpl",
+    "methods": [
+     {
+      "type": null,
+      "name": "run",
+      "params": [
+       {
+        "type": "RunNotifier",
+        "name": "notifier"
+       }
+      ]
+     },
+     {
+      "type": "Description",
+      "name": "getDescription",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "filter",
+      "params": [
+       {
+        "type": "org",
+        "name": "filter"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.runners",
+  "filename": "JUnit44RunnerImpl.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "RunnerImpl",
+    "methods": [
+     {
+      "type": null,
+      "name": "run",
+      "params": [
+       {
+        "type": "RunNotifier",
+        "name": "notifier"
+       }
+      ]
+     },
+     {
+      "type": "Description",
+      "name": "getDescription",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.runners",
+  "filename": "RunnerImpl.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "BlockJUnit4ClassRunner",
+      "name": "runner"
+     }
+    ],
+    "name": "JUnit45AndHigherRunnerImpl",
+    "methods": [
+     {
+      "type": null,
+      "name": "run",
+      "params": [
+       {
+        "type": "RunNotifier",
+        "name": "notifier"
+       }
+      ]
+     },
+     {
+      "type": "Description",
+      "name": "getDescription",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "filter",
+      "params": [
+       {
+        "type": "org",
+        "name": "filter"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.runners",
+  "filename": "JUnit45AndHigherRunnerImpl.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "TestMethodsFinder",
+    "methods": [
+     {
+      "type": "boolean",
+      "name": "hasTestMethods",
+      "params": [
+       {
+        "type": "Class",
+        "name": "klass"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.runners.util",
+  "filename": "TestMethodsFinder.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "boolean",
+      "name": "hasJUnit45OrHigher"
+     }
+    ],
+    "name": "RunnerProvider",
+    "methods": [
+     {
+      "type": "boolean",
+      "name": "isJUnit45OrHigherAvailable",
+      "params": []
+     },
+     {
+      "type": "RunnerImpl",
+      "name": "newInstance",
+      "params": [
+       {
+        "type": "String",
+        "name": "runnerClassName"
+       },
+       {
+        "type": "Class",
+        "name": "constructorParam"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.runners.util",
+  "filename": "RunnerProvider.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "RunNotifier",
+      "name": "notifier"
+     }
+    ],
+    "name": "FrameworkUsageValidator",
+    "methods": [
+     {
+      "type": null,
+      "name": "testFinished",
+      "params": [
+       {
+        "type": "Description",
+        "name": "description"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.internal.runners.util",
+  "filename": "FrameworkUsageValidator.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "InvocationOnMock",
+    "methods": [
+     {
+      "type": "Object",
+      "name": "getMock",
+      "params": []
+     },
+     {
+      "type": "Method",
+      "name": "getMethod",
+      "params": []
+     },
+     {
+      "type": "Object",
+      "name": "getArguments",
+      "params": []
+     },
+     {
+      "type": "Object",
+      "name": "callRealMethod",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.invocation",
+  "filename": "InvocationOnMock.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "PrintableInvocation",
+    "methods": [
+     {
+      "type": "String",
+      "name": "toString",
+      "params": []
+     },
+     {
+      "type": "Location",
+      "name": "getLocation",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.exceptions",
+  "filename": "PrintableInvocation.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "Reporter",
+    "methods": [
+     {
+      "type": null,
+      "name": "checkedExceptionInvalid",
+      "params": [
+       {
+        "type": "Throwable",
+        "name": "t"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "cannotStubWithNullThrowable",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "unfinishedStubbing",
+      "params": [
+       {
+        "type": "Location",
+        "name": "location"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "missingMethodInvocation",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "unfinishedVerificationException",
+      "params": [
+       {
+        "type": "Location",
+        "name": "location"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "notAMockPassedToVerify",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "nullPassedToVerify",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "notAMockPassedToWhenMethod",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "nullPassedToWhenMethod",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "mocksHaveToBePassedToVerifyNoMoreInteractions",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "notAMockPassedToVerifyNoMoreInteractions",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "nullPassedToVerifyNoMoreInteractions",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "notAMockPassedWhenCreatingInOrder",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "nullPassedWhenCreatingInOrder",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "mocksHaveToBePassedWhenCreatingInOrder",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "inOrderRequiresFamiliarMock",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "invalidUseOfMatchers",
+      "params": [
+       {
+        "type": "int",
+        "name": "expectedMatchersCount"
+       },
+       {
+        "type": "int",
+        "name": "recordedMatchersCount"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "argumentsAreDifferent",
+      "params": [
+       {
+        "type": "String",
+        "name": "wanted"
+       },
+       {
+        "type": "String",
+        "name": "actual"
+       },
+       {
+        "type": "Location",
+        "name": "actualLocation"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "wantedButNotInvoked",
+      "params": [
+       {
+        "type": "PrintableInvocation",
+        "name": "wanted"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "wantedButNotInvoked",
+      "params": [
+       {
+        "type": "PrintableInvocation",
+        "name": "wanted"
+       },
+       {
+        "type": "List",
+        "name": "invocations"
+       }
+      ]
+     },
+     {
+      "type": "String",
+      "name": "createWantedButNotInvokedMessage",
+      "params": [
+       {
+        "type": "PrintableInvocation",
+        "name": "wanted"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "wantedButNotInvokedInOrder",
+      "params": [
+       {
+        "type": "PrintableInvocation",
+        "name": "wanted"
+       },
+       {
+        "type": "PrintableInvocation",
+        "name": "previous"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "tooManyActualInvocations",
+      "params": [
+       {
+        "type": "int",
+        "name": "wantedCount"
+       },
+       {
+        "type": "int",
+        "name": "actualCount"
+       },
+       {
+        "type": "PrintableInvocation",
+        "name": "wanted"
+       },
+       {
+        "type": "Location",
+        "name": "firstUndesired"
+       }
+      ]
+     },
+     {
+      "type": "String",
+      "name": "createTooManyInvocationsMessage",
+      "params": [
+       {
+        "type": "int",
+        "name": "wantedCount"
+       },
+       {
+        "type": "int",
+        "name": "actualCount"
+       },
+       {
+        "type": "PrintableInvocation",
+        "name": "wanted"
+       },
+       {
+        "type": "Location",
+        "name": "firstUndesired"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "neverWantedButInvoked",
+      "params": [
+       {
+        "type": "PrintableInvocation",
+        "name": "wanted"
+       },
+       {
+        "type": "Location",
+        "name": "firstUndesired"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "tooManyActualInvocationsInOrder",
+      "params": [
+       {
+        "type": "int",
+        "name": "wantedCount"
+       },
+       {
+        "type": "int",
+        "name": "actualCount"
+       },
+       {
+        "type": "PrintableInvocation",
+        "name": "wanted"
+       },
+       {
+        "type": "Location",
+        "name": "firstUndesired"
+       }
+      ]
+     },
+     {
+      "type": "String",
+      "name": "createTooLittleInvocationsMessage",
+      "params": [
+       {
+        "type": "Discrepancy",
+        "name": "discrepancy"
+       },
+       {
+        "type": "PrintableInvocation",
+        "name": "wanted"
+       },
+       {
+        "type": "Location",
+        "name": "lastActualInvocation"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "tooLittleActualInvocations",
+      "params": [
+       {
+        "type": "Discrepancy",
+        "name": "discrepancy"
+       },
+       {
+        "type": "PrintableInvocation",
+        "name": "wanted"
+       },
+       {
+        "type": "Location",
+        "name": "lastActualLocation"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "tooLittleActualInvocationsInOrder",
+      "params": [
+       {
+        "type": "Discrepancy",
+        "name": "discrepancy"
+       },
+       {
+        "type": "PrintableInvocation",
+        "name": "wanted"
+       },
+       {
+        "type": "Location",
+        "name": "lastActualLocation"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "noMoreInteractionsWanted",
+      "params": [
+       {
+        "type": "PrintableInvocation",
+        "name": "undesired"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "cannotMockFinalClass",
+      "params": [
+       {
+        "type": "Class",
+        "name": "clazz"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "cannotStubVoidMethodWithAReturnValue",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "onlyVoidMethodsCanBeSetToDoNothing",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "wrongTypeOfReturnValue",
+      "params": [
+       {
+        "type": "String",
+        "name": "expectedType"
+       },
+       {
+        "type": "String",
+        "name": "actualType"
+       },
+       {
+        "type": "String",
+        "name": "methodName"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "wantedAtMostX",
+      "params": [
+       {
+        "type": "int",
+        "name": "maxNumberOfInvocations"
+       },
+       {
+        "type": "int",
+        "name": "foundSize"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "misplacedArgumentMatcher",
+      "params": [
+       {
+        "type": "Location",
+        "name": "location"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "smartNullPointerException",
+      "params": [
+       {
+        "type": "Location",
+        "name": "location"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "noArgumentValueWasCaptured",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "extraInterfacesDoesNotAcceptNullParameters",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "extraInterfacesAcceptsOnlyInterfaces",
+      "params": [
+       {
+        "type": "Class",
+        "name": "wrongType"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "extraInterfacesCannotContainMockedType",
+      "params": [
+       {
+        "type": "Class",
+        "name": "wrongType"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "extraInterfacesRequiresAtLeastOneInterface",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "mockedTypeIsInconsistentWithSpiedInstanceType",
+      "params": [
+       {
+        "type": "Class",
+        "name": "mockedType"
+       },
+       {
+        "type": "Object",
+        "name": "spiedInstance"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "cannotCallRealMethodOnInterface",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.exceptions",
+  "filename": "Reporter.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "int",
+      "name": "wantedCount"
+     },
+     {
+      "type": "int",
+      "name": "actualCount"
+     }
+    ],
+    "name": "Discrepancy",
+    "methods": [
+     {
+      "type": "int",
+      "name": "getWantedCount",
+      "params": []
+     },
+     {
+      "type": "String",
+      "name": "getPluralizedWantedCount",
+      "params": []
+     },
+     {
+      "type": "int",
+      "name": "getActualCount",
+      "params": []
+     },
+     {
+      "type": "String",
+      "name": "getPluralizedActualCount",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.exceptions",
+  "filename": "Discrepancy.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "Pluralizer",
+    "methods": [
+     {
+      "type": "String",
+      "name": "pluralize",
+      "params": [
+       {
+        "type": "int",
+        "name": "number"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.exceptions",
+  "filename": "Pluralizer.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ],
+    "name": "TooLittleActualInvocations",
+    "methods": []
+   }
+  ],
+  "package_name": "org.mockito.exceptions.verification",
+  "filename": "TooLittleActualInvocations.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ],
+    "name": "ArgumentsAreDifferent",
+    "methods": [
+     {
+      "type": "String",
+      "name": "toString",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.exceptions.verification",
+  "filename": "ArgumentsAreDifferent.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ],
+    "name": "VerificationInOrderFailure",
+    "methods": []
+   }
+  ],
+  "package_name": "org.mockito.exceptions.verification",
+  "filename": "VerificationInOrderFailure.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ],
+    "name": "NoInteractionsWanted",
+    "methods": []
+   }
+  ],
+  "package_name": "org.mockito.exceptions.verification",
+  "filename": "NoInteractionsWanted.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ],
+    "name": "NeverWantedButInvoked",
+    "methods": []
+   }
+  ],
+  "package_name": "org.mockito.exceptions.verification",
+  "filename": "NeverWantedButInvoked.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ],
+    "name": "SmartNullPointerException",
+    "methods": []
+   }
+  ],
+  "package_name": "org.mockito.exceptions.verification",
+  "filename": "SmartNullPointerException.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ],
+    "name": "TooManyActualInvocations",
+    "methods": []
+   }
+  ],
+  "package_name": "org.mockito.exceptions.verification",
+  "filename": "TooManyActualInvocations.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ],
+    "name": "WantedButNotInvoked",
+    "methods": [
+     {
+      "type": "String",
+      "name": "toString",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.exceptions.verification",
+  "filename": "WantedButNotInvoked.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "String",
+      "name": "message"
+     },
+     {
+      "type": "StackTraceElement",
+      "name": "unfilteredStackTrace"
+     }
+    ],
+    "name": "ArgumentsAreDifferent",
+    "methods": [
+     {
+      "type": "String",
+      "name": "getMessage",
+      "params": []
+     },
+     {
+      "type": "StackTraceElement",
+      "name": "getUnfilteredStackTrace",
+      "params": []
+     },
+     {
+      "type": "String",
+      "name": "toString",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.exceptions.verification.junit",
+  "filename": "ArgumentsAreDifferent.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "boolean",
+      "name": "hasJUnit"
+     }
+    ],
+    "name": "JUnitTool",
+    "methods": [
+     {
+      "type": "boolean",
+      "name": "hasJUnit",
+      "params": []
+     },
+     {
+      "type": "AssertionError",
+      "name": "createArgumentsAreDifferentException",
+      "params": [
+       {
+        "type": "String",
+        "name": "message"
+       },
+       {
+        "type": "String",
+        "name": "wanted"
+       },
+       {
+        "type": "String",
+        "name": "actual"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.exceptions.verification.junit",
+  "filename": "JUnitTool.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ],
+    "name": "NullInsteadOfMockException",
+    "methods": []
+   }
+  ],
+  "package_name": "org.mockito.exceptions.misusing",
+  "filename": "NullInsteadOfMockException.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ],
+    "name": "NotAMockException",
+    "methods": []
+   }
+  ],
+  "package_name": "org.mockito.exceptions.misusing",
+  "filename": "NotAMockException.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ],
+    "name": "UnfinishedStubbingException",
+    "methods": []
+   }
+  ],
+  "package_name": "org.mockito.exceptions.misusing",
+  "filename": "UnfinishedStubbingException.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ],
+    "name": "InvalidUseOfMatchersException",
+    "methods": []
+   }
+  ],
+  "package_name": "org.mockito.exceptions.misusing",
+  "filename": "InvalidUseOfMatchersException.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ],
+    "name": "UnfinishedVerificationException",
+    "methods": []
+   }
+  ],
+  "package_name": "org.mockito.exceptions.misusing",
+  "filename": "UnfinishedVerificationException.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ],
+    "name": "MissingMethodInvocationException",
+    "methods": []
+   }
+  ],
+  "package_name": "org.mockito.exceptions.misusing",
+  "filename": "MissingMethodInvocationException.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ],
+    "name": "WrongTypeOfReturnValue",
+    "methods": []
+   }
+  ],
+  "package_name": "org.mockito.exceptions.misusing",
+  "filename": "WrongTypeOfReturnValue.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ],
+    "name": "MockitoConfigurationException",
+    "methods": []
+   }
+  ],
+  "package_name": "org.mockito.exceptions.misusing",
+  "filename": "MockitoConfigurationException.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "StackTraceElement",
+      "name": "unfilteredStackTrace"
+     }
+    ],
+    "name": "MockitoAssertionError",
+    "methods": [
+     {
+      "type": "StackTraceElement",
+      "name": "getUnfilteredStackTrace",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.exceptions.base",
+  "filename": "MockitoAssertionError.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "StackTraceElement",
+      "name": "unfilteredStackTrace"
+     }
+    ],
+    "name": "MockitoException",
+    "methods": [
+     {
+      "type": null,
+      "name": "filterStackTrace",
+      "params": []
+     },
+     {
+      "type": "StackTraceElement",
+      "name": "getUnfilteredStackTrace",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.exceptions.base",
+  "filename": "MockitoException.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "RunnerImpl",
+      "name": "runner"
+     }
+    ],
+    "name": "VerboseMockitoJUnitRunner",
+    "methods": [
+     {
+      "type": null,
+      "name": "run",
+      "params": [
+       {
+        "type": "RunNotifier",
+        "name": "notifier"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "afterRun",
+      "params": [
+       {
+        "type": "DebuggingInfo",
+        "name": "debuggingInfo"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "beforeRun",
+      "params": [
+       {
+        "type": "RunNotifier",
+        "name": "notifier"
+       },
+       {
+        "type": "DebuggingInfo",
+        "name": "debuggingInfo"
+       }
+      ]
+     },
+     {
+      "type": "Description",
+      "name": "getDescription",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.runners",
+  "filename": "VerboseMockitoJUnitRunner.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [],
+    "name": "MockitoJUnit44Runner",
+    "methods": []
+   }
+  ],
+  "package_name": "org.mockito.runners",
+  "filename": "MockitoJUnit44Runner.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "MockitoLogger",
+      "name": "logger"
+     },
+     {
+      "type": "RunnerImpl",
+      "name": "runner"
+     }
+    ],
+    "name": "ConsoleSpammingMockitoJUnitRunner",
+    "methods": [
+     {
+      "type": null,
+      "name": "run",
+      "params": [
+       {
+        "type": "RunNotifier",
+        "name": "notifier"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "afterRun",
+      "params": [
+       {
+        "type": "DebuggingInfo",
+        "name": "debuggingInfo"
+       }
+      ]
+     },
+     {
+      "type": null,
+      "name": "beforeRun",
+      "params": [
+       {
+        "type": "RunNotifier",
+        "name": "notifier"
+       },
+       {
+        "type": "DebuggingInfo",
+        "name": "debuggingInfo"
+       }
+      ]
+     },
+     {
+      "type": "Description",
+      "name": "getDescription",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.runners",
+  "filename": "ConsoleSpammingMockitoJUnitRunner.java"
+ },
+ {
+  "classes": [
+   {
+    "fields": [
+     {
+      "type": "RunnerImpl",
+      "name": "runner"
+     }
+    ],
+    "name": "MockitoJUnitRunner",
+    "methods": [
+     {
+      "type": null,
+      "name": "run",
+      "params": [
+       {
+        "type": "RunNotifier",
+        "name": "notifier"
+       }
+      ]
+     },
+     {
+      "type": "Description",
+      "name": "getDescription",
+      "params": []
+     },
+     {
+      "type": null,
+      "name": "filter",
+      "params": [
+       {
+        "type": "org",
+        "name": "filter"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.mockito.runners",
+  "filename": "MockitoJUnitRunner.java"
+ }
+]

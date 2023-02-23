@@ -1,0 +1,9 @@
+org.apache.commons.math.estimation.SimpleEstimationProblem@58@0.3535533906
+org.apache.commons.math.estimation.AbstractEstimator@173@0.2886751346
+org.apache.commons.math.estimation.AbstractEstimator@172@0.2886751346
+org.apache.commons.math.estimation.AbstractEstimator@171@0.2886751346
+org.apache.commons.math.estimation.AbstractEstimator@170@0.2886751346
+org.apache.commons.math.estimation.AbstractEstimator@169@0.2886751346
+org.apache.commons.math.estimation.AbstractEstimator@168@0.2886751346
+org.apache.commons.math.estimation.AbstractEstimator@167@0.2886751346
+org.apache.commons.math.estimation.AbstractEstimator@166@0.2886751346

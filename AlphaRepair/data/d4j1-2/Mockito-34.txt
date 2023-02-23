@@ -1,0 +1,2 @@
+- if (m instanceof CapturesArguments) {
++ if (m instanceof CapturesArguments && i.getArguments().length > k) {

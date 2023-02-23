@@ -1,0 +1,2 @@
++ break;
+  int ancestorType = an.getType();

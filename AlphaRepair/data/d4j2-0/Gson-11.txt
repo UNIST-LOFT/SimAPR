@@ -1,0 +1,2 @@
++ case STRING:
+  return new LazilyParsedNumber(in.nextString());

@@ -1,0 +1,51 @@
+# NFL
+#        NFL/PFL
+# Chart: 5/7
+Chart_1,34/UCUselessCondition_/1703/AbstractCategoryItemRenderer.java
+Chart_4,53/NPNullOnSomePath/2049/XYPlot.java
+Chart_11,4/DLSDeadLocalStore/85/ShapeUtilities.java
+Chart_24,2/DLSDeadLocalStore/61/GrayPaintScale.java
+# Chart_19 - multi line
+Chart_19,4/NPNullOnSomePath/255/CategoryPlot.java
+Chart_19,5/NPNullOnSomePath/358/CategoryPlot.java
+# Closure: 8/10
+Closure_2,3/NPNullOnSomePath/75/TypeCheck.java
+Closure_38,44/UCUselessCondition_/1451/CodeConsumer.java
+Closure_46,0/UPMUncalledPrivateMethod/10/RecordType.java,0/UPMUncalledPrivateMethod/11/RecordType.java,0/UPMUncalledPrivateMethod/12/RecordType.java,0/UPMUncalledPrivateMethod/13/RecordType.java,0/UPMUncalledPrivateMethod/14/RecordType.java
+Closure_62,3/UCUselessCondition_/69/LightweightMessageFormatter.java
+Closure_63,3/UCUselessCondition_/69/LightweightMessageFormatter.java
+Closure_73,9/UCUselessCondition_/175/CodeGenerator.java
+Closure_115,146/UCFUselessControlFlow/3303/FunctionInjector.java
+# Lang: 5/5
+Lang_6,98/DLSDeadLocalStore/1021/CharSequenceTranslator.java
+Lang_7,45/UCFUselessControlFlow/1101/NumberUtils.java
+Lang_10,81/UCFUselessControlFlow/2403/FastDateParser.java
+Lang_57,5/DLSDeadLocalStore/37/LocaleUtils.java
+Lang_59,
+# Math: 6/8
+# Math_4 - multi line
+Math_4,7/NPNullOnSomePath/186/SubLine.java
+Math_33,22/DLSDeadLocalStore/751/SimplexTableau.java
+# Math_46 - multi line
+Math_59,1/DLSDeadLocalStore/51/FastMath.java
+Math_85,49/UCUselessCondition_/1029/UnivariateRealSolverUtils.java
+Math_89,0/BCUnconfirmedCast/5/Frequency.java
+# Mockito: 2/2
+Mockito_29,5/NPNullOnSomePath/99/Same.java
+Mockito_38,0/NPNullOnSomePath/9/ArgumentMatchingTool.java
+# Time: 1/2
+Time_7,326/DLSDeadLocalStore/6120/DateTimeFormatter.java
+
+# PFL 
+# Chart: 5/7
+Chart_8,
+Chart_26,
+# Closure: 8/10
+# Closure_18, Closure_31
+Closure_11,651/UCUselessCondition_/22133/TypeCheck.java
+Closure_126,6/UCFUselessControlFlow/169/MinimizeExitPoints.java
+# Math: 6/8
+Math_82,62/UCUselessCondition_/1328/SimplexSolver.java
+
+# Time: 1/2
+Time_19,1540/UCUselessCondition_/42790/DateTimeZone.java

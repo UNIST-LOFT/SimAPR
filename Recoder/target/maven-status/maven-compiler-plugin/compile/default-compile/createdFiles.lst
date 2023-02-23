@@ -1,0 +1,16 @@
+edu/lu/uni/serval/tbar/json/MethodInfoUtils$MethodVisitorAst.class
+edu/lu/uni/serval/tbar/utils/SuspiciousCodeParser$1.class
+edu/lu/uni/serval/tbar/main/MainPerfectFLPatchSpace.class
+edu/lu/uni/serval/tbar/json/PatchesLogs$MutationRanking.class
+edu/lu/uni/serval/tbar/main/MainPerfectFL$1.class
+edu/lu/uni/serval/tbar/json/util/PatchSpaceUtils.class
+edu/lu/uni/serval/tbar/json/MethodInfoUtils$MethodBeam.class
+edu/lu/uni/serval/tbar/fixpatterns/RangeChecker$1.class
+edu/lu/uni/serval/tbar/json/PatchesLogs.class
+edu/lu/uni/serval/tbar/fixpatterns/OperatorMutator$1.class
+edu/lu/uni/serval/AST/ASTGenerator$1.class
+edu/lu/uni/serval/tbar/json/PatchesLogs$MutationInfo.class
+edu/lu/uni/serval/tbar/TBarFixerPatchSpace.class
+edu/lu/uni/serval/entity/EntityType$1.class
+edu/lu/uni/serval/tbar/json/PatchesLogs$MethodMutationInfo.class
+edu/lu/uni/serval/tbar/json/MethodInfoUtils.class

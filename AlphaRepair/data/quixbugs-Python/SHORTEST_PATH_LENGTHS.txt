@@ -1,0 +1,2 @@
+- length_by_path[i, k] + length_by_path[j, k]
++ length_by_path[i, k] +  length_by_path[k, j]

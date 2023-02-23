@@ -1,0 +1,2 @@
+- if (rawCentralDirectoryData.length != expectedLength) {
++ if (rawCentralDirectoryData.length < expectedLength) {

@@ -1,0 +1,13 @@
+org.joda.time.IllegalFieldValueException@314@0.2
+org.joda.time.Duration@166@0.1
+org.joda.time.Duration@163@0.1
+org.joda.time.DateTimeUtils@86@0.1075552109
+org.joda.time.tz.DefaultNameProvider@89@0.1075552109
+org.joda.time.Months@162@0.0816496581
+org.joda.time.Months@161@0.0816496581
+org.joda.time.Months@155@0.0816496581
+org.joda.time.Days@142@0.0816496581
+org.joda.time.Days@141@0.0816496581
+org.joda.time.Days@135@0.0816496581
+org.joda.time.base.BaseSingleFieldPeriod@105@0.0816496581
+org.joda.time.base.BaseSingleFieldPeriod@104@0.0816496581

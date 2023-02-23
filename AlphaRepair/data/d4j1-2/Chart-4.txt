@@ -1,0 +1,2 @@
++ if (r!= null) {
+  Collection c = r.getAnnotations();

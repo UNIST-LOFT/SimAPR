@@ -1,0 +1,2 @@
+- Partial newPartial = new Partial(iChronology, newTypes, newValues);
++ Partial newPartial = new Partial(newTypes, newValues);

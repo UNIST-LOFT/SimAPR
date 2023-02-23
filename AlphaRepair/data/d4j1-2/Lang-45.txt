@@ -1,0 +1,2 @@
++ if (lower > str.length()) { lower = str.length(); }
+  if (upper == -1 || upper > str.length()) {

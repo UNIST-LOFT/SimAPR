@@ -1,0 +1,4 @@
+Failing tests: 3
+  - org.jsoup.nodes.ElementTest::testAppendRowToTable
+  - org.jsoup.nodes.ElementTest::testPrependRowToTable
+  - org.jsoup.parser.ParserTest::handlesNestedImplicitTable

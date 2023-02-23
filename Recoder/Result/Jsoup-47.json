@@ -1,0 +1,7918 @@
+[
+ {
+  "classes": [
+   {
+    "name": "Jsoup",
+    "fields": [],
+    "methods": [
+     {
+      "name": "parse",
+      "type": "Document",
+      "params": [
+       {
+        "name": "html",
+        "type": "String"
+       },
+       {
+        "name": "baseUri",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "parse",
+      "type": "Document",
+      "params": [
+       {
+        "name": "html",
+        "type": "String"
+       },
+       {
+        "name": "baseUri",
+        "type": "String"
+       },
+       {
+        "name": "parser",
+        "type": "Parser"
+       }
+      ]
+     },
+     {
+      "name": "parse",
+      "type": "Document",
+      "params": [
+       {
+        "name": "html",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "connect",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "url",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "parse",
+      "type": "Document",
+      "params": [
+       {
+        "name": "in",
+        "type": "File"
+       },
+       {
+        "name": "charsetName",
+        "type": "String"
+       },
+       {
+        "name": "baseUri",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "parse",
+      "type": "Document",
+      "params": [
+       {
+        "name": "in",
+        "type": "File"
+       },
+       {
+        "name": "charsetName",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "parse",
+      "type": "Document",
+      "params": [
+       {
+        "name": "in",
+        "type": "InputStream"
+       },
+       {
+        "name": "charsetName",
+        "type": "String"
+       },
+       {
+        "name": "baseUri",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "parse",
+      "type": "Document",
+      "params": [
+       {
+        "name": "in",
+        "type": "InputStream"
+       },
+       {
+        "name": "charsetName",
+        "type": "String"
+       },
+       {
+        "name": "baseUri",
+        "type": "String"
+       },
+       {
+        "name": "parser",
+        "type": "Parser"
+       }
+      ]
+     },
+     {
+      "name": "parseBodyFragment",
+      "type": "Document",
+      "params": [
+       {
+        "name": "bodyHtml",
+        "type": "String"
+       },
+       {
+        "name": "baseUri",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "parseBodyFragment",
+      "type": "Document",
+      "params": [
+       {
+        "name": "bodyHtml",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "parse",
+      "type": "Document",
+      "params": [
+       {
+        "name": "url",
+        "type": "URL"
+       },
+       {
+        "name": "timeoutMillis",
+        "type": "int"
+       }
+      ]
+     },
+     {
+      "name": "clean",
+      "type": "String",
+      "params": [
+       {
+        "name": "bodyHtml",
+        "type": "String"
+       },
+       {
+        "name": "baseUri",
+        "type": "String"
+       },
+       {
+        "name": "whitelist",
+        "type": "Whitelist"
+       }
+      ]
+     },
+     {
+      "name": "clean",
+      "type": "String",
+      "params": [
+       {
+        "name": "bodyHtml",
+        "type": "String"
+       },
+       {
+        "name": "whitelist",
+        "type": "Whitelist"
+       }
+      ]
+     },
+     {
+      "name": "clean",
+      "type": "String",
+      "params": [
+       {
+        "name": "bodyHtml",
+        "type": "String"
+       },
+       {
+        "name": "baseUri",
+        "type": "String"
+       },
+       {
+        "name": "whitelist",
+        "type": "Whitelist"
+       },
+       {
+        "name": "outputSettings",
+        "type": "Document"
+       }
+      ]
+     },
+     {
+      "name": "isValid",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "bodyHtml",
+        "type": "String"
+       },
+       {
+        "name": "whitelist",
+        "type": "Whitelist"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup",
+  "filename": "Jsoup.java"
+ },
+ {
+  "classes": [],
+  "package_name": "org.jsoup",
+  "filename": "package-info.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "HttpStatusException",
+    "fields": [
+     {
+      "name": "statusCode",
+      "type": "int"
+     },
+     {
+      "name": "url",
+      "type": "String"
+     }
+    ],
+    "methods": [
+     {
+      "name": "getStatusCode",
+      "type": "int",
+      "params": []
+     },
+     {
+      "name": "getUrl",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "toString",
+      "type": "String",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup",
+  "filename": "HttpStatusException.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "Connection",
+    "fields": [],
+    "methods": [
+     {
+      "name": "url",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "url",
+        "type": "URL"
+       }
+      ]
+     },
+     {
+      "name": "url",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "url",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "userAgent",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "userAgent",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "timeout",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "millis",
+        "type": "int"
+       }
+      ]
+     },
+     {
+      "name": "maxBodySize",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "bytes",
+        "type": "int"
+       }
+      ]
+     },
+     {
+      "name": "referrer",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "referrer",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "followRedirects",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "followRedirects",
+        "type": "boolean"
+       }
+      ]
+     },
+     {
+      "name": "method",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "method",
+        "type": "Method"
+       }
+      ]
+     },
+     {
+      "name": "ignoreHttpErrors",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "ignoreHttpErrors",
+        "type": "boolean"
+       }
+      ]
+     },
+     {
+      "name": "ignoreContentType",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "ignoreContentType",
+        "type": "boolean"
+       }
+      ]
+     },
+     {
+      "name": "validateTLSCertificates",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "value",
+        "type": "boolean"
+       }
+      ]
+     },
+     {
+      "name": "data",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       },
+       {
+        "name": "value",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "data",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       },
+       {
+        "name": "filename",
+        "type": "String"
+       },
+       {
+        "name": "inputStream",
+        "type": "InputStream"
+       }
+      ]
+     },
+     {
+      "name": "data",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "data",
+        "type": "Collection"
+       }
+      ]
+     },
+     {
+      "name": "data",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "data",
+        "type": "Map"
+       }
+      ]
+     },
+     {
+      "name": "data",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "keyvals",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "header",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       },
+       {
+        "name": "value",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "cookie",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       },
+       {
+        "name": "value",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "cookies",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "cookies",
+        "type": "Map"
+       }
+      ]
+     },
+     {
+      "name": "parser",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "parser",
+        "type": "Parser"
+       }
+      ]
+     },
+     {
+      "name": "postDataCharset",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "charset",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "get",
+      "type": "Document",
+      "params": []
+     },
+     {
+      "name": "post",
+      "type": "Document",
+      "params": []
+     },
+     {
+      "name": "execute",
+      "type": "Response",
+      "params": []
+     },
+     {
+      "name": "request",
+      "type": "Request",
+      "params": []
+     },
+     {
+      "name": "request",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "request",
+        "type": "Request"
+       }
+      ]
+     },
+     {
+      "name": "response",
+      "type": "Response",
+      "params": []
+     },
+     {
+      "name": "response",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "response",
+        "type": "Response"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup",
+  "filename": "Connection.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "UnsupportedMimeTypeException",
+    "fields": [
+     {
+      "name": "mimeType",
+      "type": "String"
+     },
+     {
+      "name": "url",
+      "type": "String"
+     }
+    ],
+    "methods": [
+     {
+      "name": "getMimeType",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "getUrl",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "toString",
+      "type": "String",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup",
+  "filename": "UnsupportedMimeTypeException.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "DescendableLinkedList",
+    "fields": [],
+    "methods": [
+     {
+      "name": "push",
+      "type": null,
+      "params": [
+       {
+        "name": "e",
+        "type": "E"
+       }
+      ]
+     },
+     {
+      "name": "peekLast",
+      "type": "E",
+      "params": []
+     },
+     {
+      "name": "pollLast",
+      "type": "E",
+      "params": []
+     },
+     {
+      "name": "descendingIterator",
+      "type": "Iterator",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.helper",
+  "filename": "DescendableLinkedList.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "HttpConnection",
+    "fields": [
+     {
+      "name": "CONTENT_ENCODING",
+      "type": "String"
+     },
+     {
+      "name": "CONTENT_TYPE",
+      "type": "String"
+     },
+     {
+      "name": "MULTIPART_FORM_DATA",
+      "type": "String"
+     },
+     {
+      "name": "FORM_URL_ENCODED",
+      "type": "String"
+     },
+     {
+      "name": "req",
+      "type": "Connection"
+     },
+     {
+      "name": "res",
+      "type": "Connection"
+     }
+    ],
+    "methods": [
+     {
+      "name": "connect",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "url",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "connect",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "url",
+        "type": "URL"
+       }
+      ]
+     },
+     {
+      "name": "encodeUrl",
+      "type": "String",
+      "params": [
+       {
+        "name": "url",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "encodeMimeName",
+      "type": "String",
+      "params": [
+       {
+        "name": "val",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "url",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "url",
+        "type": "URL"
+       }
+      ]
+     },
+     {
+      "name": "url",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "url",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "userAgent",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "userAgent",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "timeout",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "millis",
+        "type": "int"
+       }
+      ]
+     },
+     {
+      "name": "maxBodySize",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "bytes",
+        "type": "int"
+       }
+      ]
+     },
+     {
+      "name": "followRedirects",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "followRedirects",
+        "type": "boolean"
+       }
+      ]
+     },
+     {
+      "name": "referrer",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "referrer",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "method",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "method",
+        "type": "Method"
+       }
+      ]
+     },
+     {
+      "name": "ignoreHttpErrors",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "ignoreHttpErrors",
+        "type": "boolean"
+       }
+      ]
+     },
+     {
+      "name": "ignoreContentType",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "ignoreContentType",
+        "type": "boolean"
+       }
+      ]
+     },
+     {
+      "name": "validateTLSCertificates",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "value",
+        "type": "boolean"
+       }
+      ]
+     },
+     {
+      "name": "data",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       },
+       {
+        "name": "value",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "data",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       },
+       {
+        "name": "filename",
+        "type": "String"
+       },
+       {
+        "name": "inputStream",
+        "type": "InputStream"
+       }
+      ]
+     },
+     {
+      "name": "data",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "data",
+        "type": "Map"
+       }
+      ]
+     },
+     {
+      "name": "data",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "keyvals",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "data",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "data",
+        "type": "Collection"
+       }
+      ]
+     },
+     {
+      "name": "header",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       },
+       {
+        "name": "value",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "cookie",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       },
+       {
+        "name": "value",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "cookies",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "cookies",
+        "type": "Map"
+       }
+      ]
+     },
+     {
+      "name": "parser",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "parser",
+        "type": "Parser"
+       }
+      ]
+     },
+     {
+      "name": "get",
+      "type": "Document",
+      "params": []
+     },
+     {
+      "name": "post",
+      "type": "Document",
+      "params": []
+     },
+     {
+      "name": "execute",
+      "type": "Connection",
+      "params": []
+     },
+     {
+      "name": "request",
+      "type": "Connection",
+      "params": []
+     },
+     {
+      "name": "request",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "request",
+        "type": "Connection"
+       }
+      ]
+     },
+     {
+      "name": "response",
+      "type": "Connection",
+      "params": []
+     },
+     {
+      "name": "response",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "response",
+        "type": "Connection"
+       }
+      ]
+     },
+     {
+      "name": "postDataCharset",
+      "type": "Connection",
+      "params": [
+       {
+        "name": "charset",
+        "type": "String"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.helper",
+  "filename": "HttpConnection.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "Validate",
+    "fields": [],
+    "methods": [
+     {
+      "name": "notNull",
+      "type": null,
+      "params": [
+       {
+        "name": "obj",
+        "type": "Object"
+       }
+      ]
+     },
+     {
+      "name": "notNull",
+      "type": null,
+      "params": [
+       {
+        "name": "obj",
+        "type": "Object"
+       },
+       {
+        "name": "msg",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "isTrue",
+      "type": null,
+      "params": [
+       {
+        "name": "val",
+        "type": "boolean"
+       }
+      ]
+     },
+     {
+      "name": "isTrue",
+      "type": null,
+      "params": [
+       {
+        "name": "val",
+        "type": "boolean"
+       },
+       {
+        "name": "msg",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "isFalse",
+      "type": null,
+      "params": [
+       {
+        "name": "val",
+        "type": "boolean"
+       }
+      ]
+     },
+     {
+      "name": "isFalse",
+      "type": null,
+      "params": [
+       {
+        "name": "val",
+        "type": "boolean"
+       },
+       {
+        "name": "msg",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "noNullElements",
+      "type": null,
+      "params": [
+       {
+        "name": "objects",
+        "type": "Object"
+       }
+      ]
+     },
+     {
+      "name": "noNullElements",
+      "type": null,
+      "params": [
+       {
+        "name": "objects",
+        "type": "Object"
+       },
+       {
+        "name": "msg",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "notEmpty",
+      "type": null,
+      "params": [
+       {
+        "name": "string",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "notEmpty",
+      "type": null,
+      "params": [
+       {
+        "name": "string",
+        "type": "String"
+       },
+       {
+        "name": "msg",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "fail",
+      "type": null,
+      "params": [
+       {
+        "name": "msg",
+        "type": "String"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.helper",
+  "filename": "Validate.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "W3CDom",
+    "fields": [
+     {
+      "name": "factory",
+      "type": "DocumentBuilderFactory"
+     }
+    ],
+    "methods": [
+     {
+      "name": "fromJsoup",
+      "type": "Document",
+      "params": [
+       {
+        "name": "in",
+        "type": "org"
+       }
+      ]
+     },
+     {
+      "name": "convert",
+      "type": null,
+      "params": [
+       {
+        "name": "in",
+        "type": "org"
+       },
+       {
+        "name": "out",
+        "type": "Document"
+       }
+      ]
+     },
+     {
+      "name": "asString",
+      "type": "String",
+      "params": [
+       {
+        "name": "doc",
+        "type": "Document"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.helper",
+  "filename": "W3CDom.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "DataUtil",
+    "fields": [
+     {
+      "name": "charsetPattern",
+      "type": "Pattern"
+     },
+     {
+      "name": "defaultCharset",
+      "type": "String"
+     },
+     {
+      "name": "bufferSize",
+      "type": "int"
+     },
+     {
+      "name": "UNICODE_BOM",
+      "type": "int"
+     },
+     {
+      "name": "mimeBoundaryChars",
+      "type": "char"
+     },
+     {
+      "name": "boundaryLength",
+      "type": "int"
+     }
+    ],
+    "methods": [
+     {
+      "name": "load",
+      "type": "Document",
+      "params": [
+       {
+        "name": "in",
+        "type": "File"
+       },
+       {
+        "name": "charsetName",
+        "type": "String"
+       },
+       {
+        "name": "baseUri",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "load",
+      "type": "Document",
+      "params": [
+       {
+        "name": "in",
+        "type": "InputStream"
+       },
+       {
+        "name": "charsetName",
+        "type": "String"
+       },
+       {
+        "name": "baseUri",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "load",
+      "type": "Document",
+      "params": [
+       {
+        "name": "in",
+        "type": "InputStream"
+       },
+       {
+        "name": "charsetName",
+        "type": "String"
+       },
+       {
+        "name": "baseUri",
+        "type": "String"
+       },
+       {
+        "name": "parser",
+        "type": "Parser"
+       }
+      ]
+     },
+     {
+      "name": "crossStreams",
+      "type": null,
+      "params": [
+       {
+        "name": "in",
+        "type": "InputStream"
+       },
+       {
+        "name": "out",
+        "type": "OutputStream"
+       }
+      ]
+     },
+     {
+      "name": "parseByteData",
+      "type": "Document",
+      "params": [
+       {
+        "name": "byteData",
+        "type": "ByteBuffer"
+       },
+       {
+        "name": "charsetName",
+        "type": "String"
+       },
+       {
+        "name": "baseUri",
+        "type": "String"
+       },
+       {
+        "name": "parser",
+        "type": "Parser"
+       }
+      ]
+     },
+     {
+      "name": "readToByteBuffer",
+      "type": "ByteBuffer",
+      "params": [
+       {
+        "name": "inStream",
+        "type": "InputStream"
+       },
+       {
+        "name": "maxSize",
+        "type": "int"
+       }
+      ]
+     },
+     {
+      "name": "readToByteBuffer",
+      "type": "ByteBuffer",
+      "params": [
+       {
+        "name": "inStream",
+        "type": "InputStream"
+       }
+      ]
+     },
+     {
+      "name": "readFileToByteBuffer",
+      "type": "ByteBuffer",
+      "params": [
+       {
+        "name": "file",
+        "type": "File"
+       }
+      ]
+     },
+     {
+      "name": "emptyByteBuffer",
+      "type": "ByteBuffer",
+      "params": []
+     },
+     {
+      "name": "getCharsetFromContentType",
+      "type": "String",
+      "params": [
+       {
+        "name": "contentType",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "mimeBoundary",
+      "type": "String",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.helper",
+  "filename": "DataUtil.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "StringUtil",
+    "fields": [
+     {
+      "name": "padding",
+      "type": "String"
+     }
+    ],
+    "methods": [
+     {
+      "name": "join",
+      "type": "String",
+      "params": [
+       {
+        "name": "strings",
+        "type": "Collection"
+       },
+       {
+        "name": "sep",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "join",
+      "type": "String",
+      "params": [
+       {
+        "name": "strings",
+        "type": "Iterator"
+       },
+       {
+        "name": "sep",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "padding",
+      "type": "String",
+      "params": [
+       {
+        "name": "width",
+        "type": "int"
+       }
+      ]
+     },
+     {
+      "name": "isBlank",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "string",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "isNumeric",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "string",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "isWhitespace",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "c",
+        "type": "int"
+       }
+      ]
+     },
+     {
+      "name": "normaliseWhitespace",
+      "type": "String",
+      "params": [
+       {
+        "name": "string",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "appendNormalisedWhitespace",
+      "type": null,
+      "params": [
+       {
+        "name": "accum",
+        "type": "StringBuilder"
+       },
+       {
+        "name": "string",
+        "type": "String"
+       },
+       {
+        "name": "stripLeading",
+        "type": "boolean"
+       }
+      ]
+     },
+     {
+      "name": "in",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "needle",
+        "type": "String"
+       },
+       {
+        "name": "haystack",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "resolve",
+      "type": "URL",
+      "params": [
+       {
+        "name": "base",
+        "type": "URL"
+       },
+       {
+        "name": "relUrl",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "resolve",
+      "type": "String",
+      "params": [
+       {
+        "name": "baseUrl",
+        "type": "String"
+       },
+       {
+        "name": "relUrl",
+        "type": "String"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.helper",
+  "filename": "StringUtil.java"
+ },
+ {
+  "classes": [],
+  "package_name": "org.jsoup.examples",
+  "filename": "package-info.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "HtmlToPlainText",
+    "fields": [
+     {
+      "name": "userAgent",
+      "type": "String"
+     },
+     {
+      "name": "timeout",
+      "type": "int"
+     }
+    ],
+    "methods": [
+     {
+      "name": "main",
+      "type": null,
+      "params": [
+       {
+        "name": "args",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "getPlainText",
+      "type": "String",
+      "params": [
+       {
+        "name": "element",
+        "type": "Element"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.examples",
+  "filename": "HtmlToPlainText.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "ListLinks",
+    "fields": [],
+    "methods": [
+     {
+      "name": "main",
+      "type": null,
+      "params": [
+       {
+        "name": "args",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "print",
+      "type": null,
+      "params": [
+       {
+        "name": "msg",
+        "type": "String"
+       },
+       {
+        "name": "args",
+        "type": "Object"
+       }
+      ]
+     },
+     {
+      "name": "trim",
+      "type": "String",
+      "params": [
+       {
+        "name": "s",
+        "type": "String"
+       },
+       {
+        "name": "width",
+        "type": "int"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.examples",
+  "filename": "ListLinks.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "TokenQueue",
+    "fields": [
+     {
+      "name": "queue",
+      "type": "String"
+     },
+     {
+      "name": "pos",
+      "type": "int"
+     },
+     {
+      "name": "ESC",
+      "type": "char"
+     }
+    ],
+    "methods": [
+     {
+      "name": "isEmpty",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "remainingLength",
+      "type": "int",
+      "params": []
+     },
+     {
+      "name": "peek",
+      "type": "char",
+      "params": []
+     },
+     {
+      "name": "addFirst",
+      "type": null,
+      "params": [
+       {
+        "name": "c",
+        "type": "Character"
+       }
+      ]
+     },
+     {
+      "name": "addFirst",
+      "type": null,
+      "params": [
+       {
+        "name": "seq",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "matches",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "seq",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "matchesCS",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "seq",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "matchesAny",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "seq",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "matchesAny",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "seq",
+        "type": "char"
+       }
+      ]
+     },
+     {
+      "name": "matchesStartTag",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "matchChomp",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "seq",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "matchesWhitespace",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "matchesWord",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "advance",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "consume",
+      "type": "char",
+      "params": []
+     },
+     {
+      "name": "consume",
+      "type": null,
+      "params": [
+       {
+        "name": "seq",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "consumeTo",
+      "type": "String",
+      "params": [
+       {
+        "name": "seq",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "consumeToIgnoreCase",
+      "type": "String",
+      "params": [
+       {
+        "name": "seq",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "consumeToAny",
+      "type": "String",
+      "params": [
+       {
+        "name": "seq",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "chompTo",
+      "type": "String",
+      "params": [
+       {
+        "name": "seq",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "chompToIgnoreCase",
+      "type": "String",
+      "params": [
+       {
+        "name": "seq",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "chompBalanced",
+      "type": "String",
+      "params": [
+       {
+        "name": "open",
+        "type": "char"
+       },
+       {
+        "name": "close",
+        "type": "char"
+       }
+      ]
+     },
+     {
+      "name": "unescape",
+      "type": "String",
+      "params": [
+       {
+        "name": "in",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "consumeWhitespace",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "consumeWord",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "consumeTagName",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "consumeElementSelector",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "consumeCssIdentifier",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "consumeAttributeKey",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "remainder",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "toString",
+      "type": "String",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.parser",
+  "filename": "TokenQueue.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "Token",
+    "fields": [
+     {
+      "name": "type",
+      "type": "TokenType"
+     }
+    ],
+    "methods": [
+     {
+      "name": "tokenType",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "reset",
+      "type": "Token",
+      "params": []
+     },
+     {
+      "name": "reset",
+      "type": null,
+      "params": [
+       {
+        "name": "sb",
+        "type": "StringBuilder"
+       }
+      ]
+     },
+     {
+      "name": "isDoctype",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "asDoctype",
+      "type": "Doctype",
+      "params": []
+     },
+     {
+      "name": "isStartTag",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "asStartTag",
+      "type": "StartTag",
+      "params": []
+     },
+     {
+      "name": "isEndTag",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "asEndTag",
+      "type": "EndTag",
+      "params": []
+     },
+     {
+      "name": "isComment",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "asComment",
+      "type": "Comment",
+      "params": []
+     },
+     {
+      "name": "isCharacter",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "asCharacter",
+      "type": "Character",
+      "params": []
+     },
+     {
+      "name": "isEOF",
+      "type": "boolean",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.parser",
+  "filename": "Token.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "Tokeniser",
+    "fields": [
+     {
+      "name": "replacementChar",
+      "type": "char"
+     },
+     {
+      "name": "notCharRefCharsSorted",
+      "type": "char"
+     },
+     {
+      "name": "reader",
+      "type": "CharacterReader"
+     },
+     {
+      "name": "errors",
+      "type": "ParseErrorList"
+     },
+     {
+      "name": "state",
+      "type": "TokeniserState"
+     },
+     {
+      "name": "emitPending",
+      "type": "Token"
+     },
+     {
+      "name": "isEmitPending",
+      "type": "boolean"
+     },
+     {
+      "name": "charsString",
+      "type": "String"
+     },
+     {
+      "name": "charsBuilder",
+      "type": "StringBuilder"
+     },
+     {
+      "name": "dataBuffer",
+      "type": "StringBuilder"
+     },
+     {
+      "name": "tagPending",
+      "type": "Token"
+     },
+     {
+      "name": "startPending",
+      "type": "Token"
+     },
+     {
+      "name": "endPending",
+      "type": "Token"
+     },
+     {
+      "name": "charPending",
+      "type": "Token"
+     },
+     {
+      "name": "doctypePending",
+      "type": "Token"
+     },
+     {
+      "name": "commentPending",
+      "type": "Token"
+     },
+     {
+      "name": "lastStartTag",
+      "type": "String"
+     },
+     {
+      "name": "selfClosingFlagAcknowledged",
+      "type": "boolean"
+     },
+     {
+      "name": "charRefHolder",
+      "type": "char"
+     }
+    ],
+    "methods": [
+     {
+      "name": "read",
+      "type": "Token",
+      "params": []
+     },
+     {
+      "name": "emit",
+      "type": null,
+      "params": [
+       {
+        "name": "token",
+        "type": "Token"
+       }
+      ]
+     },
+     {
+      "name": "emit",
+      "type": null,
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "emit",
+      "type": null,
+      "params": [
+       {
+        "name": "chars",
+        "type": "char"
+       }
+      ]
+     },
+     {
+      "name": "emit",
+      "type": null,
+      "params": [
+       {
+        "name": "c",
+        "type": "char"
+       }
+      ]
+     },
+     {
+      "name": "getState",
+      "type": "TokeniserState",
+      "params": []
+     },
+     {
+      "name": "transition",
+      "type": null,
+      "params": [
+       {
+        "name": "state",
+        "type": "TokeniserState"
+       }
+      ]
+     },
+     {
+      "name": "advanceTransition",
+      "type": null,
+      "params": [
+       {
+        "name": "state",
+        "type": "TokeniserState"
+       }
+      ]
+     },
+     {
+      "name": "acknowledgeSelfClosingFlag",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "consumeCharacterReference",
+      "type": "char",
+      "params": [
+       {
+        "name": "additionalAllowedCharacter",
+        "type": "Character"
+       },
+       {
+        "name": "inAttribute",
+        "type": "boolean"
+       }
+      ]
+     },
+     {
+      "name": "createTagPending",
+      "type": "Token",
+      "params": [
+       {
+        "name": "start",
+        "type": "boolean"
+       }
+      ]
+     },
+     {
+      "name": "emitTagPending",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "createCommentPending",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "emitCommentPending",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "createDoctypePending",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "emitDoctypePending",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "createTempBuffer",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "isAppropriateEndTagToken",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "appropriateEndTagName",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "error",
+      "type": null,
+      "params": [
+       {
+        "name": "state",
+        "type": "TokeniserState"
+       }
+      ]
+     },
+     {
+      "name": "eofError",
+      "type": null,
+      "params": [
+       {
+        "name": "state",
+        "type": "TokeniserState"
+       }
+      ]
+     },
+     {
+      "name": "characterReferenceError",
+      "type": null,
+      "params": [
+       {
+        "name": "message",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "error",
+      "type": null,
+      "params": [
+       {
+        "name": "errorMsg",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "currentNodeInHtmlNS",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "unescapeEntities",
+      "type": "String",
+      "params": [
+       {
+        "name": "inAttribute",
+        "type": "boolean"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.parser",
+  "filename": "Tokeniser.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "Tag",
+    "fields": [
+     {
+      "name": "tags",
+      "type": "Map"
+     },
+     {
+      "name": "tagName",
+      "type": "String"
+     },
+     {
+      "name": "isBlock",
+      "type": "boolean"
+     },
+     {
+      "name": "formatAsBlock",
+      "type": "boolean"
+     },
+     {
+      "name": "canContainBlock",
+      "type": "boolean"
+     },
+     {
+      "name": "canContainInline",
+      "type": "boolean"
+     },
+     {
+      "name": "empty",
+      "type": "boolean"
+     },
+     {
+      "name": "selfClosing",
+      "type": "boolean"
+     },
+     {
+      "name": "preserveWhitespace",
+      "type": "boolean"
+     },
+     {
+      "name": "formList",
+      "type": "boolean"
+     },
+     {
+      "name": "formSubmit",
+      "type": "boolean"
+     },
+     {
+      "name": "blockTags",
+      "type": "String"
+     },
+     {
+      "name": "inlineTags",
+      "type": "String"
+     },
+     {
+      "name": "emptyTags",
+      "type": "String"
+     },
+     {
+      "name": "formatAsInlineTags",
+      "type": "String"
+     },
+     {
+      "name": "preserveWhitespaceTags",
+      "type": "String"
+     },
+     {
+      "name": "formListedTags",
+      "type": "String"
+     },
+     {
+      "name": "formSubmitTags",
+      "type": "String"
+     }
+    ],
+    "methods": [
+     {
+      "name": "getName",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "valueOf",
+      "type": "Tag",
+      "params": [
+       {
+        "name": "tagName",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "isBlock",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "formatAsBlock",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "canContainBlock",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "isInline",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "isData",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "isEmpty",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "isSelfClosing",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "isKnownTag",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "isKnownTag",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "tagName",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "preserveWhitespace",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "isFormListed",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "isFormSubmittable",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "setSelfClosing",
+      "type": "Tag",
+      "params": []
+     },
+     {
+      "name": "equals",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "o",
+        "type": "Object"
+       }
+      ]
+     },
+     {
+      "name": "hashCode",
+      "type": "int",
+      "params": []
+     },
+     {
+      "name": "toString",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "register",
+      "type": null,
+      "params": [
+       {
+        "name": "tag",
+        "type": "Tag"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.parser",
+  "filename": "Tag.java"
+ },
+ {
+  "classes": [],
+  "package_name": "org.jsoup.parser",
+  "filename": "package-info.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "ParseErrorList",
+    "fields": [
+     {
+      "name": "INITIAL_CAPACITY",
+      "type": "int"
+     },
+     {
+      "name": "maxSize",
+      "type": "int"
+     }
+    ],
+    "methods": [
+     {
+      "name": "canAddError",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "getMaxSize",
+      "type": "int",
+      "params": []
+     },
+     {
+      "name": "noTracking",
+      "type": "ParseErrorList",
+      "params": []
+     },
+     {
+      "name": "tracking",
+      "type": "ParseErrorList",
+      "params": [
+       {
+        "name": "maxSize",
+        "type": "int"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.parser",
+  "filename": "ParseErrorList.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "HtmlTreeBuilder",
+    "fields": [
+     {
+      "name": "TagsScriptStyle",
+      "type": "String"
+     },
+     {
+      "name": "TagsSearchInScope",
+      "type": "String"
+     },
+     {
+      "name": "TagSearchList",
+      "type": "String"
+     },
+     {
+      "name": "TagSearchButton",
+      "type": "String"
+     },
+     {
+      "name": "TagSearchTableScope",
+      "type": "String"
+     },
+     {
+      "name": "TagSearchSelectScope",
+      "type": "String"
+     },
+     {
+      "name": "TagSearchEndTags",
+      "type": "String"
+     },
+     {
+      "name": "TagSearchSpecial",
+      "type": "String"
+     },
+     {
+      "name": "state",
+      "type": "HtmlTreeBuilderState"
+     },
+     {
+      "name": "originalState",
+      "type": "HtmlTreeBuilderState"
+     },
+     {
+      "name": "baseUriSetFromDoc",
+      "type": "boolean"
+     },
+     {
+      "name": "headElement",
+      "type": "Element"
+     },
+     {
+      "name": "formElement",
+      "type": "FormElement"
+     },
+     {
+      "name": "contextElement",
+      "type": "Element"
+     },
+     {
+      "name": "formattingElements",
+      "type": "ArrayList"
+     },
+     {
+      "name": "pendingTableCharacters",
+      "type": "List"
+     },
+     {
+      "name": "emptyEnd",
+      "type": "Token"
+     },
+     {
+      "name": "framesetOk",
+      "type": "boolean"
+     },
+     {
+      "name": "fosterInserts",
+      "type": "boolean"
+     },
+     {
+      "name": "fragmentParsing",
+      "type": "boolean"
+     },
+     {
+      "name": "specificScopeTarget",
+      "type": "String"
+     }
+    ],
+    "methods": [
+     {
+      "name": "parse",
+      "type": "Document",
+      "params": [
+       {
+        "name": "input",
+        "type": "String"
+       },
+       {
+        "name": "baseUri",
+        "type": "String"
+       },
+       {
+        "name": "errors",
+        "type": "ParseErrorList"
+       }
+      ]
+     },
+     {
+      "name": "parseFragment",
+      "type": "List",
+      "params": [
+       {
+        "name": "inputFragment",
+        "type": "String"
+       },
+       {
+        "name": "context",
+        "type": "Element"
+       },
+       {
+        "name": "baseUri",
+        "type": "String"
+       },
+       {
+        "name": "errors",
+        "type": "ParseErrorList"
+       }
+      ]
+     },
+     {
+      "name": "process",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "token",
+        "type": "Token"
+       }
+      ]
+     },
+     {
+      "name": "process",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "token",
+        "type": "Token"
+       },
+       {
+        "name": "state",
+        "type": "HtmlTreeBuilderState"
+       }
+      ]
+     },
+     {
+      "name": "transition",
+      "type": null,
+      "params": [
+       {
+        "name": "state",
+        "type": "HtmlTreeBuilderState"
+       }
+      ]
+     },
+     {
+      "name": "state",
+      "type": "HtmlTreeBuilderState",
+      "params": []
+     },
+     {
+      "name": "markInsertionMode",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "originalState",
+      "type": "HtmlTreeBuilderState",
+      "params": []
+     },
+     {
+      "name": "framesetOk",
+      "type": null,
+      "params": [
+       {
+        "name": "framesetOk",
+        "type": "boolean"
+       }
+      ]
+     },
+     {
+      "name": "framesetOk",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "getDocument",
+      "type": "Document",
+      "params": []
+     },
+     {
+      "name": "getBaseUri",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "maybeSetBaseUri",
+      "type": null,
+      "params": [
+       {
+        "name": "base",
+        "type": "Element"
+       }
+      ]
+     },
+     {
+      "name": "isFragmentParsing",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "error",
+      "type": null,
+      "params": [
+       {
+        "name": "state",
+        "type": "HtmlTreeBuilderState"
+       }
+      ]
+     },
+     {
+      "name": "insert",
+      "type": "Element",
+      "params": [
+       {
+        "name": "startTag",
+        "type": "Token"
+       }
+      ]
+     },
+     {
+      "name": "insertStartTag",
+      "type": "Element",
+      "params": [
+       {
+        "name": "startTagName",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "insert",
+      "type": null,
+      "params": [
+       {
+        "name": "el",
+        "type": "Element"
+       }
+      ]
+     },
+     {
+      "name": "insertEmpty",
+      "type": "Element",
+      "params": [
+       {
+        "name": "startTag",
+        "type": "Token"
+       }
+      ]
+     },
+     {
+      "name": "insertForm",
+      "type": "FormElement",
+      "params": [
+       {
+        "name": "startTag",
+        "type": "Token"
+       },
+       {
+        "name": "onStack",
+        "type": "boolean"
+       }
+      ]
+     },
+     {
+      "name": "insert",
+      "type": null,
+      "params": [
+       {
+        "name": "commentToken",
+        "type": "Token"
+       }
+      ]
+     },
+     {
+      "name": "insert",
+      "type": null,
+      "params": [
+       {
+        "name": "characterToken",
+        "type": "Token"
+       }
+      ]
+     },
+     {
+      "name": "insertNode",
+      "type": null,
+      "params": [
+       {
+        "name": "node",
+        "type": "Node"
+       }
+      ]
+     },
+     {
+      "name": "pop",
+      "type": "Element",
+      "params": []
+     },
+     {
+      "name": "push",
+      "type": null,
+      "params": [
+       {
+        "name": "element",
+        "type": "Element"
+       }
+      ]
+     },
+     {
+      "name": "getStack",
+      "type": "ArrayList",
+      "params": []
+     },
+     {
+      "name": "onStack",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "el",
+        "type": "Element"
+       }
+      ]
+     },
+     {
+      "name": "isElementInQueue",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "queue",
+        "type": "ArrayList"
+       },
+       {
+        "name": "element",
+        "type": "Element"
+       }
+      ]
+     },
+     {
+      "name": "getFromStack",
+      "type": "Element",
+      "params": [
+       {
+        "name": "elName",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "removeFromStack",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "el",
+        "type": "Element"
+       }
+      ]
+     },
+     {
+      "name": "popStackToClose",
+      "type": null,
+      "params": [
+       {
+        "name": "elName",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "popStackToClose",
+      "type": null,
+      "params": [
+       {
+        "name": "elNames",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "popStackToBefore",
+      "type": null,
+      "params": [
+       {
+        "name": "elName",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "clearStackToTableContext",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "clearStackToTableBodyContext",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "clearStackToTableRowContext",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "clearStackToContext",
+      "type": null,
+      "params": [
+       {
+        "name": "nodeNames",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "aboveOnStack",
+      "type": "Element",
+      "params": [
+       {
+        "name": "el",
+        "type": "Element"
+       }
+      ]
+     },
+     {
+      "name": "insertOnStackAfter",
+      "type": null,
+      "params": [
+       {
+        "name": "after",
+        "type": "Element"
+       },
+       {
+        "name": "in",
+        "type": "Element"
+       }
+      ]
+     },
+     {
+      "name": "replaceOnStack",
+      "type": null,
+      "params": [
+       {
+        "name": "out",
+        "type": "Element"
+       },
+       {
+        "name": "in",
+        "type": "Element"
+       }
+      ]
+     },
+     {
+      "name": "replaceInQueue",
+      "type": null,
+      "params": [
+       {
+        "name": "queue",
+        "type": "ArrayList"
+       },
+       {
+        "name": "out",
+        "type": "Element"
+       },
+       {
+        "name": "in",
+        "type": "Element"
+       }
+      ]
+     },
+     {
+      "name": "resetInsertionMode",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "inSpecificScope",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "targetName",
+        "type": "String"
+       },
+       {
+        "name": "baseTypes",
+        "type": "String"
+       },
+       {
+        "name": "extraTypes",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "inSpecificScope",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "targetNames",
+        "type": "String"
+       },
+       {
+        "name": "baseTypes",
+        "type": "String"
+       },
+       {
+        "name": "extraTypes",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "inScope",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "targetNames",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "inScope",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "targetName",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "inScope",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "targetName",
+        "type": "String"
+       },
+       {
+        "name": "extras",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "inListItemScope",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "targetName",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "inButtonScope",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "targetName",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "inTableScope",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "targetName",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "inSelectScope",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "targetName",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "setHeadElement",
+      "type": null,
+      "params": [
+       {
+        "name": "headElement",
+        "type": "Element"
+       }
+      ]
+     },
+     {
+      "name": "getHeadElement",
+      "type": "Element",
+      "params": []
+     },
+     {
+      "name": "isFosterInserts",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "setFosterInserts",
+      "type": null,
+      "params": [
+       {
+        "name": "fosterInserts",
+        "type": "boolean"
+       }
+      ]
+     },
+     {
+      "name": "getFormElement",
+      "type": "FormElement",
+      "params": []
+     },
+     {
+      "name": "setFormElement",
+      "type": null,
+      "params": [
+       {
+        "name": "formElement",
+        "type": "FormElement"
+       }
+      ]
+     },
+     {
+      "name": "newPendingTableCharacters",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "getPendingTableCharacters",
+      "type": "List",
+      "params": []
+     },
+     {
+      "name": "setPendingTableCharacters",
+      "type": null,
+      "params": [
+       {
+        "name": "pendingTableCharacters",
+        "type": "List"
+       }
+      ]
+     },
+     {
+      "name": "generateImpliedEndTags",
+      "type": null,
+      "params": [
+       {
+        "name": "excludeTag",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "generateImpliedEndTags",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "isSpecial",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "el",
+        "type": "Element"
+       }
+      ]
+     },
+     {
+      "name": "lastFormattingElement",
+      "type": "Element",
+      "params": []
+     },
+     {
+      "name": "removeLastFormattingElement",
+      "type": "Element",
+      "params": []
+     },
+     {
+      "name": "pushActiveFormattingElements",
+      "type": null,
+      "params": [
+       {
+        "name": "in",
+        "type": "Element"
+       }
+      ]
+     },
+     {
+      "name": "isSameFormattingElement",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "a",
+        "type": "Element"
+       },
+       {
+        "name": "b",
+        "type": "Element"
+       }
+      ]
+     },
+     {
+      "name": "reconstructFormattingElements",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "clearFormattingElementsToLastMarker",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "removeFromActiveFormattingElements",
+      "type": null,
+      "params": [
+       {
+        "name": "el",
+        "type": "Element"
+       }
+      ]
+     },
+     {
+      "name": "isInActiveFormattingElements",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "el",
+        "type": "Element"
+       }
+      ]
+     },
+     {
+      "name": "getActiveFormattingElement",
+      "type": "Element",
+      "params": [
+       {
+        "name": "nodeName",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "replaceActiveFormattingElement",
+      "type": null,
+      "params": [
+       {
+        "name": "out",
+        "type": "Element"
+       },
+       {
+        "name": "in",
+        "type": "Element"
+       }
+      ]
+     },
+     {
+      "name": "insertMarkerToFormattingElements",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "insertInFosterParent",
+      "type": null,
+      "params": [
+       {
+        "name": "in",
+        "type": "Node"
+       }
+      ]
+     },
+     {
+      "name": "toString",
+      "type": "String",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.parser",
+  "filename": "HtmlTreeBuilder.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "TreeBuilder",
+    "fields": [
+     {
+      "name": "reader",
+      "type": "CharacterReader"
+     },
+     {
+      "name": "tokeniser",
+      "type": "Tokeniser"
+     },
+     {
+      "name": "doc",
+      "type": "Document"
+     },
+     {
+      "name": "stack",
+      "type": "ArrayList"
+     },
+     {
+      "name": "baseUri",
+      "type": "String"
+     },
+     {
+      "name": "currentToken",
+      "type": "Token"
+     },
+     {
+      "name": "errors",
+      "type": "ParseErrorList"
+     },
+     {
+      "name": "start",
+      "type": "Token"
+     },
+     {
+      "name": "end",
+      "type": "Token"
+     }
+    ],
+    "methods": [
+     {
+      "name": "initialiseParse",
+      "type": null,
+      "params": [
+       {
+        "name": "input",
+        "type": "String"
+       },
+       {
+        "name": "baseUri",
+        "type": "String"
+       },
+       {
+        "name": "errors",
+        "type": "ParseErrorList"
+       }
+      ]
+     },
+     {
+      "name": "parse",
+      "type": "Document",
+      "params": [
+       {
+        "name": "input",
+        "type": "String"
+       },
+       {
+        "name": "baseUri",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "parse",
+      "type": "Document",
+      "params": [
+       {
+        "name": "input",
+        "type": "String"
+       },
+       {
+        "name": "baseUri",
+        "type": "String"
+       },
+       {
+        "name": "errors",
+        "type": "ParseErrorList"
+       }
+      ]
+     },
+     {
+      "name": "runParser",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "process",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "token",
+        "type": "Token"
+       }
+      ]
+     },
+     {
+      "name": "processStartTag",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "processStartTag",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       },
+       {
+        "name": "attrs",
+        "type": "Attributes"
+       }
+      ]
+     },
+     {
+      "name": "processEndTag",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "currentElement",
+      "type": "Element",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.parser",
+  "filename": "TreeBuilder.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "CharacterReader",
+    "fields": [
+     {
+      "name": "EOF",
+      "type": "char"
+     },
+     {
+      "name": "maxCacheLen",
+      "type": "int"
+     },
+     {
+      "name": "input",
+      "type": "char"
+     },
+     {
+      "name": "length",
+      "type": "int"
+     },
+     {
+      "name": "pos",
+      "type": "int"
+     },
+     {
+      "name": "mark",
+      "type": "int"
+     },
+     {
+      "name": "stringCache",
+      "type": "String"
+     }
+    ],
+    "methods": [
+     {
+      "name": "pos",
+      "type": "int",
+      "params": []
+     },
+     {
+      "name": "isEmpty",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "current",
+      "type": "char",
+      "params": []
+     },
+     {
+      "name": "consume",
+      "type": "char",
+      "params": []
+     },
+     {
+      "name": "unconsume",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "advance",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "mark",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "rewindToMark",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "consumeAsString",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "nextIndexOf",
+      "type": "int",
+      "params": [
+       {
+        "name": "c",
+        "type": "char"
+       }
+      ]
+     },
+     {
+      "name": "nextIndexOf",
+      "type": "int",
+      "params": [
+       {
+        "name": "seq",
+        "type": "CharSequence"
+       }
+      ]
+     },
+     {
+      "name": "consumeTo",
+      "type": "String",
+      "params": [
+       {
+        "name": "c",
+        "type": "char"
+       }
+      ]
+     },
+     {
+      "name": "consumeTo",
+      "type": "String",
+      "params": [
+       {
+        "name": "seq",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "consumeToAny",
+      "type": "String",
+      "params": [
+       {
+        "name": "chars",
+        "type": "char"
+       }
+      ]
+     },
+     {
+      "name": "consumeToAnySorted",
+      "type": "String",
+      "params": [
+       {
+        "name": "chars",
+        "type": "char"
+       }
+      ]
+     },
+     {
+      "name": "consumeData",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "consumeTagName",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "consumeToEnd",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "consumeLetterSequence",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "consumeLetterThenDigitSequence",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "consumeHexSequence",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "consumeDigitSequence",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "matches",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "c",
+        "type": "char"
+       }
+      ]
+     },
+     {
+      "name": "matches",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "seq",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "matchesIgnoreCase",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "seq",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "matchesAny",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "seq",
+        "type": "char"
+       }
+      ]
+     },
+     {
+      "name": "matchesAnySorted",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "seq",
+        "type": "char"
+       }
+      ]
+     },
+     {
+      "name": "matchesLetter",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "matchesDigit",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "matchConsume",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "seq",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "matchConsumeIgnoreCase",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "seq",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "containsIgnoreCase",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "seq",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "toString",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "cacheString",
+      "type": "String",
+      "params": [
+       {
+        "name": "start",
+        "type": "int"
+       },
+       {
+        "name": "count",
+        "type": "int"
+       }
+      ]
+     },
+     {
+      "name": "rangeEquals",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "start",
+        "type": "int"
+       },
+       {
+        "name": "count",
+        "type": "int"
+       },
+       {
+        "name": "cached",
+        "type": "String"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.parser",
+  "filename": "CharacterReader.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "TokeniserState",
+    "fields": [
+     {
+      "name": "nullChar",
+      "type": "char"
+     },
+     {
+      "name": "attributeSingleValueCharsSorted",
+      "type": "char"
+     },
+     {
+      "name": "attributeDoubleValueCharsSorted",
+      "type": "char"
+     },
+     {
+      "name": "attributeNameCharsSorted",
+      "type": "char"
+     },
+     {
+      "name": "replacementChar",
+      "type": "char"
+     },
+     {
+      "name": "replacementStr",
+      "type": "String"
+     },
+     {
+      "name": "eof",
+      "type": "char"
+     }
+    ],
+    "methods": [
+     {
+      "name": "read",
+      "type": null,
+      "params": [
+       {
+        "name": "t",
+        "type": "Tokeniser"
+       },
+       {
+        "name": "r",
+        "type": "CharacterReader"
+       }
+      ]
+     },
+     {
+      "name": "handleDataEndTag",
+      "type": null,
+      "params": [
+       {
+        "name": "t",
+        "type": "Tokeniser"
+       },
+       {
+        "name": "r",
+        "type": "CharacterReader"
+       },
+       {
+        "name": "elseTransition",
+        "type": "TokeniserState"
+       }
+      ]
+     },
+     {
+      "name": "handleDataDoubleEscapeTag",
+      "type": null,
+      "params": [
+       {
+        "name": "t",
+        "type": "Tokeniser"
+       },
+       {
+        "name": "r",
+        "type": "CharacterReader"
+       },
+       {
+        "name": "primary",
+        "type": "TokeniserState"
+       },
+       {
+        "name": "fallback",
+        "type": "TokeniserState"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.parser",
+  "filename": "TokeniserState.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "HtmlTreeBuilderState",
+    "fields": [
+     {
+      "name": "nullString",
+      "type": "String"
+     }
+    ],
+    "methods": [
+     {
+      "name": "process",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "t",
+        "type": "Token"
+       },
+       {
+        "name": "tb",
+        "type": "HtmlTreeBuilder"
+       }
+      ]
+     },
+     {
+      "name": "isWhitespace",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "t",
+        "type": "Token"
+       }
+      ]
+     },
+     {
+      "name": "isWhitespace",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "data",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "handleRcData",
+      "type": null,
+      "params": [
+       {
+        "name": "startTag",
+        "type": "Token"
+       },
+       {
+        "name": "tb",
+        "type": "HtmlTreeBuilder"
+       }
+      ]
+     },
+     {
+      "name": "handleRawtext",
+      "type": null,
+      "params": [
+       {
+        "name": "startTag",
+        "type": "Token"
+       },
+       {
+        "name": "tb",
+        "type": "HtmlTreeBuilder"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.parser",
+  "filename": "HtmlTreeBuilderState.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "ParseError",
+    "fields": [
+     {
+      "name": "pos",
+      "type": "int"
+     },
+     {
+      "name": "errorMsg",
+      "type": "String"
+     }
+    ],
+    "methods": [
+     {
+      "name": "getErrorMessage",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "getPosition",
+      "type": "int",
+      "params": []
+     },
+     {
+      "name": "toString",
+      "type": "String",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.parser",
+  "filename": "ParseError.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "Parser",
+    "fields": [
+     {
+      "name": "DEFAULT_MAX_ERRORS",
+      "type": "int"
+     },
+     {
+      "name": "treeBuilder",
+      "type": "TreeBuilder"
+     },
+     {
+      "name": "maxErrors",
+      "type": "int"
+     },
+     {
+      "name": "errors",
+      "type": "ParseErrorList"
+     }
+    ],
+    "methods": [
+     {
+      "name": "parseInput",
+      "type": "Document",
+      "params": [
+       {
+        "name": "html",
+        "type": "String"
+       },
+       {
+        "name": "baseUri",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "getTreeBuilder",
+      "type": "TreeBuilder",
+      "params": []
+     },
+     {
+      "name": "setTreeBuilder",
+      "type": "Parser",
+      "params": [
+       {
+        "name": "treeBuilder",
+        "type": "TreeBuilder"
+       }
+      ]
+     },
+     {
+      "name": "isTrackErrors",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "setTrackErrors",
+      "type": "Parser",
+      "params": [
+       {
+        "name": "maxErrors",
+        "type": "int"
+       }
+      ]
+     },
+     {
+      "name": "getErrors",
+      "type": "List",
+      "params": []
+     },
+     {
+      "name": "parse",
+      "type": "Document",
+      "params": [
+       {
+        "name": "html",
+        "type": "String"
+       },
+       {
+        "name": "baseUri",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "parseFragment",
+      "type": "List",
+      "params": [
+       {
+        "name": "fragmentHtml",
+        "type": "String"
+       },
+       {
+        "name": "context",
+        "type": "Element"
+       },
+       {
+        "name": "baseUri",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "parseXmlFragment",
+      "type": "List",
+      "params": [
+       {
+        "name": "fragmentXml",
+        "type": "String"
+       },
+       {
+        "name": "baseUri",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "parseBodyFragment",
+      "type": "Document",
+      "params": [
+       {
+        "name": "bodyHtml",
+        "type": "String"
+       },
+       {
+        "name": "baseUri",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "unescapeEntities",
+      "type": "String",
+      "params": [
+       {
+        "name": "string",
+        "type": "String"
+       },
+       {
+        "name": "inAttribute",
+        "type": "boolean"
+       }
+      ]
+     },
+     {
+      "name": "parseBodyFragmentRelaxed",
+      "type": "Document",
+      "params": [
+       {
+        "name": "bodyHtml",
+        "type": "String"
+       },
+       {
+        "name": "baseUri",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "htmlParser",
+      "type": "Parser",
+      "params": []
+     },
+     {
+      "name": "xmlParser",
+      "type": "Parser",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.parser",
+  "filename": "Parser.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "XmlTreeBuilder",
+    "fields": [],
+    "methods": [
+     {
+      "name": "initialiseParse",
+      "type": null,
+      "params": [
+       {
+        "name": "input",
+        "type": "String"
+       },
+       {
+        "name": "baseUri",
+        "type": "String"
+       },
+       {
+        "name": "errors",
+        "type": "ParseErrorList"
+       }
+      ]
+     },
+     {
+      "name": "process",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "token",
+        "type": "Token"
+       }
+      ]
+     },
+     {
+      "name": "insertNode",
+      "type": null,
+      "params": [
+       {
+        "name": "node",
+        "type": "Node"
+       }
+      ]
+     },
+     {
+      "name": "insert",
+      "type": "Element",
+      "params": [
+       {
+        "name": "startTag",
+        "type": "Token"
+       }
+      ]
+     },
+     {
+      "name": "insert",
+      "type": null,
+      "params": [
+       {
+        "name": "commentToken",
+        "type": "Token"
+       }
+      ]
+     },
+     {
+      "name": "insert",
+      "type": null,
+      "params": [
+       {
+        "name": "characterToken",
+        "type": "Token"
+       }
+      ]
+     },
+     {
+      "name": "insert",
+      "type": null,
+      "params": [
+       {
+        "name": "d",
+        "type": "Token"
+       }
+      ]
+     },
+     {
+      "name": "popStackToClose",
+      "type": null,
+      "params": [
+       {
+        "name": "endTag",
+        "type": "Token"
+       }
+      ]
+     },
+     {
+      "name": "parseFragment",
+      "type": "List",
+      "params": [
+       {
+        "name": "inputFragment",
+        "type": "String"
+       },
+       {
+        "name": "baseUri",
+        "type": "String"
+       },
+       {
+        "name": "errors",
+        "type": "ParseErrorList"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.parser",
+  "filename": "XmlTreeBuilder.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "Collector",
+    "fields": [],
+    "methods": [
+     {
+      "name": "collect",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "eval",
+        "type": "Evaluator"
+       },
+       {
+        "name": "root",
+        "type": "Element"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.select",
+  "filename": "Collector.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "Evaluator",
+    "fields": [],
+    "methods": [
+     {
+      "name": "matches",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "root",
+        "type": "Element"
+       },
+       {
+        "name": "element",
+        "type": "Element"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.select",
+  "filename": "Evaluator.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "Elements",
+    "fields": [],
+    "methods": [
+     {
+      "name": "clone",
+      "type": "Elements",
+      "params": []
+     },
+     {
+      "name": "attr",
+      "type": "String",
+      "params": [
+       {
+        "name": "attributeKey",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "hasAttr",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "attributeKey",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "attr",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "attributeKey",
+        "type": "String"
+       },
+       {
+        "name": "attributeValue",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "removeAttr",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "attributeKey",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "addClass",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "className",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "removeClass",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "className",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "toggleClass",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "className",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "hasClass",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "className",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "val",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "val",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "text",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "hasText",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "html",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "outerHtml",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "toString",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "tagName",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "tagName",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "html",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "html",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "prepend",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "html",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "append",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "html",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "before",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "html",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "after",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "html",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "wrap",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "html",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "unwrap",
+      "type": "Elements",
+      "params": []
+     },
+     {
+      "name": "empty",
+      "type": "Elements",
+      "params": []
+     },
+     {
+      "name": "remove",
+      "type": "Elements",
+      "params": []
+     },
+     {
+      "name": "select",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "query",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "not",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "query",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "eq",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "index",
+        "type": "int"
+       }
+      ]
+     },
+     {
+      "name": "is",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "query",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "parents",
+      "type": "Elements",
+      "params": []
+     },
+     {
+      "name": "first",
+      "type": "Element",
+      "params": []
+     },
+     {
+      "name": "last",
+      "type": "Element",
+      "params": []
+     },
+     {
+      "name": "traverse",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "nodeVisitor",
+        "type": "NodeVisitor"
+       }
+      ]
+     },
+     {
+      "name": "forms",
+      "type": "List",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.select",
+  "filename": "Elements.java"
+ },
+ {
+  "classes": [],
+  "package_name": "org.jsoup.select",
+  "filename": "package-info.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "NodeVisitor",
+    "fields": [],
+    "methods": [
+     {
+      "name": "head",
+      "type": null,
+      "params": [
+       {
+        "name": "node",
+        "type": "Node"
+       },
+       {
+        "name": "depth",
+        "type": "int"
+       }
+      ]
+     },
+     {
+      "name": "tail",
+      "type": null,
+      "params": [
+       {
+        "name": "node",
+        "type": "Node"
+       },
+       {
+        "name": "depth",
+        "type": "int"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.select",
+  "filename": "NodeVisitor.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "QueryParser",
+    "fields": [
+     {
+      "name": "combinators",
+      "type": "String"
+     },
+     {
+      "name": "AttributeEvals",
+      "type": "String"
+     },
+     {
+      "name": "tq",
+      "type": "TokenQueue"
+     },
+     {
+      "name": "query",
+      "type": "String"
+     },
+     {
+      "name": "evals",
+      "type": "List"
+     },
+     {
+      "name": "NTH_AB",
+      "type": "Pattern"
+     },
+     {
+      "name": "NTH_B",
+      "type": "Pattern"
+     }
+    ],
+    "methods": [
+     {
+      "name": "parse",
+      "type": "Evaluator",
+      "params": [
+       {
+        "name": "query",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "parse",
+      "type": "Evaluator",
+      "params": []
+     },
+     {
+      "name": "combinator",
+      "type": null,
+      "params": [
+       {
+        "name": "combinator",
+        "type": "char"
+       }
+      ]
+     },
+     {
+      "name": "consumeSubQuery",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "findElements",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "byId",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "byClass",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "byTag",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "byAttribute",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "allElements",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "indexLessThan",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "indexGreaterThan",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "indexEquals",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "cssNthChild",
+      "type": null,
+      "params": [
+       {
+        "name": "backwards",
+        "type": "boolean"
+       },
+       {
+        "name": "ofType",
+        "type": "boolean"
+       }
+      ]
+     },
+     {
+      "name": "consumeIndex",
+      "type": "int",
+      "params": []
+     },
+     {
+      "name": "has",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "contains",
+      "type": null,
+      "params": [
+       {
+        "name": "own",
+        "type": "boolean"
+       }
+      ]
+     },
+     {
+      "name": "matches",
+      "type": null,
+      "params": [
+       {
+        "name": "own",
+        "type": "boolean"
+       }
+      ]
+     },
+     {
+      "name": "not",
+      "type": null,
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.select",
+  "filename": "QueryParser.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "StructuralEvaluator",
+    "fields": [
+     {
+      "name": "evaluator",
+      "type": "Evaluator"
+     }
+    ],
+    "methods": []
+   }
+  ],
+  "package_name": "org.jsoup.select",
+  "filename": "StructuralEvaluator.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "NodeTraversor",
+    "fields": [
+     {
+      "name": "visitor",
+      "type": "NodeVisitor"
+     }
+    ],
+    "methods": [
+     {
+      "name": "traverse",
+      "type": null,
+      "params": [
+       {
+        "name": "root",
+        "type": "Node"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.select",
+  "filename": "NodeTraversor.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "CombiningEvaluator",
+    "fields": [
+     {
+      "name": "evaluators",
+      "type": "ArrayList"
+     },
+     {
+      "name": "num",
+      "type": "int"
+     }
+    ],
+    "methods": [
+     {
+      "name": "rightMostEvaluator",
+      "type": "Evaluator",
+      "params": []
+     },
+     {
+      "name": "replaceRightMostEvaluator",
+      "type": null,
+      "params": [
+       {
+        "name": "replacement",
+        "type": "Evaluator"
+       }
+      ]
+     },
+     {
+      "name": "updateNumEvaluators",
+      "type": null,
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.select",
+  "filename": "CombiningEvaluator.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "Selector",
+    "fields": [
+     {
+      "name": "evaluator",
+      "type": "Evaluator"
+     },
+     {
+      "name": "root",
+      "type": "Element"
+     }
+    ],
+    "methods": [
+     {
+      "name": "select",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "query",
+        "type": "String"
+       },
+       {
+        "name": "root",
+        "type": "Element"
+       }
+      ]
+     },
+     {
+      "name": "select",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "evaluator",
+        "type": "Evaluator"
+       },
+       {
+        "name": "root",
+        "type": "Element"
+       }
+      ]
+     },
+     {
+      "name": "select",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "query",
+        "type": "String"
+       },
+       {
+        "name": "roots",
+        "type": "Iterable"
+       }
+      ]
+     },
+     {
+      "name": "select",
+      "type": "Elements",
+      "params": []
+     },
+     {
+      "name": "filterOut",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "elements",
+        "type": "Collection"
+       },
+       {
+        "name": "outs",
+        "type": "Collection"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.select",
+  "filename": "Selector.java"
+ },
+ {
+  "classes": [],
+  "package_name": "org.jsoup.safety",
+  "filename": "package-info.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "Cleaner",
+    "fields": [
+     {
+      "name": "whitelist",
+      "type": "Whitelist"
+     }
+    ],
+    "methods": [
+     {
+      "name": "clean",
+      "type": "Document",
+      "params": [
+       {
+        "name": "dirtyDocument",
+        "type": "Document"
+       }
+      ]
+     },
+     {
+      "name": "isValid",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "dirtyDocument",
+        "type": "Document"
+       }
+      ]
+     },
+     {
+      "name": "copySafeNodes",
+      "type": "int",
+      "params": [
+       {
+        "name": "source",
+        "type": "Element"
+       },
+       {
+        "name": "dest",
+        "type": "Element"
+       }
+      ]
+     },
+     {
+      "name": "createSafeElement",
+      "type": "ElementMeta",
+      "params": [
+       {
+        "name": "sourceEl",
+        "type": "Element"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.safety",
+  "filename": "Cleaner.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "Whitelist",
+    "fields": [
+     {
+      "name": "tagNames",
+      "type": "Set"
+     },
+     {
+      "name": "attributes",
+      "type": "Map"
+     },
+     {
+      "name": "enforcedAttributes",
+      "type": "Map"
+     },
+     {
+      "name": "protocols",
+      "type": "Map"
+     },
+     {
+      "name": "preserveRelativeLinks",
+      "type": "boolean"
+     }
+    ],
+    "methods": [
+     {
+      "name": "none",
+      "type": "Whitelist",
+      "params": []
+     },
+     {
+      "name": "simpleText",
+      "type": "Whitelist",
+      "params": []
+     },
+     {
+      "name": "basic",
+      "type": "Whitelist",
+      "params": []
+     },
+     {
+      "name": "basicWithImages",
+      "type": "Whitelist",
+      "params": []
+     },
+     {
+      "name": "relaxed",
+      "type": "Whitelist",
+      "params": []
+     },
+     {
+      "name": "addTags",
+      "type": "Whitelist",
+      "params": [
+       {
+        "name": "tags",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "removeTags",
+      "type": "Whitelist",
+      "params": [
+       {
+        "name": "tags",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "addAttributes",
+      "type": "Whitelist",
+      "params": [
+       {
+        "name": "tag",
+        "type": "String"
+       },
+       {
+        "name": "keys",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "removeAttributes",
+      "type": "Whitelist",
+      "params": [
+       {
+        "name": "tag",
+        "type": "String"
+       },
+       {
+        "name": "keys",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "addEnforcedAttribute",
+      "type": "Whitelist",
+      "params": [
+       {
+        "name": "tag",
+        "type": "String"
+       },
+       {
+        "name": "key",
+        "type": "String"
+       },
+       {
+        "name": "value",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "removeEnforcedAttribute",
+      "type": "Whitelist",
+      "params": [
+       {
+        "name": "tag",
+        "type": "String"
+       },
+       {
+        "name": "key",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "preserveRelativeLinks",
+      "type": "Whitelist",
+      "params": [
+       {
+        "name": "preserve",
+        "type": "boolean"
+       }
+      ]
+     },
+     {
+      "name": "addProtocols",
+      "type": "Whitelist",
+      "params": [
+       {
+        "name": "tag",
+        "type": "String"
+       },
+       {
+        "name": "key",
+        "type": "String"
+       },
+       {
+        "name": "protocols",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "removeProtocols",
+      "type": "Whitelist",
+      "params": [
+       {
+        "name": "tag",
+        "type": "String"
+       },
+       {
+        "name": "key",
+        "type": "String"
+       },
+       {
+        "name": "protocols",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "isSafeTag",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "tag",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "isSafeAttribute",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "tagName",
+        "type": "String"
+       },
+       {
+        "name": "el",
+        "type": "Element"
+       },
+       {
+        "name": "attr",
+        "type": "Attribute"
+       }
+      ]
+     },
+     {
+      "name": "testValidProtocol",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "el",
+        "type": "Element"
+       },
+       {
+        "name": "attr",
+        "type": "Attribute"
+       },
+       {
+        "name": "protocols",
+        "type": "Set"
+       }
+      ]
+     },
+     {
+      "name": "isValidAnchor",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "getEnforcedAttributes",
+      "type": "Attributes",
+      "params": [
+       {
+        "name": "tagName",
+        "type": "String"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.safety",
+  "filename": "Whitelist.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "TextNode",
+    "fields": [
+     {
+      "name": "TEXT_KEY",
+      "type": "String"
+     },
+     {
+      "name": "text",
+      "type": "String"
+     }
+    ],
+    "methods": [
+     {
+      "name": "nodeName",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "text",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "text",
+      "type": "TextNode",
+      "params": [
+       {
+        "name": "text",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "getWholeText",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "isBlank",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "splitText",
+      "type": "TextNode",
+      "params": [
+       {
+        "name": "offset",
+        "type": "int"
+       }
+      ]
+     },
+     {
+      "name": "outerHtmlHead",
+      "type": null,
+      "params": [
+       {
+        "name": "accum",
+        "type": "StringBuilder"
+       },
+       {
+        "name": "depth",
+        "type": "int"
+       },
+       {
+        "name": "out",
+        "type": "Document"
+       }
+      ]
+     },
+     {
+      "name": "outerHtmlTail",
+      "type": null,
+      "params": [
+       {
+        "name": "accum",
+        "type": "StringBuilder"
+       },
+       {
+        "name": "depth",
+        "type": "int"
+       },
+       {
+        "name": "out",
+        "type": "Document"
+       }
+      ]
+     },
+     {
+      "name": "toString",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "createFromEncoded",
+      "type": "TextNode",
+      "params": [
+       {
+        "name": "encodedText",
+        "type": "String"
+       },
+       {
+        "name": "baseUri",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "normaliseWhitespace",
+      "type": "String",
+      "params": [
+       {
+        "name": "text",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "stripLeadingWhitespace",
+      "type": "String",
+      "params": [
+       {
+        "name": "text",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "lastCharIsWhitespace",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "sb",
+        "type": "StringBuilder"
+       }
+      ]
+     },
+     {
+      "name": "ensureAttributes",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "attr",
+      "type": "String",
+      "params": [
+       {
+        "name": "attributeKey",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "attributes",
+      "type": "Attributes",
+      "params": []
+     },
+     {
+      "name": "attr",
+      "type": "Node",
+      "params": [
+       {
+        "name": "attributeKey",
+        "type": "String"
+       },
+       {
+        "name": "attributeValue",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "hasAttr",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "attributeKey",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "removeAttr",
+      "type": "Node",
+      "params": [
+       {
+        "name": "attributeKey",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "absUrl",
+      "type": "String",
+      "params": [
+       {
+        "name": "attributeKey",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "equals",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "o",
+        "type": "Object"
+       }
+      ]
+     },
+     {
+      "name": "hashCode",
+      "type": "int",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.nodes",
+  "filename": "TextNode.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "XmlDeclaration",
+    "fields": [
+     {
+      "name": "DECL_KEY",
+      "type": "String"
+     },
+     {
+      "name": "isProcessingInstruction",
+      "type": "boolean"
+     }
+    ],
+    "methods": [
+     {
+      "name": "nodeName",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "getWholeDeclaration",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "outerHtmlHead",
+      "type": null,
+      "params": [
+       {
+        "name": "accum",
+        "type": "StringBuilder"
+       },
+       {
+        "name": "depth",
+        "type": "int"
+       },
+       {
+        "name": "out",
+        "type": "Document"
+       }
+      ]
+     },
+     {
+      "name": "outerHtmlTail",
+      "type": null,
+      "params": [
+       {
+        "name": "accum",
+        "type": "StringBuilder"
+       },
+       {
+        "name": "depth",
+        "type": "int"
+       },
+       {
+        "name": "out",
+        "type": "Document"
+       }
+      ]
+     },
+     {
+      "name": "toString",
+      "type": "String",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.nodes",
+  "filename": "XmlDeclaration.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "Document",
+    "fields": [
+     {
+      "name": "outputSettings",
+      "type": "OutputSettings"
+     },
+     {
+      "name": "quirksMode",
+      "type": "QuirksMode"
+     },
+     {
+      "name": "location",
+      "type": "String"
+     },
+     {
+      "name": "updateMetaCharset",
+      "type": "boolean"
+     }
+    ],
+    "methods": [
+     {
+      "name": "createShell",
+      "type": "Document",
+      "params": [
+       {
+        "name": "baseUri",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "location",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "head",
+      "type": "Element",
+      "params": []
+     },
+     {
+      "name": "body",
+      "type": "Element",
+      "params": []
+     },
+     {
+      "name": "title",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "title",
+      "type": null,
+      "params": [
+       {
+        "name": "title",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "createElement",
+      "type": "Element",
+      "params": [
+       {
+        "name": "tagName",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "normalise",
+      "type": "Document",
+      "params": []
+     },
+     {
+      "name": "normaliseTextNodes",
+      "type": null,
+      "params": [
+       {
+        "name": "element",
+        "type": "Element"
+       }
+      ]
+     },
+     {
+      "name": "normaliseStructure",
+      "type": null,
+      "params": [
+       {
+        "name": "tag",
+        "type": "String"
+       },
+       {
+        "name": "htmlEl",
+        "type": "Element"
+       }
+      ]
+     },
+     {
+      "name": "findFirstElementByTagName",
+      "type": "Element",
+      "params": [
+       {
+        "name": "tag",
+        "type": "String"
+       },
+       {
+        "name": "node",
+        "type": "Node"
+       }
+      ]
+     },
+     {
+      "name": "outerHtml",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "text",
+      "type": "Element",
+      "params": [
+       {
+        "name": "text",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "nodeName",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "charset",
+      "type": null,
+      "params": [
+       {
+        "name": "charset",
+        "type": "Charset"
+       }
+      ]
+     },
+     {
+      "name": "charset",
+      "type": "Charset",
+      "params": []
+     },
+     {
+      "name": "updateMetaCharsetElement",
+      "type": null,
+      "params": [
+       {
+        "name": "update",
+        "type": "boolean"
+       }
+      ]
+     },
+     {
+      "name": "updateMetaCharsetElement",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "clone",
+      "type": "Document",
+      "params": []
+     },
+     {
+      "name": "ensureMetaCharsetElement",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "outputSettings",
+      "type": "OutputSettings",
+      "params": []
+     },
+     {
+      "name": "outputSettings",
+      "type": "Document",
+      "params": [
+       {
+        "name": "outputSettings",
+        "type": "OutputSettings"
+       }
+      ]
+     },
+     {
+      "name": "quirksMode",
+      "type": "QuirksMode",
+      "params": []
+     },
+     {
+      "name": "quirksMode",
+      "type": "Document",
+      "params": [
+       {
+        "name": "quirksMode",
+        "type": "QuirksMode"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.nodes",
+  "filename": "Document.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "Entities",
+    "fields": [
+     {
+      "name": "full",
+      "type": "Map"
+     },
+     {
+      "name": "xhtmlByVal",
+      "type": "Map"
+     },
+     {
+      "name": "base",
+      "type": "Map"
+     },
+     {
+      "name": "baseByVal",
+      "type": "Map"
+     },
+     {
+      "name": "fullByVal",
+      "type": "Map"
+     },
+     {
+      "name": "xhtmlArray",
+      "type": "Object"
+     }
+    ],
+    "methods": [
+     {
+      "name": "isNamedEntity",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "isBaseNamedEntity",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "getCharacterByName",
+      "type": "Character",
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "escape",
+      "type": "String",
+      "params": [
+       {
+        "name": "string",
+        "type": "String"
+       },
+       {
+        "name": "out",
+        "type": "Document"
+       }
+      ]
+     },
+     {
+      "name": "escape",
+      "type": null,
+      "params": [
+       {
+        "name": "accum",
+        "type": "StringBuilder"
+       },
+       {
+        "name": "string",
+        "type": "String"
+       },
+       {
+        "name": "out",
+        "type": "Document"
+       },
+       {
+        "name": "inAttribute",
+        "type": "boolean"
+       },
+       {
+        "name": "normaliseWhite",
+        "type": "boolean"
+       },
+       {
+        "name": "stripLeadingWhite",
+        "type": "boolean"
+       }
+      ]
+     },
+     {
+      "name": "unescape",
+      "type": "String",
+      "params": [
+       {
+        "name": "string",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "unescape",
+      "type": "String",
+      "params": [
+       {
+        "name": "string",
+        "type": "String"
+       },
+       {
+        "name": "strict",
+        "type": "boolean"
+       }
+      ]
+     },
+     {
+      "name": "canEncode",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "charset",
+        "type": "CoreCharset"
+       },
+       {
+        "name": "c",
+        "type": "char"
+       },
+       {
+        "name": "fallback",
+        "type": "CharsetEncoder"
+       }
+      ]
+     },
+     {
+      "name": "loadEntities",
+      "type": "Map",
+      "params": [
+       {
+        "name": "filename",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "toCharacterKey",
+      "type": "Map",
+      "params": [
+       {
+        "name": "inMap",
+        "type": "Map"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.nodes",
+  "filename": "Entities.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "BooleanAttribute",
+    "fields": [],
+    "methods": [
+     {
+      "name": "isBooleanAttribute",
+      "type": "boolean",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.nodes",
+  "filename": "BooleanAttribute.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "FormElement",
+    "fields": [
+     {
+      "name": "elements",
+      "type": "Elements"
+     }
+    ],
+    "methods": [
+     {
+      "name": "elements",
+      "type": "Elements",
+      "params": []
+     },
+     {
+      "name": "addElement",
+      "type": "FormElement",
+      "params": [
+       {
+        "name": "element",
+        "type": "Element"
+       }
+      ]
+     },
+     {
+      "name": "submit",
+      "type": "Connection",
+      "params": []
+     },
+     {
+      "name": "formData",
+      "type": "List",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.nodes",
+  "filename": "FormElement.java"
+ },
+ {
+  "classes": [],
+  "package_name": "org.jsoup.nodes",
+  "filename": "package-info.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "Node",
+    "fields": [
+     {
+      "name": "parentNode",
+      "type": "Node"
+     },
+     {
+      "name": "childNodes",
+      "type": "List"
+     },
+     {
+      "name": "attributes",
+      "type": "Attributes"
+     },
+     {
+      "name": "baseUri",
+      "type": "String"
+     },
+     {
+      "name": "siblingIndex",
+      "type": "int"
+     }
+    ],
+    "methods": [
+     {
+      "name": "nodeName",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "attr",
+      "type": "String",
+      "params": [
+       {
+        "name": "attributeKey",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "attributes",
+      "type": "Attributes",
+      "params": []
+     },
+     {
+      "name": "attr",
+      "type": "Node",
+      "params": [
+       {
+        "name": "attributeKey",
+        "type": "String"
+       },
+       {
+        "name": "attributeValue",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "hasAttr",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "attributeKey",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "removeAttr",
+      "type": "Node",
+      "params": [
+       {
+        "name": "attributeKey",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "baseUri",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "setBaseUri",
+      "type": null,
+      "params": [
+       {
+        "name": "baseUri",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "absUrl",
+      "type": "String",
+      "params": [
+       {
+        "name": "attributeKey",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "childNode",
+      "type": "Node",
+      "params": [
+       {
+        "name": "index",
+        "type": "int"
+       }
+      ]
+     },
+     {
+      "name": "childNodes",
+      "type": "List",
+      "params": []
+     },
+     {
+      "name": "childNodesCopy",
+      "type": "List",
+      "params": []
+     },
+     {
+      "name": "childNodeSize",
+      "type": "int",
+      "params": []
+     },
+     {
+      "name": "childNodesAsArray",
+      "type": "Node",
+      "params": []
+     },
+     {
+      "name": "parent",
+      "type": "Node",
+      "params": []
+     },
+     {
+      "name": "parentNode",
+      "type": "Node",
+      "params": []
+     },
+     {
+      "name": "ownerDocument",
+      "type": "Document",
+      "params": []
+     },
+     {
+      "name": "remove",
+      "type": null,
+      "params": []
+     },
+     {
+      "name": "before",
+      "type": "Node",
+      "params": [
+       {
+        "name": "html",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "before",
+      "type": "Node",
+      "params": [
+       {
+        "name": "node",
+        "type": "Node"
+       }
+      ]
+     },
+     {
+      "name": "after",
+      "type": "Node",
+      "params": [
+       {
+        "name": "html",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "after",
+      "type": "Node",
+      "params": [
+       {
+        "name": "node",
+        "type": "Node"
+       }
+      ]
+     },
+     {
+      "name": "addSiblingHtml",
+      "type": null,
+      "params": [
+       {
+        "name": "index",
+        "type": "int"
+       },
+       {
+        "name": "html",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "wrap",
+      "type": "Node",
+      "params": [
+       {
+        "name": "html",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "unwrap",
+      "type": "Node",
+      "params": []
+     },
+     {
+      "name": "getDeepChild",
+      "type": "Element",
+      "params": [
+       {
+        "name": "el",
+        "type": "Element"
+       }
+      ]
+     },
+     {
+      "name": "replaceWith",
+      "type": null,
+      "params": [
+       {
+        "name": "in",
+        "type": "Node"
+       }
+      ]
+     },
+     {
+      "name": "setParentNode",
+      "type": null,
+      "params": [
+       {
+        "name": "parentNode",
+        "type": "Node"
+       }
+      ]
+     },
+     {
+      "name": "replaceChild",
+      "type": null,
+      "params": [
+       {
+        "name": "out",
+        "type": "Node"
+       },
+       {
+        "name": "in",
+        "type": "Node"
+       }
+      ]
+     },
+     {
+      "name": "removeChild",
+      "type": null,
+      "params": [
+       {
+        "name": "out",
+        "type": "Node"
+       }
+      ]
+     },
+     {
+      "name": "addChildren",
+      "type": null,
+      "params": [
+       {
+        "name": "children",
+        "type": "Node"
+       }
+      ]
+     },
+     {
+      "name": "addChildren",
+      "type": null,
+      "params": [
+       {
+        "name": "index",
+        "type": "int"
+       },
+       {
+        "name": "children",
+        "type": "Node"
+       }
+      ]
+     },
+     {
+      "name": "reparentChild",
+      "type": null,
+      "params": [
+       {
+        "name": "child",
+        "type": "Node"
+       }
+      ]
+     },
+     {
+      "name": "reindexChildren",
+      "type": null,
+      "params": [
+       {
+        "name": "start",
+        "type": "int"
+       }
+      ]
+     },
+     {
+      "name": "siblingNodes",
+      "type": "List",
+      "params": []
+     },
+     {
+      "name": "nextSibling",
+      "type": "Node",
+      "params": []
+     },
+     {
+      "name": "previousSibling",
+      "type": "Node",
+      "params": []
+     },
+     {
+      "name": "siblingIndex",
+      "type": "int",
+      "params": []
+     },
+     {
+      "name": "setSiblingIndex",
+      "type": null,
+      "params": [
+       {
+        "name": "siblingIndex",
+        "type": "int"
+       }
+      ]
+     },
+     {
+      "name": "traverse",
+      "type": "Node",
+      "params": [
+       {
+        "name": "nodeVisitor",
+        "type": "NodeVisitor"
+       }
+      ]
+     },
+     {
+      "name": "outerHtml",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "outerHtml",
+      "type": null,
+      "params": [
+       {
+        "name": "accum",
+        "type": "StringBuilder"
+       }
+      ]
+     },
+     {
+      "name": "getOutputSettings",
+      "type": "Document",
+      "params": []
+     },
+     {
+      "name": "outerHtmlHead",
+      "type": null,
+      "params": [
+       {
+        "name": "accum",
+        "type": "StringBuilder"
+       },
+       {
+        "name": "depth",
+        "type": "int"
+       },
+       {
+        "name": "out",
+        "type": "Document"
+       }
+      ]
+     },
+     {
+      "name": "outerHtmlTail",
+      "type": null,
+      "params": [
+       {
+        "name": "accum",
+        "type": "StringBuilder"
+       },
+       {
+        "name": "depth",
+        "type": "int"
+       },
+       {
+        "name": "out",
+        "type": "Document"
+       }
+      ]
+     },
+     {
+      "name": "toString",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "indent",
+      "type": null,
+      "params": [
+       {
+        "name": "accum",
+        "type": "StringBuilder"
+       },
+       {
+        "name": "depth",
+        "type": "int"
+       },
+       {
+        "name": "out",
+        "type": "Document"
+       }
+      ]
+     },
+     {
+      "name": "equals",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "o",
+        "type": "Object"
+       }
+      ]
+     },
+     {
+      "name": "hashCode",
+      "type": "int",
+      "params": []
+     },
+     {
+      "name": "clone",
+      "type": "Node",
+      "params": []
+     },
+     {
+      "name": "doClone",
+      "type": "Node",
+      "params": [
+       {
+        "name": "parent",
+        "type": "Node"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.nodes",
+  "filename": "Node.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "Element",
+    "fields": [
+     {
+      "name": "tag",
+      "type": "Tag"
+     },
+     {
+      "name": "classSplit",
+      "type": "Pattern"
+     }
+    ],
+    "methods": [
+     {
+      "name": "nodeName",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "tagName",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "tagName",
+      "type": "Element",
+      "params": [
+       {
+        "name": "tagName",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "tag",
+      "type": "Tag",
+      "params": []
+     },
+     {
+      "name": "isBlock",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "id",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "attr",
+      "type": "Element",
+      "params": [
+       {
+        "name": "attributeKey",
+        "type": "String"
+       },
+       {
+        "name": "attributeValue",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "attr",
+      "type": "Element",
+      "params": [
+       {
+        "name": "attributeKey",
+        "type": "String"
+       },
+       {
+        "name": "attributeValue",
+        "type": "boolean"
+       }
+      ]
+     },
+     {
+      "name": "dataset",
+      "type": "Map",
+      "params": []
+     },
+     {
+      "name": "parent",
+      "type": "Element",
+      "params": []
+     },
+     {
+      "name": "parents",
+      "type": "Elements",
+      "params": []
+     },
+     {
+      "name": "accumulateParents",
+      "type": null,
+      "params": [
+       {
+        "name": "el",
+        "type": "Element"
+       },
+       {
+        "name": "parents",
+        "type": "Elements"
+       }
+      ]
+     },
+     {
+      "name": "child",
+      "type": "Element",
+      "params": [
+       {
+        "name": "index",
+        "type": "int"
+       }
+      ]
+     },
+     {
+      "name": "children",
+      "type": "Elements",
+      "params": []
+     },
+     {
+      "name": "textNodes",
+      "type": "List",
+      "params": []
+     },
+     {
+      "name": "dataNodes",
+      "type": "List",
+      "params": []
+     },
+     {
+      "name": "select",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "cssQuery",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "appendChild",
+      "type": "Element",
+      "params": [
+       {
+        "name": "child",
+        "type": "Node"
+       }
+      ]
+     },
+     {
+      "name": "prependChild",
+      "type": "Element",
+      "params": [
+       {
+        "name": "child",
+        "type": "Node"
+       }
+      ]
+     },
+     {
+      "name": "insertChildren",
+      "type": "Element",
+      "params": [
+       {
+        "name": "index",
+        "type": "int"
+       },
+       {
+        "name": "children",
+        "type": "Collection"
+       }
+      ]
+     },
+     {
+      "name": "appendElement",
+      "type": "Element",
+      "params": [
+       {
+        "name": "tagName",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "prependElement",
+      "type": "Element",
+      "params": [
+       {
+        "name": "tagName",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "appendText",
+      "type": "Element",
+      "params": [
+       {
+        "name": "text",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "prependText",
+      "type": "Element",
+      "params": [
+       {
+        "name": "text",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "append",
+      "type": "Element",
+      "params": [
+       {
+        "name": "html",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "prepend",
+      "type": "Element",
+      "params": [
+       {
+        "name": "html",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "before",
+      "type": "Element",
+      "params": [
+       {
+        "name": "html",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "before",
+      "type": "Element",
+      "params": [
+       {
+        "name": "node",
+        "type": "Node"
+       }
+      ]
+     },
+     {
+      "name": "after",
+      "type": "Element",
+      "params": [
+       {
+        "name": "html",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "after",
+      "type": "Element",
+      "params": [
+       {
+        "name": "node",
+        "type": "Node"
+       }
+      ]
+     },
+     {
+      "name": "empty",
+      "type": "Element",
+      "params": []
+     },
+     {
+      "name": "wrap",
+      "type": "Element",
+      "params": [
+       {
+        "name": "html",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "cssSelector",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "siblingElements",
+      "type": "Elements",
+      "params": []
+     },
+     {
+      "name": "nextElementSibling",
+      "type": "Element",
+      "params": []
+     },
+     {
+      "name": "previousElementSibling",
+      "type": "Element",
+      "params": []
+     },
+     {
+      "name": "firstElementSibling",
+      "type": "Element",
+      "params": []
+     },
+     {
+      "name": "elementSiblingIndex",
+      "type": "Integer",
+      "params": []
+     },
+     {
+      "name": "lastElementSibling",
+      "type": "Element",
+      "params": []
+     },
+     {
+      "name": "indexInList",
+      "type": "Integer",
+      "params": [
+       {
+        "name": "search",
+        "type": "Element"
+       },
+       {
+        "name": "elements",
+        "type": "List"
+       }
+      ]
+     },
+     {
+      "name": "getElementsByTag",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "tagName",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "getElementById",
+      "type": "Element",
+      "params": [
+       {
+        "name": "id",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "getElementsByClass",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "className",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "getElementsByAttribute",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "getElementsByAttributeStarting",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "keyPrefix",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "getElementsByAttributeValue",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       },
+       {
+        "name": "value",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "getElementsByAttributeValueNot",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       },
+       {
+        "name": "value",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "getElementsByAttributeValueStarting",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       },
+       {
+        "name": "valuePrefix",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "getElementsByAttributeValueEnding",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       },
+       {
+        "name": "valueSuffix",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "getElementsByAttributeValueContaining",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       },
+       {
+        "name": "match",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "getElementsByAttributeValueMatching",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       },
+       {
+        "name": "pattern",
+        "type": "Pattern"
+       }
+      ]
+     },
+     {
+      "name": "getElementsByAttributeValueMatching",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       },
+       {
+        "name": "regex",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "getElementsByIndexLessThan",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "index",
+        "type": "int"
+       }
+      ]
+     },
+     {
+      "name": "getElementsByIndexGreaterThan",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "index",
+        "type": "int"
+       }
+      ]
+     },
+     {
+      "name": "getElementsByIndexEquals",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "index",
+        "type": "int"
+       }
+      ]
+     },
+     {
+      "name": "getElementsContainingText",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "searchText",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "getElementsContainingOwnText",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "searchText",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "getElementsMatchingText",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "pattern",
+        "type": "Pattern"
+       }
+      ]
+     },
+     {
+      "name": "getElementsMatchingText",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "regex",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "getElementsMatchingOwnText",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "pattern",
+        "type": "Pattern"
+       }
+      ]
+     },
+     {
+      "name": "getElementsMatchingOwnText",
+      "type": "Elements",
+      "params": [
+       {
+        "name": "regex",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "getAllElements",
+      "type": "Elements",
+      "params": []
+     },
+     {
+      "name": "text",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "ownText",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "ownText",
+      "type": null,
+      "params": [
+       {
+        "name": "accum",
+        "type": "StringBuilder"
+       }
+      ]
+     },
+     {
+      "name": "appendNormalisedText",
+      "type": null,
+      "params": [
+       {
+        "name": "accum",
+        "type": "StringBuilder"
+       },
+       {
+        "name": "textNode",
+        "type": "TextNode"
+       }
+      ]
+     },
+     {
+      "name": "appendWhitespaceIfBr",
+      "type": null,
+      "params": [
+       {
+        "name": "element",
+        "type": "Element"
+       },
+       {
+        "name": "accum",
+        "type": "StringBuilder"
+       }
+      ]
+     },
+     {
+      "name": "preserveWhitespace",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "node",
+        "type": "Node"
+       }
+      ]
+     },
+     {
+      "name": "text",
+      "type": "Element",
+      "params": [
+       {
+        "name": "text",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "hasText",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "data",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "className",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "classNames",
+      "type": "Set",
+      "params": []
+     },
+     {
+      "name": "classNames",
+      "type": "Element",
+      "params": [
+       {
+        "name": "classNames",
+        "type": "Set"
+       }
+      ]
+     },
+     {
+      "name": "hasClass",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "className",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "addClass",
+      "type": "Element",
+      "params": [
+       {
+        "name": "className",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "removeClass",
+      "type": "Element",
+      "params": [
+       {
+        "name": "className",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "toggleClass",
+      "type": "Element",
+      "params": [
+       {
+        "name": "className",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "val",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "val",
+      "type": "Element",
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "outerHtmlHead",
+      "type": null,
+      "params": [
+       {
+        "name": "accum",
+        "type": "StringBuilder"
+       },
+       {
+        "name": "depth",
+        "type": "int"
+       },
+       {
+        "name": "out",
+        "type": "Document"
+       }
+      ]
+     },
+     {
+      "name": "outerHtmlTail",
+      "type": null,
+      "params": [
+       {
+        "name": "accum",
+        "type": "StringBuilder"
+       },
+       {
+        "name": "depth",
+        "type": "int"
+       },
+       {
+        "name": "out",
+        "type": "Document"
+       }
+      ]
+     },
+     {
+      "name": "html",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "html",
+      "type": null,
+      "params": [
+       {
+        "name": "accum",
+        "type": "StringBuilder"
+       }
+      ]
+     },
+     {
+      "name": "html",
+      "type": "Element",
+      "params": [
+       {
+        "name": "html",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "toString",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "equals",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "o",
+        "type": "Object"
+       }
+      ]
+     },
+     {
+      "name": "hashCode",
+      "type": "int",
+      "params": []
+     },
+     {
+      "name": "clone",
+      "type": "Element",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.nodes",
+  "filename": "Element.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "DataNode",
+    "fields": [
+     {
+      "name": "DATA_KEY",
+      "type": "String"
+     }
+    ],
+    "methods": [
+     {
+      "name": "nodeName",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "getWholeData",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "setWholeData",
+      "type": "DataNode",
+      "params": [
+       {
+        "name": "data",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "outerHtmlHead",
+      "type": null,
+      "params": [
+       {
+        "name": "accum",
+        "type": "StringBuilder"
+       },
+       {
+        "name": "depth",
+        "type": "int"
+       },
+       {
+        "name": "out",
+        "type": "Document"
+       }
+      ]
+     },
+     {
+      "name": "outerHtmlTail",
+      "type": null,
+      "params": [
+       {
+        "name": "accum",
+        "type": "StringBuilder"
+       },
+       {
+        "name": "depth",
+        "type": "int"
+       },
+       {
+        "name": "out",
+        "type": "Document"
+       }
+      ]
+     },
+     {
+      "name": "toString",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "createFromEncoded",
+      "type": "DataNode",
+      "params": [
+       {
+        "name": "encodedData",
+        "type": "String"
+       },
+       {
+        "name": "baseUri",
+        "type": "String"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.nodes",
+  "filename": "DataNode.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "Comment",
+    "fields": [
+     {
+      "name": "COMMENT_KEY",
+      "type": "String"
+     }
+    ],
+    "methods": [
+     {
+      "name": "nodeName",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "getData",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "outerHtmlHead",
+      "type": null,
+      "params": [
+       {
+        "name": "accum",
+        "type": "StringBuilder"
+       },
+       {
+        "name": "depth",
+        "type": "int"
+       },
+       {
+        "name": "out",
+        "type": "Document"
+       }
+      ]
+     },
+     {
+      "name": "outerHtmlTail",
+      "type": null,
+      "params": [
+       {
+        "name": "accum",
+        "type": "StringBuilder"
+       },
+       {
+        "name": "depth",
+        "type": "int"
+       },
+       {
+        "name": "out",
+        "type": "Document"
+       }
+      ]
+     },
+     {
+      "name": "toString",
+      "type": "String",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.nodes",
+  "filename": "Comment.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "DocumentType",
+    "fields": [
+     {
+      "name": "NAME",
+      "type": "String"
+     },
+     {
+      "name": "PUBLIC_ID",
+      "type": "String"
+     },
+     {
+      "name": "SYSTEM_ID",
+      "type": "String"
+     }
+    ],
+    "methods": [
+     {
+      "name": "nodeName",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "outerHtmlHead",
+      "type": null,
+      "params": [
+       {
+        "name": "accum",
+        "type": "StringBuilder"
+       },
+       {
+        "name": "depth",
+        "type": "int"
+       },
+       {
+        "name": "out",
+        "type": "Document"
+       }
+      ]
+     },
+     {
+      "name": "outerHtmlTail",
+      "type": null,
+      "params": [
+       {
+        "name": "accum",
+        "type": "StringBuilder"
+       },
+       {
+        "name": "depth",
+        "type": "int"
+       },
+       {
+        "name": "out",
+        "type": "Document"
+       }
+      ]
+     },
+     {
+      "name": "has",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "attribute",
+        "type": "String"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.nodes",
+  "filename": "DocumentType.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "Attribute",
+    "fields": [
+     {
+      "name": "booleanAttributes",
+      "type": "String"
+     },
+     {
+      "name": "key",
+      "type": "String"
+     },
+     {
+      "name": "value",
+      "type": "String"
+     }
+    ],
+    "methods": [
+     {
+      "name": "getKey",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "setKey",
+      "type": null,
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "getValue",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "setValue",
+      "type": "String",
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "html",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "html",
+      "type": null,
+      "params": [
+       {
+        "name": "accum",
+        "type": "StringBuilder"
+       },
+       {
+        "name": "out",
+        "type": "Document"
+       }
+      ]
+     },
+     {
+      "name": "toString",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "createFromEncoded",
+      "type": "Attribute",
+      "params": [
+       {
+        "name": "unencodedKey",
+        "type": "String"
+       },
+       {
+        "name": "encodedValue",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "isDataAttribute",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "shouldCollapseAttribute",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "out",
+        "type": "Document"
+       }
+      ]
+     },
+     {
+      "name": "isBooleanAttribute",
+      "type": "boolean",
+      "params": []
+     },
+     {
+      "name": "equals",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "o",
+        "type": "Object"
+       }
+      ]
+     },
+     {
+      "name": "hashCode",
+      "type": "int",
+      "params": []
+     },
+     {
+      "name": "clone",
+      "type": "Attribute",
+      "params": []
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.nodes",
+  "filename": "Attribute.java"
+ },
+ {
+  "classes": [
+   {
+    "name": "Attributes",
+    "fields": [
+     {
+      "name": "dataPrefix",
+      "type": "String"
+     },
+     {
+      "name": "attributes",
+      "type": "LinkedHashMap"
+     }
+    ],
+    "methods": [
+     {
+      "name": "get",
+      "type": "String",
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "put",
+      "type": null,
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       },
+       {
+        "name": "value",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "put",
+      "type": null,
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       },
+       {
+        "name": "value",
+        "type": "boolean"
+       }
+      ]
+     },
+     {
+      "name": "put",
+      "type": null,
+      "params": [
+       {
+        "name": "attribute",
+        "type": "Attribute"
+       }
+      ]
+     },
+     {
+      "name": "remove",
+      "type": null,
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "hasKey",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       }
+      ]
+     },
+     {
+      "name": "size",
+      "type": "int",
+      "params": []
+     },
+     {
+      "name": "addAll",
+      "type": null,
+      "params": [
+       {
+        "name": "incoming",
+        "type": "Attributes"
+       }
+      ]
+     },
+     {
+      "name": "iterator",
+      "type": "Iterator",
+      "params": []
+     },
+     {
+      "name": "asList",
+      "type": "List",
+      "params": []
+     },
+     {
+      "name": "dataset",
+      "type": "Map",
+      "params": []
+     },
+     {
+      "name": "html",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "html",
+      "type": null,
+      "params": [
+       {
+        "name": "accum",
+        "type": "StringBuilder"
+       },
+       {
+        "name": "out",
+        "type": "Document"
+       }
+      ]
+     },
+     {
+      "name": "toString",
+      "type": "String",
+      "params": []
+     },
+     {
+      "name": "equals",
+      "type": "boolean",
+      "params": [
+       {
+        "name": "o",
+        "type": "Object"
+       }
+      ]
+     },
+     {
+      "name": "hashCode",
+      "type": "int",
+      "params": []
+     },
+     {
+      "name": "clone",
+      "type": "Attributes",
+      "params": []
+     },
+     {
+      "name": "dataKey",
+      "type": "String",
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       }
+      ]
+     }
+    ]
+   }
+  ],
+  "package_name": "org.jsoup.nodes",
+  "filename": "Attributes.java"
+ }
+]

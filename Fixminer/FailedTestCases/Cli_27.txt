@@ -1,0 +1,4 @@
+Failing tests: 3
+  - org.apache.commons.cli.BasicParserTest::testOptionGroupLong
+  - org.apache.commons.cli.GnuParserTest::testOptionGroupLong
+  - org.apache.commons.cli.PosixParserTest::testOptionGroupLong

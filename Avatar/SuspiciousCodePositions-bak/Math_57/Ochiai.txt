@@ -1,0 +1,14 @@
+org.apache.commons.math.stat.clustering.KMeansPlusPlusClusterer@194@0.4082482905
+org.apache.commons.math.stat.clustering.KMeansPlusPlusClusterer@191@0.4082482905
+org.apache.commons.math.stat.clustering.KMeansPlusPlusClusterer@190@0.4082482905
+org.apache.commons.math.stat.clustering.KMeansPlusPlusClusterer@189@0.4082482905
+org.apache.commons.math.stat.clustering.KMeansPlusPlusClusterer@188@0.4082482905
+org.apache.commons.math.stat.clustering.KMeansPlusPlusClusterer@187@0.4082482905
+org.apache.commons.math.stat.clustering.KMeansPlusPlusClusterer@186@0.4082482905
+org.apache.commons.math.stat.clustering.KMeansPlusPlusClusterer@181@0.4082482905
+org.apache.commons.math.stat.clustering.KMeansPlusPlusClusterer@180@0.4082482905
+org.apache.commons.math.stat.clustering.KMeansPlusPlusClusterer@179@0.4082482905
+org.apache.commons.math.stat.clustering.KMeansPlusPlusClusterer@178@0.4082482905
+org.apache.commons.math.stat.clustering.KMeansPlusPlusClusterer@177@0.4082482905
+org.apache.commons.math.stat.clustering.KMeansPlusPlusClusterer@176@0.4082482905
+org.apache.commons.math.stat.clustering.KMeansPlusPlusClusterer@175@0.4082482905

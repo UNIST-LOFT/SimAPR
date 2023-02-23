@@ -1,0 +1,2 @@
+- int g = (int) ((value - this.lowerBound) / (this.upperBound 
++ int g = (int) ((v - this.lowerBound) / (this.upperBound

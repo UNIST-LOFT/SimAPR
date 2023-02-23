@@ -1,0 +1,2 @@
+- return FastMath.pow(2 * FastMath.PI, -dim / 2) *
++ return FastMath.pow(2 * FastMath.PI, -dim * 0.5) *

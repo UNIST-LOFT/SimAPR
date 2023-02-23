@@ -1,0 +1,3 @@
+Failing tests: 2
+  - com.fasterxml.jackson.databind.deser.ReadOrWriteOnlyTest::testReadOnlyAndWriteOnly
+  - com.fasterxml.jackson.databind.deser.ReadOrWriteOnlyTest::testReadOnly935

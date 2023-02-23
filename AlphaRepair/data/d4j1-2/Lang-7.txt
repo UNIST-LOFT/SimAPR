@@ -1,0 +1,2 @@
+- if (str.startsWith("--")) {
++ if (str.startsWith("null")) {

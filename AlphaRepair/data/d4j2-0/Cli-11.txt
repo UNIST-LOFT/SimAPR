@@ -1,0 +1,2 @@
+- if (option.hasArg() && (option.getArgName() != null))
++ if (option.hasArg() && (option.hasArgName()) )

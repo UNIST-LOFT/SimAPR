@@ -1,0 +1,10870 @@
+[
+ {
+  "filename": "ArchiveException.java",
+  "package_name": "org.apache.commons.compress.archivers",
+  "classes": [
+   {
+    "methods": [],
+    "fields": [
+     {
+      "name": "serialVersionUID",
+      "type": "long"
+     }
+    ],
+    "name": "ArchiveException"
+   }
+  ]
+ },
+ {
+  "filename": "ArchiveInputStream.java",
+  "package_name": "org.apache.commons.compress.archivers",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getNextEntry",
+      "type": "ArchiveEntry"
+     },
+     {
+      "params": [],
+      "name": "read",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "read",
+        "type": "int"
+       }
+      ],
+      "name": "count",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "read",
+        "type": "long"
+       }
+      ],
+      "name": "count",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "pushedBack",
+        "type": "long"
+       }
+      ],
+      "name": "pushedBackBytes",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getCount",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getBytesRead",
+      "type": "long"
+     },
+     {
+      "params": [
+       {
+        "name": "ae",
+        "type": "ArchiveEntry"
+       }
+      ],
+      "name": "canReadEntryData",
+      "type": "boolean"
+     }
+    ],
+    "fields": [
+     {
+      "name": "SINGLE",
+      "type": "byte"
+     },
+     {
+      "name": "BYTE_MASK",
+      "type": "int"
+     },
+     {
+      "name": "bytesRead",
+      "type": "long"
+     }
+    ],
+    "name": "ArchiveInputStream"
+   }
+  ]
+ },
+ {
+  "filename": "ArchiveStreamFactory.java",
+  "package_name": "org.apache.commons.compress.archivers",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "archiverName",
+        "type": "String"
+       },
+       {
+        "name": "in",
+        "type": "InputStream"
+       }
+      ],
+      "name": "createArchiveInputStream",
+      "type": "ArchiveInputStream"
+     },
+     {
+      "params": [
+       {
+        "name": "archiverName",
+        "type": "String"
+       },
+       {
+        "name": "out",
+        "type": "OutputStream"
+       }
+      ],
+      "name": "createArchiveOutputStream",
+      "type": "ArchiveOutputStream"
+     },
+     {
+      "params": [
+       {
+        "name": "in",
+        "type": "InputStream"
+       }
+      ],
+      "name": "createArchiveInputStream",
+      "type": "ArchiveInputStream"
+     }
+    ],
+    "fields": [
+     {
+      "name": "AR",
+      "type": "String"
+     },
+     {
+      "name": "CPIO",
+      "type": "String"
+     },
+     {
+      "name": "DUMP",
+      "type": "String"
+     },
+     {
+      "name": "JAR",
+      "type": "String"
+     },
+     {
+      "name": "TAR",
+      "type": "String"
+     },
+     {
+      "name": "ZIP",
+      "type": "String"
+     }
+    ],
+    "name": "ArchiveStreamFactory"
+   }
+  ]
+ },
+ {
+  "filename": "Lister.java",
+  "package_name": "org.apache.commons.compress.archivers",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "args",
+        "type": "String"
+       }
+      ],
+      "name": "main",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "usage",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "factory",
+      "type": "ArchiveStreamFactory"
+     }
+    ],
+    "name": "Lister"
+   }
+  ]
+ },
+ {
+  "filename": "ArchiveOutputStream.java",
+  "package_name": "org.apache.commons.compress.archivers",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "entry",
+        "type": "ArchiveEntry"
+       }
+      ],
+      "name": "putArchiveEntry",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "closeArchiveEntry",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "finish",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "inputFile",
+        "type": "File"
+       },
+       {
+        "name": "entryName",
+        "type": "String"
+       }
+      ],
+      "name": "createArchiveEntry",
+      "type": "ArchiveEntry"
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "int"
+       }
+      ],
+      "name": "write",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "written",
+        "type": "int"
+       }
+      ],
+      "name": "count",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "written",
+        "type": "long"
+       }
+      ],
+      "name": "count",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getCount",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getBytesWritten",
+      "type": "long"
+     },
+     {
+      "params": [
+       {
+        "name": "ae",
+        "type": "ArchiveEntry"
+       }
+      ],
+      "name": "canWriteEntryData",
+      "type": "boolean"
+     }
+    ],
+    "fields": [
+     {
+      "name": "oneByte",
+      "type": "byte"
+     },
+     {
+      "name": "BYTE_MASK",
+      "type": "int"
+     },
+     {
+      "name": "bytesWritten",
+      "type": "long"
+     }
+    ],
+    "name": "ArchiveOutputStream"
+   }
+  ]
+ },
+ {
+  "filename": "ArchiveEntry.java",
+  "package_name": "org.apache.commons.compress.archivers",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getName",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getSize",
+      "type": "long"
+     },
+     {
+      "params": [],
+      "name": "isDirectory",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "getLastModifiedDate",
+      "type": "Date"
+     }
+    ],
+    "fields": [
+     {
+      "name": "SIZE_UNKNOWN",
+      "type": "long"
+     }
+    ],
+    "name": "ArchiveEntry"
+   }
+  ]
+ },
+ {
+  "filename": "NioZipEncoding.java",
+  "package_name": "org.apache.commons.compress.archivers.zip",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ],
+      "name": "canEncode",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ],
+      "name": "encode",
+      "type": "ByteBuffer"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       }
+      ],
+      "name": "decode",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "charset",
+      "type": "Charset"
+     }
+    ],
+    "name": "NioZipEncoding"
+   }
+  ]
+ },
+ {
+  "filename": "FallbackZipEncoding.java",
+  "package_name": "org.apache.commons.compress.archivers.zip",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ],
+      "name": "canEncode",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ],
+      "name": "encode",
+      "type": "ByteBuffer"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       }
+      ],
+      "name": "decode",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "charset",
+      "type": "String"
+     }
+    ],
+    "name": "FallbackZipEncoding"
+   }
+  ]
+ },
+ {
+  "filename": "Simple8BitZipEncoding.java",
+  "package_name": "org.apache.commons.compress.archivers.zip",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "byte"
+       }
+      ],
+      "name": "decodeByte",
+      "type": "char"
+     },
+     {
+      "params": [
+       {
+        "name": "c",
+        "type": "char"
+       }
+      ],
+      "name": "canEncodeChar",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "bb",
+        "type": "ByteBuffer"
+       },
+       {
+        "name": "c",
+        "type": "char"
+       }
+      ],
+      "name": "pushEncodedChar",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "c",
+        "type": "char"
+       }
+      ],
+      "name": "encodeHighChar",
+      "type": "Simple8BitChar"
+     },
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ],
+      "name": "canEncode",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ],
+      "name": "encode",
+      "type": "ByteBuffer"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       }
+      ],
+      "name": "decode",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "highChars",
+      "type": "char"
+     },
+     {
+      "name": "reverseMapping",
+      "type": "List"
+     }
+    ],
+    "name": "Simple8BitZipEncoding"
+   }
+  ]
+ },
+ {
+  "filename": "Zip64ExtendedInformationExtraField.java",
+  "package_name": "org.apache.commons.compress.archivers.zip",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getHeaderId",
+      "type": "ZipShort"
+     },
+     {
+      "params": [],
+      "name": "getLocalFileDataLength",
+      "type": "ZipShort"
+     },
+     {
+      "params": [],
+      "name": "getCentralDirectoryLength",
+      "type": "ZipShort"
+     },
+     {
+      "params": [],
+      "name": "getLocalFileDataData",
+      "type": "byte"
+     },
+     {
+      "params": [],
+      "name": "getCentralDirectoryData",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "parseFromLocalFileData",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "parseFromCentralDirectoryData",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "hasUncompressedSize",
+        "type": "boolean"
+       },
+       {
+        "name": "hasCompressedSize",
+        "type": "boolean"
+       },
+       {
+        "name": "hasRelativeHeaderOffset",
+        "type": "boolean"
+       },
+       {
+        "name": "hasDiskStart",
+        "type": "boolean"
+       }
+      ],
+      "name": "reparseCentralDirectoryData",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getSize",
+      "type": "ZipEightByteInteger"
+     },
+     {
+      "params": [
+       {
+        "name": "size",
+        "type": "ZipEightByteInteger"
+       }
+      ],
+      "name": "setSize",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getCompressedSize",
+      "type": "ZipEightByteInteger"
+     },
+     {
+      "params": [
+       {
+        "name": "compressedSize",
+        "type": "ZipEightByteInteger"
+       }
+      ],
+      "name": "setCompressedSize",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getRelativeHeaderOffset",
+      "type": "ZipEightByteInteger"
+     },
+     {
+      "params": [
+       {
+        "name": "rho",
+        "type": "ZipEightByteInteger"
+       }
+      ],
+      "name": "setRelativeHeaderOffset",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getDiskStartNumber",
+      "type": "ZipLong"
+     },
+     {
+      "params": [
+       {
+        "name": "ds",
+        "type": "ZipLong"
+       }
+      ],
+      "name": "setDiskStartNumber",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       }
+      ],
+      "name": "addSizes",
+      "type": "int"
+     }
+    ],
+    "fields": [
+     {
+      "name": "HEADER_ID",
+      "type": "ZipShort"
+     },
+     {
+      "name": "LFH_MUST_HAVE_BOTH_SIZES_MSG",
+      "type": "String"
+     },
+     {
+      "name": "size",
+      "type": "ZipEightByteInteger"
+     },
+     {
+      "name": "compressedSize",
+      "type": "ZipEightByteInteger"
+     },
+     {
+      "name": "relativeHeaderOffset",
+      "type": "ZipEightByteInteger"
+     },
+     {
+      "name": "diskStart",
+      "type": "ZipLong"
+     },
+     {
+      "name": "rawCentralDirectoryData",
+      "type": "byte"
+     }
+    ],
+    "name": "Zip64ExtendedInformationExtraField"
+   }
+  ]
+ },
+ {
+  "filename": "JarMarker.java",
+  "package_name": "org.apache.commons.compress.archivers.zip",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getInstance",
+      "type": "JarMarker"
+     },
+     {
+      "params": [],
+      "name": "getHeaderId",
+      "type": "ZipShort"
+     },
+     {
+      "params": [],
+      "name": "getLocalFileDataLength",
+      "type": "ZipShort"
+     },
+     {
+      "params": [],
+      "name": "getCentralDirectoryLength",
+      "type": "ZipShort"
+     },
+     {
+      "params": [],
+      "name": "getLocalFileDataData",
+      "type": "byte"
+     },
+     {
+      "params": [],
+      "name": "getCentralDirectoryData",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "parseFromLocalFileData",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "parseFromCentralDirectoryData",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "ID",
+      "type": "ZipShort"
+     },
+     {
+      "name": "NULL",
+      "type": "ZipShort"
+     },
+     {
+      "name": "NO_BYTES",
+      "type": "byte"
+     },
+     {
+      "name": "DEFAULT",
+      "type": "JarMarker"
+     }
+    ],
+    "name": "JarMarker"
+   }
+  ]
+ },
+ {
+  "filename": "ZipArchiveOutputStream.java",
+  "package_name": "org.apache.commons.compress.archivers.zip",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "isSeekable",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "encoding",
+        "type": "String"
+       }
+      ],
+      "name": "setEncoding",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getEncoding",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "boolean"
+       }
+      ],
+      "name": "setUseLanguageEncodingFlag",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "UnicodeExtraFieldPolicy"
+       }
+      ],
+      "name": "setCreateUnicodeExtraFields",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "boolean"
+       }
+      ],
+      "name": "setFallbackToUTF8",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "mode",
+        "type": "Zip64Mode"
+       }
+      ],
+      "name": "setUseZip64",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "finish",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "closeArchiveEntry",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "flushDeflater",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "bytesWritten",
+        "type": "long"
+       },
+       {
+        "name": "crc",
+        "type": "long"
+       },
+       {
+        "name": "effectiveMode",
+        "type": "Zip64Mode"
+       }
+      ],
+      "name": "handleSizesAndCrc",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "actuallyNeedsZip64",
+        "type": "boolean"
+       }
+      ],
+      "name": "rewriteSizesAndCrc",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "archiveEntry",
+        "type": "ArchiveEntry"
+       }
+      ],
+      "name": "putArchiveEntry",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "entry",
+        "type": "ZipArchiveEntry"
+       }
+      ],
+      "name": "setDefaults",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "effectiveMode",
+        "type": "Zip64Mode"
+       }
+      ],
+      "name": "validateSizeInformation",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "entry",
+        "type": "ZipArchiveEntry"
+       },
+       {
+        "name": "mode",
+        "type": "Zip64Mode"
+       }
+      ],
+      "name": "shouldAddZip64Extra",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "comment",
+        "type": "String"
+       }
+      ],
+      "name": "setComment",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "level",
+        "type": "int"
+       }
+      ],
+      "name": "setLevel",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "method",
+        "type": "int"
+       }
+      ],
+      "name": "setMethod",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "ae",
+        "type": "ArchiveEntry"
+       }
+      ],
+      "name": "canWriteEntryData",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "write",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "writeDeflated",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "close",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "flush",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "deflate",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "ze",
+        "type": "ZipArchiveEntry"
+       }
+      ],
+      "name": "writeLocalFileHeader",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "ze",
+        "type": "ZipArchiveEntry"
+       },
+       {
+        "name": "encodable",
+        "type": "boolean"
+       },
+       {
+        "name": "name",
+        "type": "ByteBuffer"
+       }
+      ],
+      "name": "addUnicodeExtraFields",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "ze",
+        "type": "ZipArchiveEntry"
+       }
+      ],
+      "name": "writeDataDescriptor",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "ze",
+        "type": "ZipArchiveEntry"
+       }
+      ],
+      "name": "writeCentralFileHeader",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "ze",
+        "type": "ZipArchiveEntry"
+       },
+       {
+        "name": "lfhOffset",
+        "type": "long"
+       },
+       {
+        "name": "needsZip64Extra",
+        "type": "boolean"
+       }
+      ],
+      "name": "handleZip64Extra",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "writeCentralDirectoryEnd",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "writeZip64CentralDirectory",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       }
+      ],
+      "name": "writeOut",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "writeOut",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "deflateUntilInputIsNeeded",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "zipMethod",
+        "type": "int"
+       },
+       {
+        "name": "utfFallback",
+        "type": "boolean"
+       },
+       {
+        "name": "zip64",
+        "type": "boolean"
+       }
+      ],
+      "name": "writeVersionNeededToExtractAndGeneralPurposeBits",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "inputFile",
+        "type": "File"
+       },
+       {
+        "name": "entryName",
+        "type": "String"
+       }
+      ],
+      "name": "createArchiveEntry",
+      "type": "ArchiveEntry"
+     },
+     {
+      "params": [
+       {
+        "name": "ze",
+        "type": "ZipArchiveEntry"
+       }
+      ],
+      "name": "getZip64Extra",
+      "type": "Zip64ExtendedInformationExtraField"
+     },
+     {
+      "params": [
+       {
+        "name": "ze",
+        "type": "ZipArchiveEntry"
+       }
+      ],
+      "name": "hasZip64Extra",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "ze",
+        "type": "ZipArchiveEntry"
+       }
+      ],
+      "name": "getEffectiveZip64Mode",
+      "type": "Zip64Mode"
+     },
+     {
+      "params": [
+       {
+        "name": "ze",
+        "type": "ZipArchiveEntry"
+       }
+      ],
+      "name": "getEntryEncoding",
+      "type": "ZipEncoding"
+     },
+     {
+      "params": [
+       {
+        "name": "ze",
+        "type": "ZipArchiveEntry"
+       }
+      ],
+      "name": "getName",
+      "type": "ByteBuffer"
+     },
+     {
+      "params": [],
+      "name": "destroy",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "BUFFER_SIZE",
+      "type": "int"
+     },
+     {
+      "name": "finished",
+      "type": "boolean"
+     },
+     {
+      "name": "DEFLATER_BLOCK_SIZE",
+      "type": "int"
+     },
+     {
+      "name": "DEFLATED",
+      "type": "int"
+     },
+     {
+      "name": "DEFAULT_COMPRESSION",
+      "type": "int"
+     },
+     {
+      "name": "STORED",
+      "type": "int"
+     },
+     {
+      "name": "DEFAULT_ENCODING",
+      "type": "String"
+     },
+     {
+      "name": "EFS_FLAG",
+      "type": "int"
+     },
+     {
+      "name": "entry",
+      "type": "CurrentEntry"
+     },
+     {
+      "name": "comment",
+      "type": "String"
+     },
+     {
+      "name": "level",
+      "type": "int"
+     },
+     {
+      "name": "hasCompressionLevelChanged",
+      "type": "boolean"
+     },
+     {
+      "name": "method",
+      "type": "int"
+     },
+     {
+      "name": "entries",
+      "type": "List"
+     },
+     {
+      "name": "crc",
+      "type": "CRC32"
+     },
+     {
+      "name": "written",
+      "type": "long"
+     },
+     {
+      "name": "cdOffset",
+      "type": "long"
+     },
+     {
+      "name": "cdLength",
+      "type": "long"
+     },
+     {
+      "name": "ZERO",
+      "type": "byte"
+     },
+     {
+      "name": "LZERO",
+      "type": "byte"
+     },
+     {
+      "name": "offsets",
+      "type": "Map"
+     },
+     {
+      "name": "encoding",
+      "type": "String"
+     },
+     {
+      "name": "zipEncoding",
+      "type": "ZipEncoding"
+     },
+     {
+      "name": "def",
+      "type": "Deflater"
+     },
+     {
+      "name": "buf",
+      "type": "byte"
+     },
+     {
+      "name": "raf",
+      "type": "RandomAccessFile"
+     },
+     {
+      "name": "out",
+      "type": "OutputStream"
+     },
+     {
+      "name": "useUTF8Flag",
+      "type": "boolean"
+     },
+     {
+      "name": "fallbackToUTF8",
+      "type": "boolean"
+     },
+     {
+      "name": "createUnicodeExtraFields",
+      "type": "UnicodeExtraFieldPolicy"
+     },
+     {
+      "name": "hasUsedZip64",
+      "type": "boolean"
+     },
+     {
+      "name": "zip64Mode",
+      "type": "Zip64Mode"
+     },
+     {
+      "name": "LFH_SIG",
+      "type": "byte"
+     },
+     {
+      "name": "DD_SIG",
+      "type": "byte"
+     },
+     {
+      "name": "CFH_SIG",
+      "type": "byte"
+     },
+     {
+      "name": "EOCD_SIG",
+      "type": "byte"
+     },
+     {
+      "name": "ZIP64_EOCD_SIG",
+      "type": "byte"
+     },
+     {
+      "name": "ZIP64_EOCD_LOC_SIG",
+      "type": "byte"
+     },
+     {
+      "name": "ONE",
+      "type": "byte"
+     }
+    ],
+    "name": "ZipArchiveOutputStream"
+   }
+  ]
+ },
+ {
+  "filename": "UnicodeCommentExtraField.java",
+  "package_name": "org.apache.commons.compress.archivers.zip",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getHeaderId",
+      "type": "ZipShort"
+     }
+    ],
+    "fields": [
+     {
+      "name": "UCOM_ID",
+      "type": "ZipShort"
+     }
+    ],
+    "name": "UnicodeCommentExtraField"
+   }
+  ]
+ },
+ {
+  "filename": "ZipLong.java",
+  "package_name": "org.apache.commons.compress.archivers.zip",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getBytes",
+      "type": "byte"
+     },
+     {
+      "params": [],
+      "name": "getValue",
+      "type": "long"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "long"
+       }
+      ],
+      "name": "getBytes",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "bytes",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       }
+      ],
+      "name": "getValue",
+      "type": "long"
+     },
+     {
+      "params": [
+       {
+        "name": "bytes",
+        "type": "byte"
+       }
+      ],
+      "name": "getValue",
+      "type": "long"
+     },
+     {
+      "params": [
+       {
+        "name": "o",
+        "type": "Object"
+       }
+      ],
+      "name": "equals",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "hashCode",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "clone",
+      "type": "Object"
+     },
+     {
+      "params": [],
+      "name": "toString",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "BYTE_1",
+      "type": "int"
+     },
+     {
+      "name": "BYTE_1_MASK",
+      "type": "int"
+     },
+     {
+      "name": "BYTE_1_SHIFT",
+      "type": "int"
+     },
+     {
+      "name": "BYTE_2",
+      "type": "int"
+     },
+     {
+      "name": "BYTE_2_MASK",
+      "type": "int"
+     },
+     {
+      "name": "BYTE_2_SHIFT",
+      "type": "int"
+     },
+     {
+      "name": "BYTE_3",
+      "type": "int"
+     },
+     {
+      "name": "BYTE_3_MASK",
+      "type": "long"
+     },
+     {
+      "name": "BYTE_3_SHIFT",
+      "type": "int"
+     },
+     {
+      "name": "value",
+      "type": "long"
+     },
+     {
+      "name": "CFH_SIG",
+      "type": "ZipLong"
+     },
+     {
+      "name": "LFH_SIG",
+      "type": "ZipLong"
+     },
+     {
+      "name": "DD_SIG",
+      "type": "ZipLong"
+     },
+     {
+      "name": "ZIP64_MAGIC",
+      "type": "ZipLong"
+     }
+    ],
+    "name": "ZipLong"
+   }
+  ]
+ },
+ {
+  "filename": "ZipExtraField.java",
+  "package_name": "org.apache.commons.compress.archivers.zip",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getHeaderId",
+      "type": "ZipShort"
+     },
+     {
+      "params": [],
+      "name": "getLocalFileDataLength",
+      "type": "ZipShort"
+     },
+     {
+      "params": [],
+      "name": "getCentralDirectoryLength",
+      "type": "ZipShort"
+     },
+     {
+      "params": [],
+      "name": "getLocalFileDataData",
+      "type": "byte"
+     },
+     {
+      "params": [],
+      "name": "getCentralDirectoryData",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "parseFromLocalFileData",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "parseFromCentralDirectoryData",
+      "type": null
+     }
+    ],
+    "fields": [],
+    "name": "ZipExtraField"
+   }
+  ]
+ },
+ {
+  "filename": "ZipShort.java",
+  "package_name": "org.apache.commons.compress.archivers.zip",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getBytes",
+      "type": "byte"
+     },
+     {
+      "params": [],
+      "name": "getValue",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "int"
+       }
+      ],
+      "name": "getBytes",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "bytes",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       }
+      ],
+      "name": "getValue",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "bytes",
+        "type": "byte"
+       }
+      ],
+      "name": "getValue",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "o",
+        "type": "Object"
+       }
+      ],
+      "name": "equals",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "hashCode",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "clone",
+      "type": "Object"
+     },
+     {
+      "params": [],
+      "name": "toString",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "BYTE_1_MASK",
+      "type": "int"
+     },
+     {
+      "name": "BYTE_1_SHIFT",
+      "type": "int"
+     },
+     {
+      "name": "value",
+      "type": "int"
+     }
+    ],
+    "name": "ZipShort"
+   }
+  ]
+ },
+ {
+  "filename": "ZipFile.java",
+  "package_name": "org.apache.commons.compress.archivers.zip",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getEncoding",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "close",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "zipfile",
+        "type": "ZipFile"
+       }
+      ],
+      "name": "closeQuietly",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getEntries",
+      "type": "Enumeration"
+     },
+     {
+      "params": [],
+      "name": "getEntriesInPhysicalOrder",
+      "type": "Enumeration"
+     },
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ],
+      "name": "getEntry",
+      "type": "ZipArchiveEntry"
+     },
+     {
+      "params": [
+       {
+        "name": "ze",
+        "type": "ZipArchiveEntry"
+       }
+      ],
+      "name": "canReadEntryData",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "ze",
+        "type": "ZipArchiveEntry"
+       }
+      ],
+      "name": "getInputStream",
+      "type": "InputStream"
+     },
+     {
+      "params": [],
+      "name": "finalize",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "populateFromCentralDirectory",
+      "type": "Map"
+     },
+     {
+      "params": [
+       {
+        "name": "noUTF8Flag",
+        "type": "Map"
+       }
+      ],
+      "name": "readCentralDirectoryEntry",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "ze",
+        "type": "ZipArchiveEntry"
+       },
+       {
+        "name": "offset",
+        "type": "OffsetEntry"
+       },
+       {
+        "name": "diskStart",
+        "type": "int"
+       }
+      ],
+      "name": "setSizesAndOffsetFromZip64Extra",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "positionAtCentralDirectory",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "positionAtCentralDirectory64",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "positionAtCentralDirectory32",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "minDistanceFromEnd",
+        "type": "long"
+       },
+       {
+        "name": "maxDistanceFromEnd",
+        "type": "long"
+       },
+       {
+        "name": "sig",
+        "type": "byte"
+       }
+      ],
+      "name": "tryToLocateSignature",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "count",
+        "type": "int"
+       }
+      ],
+      "name": "skipBytes",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "entriesWithoutUTF8Flag",
+        "type": "Map"
+       }
+      ],
+      "name": "resolveLocalFileHeaderData",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "startsWithLocalFileHeader",
+      "type": "boolean"
+     }
+    ],
+    "fields": [
+     {
+      "name": "HASH_SIZE",
+      "type": "int"
+     },
+     {
+      "name": "NIBLET_MASK",
+      "type": "int"
+     },
+     {
+      "name": "BYTE_SHIFT",
+      "type": "int"
+     },
+     {
+      "name": "POS_0",
+      "type": "int"
+     },
+     {
+      "name": "POS_1",
+      "type": "int"
+     },
+     {
+      "name": "POS_2",
+      "type": "int"
+     },
+     {
+      "name": "POS_3",
+      "type": "int"
+     },
+     {
+      "name": "entries",
+      "type": "Map"
+     },
+     {
+      "name": "nameMap",
+      "type": "Map"
+     },
+     {
+      "name": "encoding",
+      "type": "String"
+     },
+     {
+      "name": "zipEncoding",
+      "type": "ZipEncoding"
+     },
+     {
+      "name": "archiveName",
+      "type": "String"
+     },
+     {
+      "name": "archive",
+      "type": "RandomAccessFile"
+     },
+     {
+      "name": "useUnicodeExtraFields",
+      "type": "boolean"
+     },
+     {
+      "name": "closed",
+      "type": "boolean"
+     },
+     {
+      "name": "CFH_LEN",
+      "type": "int"
+     },
+     {
+      "name": "CFH_SIG",
+      "type": "long"
+     },
+     {
+      "name": "MIN_EOCD_SIZE",
+      "type": "int"
+     },
+     {
+      "name": "MAX_EOCD_SIZE",
+      "type": "int"
+     },
+     {
+      "name": "CFD_LOCATOR_OFFSET",
+      "type": "int"
+     },
+     {
+      "name": "ZIP64_EOCDL_LENGTH",
+      "type": "int"
+     },
+     {
+      "name": "ZIP64_EOCDL_LOCATOR_OFFSET",
+      "type": "int"
+     },
+     {
+      "name": "ZIP64_EOCD_CFD_LOCATOR_OFFSET",
+      "type": "int"
+     },
+     {
+      "name": "LFH_OFFSET_FOR_FILENAME_LENGTH",
+      "type": "long"
+     },
+     {
+      "name": "OFFSET_COMPARATOR",
+      "type": "Comparator"
+     }
+    ],
+    "name": "ZipFile"
+   }
+  ]
+ },
+ {
+  "filename": "AsiExtraField.java",
+  "package_name": "org.apache.commons.compress.archivers.zip",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getHeaderId",
+      "type": "ZipShort"
+     },
+     {
+      "params": [],
+      "name": "getLocalFileDataLength",
+      "type": "ZipShort"
+     },
+     {
+      "params": [],
+      "name": "getCentralDirectoryLength",
+      "type": "ZipShort"
+     },
+     {
+      "params": [],
+      "name": "getLocalFileDataData",
+      "type": "byte"
+     },
+     {
+      "params": [],
+      "name": "getCentralDirectoryData",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "uid",
+        "type": "int"
+       }
+      ],
+      "name": "setUserId",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getUserId",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "gid",
+        "type": "int"
+       }
+      ],
+      "name": "setGroupId",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getGroupId",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ],
+      "name": "setLinkedFile",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getLinkedFile",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "isLink",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "mode",
+        "type": "int"
+       }
+      ],
+      "name": "setMode",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getMode",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "dirFlag",
+        "type": "boolean"
+       }
+      ],
+      "name": "setDirectory",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "isDirectory",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "parseFromLocalFileData",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "parseFromCentralDirectoryData",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "mode",
+        "type": "int"
+       }
+      ],
+      "name": "getMode",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "clone",
+      "type": "Object"
+     }
+    ],
+    "fields": [
+     {
+      "name": "HEADER_ID",
+      "type": "ZipShort"
+     },
+     {
+      "name": "WORD",
+      "type": "int"
+     },
+     {
+      "name": "mode",
+      "type": "int"
+     },
+     {
+      "name": "uid",
+      "type": "int"
+     },
+     {
+      "name": "gid",
+      "type": "int"
+     },
+     {
+      "name": "link",
+      "type": "String"
+     },
+     {
+      "name": "dirFlag",
+      "type": "boolean"
+     },
+     {
+      "name": "crc",
+      "type": "CRC32"
+     }
+    ],
+    "name": "AsiExtraField"
+   }
+  ]
+ },
+ {
+  "filename": "Zip64Mode.java",
+  "package_name": "org.apache.commons.compress.archivers.zip",
+  "classes": [
+   {
+    "methods": [],
+    "fields": [],
+    "name": "Zip64Mode"
+   }
+  ]
+ },
+ {
+  "filename": "UnsupportedZipFeatureException.java",
+  "package_name": "org.apache.commons.compress.archivers.zip",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getFeature",
+      "type": "Feature"
+     },
+     {
+      "params": [],
+      "name": "getEntry",
+      "type": "ZipArchiveEntry"
+     }
+    ],
+    "fields": [
+     {
+      "name": "reason",
+      "type": "Feature"
+     },
+     {
+      "name": "entry",
+      "type": "ZipArchiveEntry"
+     },
+     {
+      "name": "serialVersionUID",
+      "type": "long"
+     }
+    ],
+    "name": "UnsupportedZipFeatureException"
+   }
+  ]
+ },
+ {
+  "filename": "GeneralPurposeBit.java",
+  "package_name": "org.apache.commons.compress.archivers.zip",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "usesUTF8ForNames",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "boolean"
+       }
+      ],
+      "name": "useUTF8ForNames",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "usesDataDescriptor",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "boolean"
+       }
+      ],
+      "name": "useDataDescriptor",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "usesEncryption",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "boolean"
+       }
+      ],
+      "name": "useEncryption",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "usesStrongEncryption",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "boolean"
+       }
+      ],
+      "name": "useStrongEncryption",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "encode",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       }
+      ],
+      "name": "parse",
+      "type": "GeneralPurposeBit"
+     },
+     {
+      "params": [],
+      "name": "hashCode",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "o",
+        "type": "Object"
+       }
+      ],
+      "name": "equals",
+      "type": "boolean"
+     }
+    ],
+    "fields": [
+     {
+      "name": "ENCRYPTION_FLAG",
+      "type": "int"
+     },
+     {
+      "name": "DATA_DESCRIPTOR_FLAG",
+      "type": "int"
+     },
+     {
+      "name": "STRONG_ENCRYPTION_FLAG",
+      "type": "int"
+     },
+     {
+      "name": "UFT8_NAMES_FLAG",
+      "type": "int"
+     },
+     {
+      "name": "languageEncodingFlag",
+      "type": "boolean"
+     },
+     {
+      "name": "dataDescriptorFlag",
+      "type": "boolean"
+     },
+     {
+      "name": "encryptionFlag",
+      "type": "boolean"
+     },
+     {
+      "name": "strongEncryptionFlag",
+      "type": "boolean"
+     }
+    ],
+    "name": "GeneralPurposeBit"
+   }
+  ]
+ },
+ {
+  "filename": "UnrecognizedExtraField.java",
+  "package_name": "org.apache.commons.compress.archivers.zip",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "headerId",
+        "type": "ZipShort"
+       }
+      ],
+      "name": "setHeaderId",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getHeaderId",
+      "type": "ZipShort"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       }
+      ],
+      "name": "setLocalFileDataData",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getLocalFileDataLength",
+      "type": "ZipShort"
+     },
+     {
+      "params": [],
+      "name": "getLocalFileDataData",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       }
+      ],
+      "name": "setCentralDirectoryData",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getCentralDirectoryLength",
+      "type": "ZipShort"
+     },
+     {
+      "params": [],
+      "name": "getCentralDirectoryData",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "parseFromLocalFileData",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "parseFromCentralDirectoryData",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "headerId",
+      "type": "ZipShort"
+     },
+     {
+      "name": "localData",
+      "type": "byte"
+     },
+     {
+      "name": "centralData",
+      "type": "byte"
+     }
+    ],
+    "name": "UnrecognizedExtraField"
+   }
+  ]
+ },
+ {
+  "filename": "AbstractUnicodeExtraField.java",
+  "package_name": "org.apache.commons.compress.archivers.zip",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "assembleData",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getNameCRC32",
+      "type": "long"
+     },
+     {
+      "params": [
+       {
+        "name": "nameCRC32",
+        "type": "long"
+       }
+      ],
+      "name": "setNameCRC32",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getUnicodeName",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "unicodeName",
+        "type": "byte"
+       }
+      ],
+      "name": "setUnicodeName",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getCentralDirectoryData",
+      "type": "byte"
+     },
+     {
+      "params": [],
+      "name": "getCentralDirectoryLength",
+      "type": "ZipShort"
+     },
+     {
+      "params": [],
+      "name": "getLocalFileDataData",
+      "type": "byte"
+     },
+     {
+      "params": [],
+      "name": "getLocalFileDataLength",
+      "type": "ZipShort"
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "parseFromLocalFileData",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "parseFromCentralDirectoryData",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "nameCRC32",
+      "type": "long"
+     },
+     {
+      "name": "unicodeName",
+      "type": "byte"
+     },
+     {
+      "name": "data",
+      "type": "byte"
+     }
+    ],
+    "name": "AbstractUnicodeExtraField"
+   }
+  ]
+ },
+ {
+  "filename": "ZipEncodingHelper.java",
+  "package_name": "org.apache.commons.compress.archivers.zip",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "ByteBuffer"
+       },
+       {
+        "name": "newCapacity",
+        "type": "int"
+       }
+      ],
+      "name": "growBuffer",
+      "type": "ByteBuffer"
+     },
+     {
+      "params": [
+       {
+        "name": "bb",
+        "type": "ByteBuffer"
+       },
+       {
+        "name": "c",
+        "type": "char"
+       }
+      ],
+      "name": "appendSurrogate",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ],
+      "name": "getZipEncoding",
+      "type": "ZipEncoding"
+     },
+     {
+      "params": [
+       {
+        "name": "encoding",
+        "type": "String"
+       }
+      ],
+      "name": "isUTF8",
+      "type": "boolean"
+     }
+    ],
+    "fields": [
+     {
+      "name": "simpleEncodings",
+      "type": "Map"
+     },
+     {
+      "name": "HEX_DIGITS",
+      "type": "byte"
+     },
+     {
+      "name": "UTF8",
+      "type": "String"
+     },
+     {
+      "name": "UTF_DASH_8",
+      "type": "String"
+     },
+     {
+      "name": "UTF8_ZIP_ENCODING",
+      "type": "ZipEncoding"
+     }
+    ],
+    "name": "ZipEncodingHelper"
+   }
+  ]
+ },
+ {
+  "filename": "Zip64RequiredException.java",
+  "package_name": "org.apache.commons.compress.archivers.zip",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "ze",
+        "type": "ZipArchiveEntry"
+       }
+      ],
+      "name": "getEntryTooBigMessage",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "serialVersionUID",
+      "type": "long"
+     },
+     {
+      "name": "ARCHIVE_TOO_BIG_MESSAGE",
+      "type": "String"
+     },
+     {
+      "name": "TOO_MANY_ENTRIES_MESSAGE",
+      "type": "String"
+     }
+    ],
+    "name": "Zip64RequiredException"
+   }
+  ]
+ },
+ {
+  "filename": "ZipUtil.java",
+  "package_name": "org.apache.commons.compress.archivers.zip",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "time",
+        "type": "Date"
+       }
+      ],
+      "name": "toDosTime",
+      "type": "ZipLong"
+     },
+     {
+      "params": [
+       {
+        "name": "t",
+        "type": "long"
+       }
+      ],
+      "name": "toDosTime",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "i",
+        "type": "int"
+       }
+      ],
+      "name": "adjustToLong",
+      "type": "long"
+     },
+     {
+      "params": [
+       {
+        "name": "zipDosTime",
+        "type": "ZipLong"
+       }
+      ],
+      "name": "fromDosTime",
+      "type": "Date"
+     },
+     {
+      "params": [
+       {
+        "name": "dosTime",
+        "type": "long"
+       }
+      ],
+      "name": "dosToJavaTime",
+      "type": "long"
+     },
+     {
+      "params": [
+       {
+        "name": "ze",
+        "type": "ZipArchiveEntry"
+       },
+       {
+        "name": "originalNameBytes",
+        "type": "byte"
+       },
+       {
+        "name": "commentBytes",
+        "type": "byte"
+       }
+      ],
+      "name": "setNameAndCommentFromExtraFields",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "f",
+        "type": "AbstractUnicodeExtraField"
+       },
+       {
+        "name": "orig",
+        "type": "byte"
+       }
+      ],
+      "name": "getUnicodeStringIfOriginalMatches",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "from",
+        "type": "byte"
+       }
+      ],
+      "name": "copy",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "entry",
+        "type": "ZipArchiveEntry"
+       }
+      ],
+      "name": "canHandleEntryData",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "entry",
+        "type": "ZipArchiveEntry"
+       }
+      ],
+      "name": "supportsEncryptionOf",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "entry",
+        "type": "ZipArchiveEntry"
+       }
+      ],
+      "name": "supportsMethodOf",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "ze",
+        "type": "ZipArchiveEntry"
+       }
+      ],
+      "name": "checkRequestedFeatures",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "DOS_TIME_MIN",
+      "type": "byte"
+     }
+    ],
+    "name": "ZipUtil"
+   }
+  ]
+ },
+ {
+  "filename": "UnparseableExtraFieldData.java",
+  "package_name": "org.apache.commons.compress.archivers.zip",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getHeaderId",
+      "type": "ZipShort"
+     },
+     {
+      "params": [],
+      "name": "getLocalFileDataLength",
+      "type": "ZipShort"
+     },
+     {
+      "params": [],
+      "name": "getCentralDirectoryLength",
+      "type": "ZipShort"
+     },
+     {
+      "params": [],
+      "name": "getLocalFileDataData",
+      "type": "byte"
+     },
+     {
+      "params": [],
+      "name": "getCentralDirectoryData",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "parseFromLocalFileData",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "parseFromCentralDirectoryData",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "HEADER_ID",
+      "type": "ZipShort"
+     },
+     {
+      "name": "localFileData",
+      "type": "byte"
+     },
+     {
+      "name": "centralDirectoryData",
+      "type": "byte"
+     }
+    ],
+    "name": "UnparseableExtraFieldData"
+   }
+  ]
+ },
+ {
+  "filename": "ZipArchiveInputStream.java",
+  "package_name": "org.apache.commons.compress.archivers.zip",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getNextZipEntry",
+      "type": "ZipArchiveEntry"
+     },
+     {
+      "params": [
+       {
+        "name": "size",
+        "type": "ZipLong"
+       },
+       {
+        "name": "cSize",
+        "type": "ZipLong"
+       }
+      ],
+      "name": "processZip64Extra",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getNextEntry",
+      "type": "ArchiveEntry"
+     },
+     {
+      "params": [
+       {
+        "name": "ae",
+        "type": "ArchiveEntry"
+       }
+      ],
+      "name": "canReadEntryData",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "byte"
+       },
+       {
+        "name": "start",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "read",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "byte"
+       },
+       {
+        "name": "start",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "readStored",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "byte"
+       },
+       {
+        "name": "start",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "readDeflated",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "close",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "long"
+       }
+      ],
+      "name": "skip",
+      "type": "long"
+     },
+     {
+      "params": [
+       {
+        "name": "signature",
+        "type": "byte"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "matches",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "signature",
+        "type": "byte"
+       },
+       {
+        "name": "expected",
+        "type": "byte"
+       }
+      ],
+      "name": "checksig",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "closeEntry",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "drainCurrentEntryData",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getBytesInflated",
+      "type": "long"
+     },
+     {
+      "params": [],
+      "name": "fill",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "byte"
+       }
+      ],
+      "name": "readFully",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "readDataDescriptor",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "entry",
+        "type": "ZipArchiveEntry"
+       }
+      ],
+      "name": "supportsDataDescriptorFor",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "readStoredEntry",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "bos",
+        "type": "ByteArrayOutputStream"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "lastRead",
+        "type": "int"
+       },
+       {
+        "name": "expectedDDLen",
+        "type": "int"
+       }
+      ],
+      "name": "bufferContainsSignature",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "bos",
+        "type": "ByteArrayOutputStream"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "lastRead",
+        "type": "int"
+       },
+       {
+        "name": "expecteDDLen",
+        "type": "int"
+       }
+      ],
+      "name": "cacheBytesRead",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "buf",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "pushback",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "zipEncoding",
+      "type": "ZipEncoding"
+     },
+     {
+      "name": "useUnicodeExtraFields",
+      "type": "boolean"
+     },
+     {
+      "name": "in",
+      "type": "InputStream"
+     },
+     {
+      "name": "inf",
+      "type": "Inflater"
+     },
+     {
+      "name": "crc",
+      "type": "CRC32"
+     },
+     {
+      "name": "buf",
+      "type": "Buffer"
+     },
+     {
+      "name": "current",
+      "type": "CurrentEntry"
+     },
+     {
+      "name": "closed",
+      "type": "boolean"
+     },
+     {
+      "name": "hitCentralDirectory",
+      "type": "boolean"
+     },
+     {
+      "name": "lastStoredEntry",
+      "type": "ByteArrayInputStream"
+     },
+     {
+      "name": "allowStoredEntriesWithDataDescriptor",
+      "type": "boolean"
+     },
+     {
+      "name": "LFH_LEN",
+      "type": "int"
+     },
+     {
+      "name": "TWO_EXP_32",
+      "type": "long"
+     },
+     {
+      "name": "LFH",
+      "type": "byte"
+     },
+     {
+      "name": "CFH",
+      "type": "byte"
+     },
+     {
+      "name": "DD",
+      "type": "byte"
+     }
+    ],
+    "name": "ZipArchiveInputStream"
+   }
+  ]
+ },
+ {
+  "filename": "UnicodePathExtraField.java",
+  "package_name": "org.apache.commons.compress.archivers.zip",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getHeaderId",
+      "type": "ZipShort"
+     }
+    ],
+    "fields": [
+     {
+      "name": "UPATH_ID",
+      "type": "ZipShort"
+     }
+    ],
+    "name": "UnicodePathExtraField"
+   }
+  ]
+ },
+ {
+  "filename": "ZipEightByteInteger.java",
+  "package_name": "org.apache.commons.compress.archivers.zip",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getBytes",
+      "type": "byte"
+     },
+     {
+      "params": [],
+      "name": "getLongValue",
+      "type": "long"
+     },
+     {
+      "params": [],
+      "name": "getValue",
+      "type": "BigInteger"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "long"
+       }
+      ],
+      "name": "getBytes",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "BigInteger"
+       }
+      ],
+      "name": "getBytes",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "bytes",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       }
+      ],
+      "name": "getLongValue",
+      "type": "long"
+     },
+     {
+      "params": [
+       {
+        "name": "bytes",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       }
+      ],
+      "name": "getValue",
+      "type": "BigInteger"
+     },
+     {
+      "params": [
+       {
+        "name": "bytes",
+        "type": "byte"
+       }
+      ],
+      "name": "getLongValue",
+      "type": "long"
+     },
+     {
+      "params": [
+       {
+        "name": "bytes",
+        "type": "byte"
+       }
+      ],
+      "name": "getValue",
+      "type": "BigInteger"
+     },
+     {
+      "params": [
+       {
+        "name": "o",
+        "type": "Object"
+       }
+      ],
+      "name": "equals",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "hashCode",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "toString",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "BYTE_1",
+      "type": "int"
+     },
+     {
+      "name": "BYTE_1_MASK",
+      "type": "int"
+     },
+     {
+      "name": "BYTE_1_SHIFT",
+      "type": "int"
+     },
+     {
+      "name": "BYTE_2",
+      "type": "int"
+     },
+     {
+      "name": "BYTE_2_MASK",
+      "type": "int"
+     },
+     {
+      "name": "BYTE_2_SHIFT",
+      "type": "int"
+     },
+     {
+      "name": "BYTE_3",
+      "type": "int"
+     },
+     {
+      "name": "BYTE_3_MASK",
+      "type": "long"
+     },
+     {
+      "name": "BYTE_3_SHIFT",
+      "type": "int"
+     },
+     {
+      "name": "BYTE_4",
+      "type": "int"
+     },
+     {
+      "name": "BYTE_4_MASK",
+      "type": "long"
+     },
+     {
+      "name": "BYTE_4_SHIFT",
+      "type": "int"
+     },
+     {
+      "name": "BYTE_5",
+      "type": "int"
+     },
+     {
+      "name": "BYTE_5_MASK",
+      "type": "long"
+     },
+     {
+      "name": "BYTE_5_SHIFT",
+      "type": "int"
+     },
+     {
+      "name": "BYTE_6",
+      "type": "int"
+     },
+     {
+      "name": "BYTE_6_MASK",
+      "type": "long"
+     },
+     {
+      "name": "BYTE_6_SHIFT",
+      "type": "int"
+     },
+     {
+      "name": "BYTE_7",
+      "type": "int"
+     },
+     {
+      "name": "BYTE_7_MASK",
+      "type": "long"
+     },
+     {
+      "name": "BYTE_7_SHIFT",
+      "type": "int"
+     },
+     {
+      "name": "LEFTMOST_BIT_SHIFT",
+      "type": "int"
+     },
+     {
+      "name": "LEFTMOST_BIT",
+      "type": "byte"
+     },
+     {
+      "name": "value",
+      "type": "BigInteger"
+     },
+     {
+      "name": "ZERO",
+      "type": "ZipEightByteInteger"
+     }
+    ],
+    "name": "ZipEightByteInteger"
+   }
+  ]
+ },
+ {
+  "filename": "UnixStat.java",
+  "package_name": "org.apache.commons.compress.archivers.zip",
+  "classes": [
+   {
+    "methods": [],
+    "fields": [
+     {
+      "name": "PERM_MASK",
+      "type": "int"
+     },
+     {
+      "name": "LINK_FLAG",
+      "type": "int"
+     },
+     {
+      "name": "FILE_FLAG",
+      "type": "int"
+     },
+     {
+      "name": "DIR_FLAG",
+      "type": "int"
+     },
+     {
+      "name": "DEFAULT_LINK_PERM",
+      "type": "int"
+     },
+     {
+      "name": "DEFAULT_DIR_PERM",
+      "type": "int"
+     },
+     {
+      "name": "DEFAULT_FILE_PERM",
+      "type": "int"
+     }
+    ],
+    "name": "UnixStat"
+   }
+  ]
+ },
+ {
+  "filename": "ExtraFieldUtils.java",
+  "package_name": "org.apache.commons.compress.archivers.zip",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "c",
+        "type": "Class"
+       }
+      ],
+      "name": "register",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "headerId",
+        "type": "ZipShort"
+       }
+      ],
+      "name": "createExtraField",
+      "type": "ZipExtraField"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       }
+      ],
+      "name": "parse",
+      "type": "ZipExtraField"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       },
+       {
+        "name": "local",
+        "type": "boolean"
+       }
+      ],
+      "name": "parse",
+      "type": "ZipExtraField"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       },
+       {
+        "name": "local",
+        "type": "boolean"
+       },
+       {
+        "name": "onUnparseableData",
+        "type": "UnparseableExtraField"
+       }
+      ],
+      "name": "parse",
+      "type": "ZipExtraField"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "ZipExtraField"
+       }
+      ],
+      "name": "mergeLocalFileDataData",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "ZipExtraField"
+       }
+      ],
+      "name": "mergeCentralDirectoryData",
+      "type": "byte"
+     }
+    ],
+    "fields": [
+     {
+      "name": "WORD",
+      "type": "int"
+     },
+     {
+      "name": "implementations",
+      "type": "Map"
+     }
+    ],
+    "name": "ExtraFieldUtils"
+   }
+  ]
+ },
+ {
+  "filename": "ZipEncoding.java",
+  "package_name": "org.apache.commons.compress.archivers.zip",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ],
+      "name": "canEncode",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ],
+      "name": "encode",
+      "type": "ByteBuffer"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       }
+      ],
+      "name": "decode",
+      "type": "String"
+     }
+    ],
+    "fields": [],
+    "name": "ZipEncoding"
+   }
+  ]
+ },
+ {
+  "filename": "ZipArchiveEntry.java",
+  "package_name": "org.apache.commons.compress.archivers.zip",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "clone",
+      "type": "Object"
+     },
+     {
+      "params": [],
+      "name": "getMethod",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "method",
+        "type": "int"
+       }
+      ],
+      "name": "setMethod",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getInternalAttributes",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "int"
+       }
+      ],
+      "name": "setInternalAttributes",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getExternalAttributes",
+      "type": "long"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "long"
+       }
+      ],
+      "name": "setExternalAttributes",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "mode",
+        "type": "int"
+       }
+      ],
+      "name": "setUnixMode",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getUnixMode",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getPlatform",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "platform",
+        "type": "int"
+       }
+      ],
+      "name": "setPlatform",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "fields",
+        "type": "ZipExtraField"
+       }
+      ],
+      "name": "setExtraFields",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getExtraFields",
+      "type": "ZipExtraField"
+     },
+     {
+      "params": [
+       {
+        "name": "includeUnparseable",
+        "type": "boolean"
+       }
+      ],
+      "name": "getExtraFields",
+      "type": "ZipExtraField"
+     },
+     {
+      "params": [
+       {
+        "name": "ze",
+        "type": "ZipExtraField"
+       }
+      ],
+      "name": "addExtraField",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "ze",
+        "type": "ZipExtraField"
+       }
+      ],
+      "name": "addAsFirstExtraField",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "type",
+        "type": "ZipShort"
+       }
+      ],
+      "name": "removeExtraField",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "removeUnparseableExtraFieldData",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "type",
+        "type": "ZipShort"
+       }
+      ],
+      "name": "getExtraField",
+      "type": "ZipExtraField"
+     },
+     {
+      "params": [],
+      "name": "getUnparseableExtraFieldData",
+      "type": "UnparseableExtraFieldData"
+     },
+     {
+      "params": [
+       {
+        "name": "extra",
+        "type": "byte"
+       }
+      ],
+      "name": "setExtra",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "setExtra",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "byte"
+       }
+      ],
+      "name": "setCentralDirectoryExtra",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getLocalFileDataExtra",
+      "type": "byte"
+     },
+     {
+      "params": [],
+      "name": "getCentralDirectoryExtra",
+      "type": "byte"
+     },
+     {
+      "params": [],
+      "name": "getName",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "isDirectory",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ],
+      "name": "setName",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getSize",
+      "type": "long"
+     },
+     {
+      "params": [
+       {
+        "name": "size",
+        "type": "long"
+       }
+      ],
+      "name": "setSize",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       },
+       {
+        "name": "rawName",
+        "type": "byte"
+       }
+      ],
+      "name": "setName",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getRawName",
+      "type": "byte"
+     },
+     {
+      "params": [],
+      "name": "hashCode",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getGeneralPurposeBit",
+      "type": "GeneralPurposeBit"
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "GeneralPurposeBit"
+       }
+      ],
+      "name": "setGeneralPurposeBit",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "f",
+        "type": "ZipExtraField"
+       },
+       {
+        "name": "local",
+        "type": "boolean"
+       }
+      ],
+      "name": "mergeExtraFields",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getLastModifiedDate",
+      "type": "Date"
+     },
+     {
+      "params": [
+       {
+        "name": "obj",
+        "type": "Object"
+       }
+      ],
+      "name": "equals",
+      "type": "boolean"
+     }
+    ],
+    "fields": [
+     {
+      "name": "PLATFORM_UNIX",
+      "type": "int"
+     },
+     {
+      "name": "PLATFORM_FAT",
+      "type": "int"
+     },
+     {
+      "name": "SHORT_MASK",
+      "type": "int"
+     },
+     {
+      "name": "SHORT_SHIFT",
+      "type": "int"
+     },
+     {
+      "name": "method",
+      "type": "int"
+     },
+     {
+      "name": "size",
+      "type": "long"
+     },
+     {
+      "name": "internalAttributes",
+      "type": "int"
+     },
+     {
+      "name": "platform",
+      "type": "int"
+     },
+     {
+      "name": "externalAttributes",
+      "type": "long"
+     },
+     {
+      "name": "extraFields",
+      "type": "LinkedHashMap"
+     },
+     {
+      "name": "unparseableExtra",
+      "type": "UnparseableExtraFieldData"
+     },
+     {
+      "name": "name",
+      "type": "String"
+     },
+     {
+      "name": "rawName",
+      "type": "byte"
+     },
+     {
+      "name": "gpb",
+      "type": "GeneralPurposeBit"
+     }
+    ],
+    "name": "ZipArchiveEntry"
+   }
+  ]
+ },
+ {
+  "filename": "ZipConstants.java",
+  "package_name": "org.apache.commons.compress.archivers.zip",
+  "classes": [
+   {
+    "methods": [],
+    "fields": [
+     {
+      "name": "BYTE_MASK",
+      "type": "int"
+     },
+     {
+      "name": "SHORT",
+      "type": "int"
+     },
+     {
+      "name": "WORD",
+      "type": "int"
+     },
+     {
+      "name": "DWORD",
+      "type": "int"
+     },
+     {
+      "name": "INITIAL_VERSION",
+      "type": "int"
+     },
+     {
+      "name": "DATA_DESCRIPTOR_MIN_VERSION",
+      "type": "int"
+     },
+     {
+      "name": "ZIP64_MIN_VERSION",
+      "type": "int"
+     },
+     {
+      "name": "ZIP64_MAGIC_SHORT",
+      "type": "int"
+     },
+     {
+      "name": "ZIP64_MAGIC",
+      "type": "long"
+     }
+    ],
+    "name": "ZipConstants"
+   }
+  ]
+ },
+ {
+  "filename": "CpioArchiveEntry.java",
+  "package_name": "org.apache.commons.compress.archivers.cpio",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "checkNewFormat",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "checkOldFormat",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getChksum",
+      "type": "long"
+     },
+     {
+      "params": [],
+      "name": "getDevice",
+      "type": "long"
+     },
+     {
+      "params": [],
+      "name": "getDeviceMaj",
+      "type": "long"
+     },
+     {
+      "params": [],
+      "name": "getDeviceMin",
+      "type": "long"
+     },
+     {
+      "params": [],
+      "name": "getSize",
+      "type": "long"
+     },
+     {
+      "params": [],
+      "name": "getFormat",
+      "type": "short"
+     },
+     {
+      "params": [],
+      "name": "getGID",
+      "type": "long"
+     },
+     {
+      "params": [],
+      "name": "getHeaderSize",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getAlignmentBoundary",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getHeaderPadCount",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getDataPadCount",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getInode",
+      "type": "long"
+     },
+     {
+      "params": [],
+      "name": "getMode",
+      "type": "long"
+     },
+     {
+      "params": [],
+      "name": "getName",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getNumberOfLinks",
+      "type": "long"
+     },
+     {
+      "params": [],
+      "name": "getRemoteDevice",
+      "type": "long"
+     },
+     {
+      "params": [],
+      "name": "getRemoteDeviceMaj",
+      "type": "long"
+     },
+     {
+      "params": [],
+      "name": "getRemoteDeviceMin",
+      "type": "long"
+     },
+     {
+      "params": [],
+      "name": "getTime",
+      "type": "long"
+     },
+     {
+      "params": [],
+      "name": "getLastModifiedDate",
+      "type": "Date"
+     },
+     {
+      "params": [],
+      "name": "getUID",
+      "type": "long"
+     },
+     {
+      "params": [],
+      "name": "isBlockDevice",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "isCharacterDevice",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "isDirectory",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "isNetwork",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "isPipe",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "isRegularFile",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "isSocket",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "isSymbolicLink",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "chksum",
+        "type": "long"
+       }
+      ],
+      "name": "setChksum",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "device",
+        "type": "long"
+       }
+      ],
+      "name": "setDevice",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "maj",
+        "type": "long"
+       }
+      ],
+      "name": "setDeviceMaj",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "min",
+        "type": "long"
+       }
+      ],
+      "name": "setDeviceMin",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "size",
+        "type": "long"
+       }
+      ],
+      "name": "setSize",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "gid",
+        "type": "long"
+       }
+      ],
+      "name": "setGID",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "inode",
+        "type": "long"
+       }
+      ],
+      "name": "setInode",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "mode",
+        "type": "long"
+       }
+      ],
+      "name": "setMode",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ],
+      "name": "setName",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "nlink",
+        "type": "long"
+       }
+      ],
+      "name": "setNumberOfLinks",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "device",
+        "type": "long"
+       }
+      ],
+      "name": "setRemoteDevice",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "rmaj",
+        "type": "long"
+       }
+      ],
+      "name": "setRemoteDeviceMaj",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "rmin",
+        "type": "long"
+       }
+      ],
+      "name": "setRemoteDeviceMin",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "time",
+        "type": "long"
+       }
+      ],
+      "name": "setTime",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "uid",
+        "type": "long"
+       }
+      ],
+      "name": "setUID",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "hashCode",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "obj",
+        "type": "Object"
+       }
+      ],
+      "name": "equals",
+      "type": "boolean"
+     }
+    ],
+    "fields": [
+     {
+      "name": "fileFormat",
+      "type": "short"
+     },
+     {
+      "name": "headerSize",
+      "type": "int"
+     },
+     {
+      "name": "alignmentBoundary",
+      "type": "int"
+     },
+     {
+      "name": "chksum",
+      "type": "long"
+     },
+     {
+      "name": "filesize",
+      "type": "long"
+     },
+     {
+      "name": "gid",
+      "type": "long"
+     },
+     {
+      "name": "inode",
+      "type": "long"
+     },
+     {
+      "name": "maj",
+      "type": "long"
+     },
+     {
+      "name": "min",
+      "type": "long"
+     },
+     {
+      "name": "mode",
+      "type": "long"
+     },
+     {
+      "name": "mtime",
+      "type": "long"
+     },
+     {
+      "name": "name",
+      "type": "String"
+     },
+     {
+      "name": "nlink",
+      "type": "long"
+     },
+     {
+      "name": "rmaj",
+      "type": "long"
+     },
+     {
+      "name": "rmin",
+      "type": "long"
+     },
+     {
+      "name": "uid",
+      "type": "long"
+     }
+    ],
+    "name": "CpioArchiveEntry"
+   }
+  ]
+ },
+ {
+  "filename": "CpioConstants.java",
+  "package_name": "org.apache.commons.compress.archivers.cpio",
+  "classes": [
+   {
+    "methods": [],
+    "fields": [
+     {
+      "name": "MAGIC_NEW",
+      "type": "String"
+     },
+     {
+      "name": "MAGIC_NEW_CRC",
+      "type": "String"
+     },
+     {
+      "name": "MAGIC_OLD_ASCII",
+      "type": "String"
+     },
+     {
+      "name": "MAGIC_OLD_BINARY",
+      "type": "int"
+     },
+     {
+      "name": "FORMAT_NEW",
+      "type": "short"
+     },
+     {
+      "name": "FORMAT_NEW_CRC",
+      "type": "short"
+     },
+     {
+      "name": "FORMAT_OLD_ASCII",
+      "type": "short"
+     },
+     {
+      "name": "FORMAT_OLD_BINARY",
+      "type": "short"
+     },
+     {
+      "name": "FORMAT_NEW_MASK",
+      "type": "short"
+     },
+     {
+      "name": "FORMAT_OLD_MASK",
+      "type": "short"
+     },
+     {
+      "name": "S_IFMT",
+      "type": "int"
+     },
+     {
+      "name": "C_ISSOCK",
+      "type": "int"
+     },
+     {
+      "name": "C_ISLNK",
+      "type": "int"
+     },
+     {
+      "name": "C_ISNWK",
+      "type": "int"
+     },
+     {
+      "name": "C_ISREG",
+      "type": "int"
+     },
+     {
+      "name": "C_ISBLK",
+      "type": "int"
+     },
+     {
+      "name": "C_ISDIR",
+      "type": "int"
+     },
+     {
+      "name": "C_ISCHR",
+      "type": "int"
+     },
+     {
+      "name": "C_ISFIFO",
+      "type": "int"
+     },
+     {
+      "name": "C_ISUID",
+      "type": "int"
+     },
+     {
+      "name": "C_ISGID",
+      "type": "int"
+     },
+     {
+      "name": "C_ISVTX",
+      "type": "int"
+     },
+     {
+      "name": "C_IRUSR",
+      "type": "int"
+     },
+     {
+      "name": "C_IWUSR",
+      "type": "int"
+     },
+     {
+      "name": "C_IXUSR",
+      "type": "int"
+     },
+     {
+      "name": "C_IRGRP",
+      "type": "int"
+     },
+     {
+      "name": "C_IWGRP",
+      "type": "int"
+     },
+     {
+      "name": "C_IXGRP",
+      "type": "int"
+     },
+     {
+      "name": "C_IROTH",
+      "type": "int"
+     },
+     {
+      "name": "C_IWOTH",
+      "type": "int"
+     },
+     {
+      "name": "C_IXOTH",
+      "type": "int"
+     },
+     {
+      "name": "CPIO_TRAILER",
+      "type": "String"
+     },
+     {
+      "name": "BLOCK_SIZE",
+      "type": "int"
+     }
+    ],
+    "name": "CpioConstants"
+   }
+  ]
+ },
+ {
+  "filename": "CpioArchiveOutputStream.java",
+  "package_name": "org.apache.commons.compress.archivers.cpio",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "ensureOpen",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "entry",
+        "type": "ArchiveEntry"
+       }
+      ],
+      "name": "putArchiveEntry",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "e",
+        "type": "CpioArchiveEntry"
+       }
+      ],
+      "name": "writeHeader",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "entry",
+        "type": "CpioArchiveEntry"
+       }
+      ],
+      "name": "writeNewEntry",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "entry",
+        "type": "CpioArchiveEntry"
+       }
+      ],
+      "name": "writeOldAsciiEntry",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "entry",
+        "type": "CpioArchiveEntry"
+       },
+       {
+        "name": "swapHalfWord",
+        "type": "boolean"
+       }
+      ],
+      "name": "writeOldBinaryEntry",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "closeArchiveEntry",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "byte"
+       },
+       {
+        "name": "off",
+        "type": "int"
+       },
+       {
+        "name": "len",
+        "type": "int"
+       }
+      ],
+      "name": "write",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "finish",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "close",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "count",
+        "type": "int"
+       }
+      ],
+      "name": "pad",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "number",
+        "type": "long"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       },
+       {
+        "name": "swapHalfWord",
+        "type": "boolean"
+       }
+      ],
+      "name": "writeBinaryLong",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "number",
+        "type": "long"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       },
+       {
+        "name": "radix",
+        "type": "int"
+       }
+      ],
+      "name": "writeAsciiLong",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       }
+      ],
+      "name": "writeCString",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "inputFile",
+        "type": "File"
+       },
+       {
+        "name": "entryName",
+        "type": "String"
+       }
+      ],
+      "name": "createArchiveEntry",
+      "type": "ArchiveEntry"
+     }
+    ],
+    "fields": [
+     {
+      "name": "entry",
+      "type": "CpioArchiveEntry"
+     },
+     {
+      "name": "closed",
+      "type": "boolean"
+     },
+     {
+      "name": "finished",
+      "type": "boolean"
+     },
+     {
+      "name": "entryFormat",
+      "type": "short"
+     },
+     {
+      "name": "names",
+      "type": "HashMap"
+     },
+     {
+      "name": "crc",
+      "type": "long"
+     },
+     {
+      "name": "written",
+      "type": "long"
+     },
+     {
+      "name": "out",
+      "type": "OutputStream"
+     },
+     {
+      "name": "blockSize",
+      "type": "int"
+     },
+     {
+      "name": "nextArtificalDeviceAndInode",
+      "type": "long"
+     }
+    ],
+    "name": "CpioArchiveOutputStream"
+   }
+  ]
+ },
+ {
+  "filename": "CpioUtil.java",
+  "package_name": "org.apache.commons.compress.archivers.cpio",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "number",
+        "type": "byte"
+       },
+       {
+        "name": "swapHalfWord",
+        "type": "boolean"
+       }
+      ],
+      "name": "byteArray2long",
+      "type": "long"
+     },
+     {
+      "params": [
+       {
+        "name": "number",
+        "type": "long"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       },
+       {
+        "name": "swapHalfWord",
+        "type": "boolean"
+       }
+      ],
+      "name": "long2byteArray",
+      "type": "byte"
+     }
+    ],
+    "fields": [],
+    "name": "CpioUtil"
+   }
+  ]
+ },
+ {
+  "filename": "CpioArchiveInputStream.java",
+  "package_name": "org.apache.commons.compress.archivers.cpio",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "available",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "close",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "closeEntry",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "ensureOpen",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getNextCPIOEntry",
+      "type": "CpioArchiveEntry"
+     },
+     {
+      "params": [
+       {
+        "name": "bytes",
+        "type": "int"
+       }
+      ],
+      "name": "skip",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "byte"
+       },
+       {
+        "name": "off",
+        "type": "int"
+       },
+       {
+        "name": "len",
+        "type": "int"
+       }
+      ],
+      "name": "read",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "byte"
+       },
+       {
+        "name": "off",
+        "type": "int"
+       },
+       {
+        "name": "len",
+        "type": "int"
+       }
+      ],
+      "name": "readFully",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "length",
+        "type": "int"
+       },
+       {
+        "name": "swapHalfWord",
+        "type": "boolean"
+       }
+      ],
+      "name": "readBinaryLong",
+      "type": "long"
+     },
+     {
+      "params": [
+       {
+        "name": "length",
+        "type": "int"
+       },
+       {
+        "name": "radix",
+        "type": "int"
+       }
+      ],
+      "name": "readAsciiLong",
+      "type": "long"
+     },
+     {
+      "params": [
+       {
+        "name": "hasCrc",
+        "type": "boolean"
+       }
+      ],
+      "name": "readNewEntry",
+      "type": "CpioArchiveEntry"
+     },
+     {
+      "params": [],
+      "name": "readOldAsciiEntry",
+      "type": "CpioArchiveEntry"
+     },
+     {
+      "params": [
+       {
+        "name": "swapHalfWord",
+        "type": "boolean"
+       }
+      ],
+      "name": "readOldBinaryEntry",
+      "type": "CpioArchiveEntry"
+     },
+     {
+      "params": [
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "readCString",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "n",
+        "type": "long"
+       }
+      ],
+      "name": "skip",
+      "type": "long"
+     },
+     {
+      "params": [],
+      "name": "getNextEntry",
+      "type": "ArchiveEntry"
+     },
+     {
+      "params": [
+       {
+        "name": "signature",
+        "type": "byte"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "matches",
+      "type": "boolean"
+     }
+    ],
+    "fields": [
+     {
+      "name": "closed",
+      "type": "boolean"
+     },
+     {
+      "name": "entry",
+      "type": "CpioArchiveEntry"
+     },
+     {
+      "name": "entryBytesRead",
+      "type": "long"
+     },
+     {
+      "name": "entryEOF",
+      "type": "boolean"
+     },
+     {
+      "name": "tmpbuf",
+      "type": "byte"
+     },
+     {
+      "name": "crc",
+      "type": "long"
+     },
+     {
+      "name": "in",
+      "type": "InputStream"
+     }
+    ],
+    "name": "CpioArchiveInputStream"
+   }
+  ]
+ },
+ {
+  "filename": "TarBuffer.java",
+  "package_name": "org.apache.commons.compress.archivers.tar",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "blockSize",
+        "type": "int"
+       },
+       {
+        "name": "recordSize",
+        "type": "int"
+       }
+      ],
+      "name": "initialize",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getBlockSize",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getRecordSize",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "record",
+        "type": "byte"
+       }
+      ],
+      "name": "isEOFRecord",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "skipRecord",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "readRecord",
+      "type": "byte"
+     },
+     {
+      "params": [],
+      "name": "readBlock",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "getCurrentBlockNum",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getCurrentRecordNum",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "record",
+        "type": "byte"
+       }
+      ],
+      "name": "writeRecord",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "buf",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       }
+      ],
+      "name": "writeRecord",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "writeBlock",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "flushBlock",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "close",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "DEFAULT_RCDSIZE",
+      "type": "int"
+     },
+     {
+      "name": "DEFAULT_BLKSIZE",
+      "type": "int"
+     },
+     {
+      "name": "inStream",
+      "type": "InputStream"
+     },
+     {
+      "name": "outStream",
+      "type": "OutputStream"
+     },
+     {
+      "name": "blockBuffer",
+      "type": "byte"
+     },
+     {
+      "name": "currBlkIdx",
+      "type": "int"
+     },
+     {
+      "name": "currRecIdx",
+      "type": "int"
+     },
+     {
+      "name": "blockSize",
+      "type": "int"
+     },
+     {
+      "name": "recordSize",
+      "type": "int"
+     },
+     {
+      "name": "recsPerBlock",
+      "type": "int"
+     }
+    ],
+    "name": "TarBuffer"
+   }
+  ]
+ },
+ {
+  "filename": "TarArchiveSparseEntry.java",
+  "package_name": "org.apache.commons.compress.archivers.tar",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "isExtended",
+      "type": "boolean"
+     }
+    ],
+    "fields": [
+     {
+      "name": "isExtended",
+      "type": "boolean"
+     }
+    ],
+    "name": "TarArchiveSparseEntry"
+   }
+  ]
+ },
+ {
+  "filename": "TarArchiveInputStream.java",
+  "package_name": "org.apache.commons.compress.archivers.tar",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "close",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getRecordSize",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "available",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "numToSkip",
+        "type": "long"
+       }
+      ],
+      "name": "skip",
+      "type": "long"
+     },
+     {
+      "params": [],
+      "name": "reset",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getNextTarEntry",
+      "type": "TarArchiveEntry"
+     },
+     {
+      "params": [],
+      "name": "getRecord",
+      "type": "byte"
+     },
+     {
+      "params": [],
+      "name": "paxHeaders",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "readGNUSparse",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getNextEntry",
+      "type": "ArchiveEntry"
+     },
+     {
+      "params": [
+       {
+        "name": "buf",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "numToRead",
+        "type": "int"
+       }
+      ],
+      "name": "read",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "ae",
+        "type": "ArchiveEntry"
+       }
+      ],
+      "name": "canReadEntryData",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "getCurrentEntry",
+      "type": "TarArchiveEntry"
+     },
+     {
+      "params": [
+       {
+        "name": "e",
+        "type": "TarArchiveEntry"
+       }
+      ],
+      "name": "setCurrentEntry",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "isAtEOF",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "boolean"
+       }
+      ],
+      "name": "setAtEOF",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "signature",
+        "type": "byte"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "matches",
+      "type": "boolean"
+     }
+    ],
+    "fields": [
+     {
+      "name": "SMALL_BUFFER_SIZE",
+      "type": "int"
+     },
+     {
+      "name": "BUFFER_SIZE",
+      "type": "int"
+     },
+     {
+      "name": "hasHitEOF",
+      "type": "boolean"
+     },
+     {
+      "name": "entrySize",
+      "type": "long"
+     },
+     {
+      "name": "entryOffset",
+      "type": "long"
+     },
+     {
+      "name": "readBuf",
+      "type": "byte"
+     },
+     {
+      "name": "buffer",
+      "type": "TarBuffer"
+     },
+     {
+      "name": "currEntry",
+      "type": "TarArchiveEntry"
+     }
+    ],
+    "name": "TarArchiveInputStream"
+   }
+  ]
+ },
+ {
+  "filename": "TarUtils.java",
+  "package_name": "org.apache.commons.compress.archivers.tar",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "parseOctal",
+      "type": "long"
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       }
+      ],
+      "name": "parseBoolean",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       },
+       {
+        "name": "current",
+        "type": "int"
+       },
+       {
+        "name": "currentByte",
+        "type": "byte"
+       }
+      ],
+      "name": "exceptionMessage",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "parseName",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       },
+       {
+        "name": "buf",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "formatNameBytes",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "long"
+       },
+       {
+        "name": "buffer",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "formatUnsignedOctalString",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "long"
+       },
+       {
+        "name": "buf",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "formatOctalBytes",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "long"
+       },
+       {
+        "name": "buf",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "formatLongOctalBytes",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "long"
+       },
+       {
+        "name": "buf",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "formatCheckSumOctalBytes",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "buf",
+        "type": "byte"
+       }
+      ],
+      "name": "computeCheckSum",
+      "type": "long"
+     }
+    ],
+    "fields": [
+     {
+      "name": "BYTE_MASK",
+      "type": "int"
+     }
+    ],
+    "name": "TarUtils"
+   }
+  ]
+ },
+ {
+  "filename": "TarArchiveOutputStream.java",
+  "package_name": "org.apache.commons.compress.archivers.tar",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "longFileMode",
+        "type": "int"
+       }
+      ],
+      "name": "setLongFileMode",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "finish",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "close",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getRecordSize",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "archiveEntry",
+        "type": "ArchiveEntry"
+       }
+      ],
+      "name": "putArchiveEntry",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "closeArchiveEntry",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "wBuf",
+        "type": "byte"
+       },
+       {
+        "name": "wOffset",
+        "type": "int"
+       },
+       {
+        "name": "numToWrite",
+        "type": "int"
+       }
+      ],
+      "name": "write",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "writeEOFRecord",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "flush",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "inputFile",
+        "type": "File"
+       },
+       {
+        "name": "entryName",
+        "type": "String"
+       }
+      ],
+      "name": "createArchiveEntry",
+      "type": "ArchiveEntry"
+     }
+    ],
+    "fields": [
+     {
+      "name": "LONGFILE_ERROR",
+      "type": "int"
+     },
+     {
+      "name": "LONGFILE_TRUNCATE",
+      "type": "int"
+     },
+     {
+      "name": "LONGFILE_GNU",
+      "type": "int"
+     },
+     {
+      "name": "currSize",
+      "type": "long"
+     },
+     {
+      "name": "currName",
+      "type": "String"
+     },
+     {
+      "name": "currBytes",
+      "type": "long"
+     },
+     {
+      "name": "recordBuf",
+      "type": "byte"
+     },
+     {
+      "name": "assemLen",
+      "type": "int"
+     },
+     {
+      "name": "assemBuf",
+      "type": "byte"
+     },
+     {
+      "name": "buffer",
+      "type": "TarBuffer"
+     },
+     {
+      "name": "longFileMode",
+      "type": "int"
+     },
+     {
+      "name": "closed",
+      "type": "boolean"
+     },
+     {
+      "name": "haveUnclosedEntry",
+      "type": "boolean"
+     },
+     {
+      "name": "finished",
+      "type": "boolean"
+     },
+     {
+      "name": "out",
+      "type": "OutputStream"
+     }
+    ],
+    "name": "TarArchiveOutputStream"
+   }
+  ]
+ },
+ {
+  "filename": "TarArchiveEntry.java",
+  "package_name": "org.apache.commons.compress.archivers.tar",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "it",
+        "type": "TarArchiveEntry"
+       }
+      ],
+      "name": "equals",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "it",
+        "type": "Object"
+       }
+      ],
+      "name": "equals",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "hashCode",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "desc",
+        "type": "TarArchiveEntry"
+       }
+      ],
+      "name": "isDescendent",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "getName",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ],
+      "name": "setName",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "mode",
+        "type": "int"
+       }
+      ],
+      "name": "setMode",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getLinkName",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "link",
+        "type": "String"
+       }
+      ],
+      "name": "setLinkName",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getUserId",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "userId",
+        "type": "int"
+       }
+      ],
+      "name": "setUserId",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getGroupId",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "groupId",
+        "type": "int"
+       }
+      ],
+      "name": "setGroupId",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getUserName",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "userName",
+        "type": "String"
+       }
+      ],
+      "name": "setUserName",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getGroupName",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "groupName",
+        "type": "String"
+       }
+      ],
+      "name": "setGroupName",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "userId",
+        "type": "int"
+       },
+       {
+        "name": "groupId",
+        "type": "int"
+       }
+      ],
+      "name": "setIds",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "userName",
+        "type": "String"
+       },
+       {
+        "name": "groupName",
+        "type": "String"
+       }
+      ],
+      "name": "setNames",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "time",
+        "type": "long"
+       }
+      ],
+      "name": "setModTime",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "time",
+        "type": "Date"
+       }
+      ],
+      "name": "setModTime",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getModTime",
+      "type": "Date"
+     },
+     {
+      "params": [],
+      "name": "getLastModifiedDate",
+      "type": "Date"
+     },
+     {
+      "params": [],
+      "name": "getFile",
+      "type": "File"
+     },
+     {
+      "params": [],
+      "name": "getMode",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getSize",
+      "type": "long"
+     },
+     {
+      "params": [
+       {
+        "name": "size",
+        "type": "long"
+       }
+      ],
+      "name": "setSize",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "isExtended",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "getRealSize",
+      "type": "long"
+     },
+     {
+      "params": [],
+      "name": "isGNUSparse",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "isGNULongNameEntry",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "isPaxHeader",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "isGlobalPaxHeader",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "isDirectory",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "isFile",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "isSymbolicLink",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "isLink",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "isCharacterDevice",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "isBlockDevice",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "isFIFO",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "getDirectoryEntries",
+      "type": "TarArchiveEntry"
+     },
+     {
+      "params": [
+       {
+        "name": "outbuf",
+        "type": "byte"
+       }
+      ],
+      "name": "writeEntryHeader",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "header",
+        "type": "byte"
+       }
+      ],
+      "name": "parseTarHeader",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "fileName",
+        "type": "String"
+       },
+       {
+        "name": "preserveLeadingSlashes",
+        "type": "boolean"
+       }
+      ],
+      "name": "normalizeFileName",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "header",
+        "type": "byte"
+       }
+      ],
+      "name": "evaluateType",
+      "type": "int"
+     }
+    ],
+    "fields": [
+     {
+      "name": "name",
+      "type": "String"
+     },
+     {
+      "name": "mode",
+      "type": "int"
+     },
+     {
+      "name": "userId",
+      "type": "int"
+     },
+     {
+      "name": "groupId",
+      "type": "int"
+     },
+     {
+      "name": "size",
+      "type": "long"
+     },
+     {
+      "name": "modTime",
+      "type": "long"
+     },
+     {
+      "name": "linkFlag",
+      "type": "byte"
+     },
+     {
+      "name": "linkName",
+      "type": "String"
+     },
+     {
+      "name": "magic",
+      "type": "String"
+     },
+     {
+      "name": "version",
+      "type": "String"
+     },
+     {
+      "name": "userName",
+      "type": "String"
+     },
+     {
+      "name": "groupName",
+      "type": "String"
+     },
+     {
+      "name": "devMajor",
+      "type": "int"
+     },
+     {
+      "name": "devMinor",
+      "type": "int"
+     },
+     {
+      "name": "isExtended",
+      "type": "boolean"
+     },
+     {
+      "name": "realSize",
+      "type": "long"
+     },
+     {
+      "name": "file",
+      "type": "File"
+     },
+     {
+      "name": "MAX_NAMELEN",
+      "type": "int"
+     },
+     {
+      "name": "DEFAULT_DIR_MODE",
+      "type": "int"
+     },
+     {
+      "name": "DEFAULT_FILE_MODE",
+      "type": "int"
+     },
+     {
+      "name": "MILLIS_PER_SECOND",
+      "type": "int"
+     }
+    ],
+    "name": "TarArchiveEntry"
+   }
+  ]
+ },
+ {
+  "filename": "TarConstants.java",
+  "package_name": "org.apache.commons.compress.archivers.tar",
+  "classes": [
+   {
+    "methods": [],
+    "fields": [
+     {
+      "name": "FORMAT_OLDGNU",
+      "type": "int"
+     },
+     {
+      "name": "FORMAT_POSIX",
+      "type": "int"
+     },
+     {
+      "name": "NAMELEN",
+      "type": "int"
+     },
+     {
+      "name": "MODELEN",
+      "type": "int"
+     },
+     {
+      "name": "UIDLEN",
+      "type": "int"
+     },
+     {
+      "name": "GIDLEN",
+      "type": "int"
+     },
+     {
+      "name": "CHKSUMLEN",
+      "type": "int"
+     },
+     {
+      "name": "SIZELEN",
+      "type": "int"
+     },
+     {
+      "name": "MAXSIZE",
+      "type": "long"
+     },
+     {
+      "name": "MAGIC_OFFSET",
+      "type": "int"
+     },
+     {
+      "name": "MAGICLEN",
+      "type": "int"
+     },
+     {
+      "name": "VERSION_OFFSET",
+      "type": "int"
+     },
+     {
+      "name": "VERSIONLEN",
+      "type": "int"
+     },
+     {
+      "name": "MODTIMELEN",
+      "type": "int"
+     },
+     {
+      "name": "UNAMELEN",
+      "type": "int"
+     },
+     {
+      "name": "GNAMELEN",
+      "type": "int"
+     },
+     {
+      "name": "DEVLEN",
+      "type": "int"
+     },
+     {
+      "name": "PREFIXLEN",
+      "type": "int"
+     },
+     {
+      "name": "ATIMELEN_GNU",
+      "type": "int"
+     },
+     {
+      "name": "CTIMELEN_GNU",
+      "type": "int"
+     },
+     {
+      "name": "OFFSETLEN_GNU",
+      "type": "int"
+     },
+     {
+      "name": "LONGNAMESLEN_GNU",
+      "type": "int"
+     },
+     {
+      "name": "PAD2LEN_GNU",
+      "type": "int"
+     },
+     {
+      "name": "SPARSELEN_GNU",
+      "type": "int"
+     },
+     {
+      "name": "ISEXTENDEDLEN_GNU",
+      "type": "int"
+     },
+     {
+      "name": "REALSIZELEN_GNU",
+      "type": "int"
+     },
+     {
+      "name": "SPARSELEN_GNU_SPARSE",
+      "type": "int"
+     },
+     {
+      "name": "ISEXTENDEDLEN_GNU_SPARSE",
+      "type": "int"
+     },
+     {
+      "name": "LF_OLDNORM",
+      "type": "byte"
+     },
+     {
+      "name": "LF_NORMAL",
+      "type": "byte"
+     },
+     {
+      "name": "LF_LINK",
+      "type": "byte"
+     },
+     {
+      "name": "LF_SYMLINK",
+      "type": "byte"
+     },
+     {
+      "name": "LF_CHR",
+      "type": "byte"
+     },
+     {
+      "name": "LF_BLK",
+      "type": "byte"
+     },
+     {
+      "name": "LF_DIR",
+      "type": "byte"
+     },
+     {
+      "name": "LF_FIFO",
+      "type": "byte"
+     },
+     {
+      "name": "LF_CONTIG",
+      "type": "byte"
+     },
+     {
+      "name": "LF_GNUTYPE_LONGNAME",
+      "type": "byte"
+     },
+     {
+      "name": "LF_GNUTYPE_SPARSE",
+      "type": "byte"
+     },
+     {
+      "name": "LF_PAX_EXTENDED_HEADER_LC",
+      "type": "byte"
+     },
+     {
+      "name": "LF_PAX_EXTENDED_HEADER_UC",
+      "type": "byte"
+     },
+     {
+      "name": "LF_PAX_GLOBAL_EXTENDED_HEADER",
+      "type": "byte"
+     },
+     {
+      "name": "MAGIC_POSIX",
+      "type": "String"
+     },
+     {
+      "name": "VERSION_POSIX",
+      "type": "String"
+     },
+     {
+      "name": "MAGIC_GNU",
+      "type": "String"
+     },
+     {
+      "name": "VERSION_GNU_SPACE",
+      "type": "String"
+     },
+     {
+      "name": "VERSION_GNU_ZERO",
+      "type": "String"
+     },
+     {
+      "name": "MAGIC_ANT",
+      "type": "String"
+     },
+     {
+      "name": "VERSION_ANT",
+      "type": "String"
+     },
+     {
+      "name": "GNU_LONGLINK",
+      "type": "String"
+     }
+    ],
+    "name": "TarConstants"
+   }
+  ]
+ },
+ {
+  "filename": "ArArchiveInputStream.java",
+  "package_name": "org.apache.commons.compress.archivers.ar",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getNextArEntry",
+      "type": "ArArchiveEntry"
+     },
+     {
+      "params": [
+       {
+        "name": "offset",
+        "type": "int"
+       }
+      ],
+      "name": "getExtendedName",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "input",
+        "type": "byte"
+       }
+      ],
+      "name": "asLong",
+      "type": "long"
+     },
+     {
+      "params": [
+       {
+        "name": "input",
+        "type": "byte"
+       }
+      ],
+      "name": "asInt",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "input",
+        "type": "byte"
+       },
+       {
+        "name": "treatBlankAsZero",
+        "type": "boolean"
+       }
+      ],
+      "name": "asInt",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "input",
+        "type": "byte"
+       },
+       {
+        "name": "base",
+        "type": "int"
+       }
+      ],
+      "name": "asInt",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "input",
+        "type": "byte"
+       },
+       {
+        "name": "base",
+        "type": "int"
+       },
+       {
+        "name": "treatBlankAsZero",
+        "type": "boolean"
+       }
+      ],
+      "name": "asInt",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getNextEntry",
+      "type": "ArchiveEntry"
+     },
+     {
+      "params": [],
+      "name": "close",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "byte"
+       },
+       {
+        "name": "off",
+        "type": "int"
+       },
+       {
+        "name": "len",
+        "type": "int"
+       }
+      ],
+      "name": "read",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "signature",
+        "type": "byte"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "matches",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ],
+      "name": "isBSDLongName",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "bsdLongName",
+        "type": "String"
+       }
+      ],
+      "name": "getBSDLongName",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ],
+      "name": "isGNUStringTable",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "length",
+        "type": "byte"
+       }
+      ],
+      "name": "readGNUStringTable",
+      "type": "ArArchiveEntry"
+     },
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ],
+      "name": "isGNULongName",
+      "type": "boolean"
+     }
+    ],
+    "fields": [
+     {
+      "name": "input",
+      "type": "InputStream"
+     },
+     {
+      "name": "offset",
+      "type": "long"
+     },
+     {
+      "name": "closed",
+      "type": "boolean"
+     },
+     {
+      "name": "currentEntry",
+      "type": "ArArchiveEntry"
+     },
+     {
+      "name": "namebuffer",
+      "type": "byte"
+     },
+     {
+      "name": "entryOffset",
+      "type": "long"
+     },
+     {
+      "name": "BSD_LONGNAME_PREFIX",
+      "type": "String"
+     },
+     {
+      "name": "BSD_LONGNAME_PREFIX_LEN",
+      "type": "int"
+     },
+     {
+      "name": "BSD_LONGNAME_PATTERN",
+      "type": "String"
+     },
+     {
+      "name": "GNU_STRING_TABLE_NAME",
+      "type": "String"
+     },
+     {
+      "name": "GNU_LONGNAME_PATTERN",
+      "type": "String"
+     }
+    ],
+    "name": "ArArchiveInputStream"
+   }
+  ]
+ },
+ {
+  "filename": "ArArchiveEntry.java",
+  "package_name": "org.apache.commons.compress.archivers.ar",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getSize",
+      "type": "long"
+     },
+     {
+      "params": [],
+      "name": "getName",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getUserId",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getGroupId",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getMode",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getLastModified",
+      "type": "long"
+     },
+     {
+      "params": [],
+      "name": "getLastModifiedDate",
+      "type": "Date"
+     },
+     {
+      "params": [],
+      "name": "getLength",
+      "type": "long"
+     },
+     {
+      "params": [],
+      "name": "isDirectory",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "hashCode",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "obj",
+        "type": "Object"
+       }
+      ],
+      "name": "equals",
+      "type": "boolean"
+     }
+    ],
+    "fields": [
+     {
+      "name": "HEADER",
+      "type": "String"
+     },
+     {
+      "name": "TRAILER",
+      "type": "String"
+     },
+     {
+      "name": "name",
+      "type": "String"
+     },
+     {
+      "name": "userId",
+      "type": "int"
+     },
+     {
+      "name": "groupId",
+      "type": "int"
+     },
+     {
+      "name": "mode",
+      "type": "int"
+     },
+     {
+      "name": "DEFAULT_MODE",
+      "type": "int"
+     },
+     {
+      "name": "lastModified",
+      "type": "long"
+     },
+     {
+      "name": "length",
+      "type": "long"
+     }
+    ],
+    "name": "ArArchiveEntry"
+   }
+  ]
+ },
+ {
+  "filename": "ArArchiveOutputStream.java",
+  "package_name": "org.apache.commons.compress.archivers.ar",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "longFileMode",
+        "type": "int"
+       }
+      ],
+      "name": "setLongFileMode",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "writeArchiveHeader",
+      "type": "long"
+     },
+     {
+      "params": [],
+      "name": "closeArchiveEntry",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "pEntry",
+        "type": "ArchiveEntry"
+       }
+      ],
+      "name": "putArchiveEntry",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "pOffset",
+        "type": "long"
+       },
+       {
+        "name": "pNewOffset",
+        "type": "long"
+       },
+       {
+        "name": "pFill",
+        "type": "char"
+       }
+      ],
+      "name": "fill",
+      "type": "long"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "String"
+       }
+      ],
+      "name": "write",
+      "type": "long"
+     },
+     {
+      "params": [
+       {
+        "name": "pEntry",
+        "type": "ArArchiveEntry"
+       }
+      ],
+      "name": "writeEntryHeader",
+      "type": "long"
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "byte"
+       },
+       {
+        "name": "off",
+        "type": "int"
+       },
+       {
+        "name": "len",
+        "type": "int"
+       }
+      ],
+      "name": "write",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "close",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "inputFile",
+        "type": "File"
+       },
+       {
+        "name": "entryName",
+        "type": "String"
+       }
+      ],
+      "name": "createArchiveEntry",
+      "type": "ArchiveEntry"
+     },
+     {
+      "params": [],
+      "name": "finish",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "LONGFILE_ERROR",
+      "type": "int"
+     },
+     {
+      "name": "LONGFILE_BSD",
+      "type": "int"
+     },
+     {
+      "name": "out",
+      "type": "OutputStream"
+     },
+     {
+      "name": "archiveOffset",
+      "type": "long"
+     },
+     {
+      "name": "entryOffset",
+      "type": "long"
+     },
+     {
+      "name": "prevEntry",
+      "type": "ArArchiveEntry"
+     },
+     {
+      "name": "haveUnclosedEntry",
+      "type": "boolean"
+     },
+     {
+      "name": "longFileMode",
+      "type": "int"
+     },
+     {
+      "name": "finished",
+      "type": "boolean"
+     }
+    ],
+    "name": "ArArchiveOutputStream"
+   }
+  ]
+ },
+ {
+  "filename": "JarArchiveEntry.java",
+  "package_name": "org.apache.commons.compress.archivers.jar",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getManifestAttributes",
+      "type": "Attributes"
+     },
+     {
+      "params": [],
+      "name": "getCertificates",
+      "type": "Certificate"
+     },
+     {
+      "params": [
+       {
+        "name": "o",
+        "type": "Object"
+       }
+      ],
+      "name": "equals",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "hashCode",
+      "type": "int"
+     }
+    ],
+    "fields": [
+     {
+      "name": "manifestAttributes",
+      "type": "Attributes"
+     },
+     {
+      "name": "certificates",
+      "type": "Certificate"
+     }
+    ],
+    "name": "JarArchiveEntry"
+   }
+  ]
+ },
+ {
+  "filename": "JarArchiveInputStream.java",
+  "package_name": "org.apache.commons.compress.archivers.jar",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getNextJarEntry",
+      "type": "JarArchiveEntry"
+     },
+     {
+      "params": [],
+      "name": "getNextEntry",
+      "type": "ArchiveEntry"
+     },
+     {
+      "params": [
+       {
+        "name": "signature",
+        "type": "byte"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "matches",
+      "type": "boolean"
+     }
+    ],
+    "fields": [],
+    "name": "JarArchiveInputStream"
+   }
+  ]
+ },
+ {
+  "filename": "JarArchiveOutputStream.java",
+  "package_name": "org.apache.commons.compress.archivers.jar",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "ze",
+        "type": "ArchiveEntry"
+       }
+      ],
+      "name": "putArchiveEntry",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "jarMarkerAdded",
+      "type": "boolean"
+     }
+    ],
+    "name": "JarArchiveOutputStream"
+   }
+  ]
+ },
+ {
+  "filename": "DumpArchiveConstants.java",
+  "package_name": "org.apache.commons.compress.archivers.dump",
+  "classes": [
+   {
+    "methods": [],
+    "fields": [
+     {
+      "name": "TP_SIZE",
+      "type": "int"
+     },
+     {
+      "name": "NTREC",
+      "type": "int"
+     },
+     {
+      "name": "HIGH_DENSITY_NTREC",
+      "type": "int"
+     },
+     {
+      "name": "OFS_MAGIC",
+      "type": "int"
+     },
+     {
+      "name": "NFS_MAGIC",
+      "type": "int"
+     },
+     {
+      "name": "FS_UFS2_MAGIC",
+      "type": "int"
+     },
+     {
+      "name": "CHECKSUM",
+      "type": "int"
+     },
+     {
+      "name": "LBLSIZE",
+      "type": "int"
+     },
+     {
+      "name": "NAMELEN",
+      "type": "int"
+     }
+    ],
+    "name": "DumpArchiveConstants"
+   }
+  ]
+ },
+ {
+  "filename": "UnrecognizedFormatException.java",
+  "package_name": "org.apache.commons.compress.archivers.dump",
+  "classes": [
+   {
+    "methods": [],
+    "fields": [
+     {
+      "name": "serialVersionUID",
+      "type": "long"
+     }
+    ],
+    "name": "UnrecognizedFormatException"
+   }
+  ]
+ },
+ {
+  "filename": "Dirent.java",
+  "package_name": "org.apache.commons.compress.archivers.dump",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getIno",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getParentIno",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getType",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getName",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "toString",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "ino",
+      "type": "int"
+     },
+     {
+      "name": "parentIno",
+      "type": "int"
+     },
+     {
+      "name": "type",
+      "type": "int"
+     },
+     {
+      "name": "name",
+      "type": "String"
+     }
+    ],
+    "name": "Dirent"
+   }
+  ]
+ },
+ {
+  "filename": "TapeInputStream.java",
+  "package_name": "org.apache.commons.compress.archivers.dump",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "recsPerBlock",
+        "type": "int"
+       },
+       {
+        "name": "isCompressed",
+        "type": "boolean"
+       }
+      ],
+      "name": "resetBlockSize",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "available",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "read",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "byte"
+       },
+       {
+        "name": "off",
+        "type": "int"
+       },
+       {
+        "name": "len",
+        "type": "int"
+       }
+      ],
+      "name": "read",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "len",
+        "type": "long"
+       }
+      ],
+      "name": "skip",
+      "type": "long"
+     },
+     {
+      "params": [],
+      "name": "close",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "peek",
+      "type": "byte"
+     },
+     {
+      "params": [],
+      "name": "readRecord",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "decompress",
+        "type": "boolean"
+       }
+      ],
+      "name": "readBlock",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "byte"
+       },
+       {
+        "name": "off",
+        "type": "int"
+       },
+       {
+        "name": "len",
+        "type": "int"
+       }
+      ],
+      "name": "readFully",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "getBytesRead",
+      "type": "long"
+     }
+    ],
+    "fields": [
+     {
+      "name": "blockBuffer",
+      "type": "byte"
+     },
+     {
+      "name": "currBlkIdx",
+      "type": "int"
+     },
+     {
+      "name": "blockSize",
+      "type": "int"
+     },
+     {
+      "name": "recordSize",
+      "type": "int"
+     },
+     {
+      "name": "readOffset",
+      "type": "int"
+     },
+     {
+      "name": "isCompressed",
+      "type": "boolean"
+     },
+     {
+      "name": "bytesRead",
+      "type": "long"
+     }
+    ],
+    "name": "TapeInputStream"
+   }
+  ]
+ },
+ {
+  "filename": "UnsupportedCompressionAlgorithmException.java",
+  "package_name": "org.apache.commons.compress.archivers.dump",
+  "classes": [
+   {
+    "methods": [],
+    "fields": [
+     {
+      "name": "serialVersionUID",
+      "type": "long"
+     }
+    ],
+    "name": "UnsupportedCompressionAlgorithmException"
+   }
+  ]
+ },
+ {
+  "filename": "InvalidFormatException.java",
+  "package_name": "org.apache.commons.compress.archivers.dump",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getOffset",
+      "type": "long"
+     }
+    ],
+    "fields": [
+     {
+      "name": "serialVersionUID",
+      "type": "long"
+     },
+     {
+      "name": "offset",
+      "type": "long"
+     }
+    ],
+    "name": "InvalidFormatException"
+   }
+  ]
+ },
+ {
+  "filename": "DumpArchiveEntry.java",
+  "package_name": "org.apache.commons.compress.archivers.dump",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getSimpleName",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "simpleName",
+        "type": "String"
+       }
+      ],
+      "name": "setSimpleName",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getIno",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getNlink",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "nlink",
+        "type": "int"
+       }
+      ],
+      "name": "setNlink",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getCreationTime",
+      "type": "Date"
+     },
+     {
+      "params": [
+       {
+        "name": "ctime",
+        "type": "Date"
+       }
+      ],
+      "name": "setCreationTime",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getGeneration",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "generation",
+        "type": "int"
+       }
+      ],
+      "name": "setGeneration",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "isDeleted",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "isDeleted",
+        "type": "boolean"
+       }
+      ],
+      "name": "setDeleted",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getOffset",
+      "type": "long"
+     },
+     {
+      "params": [
+       {
+        "name": "offset",
+        "type": "long"
+       }
+      ],
+      "name": "setOffset",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getVolume",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "volume",
+        "type": "int"
+       }
+      ],
+      "name": "setVolume",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getHeaderType",
+      "type": "DumpArchiveConstants"
+     },
+     {
+      "params": [],
+      "name": "getHeaderCount",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getHeaderHoles",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "idx",
+        "type": "int"
+       }
+      ],
+      "name": "isSparseRecord",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "hashCode",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "o",
+        "type": "Object"
+       }
+      ],
+      "name": "equals",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "toString",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "byte"
+       }
+      ],
+      "name": "parse",
+      "type": "DumpArchiveEntry"
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "byte"
+       }
+      ],
+      "name": "update",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getName",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getOriginalName",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ],
+      "name": "setName",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getLastModifiedDate",
+      "type": "Date"
+     },
+     {
+      "params": [],
+      "name": "isDirectory",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "isFile",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "isSocket",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "isChrDev",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "isBlkDev",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "isFifo",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "getType",
+      "type": "TYPE"
+     },
+     {
+      "params": [
+       {
+        "name": "type",
+        "type": "TYPE"
+       }
+      ],
+      "name": "setType",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getMode",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "mode",
+        "type": "int"
+       }
+      ],
+      "name": "setMode",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getPermissions",
+      "type": "Set"
+     },
+     {
+      "params": [],
+      "name": "getSize",
+      "type": "long"
+     },
+     {
+      "params": [],
+      "name": "getEntrySize",
+      "type": "long"
+     },
+     {
+      "params": [
+       {
+        "name": "size",
+        "type": "long"
+       }
+      ],
+      "name": "setSize",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "mtime",
+        "type": "Date"
+       }
+      ],
+      "name": "setLastModifiedDate",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getAccessTime",
+      "type": "Date"
+     },
+     {
+      "params": [
+       {
+        "name": "atime",
+        "type": "Date"
+       }
+      ],
+      "name": "setAccessTime",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getUserId",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "uid",
+        "type": "int"
+       }
+      ],
+      "name": "setUserId",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getGroupId",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "gid",
+        "type": "int"
+       }
+      ],
+      "name": "setGroupId",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "name",
+      "type": "String"
+     },
+     {
+      "name": "type",
+      "type": "TYPE"
+     },
+     {
+      "name": "mode",
+      "type": "int"
+     },
+     {
+      "name": "permissions",
+      "type": "Set"
+     },
+     {
+      "name": "size",
+      "type": "long"
+     },
+     {
+      "name": "atime",
+      "type": "long"
+     },
+     {
+      "name": "mtime",
+      "type": "long"
+     },
+     {
+      "name": "uid",
+      "type": "int"
+     },
+     {
+      "name": "gid",
+      "type": "int"
+     },
+     {
+      "name": "summary",
+      "type": "DumpArchiveSummary"
+     },
+     {
+      "name": "header",
+      "type": "TapeSegmentHeader"
+     },
+     {
+      "name": "simpleName",
+      "type": "String"
+     },
+     {
+      "name": "originalName",
+      "type": "String"
+     },
+     {
+      "name": "volume",
+      "type": "int"
+     },
+     {
+      "name": "offset",
+      "type": "long"
+     },
+     {
+      "name": "ino",
+      "type": "int"
+     },
+     {
+      "name": "nlink",
+      "type": "int"
+     },
+     {
+      "name": "ctime",
+      "type": "long"
+     },
+     {
+      "name": "generation",
+      "type": "int"
+     },
+     {
+      "name": "isDeleted",
+      "type": "boolean"
+     }
+    ],
+    "name": "DumpArchiveEntry"
+   }
+  ]
+ },
+ {
+  "filename": "DumpArchiveUtil.java",
+  "package_name": "org.apache.commons.compress.archivers.dump",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "byte"
+       }
+      ],
+      "name": "calculateChecksum",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "byte"
+       }
+      ],
+      "name": "verify",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "byte"
+       }
+      ],
+      "name": "getIno",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       }
+      ],
+      "name": "convert64",
+      "type": "long"
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       }
+      ],
+      "name": "convert32",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       }
+      ],
+      "name": "convert16",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "byte"
+       }
+      ],
+      "name": "dumpBlock",
+      "type": null
+     }
+    ],
+    "fields": [],
+    "name": "DumpArchiveUtil"
+   }
+  ]
+ },
+ {
+  "filename": "DumpArchiveException.java",
+  "package_name": "org.apache.commons.compress.archivers.dump",
+  "classes": [
+   {
+    "methods": [],
+    "fields": [
+     {
+      "name": "serialVersionUID",
+      "type": "long"
+     }
+    ],
+    "name": "DumpArchiveException"
+   }
+  ]
+ },
+ {
+  "filename": "DumpArchiveSummary.java",
+  "package_name": "org.apache.commons.compress.archivers.dump",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getDumpDate",
+      "type": "Date"
+     },
+     {
+      "params": [
+       {
+        "name": "dumpDate",
+        "type": "Date"
+       }
+      ],
+      "name": "setDumpDate",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getPreviousDumpDate",
+      "type": "Date"
+     },
+     {
+      "params": [
+       {
+        "name": "previousDumpDate",
+        "type": "Date"
+       }
+      ],
+      "name": "setPreviousDumpDate",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getVolume",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "volume",
+        "type": "int"
+       }
+      ],
+      "name": "setVolume",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getLevel",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "level",
+        "type": "int"
+       }
+      ],
+      "name": "setLevel",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getLabel",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "label",
+        "type": "String"
+       }
+      ],
+      "name": "setLabel",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getFilesystem",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "filesystem",
+        "type": "String"
+       }
+      ],
+      "name": "setFilesystem",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getDevname",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "devname",
+        "type": "String"
+       }
+      ],
+      "name": "setDevname",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getHostname",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "hostname",
+        "type": "String"
+       }
+      ],
+      "name": "setHostname",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getFlags",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "flags",
+        "type": "int"
+       }
+      ],
+      "name": "setFlags",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getFirstRecord",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "firstrec",
+        "type": "int"
+       }
+      ],
+      "name": "setFirstRecord",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getNTRec",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "ntrec",
+        "type": "int"
+       }
+      ],
+      "name": "setNTRec",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "isNewHeader",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "isNewInode",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "isCompressed",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "isMetaDataOnly",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "isExtendedAttributes",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "hashCode",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "o",
+        "type": "Object"
+       }
+      ],
+      "name": "equals",
+      "type": "boolean"
+     }
+    ],
+    "fields": [
+     {
+      "name": "dumpDate",
+      "type": "long"
+     },
+     {
+      "name": "previousDumpDate",
+      "type": "long"
+     },
+     {
+      "name": "volume",
+      "type": "int"
+     },
+     {
+      "name": "label",
+      "type": "String"
+     },
+     {
+      "name": "level",
+      "type": "int"
+     },
+     {
+      "name": "filesys",
+      "type": "String"
+     },
+     {
+      "name": "devname",
+      "type": "String"
+     },
+     {
+      "name": "hostname",
+      "type": "String"
+     },
+     {
+      "name": "flags",
+      "type": "int"
+     },
+     {
+      "name": "firstrec",
+      "type": "int"
+     },
+     {
+      "name": "ntrec",
+      "type": "int"
+     }
+    ],
+    "name": "DumpArchiveSummary"
+   }
+  ]
+ },
+ {
+  "filename": "ShortFileException.java",
+  "package_name": "org.apache.commons.compress.archivers.dump",
+  "classes": [
+   {
+    "methods": [],
+    "fields": [
+     {
+      "name": "serialVersionUID",
+      "type": "long"
+     }
+    ],
+    "name": "ShortFileException"
+   }
+  ]
+ },
+ {
+  "filename": "DumpArchiveInputStream.java",
+  "package_name": "org.apache.commons.compress.archivers.dump",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getCount",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getBytesRead",
+      "type": "long"
+     },
+     {
+      "params": [],
+      "name": "getSummary",
+      "type": "DumpArchiveSummary"
+     },
+     {
+      "params": [],
+      "name": "readCLRI",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "readBITS",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getNextDumpEntry",
+      "type": "DumpArchiveEntry"
+     },
+     {
+      "params": [],
+      "name": "getNextEntry",
+      "type": "DumpArchiveEntry"
+     },
+     {
+      "params": [
+       {
+        "name": "entry",
+        "type": "DumpArchiveEntry"
+       }
+      ],
+      "name": "readDirectoryEntry",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "entry",
+        "type": "DumpArchiveEntry"
+       }
+      ],
+      "name": "getPath",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "buf",
+        "type": "byte"
+       },
+       {
+        "name": "off",
+        "type": "int"
+       },
+       {
+        "name": "len",
+        "type": "int"
+       }
+      ],
+      "name": "read",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "close",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "byte"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "matches",
+      "type": "boolean"
+     }
+    ],
+    "fields": [
+     {
+      "name": "summary",
+      "type": "DumpArchiveSummary"
+     },
+     {
+      "name": "active",
+      "type": "DumpArchiveEntry"
+     },
+     {
+      "name": "isClosed",
+      "type": "boolean"
+     },
+     {
+      "name": "hasHitEOF",
+      "type": "boolean"
+     },
+     {
+      "name": "entrySize",
+      "type": "long"
+     },
+     {
+      "name": "entryOffset",
+      "type": "long"
+     },
+     {
+      "name": "readIdx",
+      "type": "int"
+     },
+     {
+      "name": "readBuf",
+      "type": "byte"
+     },
+     {
+      "name": "blockBuffer",
+      "type": "byte"
+     },
+     {
+      "name": "recordOffset",
+      "type": "int"
+     },
+     {
+      "name": "filepos",
+      "type": "long"
+     },
+     {
+      "name": "raw",
+      "type": "TapeInputStream"
+     },
+     {
+      "name": "names",
+      "type": "Map"
+     },
+     {
+      "name": "pending",
+      "type": "Map"
+     },
+     {
+      "name": "queue",
+      "type": "Queue"
+     }
+    ],
+    "name": "DumpArchiveInputStream"
+   }
+  ]
+ },
+ {
+  "filename": "Change.java",
+  "package_name": "org.apache.commons.compress.changes",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getEntry",
+      "type": "ArchiveEntry"
+     },
+     {
+      "params": [],
+      "name": "getInput",
+      "type": "InputStream"
+     },
+     {
+      "params": [],
+      "name": "targetFile",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "type",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "isReplaceMode",
+      "type": "boolean"
+     }
+    ],
+    "fields": [
+     {
+      "name": "targetFile",
+      "type": "String"
+     },
+     {
+      "name": "entry",
+      "type": "ArchiveEntry"
+     },
+     {
+      "name": "input",
+      "type": "InputStream"
+     },
+     {
+      "name": "replaceMode",
+      "type": "boolean"
+     },
+     {
+      "name": "type",
+      "type": "int"
+     },
+     {
+      "name": "TYPE_DELETE",
+      "type": "int"
+     },
+     {
+      "name": "TYPE_ADD",
+      "type": "int"
+     },
+     {
+      "name": "TYPE_MOVE",
+      "type": "int"
+     },
+     {
+      "name": "TYPE_DELETE_DIR",
+      "type": "int"
+     }
+    ],
+    "name": "Change"
+   }
+  ]
+ },
+ {
+  "filename": "ChangeSetResults.java",
+  "package_name": "org.apache.commons.compress.changes",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "fileName",
+        "type": "String"
+       }
+      ],
+      "name": "deleted",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "fileName",
+        "type": "String"
+       }
+      ],
+      "name": "addedFromStream",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "fileName",
+        "type": "String"
+       }
+      ],
+      "name": "addedFromChangeSet",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getAddedFromChangeSet",
+      "type": "List"
+     },
+     {
+      "params": [],
+      "name": "getAddedFromStream",
+      "type": "List"
+     },
+     {
+      "params": [],
+      "name": "getDeleted",
+      "type": "List"
+     },
+     {
+      "params": [
+       {
+        "name": "filename",
+        "type": "String"
+       }
+      ],
+      "name": "hasBeenAdded",
+      "type": "boolean"
+     }
+    ],
+    "fields": [
+     {
+      "name": "addedFromChangeSet",
+      "type": "List"
+     },
+     {
+      "name": "addedFromStream",
+      "type": "List"
+     },
+     {
+      "name": "deleted",
+      "type": "List"
+     }
+    ],
+    "name": "ChangeSetResults"
+   }
+  ]
+ },
+ {
+  "filename": "ChangeSet.java",
+  "package_name": "org.apache.commons.compress.changes",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "filename",
+        "type": "String"
+       }
+      ],
+      "name": "delete",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "dirName",
+        "type": "String"
+       }
+      ],
+      "name": "deleteDir",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "pEntry",
+        "type": "ArchiveEntry"
+       },
+       {
+        "name": "pInput",
+        "type": "InputStream"
+       }
+      ],
+      "name": "add",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "pEntry",
+        "type": "ArchiveEntry"
+       },
+       {
+        "name": "pInput",
+        "type": "InputStream"
+       },
+       {
+        "name": "replace",
+        "type": "boolean"
+       }
+      ],
+      "name": "add",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "pChange",
+        "type": "Change"
+       }
+      ],
+      "name": "addAddition",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "pChange",
+        "type": "Change"
+       }
+      ],
+      "name": "addDeletion",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getChanges",
+      "type": "Set"
+     }
+    ],
+    "fields": [
+     {
+      "name": "changes",
+      "type": "Set"
+     }
+    ],
+    "name": "ChangeSet"
+   }
+  ]
+ },
+ {
+  "filename": "ChangeSetPerformer.java",
+  "package_name": "org.apache.commons.compress.changes",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "in",
+        "type": "ArchiveInputStream"
+       },
+       {
+        "name": "out",
+        "type": "ArchiveOutputStream"
+       }
+      ],
+      "name": "perform",
+      "type": "ChangeSetResults"
+     },
+     {
+      "params": [
+       {
+        "name": "workingSet",
+        "type": "Set"
+       },
+       {
+        "name": "entry",
+        "type": "ArchiveEntry"
+       }
+      ],
+      "name": "isDeletedLater",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "in",
+        "type": "InputStream"
+       },
+       {
+        "name": "out",
+        "type": "ArchiveOutputStream"
+       },
+       {
+        "name": "entry",
+        "type": "ArchiveEntry"
+       }
+      ],
+      "name": "copyStream",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "changes",
+      "type": "Set"
+     }
+    ],
+    "name": "ChangeSetPerformer"
+   }
+  ]
+ },
+ {
+  "filename": "CompressorInputStream.java",
+  "package_name": "org.apache.commons.compress.compressors",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "read",
+        "type": "int"
+       }
+      ],
+      "name": "count",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "read",
+        "type": "long"
+       }
+      ],
+      "name": "count",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getCount",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getBytesRead",
+      "type": "long"
+     }
+    ],
+    "fields": [
+     {
+      "name": "bytesRead",
+      "type": "long"
+     }
+    ],
+    "name": "CompressorInputStream"
+   }
+  ]
+ },
+ {
+  "filename": "CompressorOutputStream.java",
+  "package_name": "org.apache.commons.compress.compressors",
+  "classes": [
+   {
+    "methods": [],
+    "fields": [],
+    "name": "CompressorOutputStream"
+   }
+  ]
+ },
+ {
+  "filename": "CompressorException.java",
+  "package_name": "org.apache.commons.compress.compressors",
+  "classes": [
+   {
+    "methods": [],
+    "fields": [
+     {
+      "name": "serialVersionUID",
+      "type": "long"
+     }
+    ],
+    "name": "CompressorException"
+   }
+  ]
+ },
+ {
+  "filename": "CompressorStreamFactory.java",
+  "package_name": "org.apache.commons.compress.compressors",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "in",
+        "type": "InputStream"
+       }
+      ],
+      "name": "createCompressorInputStream",
+      "type": "CompressorInputStream"
+     },
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       },
+       {
+        "name": "in",
+        "type": "InputStream"
+       }
+      ],
+      "name": "createCompressorInputStream",
+      "type": "CompressorInputStream"
+     },
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       },
+       {
+        "name": "out",
+        "type": "OutputStream"
+       }
+      ],
+      "name": "createCompressorOutputStream",
+      "type": "CompressorOutputStream"
+     }
+    ],
+    "fields": [
+     {
+      "name": "BZIP2",
+      "type": "String"
+     },
+     {
+      "name": "GZIP",
+      "type": "String"
+     },
+     {
+      "name": "PACK200",
+      "type": "String"
+     }
+    ],
+    "name": "CompressorStreamFactory"
+   }
+  ]
+ },
+ {
+  "filename": "BZip2CompressorOutputStream.java",
+  "package_name": "org.apache.commons.compress.compressors.bzip2",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "len",
+        "type": "byte"
+       },
+       {
+        "name": "freq",
+        "type": "int"
+       },
+       {
+        "name": "dat",
+        "type": "Data"
+       },
+       {
+        "name": "alphaSize",
+        "type": "int"
+       },
+       {
+        "name": "maxLen",
+        "type": "int"
+       }
+      ],
+      "name": "hbMakeCodeLengths",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "inputLength",
+        "type": "long"
+       }
+      ],
+      "name": "chooseBlockSize",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "int"
+       }
+      ],
+      "name": "write",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "writeRun",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "finalize",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "finish",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "close",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "flush",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "init",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "initBlock",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "endBlock",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "endCompression",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getBlockSize",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "buf",
+        "type": "byte"
+       },
+       {
+        "name": "offs",
+        "type": "int"
+       },
+       {
+        "name": "len",
+        "type": "int"
+       }
+      ],
+      "name": "write",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "int"
+       }
+      ],
+      "name": "write0",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "code",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "byte"
+       },
+       {
+        "name": "minLen",
+        "type": "int"
+       },
+       {
+        "name": "maxLen",
+        "type": "int"
+       },
+       {
+        "name": "alphaSize",
+        "type": "int"
+       }
+      ],
+      "name": "hbAssignCodes",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "bsFinishedWithStream",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "n",
+        "type": "int"
+       },
+       {
+        "name": "v",
+        "type": "int"
+       }
+      ],
+      "name": "bsW",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "c",
+        "type": "int"
+       }
+      ],
+      "name": "bsPutUByte",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "u",
+        "type": "int"
+       }
+      ],
+      "name": "bsPutInt",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "sendMTFValues",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "nGroups",
+        "type": "int"
+       },
+       {
+        "name": "alphaSize",
+        "type": "int"
+       }
+      ],
+      "name": "sendMTFValues0",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "nGroups",
+        "type": "int"
+       },
+       {
+        "name": "alphaSize",
+        "type": "int"
+       }
+      ],
+      "name": "sendMTFValues1",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "nGroups",
+        "type": "int"
+       },
+       {
+        "name": "nSelectors",
+        "type": "int"
+       }
+      ],
+      "name": "sendMTFValues2",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "nGroups",
+        "type": "int"
+       },
+       {
+        "name": "alphaSize",
+        "type": "int"
+       }
+      ],
+      "name": "sendMTFValues3",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "sendMTFValues4",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "nGroups",
+        "type": "int"
+       },
+       {
+        "name": "nSelectors",
+        "type": "int"
+       }
+      ],
+      "name": "sendMTFValues5",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "nGroups",
+        "type": "int"
+       },
+       {
+        "name": "alphaSize",
+        "type": "int"
+       }
+      ],
+      "name": "sendMTFValues6",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "sendMTFValues7",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "moveToFrontCodeAndSend",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "dataShadow",
+        "type": "Data"
+       },
+       {
+        "name": "lo",
+        "type": "int"
+       },
+       {
+        "name": "hi",
+        "type": "int"
+       },
+       {
+        "name": "d",
+        "type": "int"
+       }
+      ],
+      "name": "mainSimpleSort",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "fmap",
+        "type": "int"
+       },
+       {
+        "name": "p1",
+        "type": "int"
+       },
+       {
+        "name": "p2",
+        "type": "int"
+       },
+       {
+        "name": "n",
+        "type": "int"
+       }
+      ],
+      "name": "vswap",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "a",
+        "type": "byte"
+       },
+       {
+        "name": "b",
+        "type": "byte"
+       },
+       {
+        "name": "c",
+        "type": "byte"
+       }
+      ],
+      "name": "med3",
+      "type": "byte"
+     },
+     {
+      "params": [],
+      "name": "blockSort",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "dataShadow",
+        "type": "Data"
+       },
+       {
+        "name": "loSt",
+        "type": "int"
+       },
+       {
+        "name": "hiSt",
+        "type": "int"
+       },
+       {
+        "name": "dSt",
+        "type": "int"
+       }
+      ],
+      "name": "mainQSort3",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "mainSort",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "randomiseBlock",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "generateMTFValues",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "MIN_BLOCKSIZE",
+      "type": "int"
+     },
+     {
+      "name": "MAX_BLOCKSIZE",
+      "type": "int"
+     },
+     {
+      "name": "SETMASK",
+      "type": "int"
+     },
+     {
+      "name": "CLEARMASK",
+      "type": "int"
+     },
+     {
+      "name": "GREATER_ICOST",
+      "type": "int"
+     },
+     {
+      "name": "LESSER_ICOST",
+      "type": "int"
+     },
+     {
+      "name": "SMALL_THRESH",
+      "type": "int"
+     },
+     {
+      "name": "DEPTH_THRESH",
+      "type": "int"
+     },
+     {
+      "name": "WORK_FACTOR",
+      "type": "int"
+     },
+     {
+      "name": "QSORT_STACK_SIZE",
+      "type": "int"
+     },
+     {
+      "name": "INCS",
+      "type": "int"
+     },
+     {
+      "name": "last",
+      "type": "int"
+     },
+     {
+      "name": "origPtr",
+      "type": "int"
+     },
+     {
+      "name": "blockSize100k",
+      "type": "int"
+     },
+     {
+      "name": "blockRandomised",
+      "type": "boolean"
+     },
+     {
+      "name": "bsBuff",
+      "type": "int"
+     },
+     {
+      "name": "bsLive",
+      "type": "int"
+     },
+     {
+      "name": "crc",
+      "type": "CRC"
+     },
+     {
+      "name": "nInUse",
+      "type": "int"
+     },
+     {
+      "name": "nMTF",
+      "type": "int"
+     },
+     {
+      "name": "workDone",
+      "type": "int"
+     },
+     {
+      "name": "workLimit",
+      "type": "int"
+     },
+     {
+      "name": "firstAttempt",
+      "type": "boolean"
+     },
+     {
+      "name": "currentChar",
+      "type": "int"
+     },
+     {
+      "name": "runLength",
+      "type": "int"
+     },
+     {
+      "name": "blockCRC",
+      "type": "int"
+     },
+     {
+      "name": "combinedCRC",
+      "type": "int"
+     },
+     {
+      "name": "allowableBlockSize",
+      "type": "int"
+     },
+     {
+      "name": "data",
+      "type": "Data"
+     },
+     {
+      "name": "out",
+      "type": "OutputStream"
+     }
+    ],
+    "name": "BZip2CompressorOutputStream"
+   }
+  ]
+ },
+ {
+  "filename": "BZip2Utils.java",
+  "package_name": "org.apache.commons.compress.compressors.bzip2",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "filename",
+        "type": "String"
+       }
+      ],
+      "name": "isCompressedFilename",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "filename",
+        "type": "String"
+       }
+      ],
+      "name": "getUncompressedFilename",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "filename",
+        "type": "String"
+       }
+      ],
+      "name": "getCompressedFilename",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "uncompressSuffix",
+      "type": "Map"
+     }
+    ],
+    "name": "BZip2Utils"
+   }
+  ]
+ },
+ {
+  "filename": "CRC.java",
+  "package_name": "org.apache.commons.compress.compressors.bzip2",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "initialiseCRC",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getFinalCRC",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getGlobalCRC",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "newCrc",
+        "type": "int"
+       }
+      ],
+      "name": "setGlobalCRC",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "inCh",
+        "type": "int"
+       }
+      ],
+      "name": "updateCRC",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "inCh",
+        "type": "int"
+       },
+       {
+        "name": "repeat",
+        "type": "int"
+       }
+      ],
+      "name": "updateCRC",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "crc32Table",
+      "type": "int"
+     },
+     {
+      "name": "globalCrc",
+      "type": "int"
+     }
+    ],
+    "name": "CRC"
+   }
+  ]
+ },
+ {
+  "filename": "BZip2CompressorInputStream.java",
+  "package_name": "org.apache.commons.compress.compressors.bzip2",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "read",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "dest",
+        "type": "byte"
+       },
+       {
+        "name": "offs",
+        "type": "int"
+       },
+       {
+        "name": "len",
+        "type": "int"
+       }
+      ],
+      "name": "read",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "makeMaps",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "read0",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "init",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "expected",
+        "type": "char"
+       },
+       {
+        "name": "position",
+        "type": "String"
+       }
+      ],
+      "name": "checkMagicChar",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "initBlock",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "endBlock",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "complete",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "close",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "n",
+        "type": "int"
+       }
+      ],
+      "name": "bsR",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "bsGetBit",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "bsGetUByte",
+      "type": "char"
+     },
+     {
+      "params": [],
+      "name": "bsGetInt",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "limit",
+        "type": "int"
+       },
+       {
+        "name": "base",
+        "type": "int"
+       },
+       {
+        "name": "perm",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "char"
+       },
+       {
+        "name": "minLen",
+        "type": "int"
+       },
+       {
+        "name": "maxLen",
+        "type": "int"
+       },
+       {
+        "name": "alphaSize",
+        "type": "int"
+       }
+      ],
+      "name": "hbCreateDecodeTables",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "recvDecodingTables",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "alphaSize",
+        "type": "int"
+       },
+       {
+        "name": "nGroups",
+        "type": "int"
+       }
+      ],
+      "name": "createHuffmanDecodingTables",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getAndMoveToFrontDecode",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "groupNo",
+        "type": "int"
+       }
+      ],
+      "name": "getAndMoveToFrontDecode0",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "setupBlock",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "setupRandPartA",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "setupNoRandPartA",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "setupRandPartB",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "setupRandPartC",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "setupNoRandPartB",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "setupNoRandPartC",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "signature",
+        "type": "byte"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "matches",
+      "type": "boolean"
+     }
+    ],
+    "fields": [
+     {
+      "name": "last",
+      "type": "int"
+     },
+     {
+      "name": "origPtr",
+      "type": "int"
+     },
+     {
+      "name": "blockSize100k",
+      "type": "int"
+     },
+     {
+      "name": "blockRandomised",
+      "type": "boolean"
+     },
+     {
+      "name": "bsBuff",
+      "type": "int"
+     },
+     {
+      "name": "bsLive",
+      "type": "int"
+     },
+     {
+      "name": "crc",
+      "type": "CRC"
+     },
+     {
+      "name": "nInUse",
+      "type": "int"
+     },
+     {
+      "name": "in",
+      "type": "InputStream"
+     },
+     {
+      "name": "currentChar",
+      "type": "int"
+     },
+     {
+      "name": "EOF",
+      "type": "int"
+     },
+     {
+      "name": "START_BLOCK_STATE",
+      "type": "int"
+     },
+     {
+      "name": "RAND_PART_A_STATE",
+      "type": "int"
+     },
+     {
+      "name": "RAND_PART_B_STATE",
+      "type": "int"
+     },
+     {
+      "name": "RAND_PART_C_STATE",
+      "type": "int"
+     },
+     {
+      "name": "NO_RAND_PART_A_STATE",
+      "type": "int"
+     },
+     {
+      "name": "NO_RAND_PART_B_STATE",
+      "type": "int"
+     },
+     {
+      "name": "NO_RAND_PART_C_STATE",
+      "type": "int"
+     },
+     {
+      "name": "currentState",
+      "type": "int"
+     },
+     {
+      "name": "storedBlockCRC",
+      "type": "int"
+     },
+     {
+      "name": "storedCombinedCRC",
+      "type": "int"
+     },
+     {
+      "name": "computedBlockCRC",
+      "type": "int"
+     },
+     {
+      "name": "computedCombinedCRC",
+      "type": "int"
+     },
+     {
+      "name": "su_count",
+      "type": "int"
+     },
+     {
+      "name": "su_ch2",
+      "type": "int"
+     },
+     {
+      "name": "su_chPrev",
+      "type": "int"
+     },
+     {
+      "name": "su_i2",
+      "type": "int"
+     },
+     {
+      "name": "su_j2",
+      "type": "int"
+     },
+     {
+      "name": "su_rNToGo",
+      "type": "int"
+     },
+     {
+      "name": "su_rTPos",
+      "type": "int"
+     },
+     {
+      "name": "su_tPos",
+      "type": "int"
+     },
+     {
+      "name": "su_z",
+      "type": "char"
+     },
+     {
+      "name": "data",
+      "type": "BZip2CompressorInputStream"
+     }
+    ],
+    "name": "BZip2CompressorInputStream"
+   }
+  ]
+ },
+ {
+  "filename": "BZip2Constants.java",
+  "package_name": "org.apache.commons.compress.compressors.bzip2",
+  "classes": [
+   {
+    "methods": [],
+    "fields": [
+     {
+      "name": "BASEBLOCKSIZE",
+      "type": "int"
+     },
+     {
+      "name": "MAX_ALPHA_SIZE",
+      "type": "int"
+     },
+     {
+      "name": "MAX_CODE_LEN",
+      "type": "int"
+     },
+     {
+      "name": "RUNA",
+      "type": "int"
+     },
+     {
+      "name": "RUNB",
+      "type": "int"
+     },
+     {
+      "name": "N_GROUPS",
+      "type": "int"
+     },
+     {
+      "name": "G_SIZE",
+      "type": "int"
+     },
+     {
+      "name": "N_ITERS",
+      "type": "int"
+     },
+     {
+      "name": "MAX_SELECTORS",
+      "type": "int"
+     },
+     {
+      "name": "NUM_OVERSHOOT_BYTES",
+      "type": "int"
+     }
+    ],
+    "name": "BZip2Constants"
+   }
+  ]
+ },
+ {
+  "filename": "Rand.java",
+  "package_name": "org.apache.commons.compress.compressors.bzip2",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "i",
+        "type": "int"
+       }
+      ],
+      "name": "rNums",
+      "type": "int"
+     }
+    ],
+    "fields": [
+     {
+      "name": "RNUMS",
+      "type": "int"
+     }
+    ],
+    "name": "Rand"
+   }
+  ]
+ },
+ {
+  "filename": "GzipCompressorOutputStream.java",
+  "package_name": "org.apache.commons.compress.compressors.gzip",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "int"
+       }
+      ],
+      "name": "write",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "byte"
+       }
+      ],
+      "name": "write",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "byte"
+       },
+       {
+        "name": "from",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "write",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "close",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "out",
+      "type": "GZIPOutputStream"
+     }
+    ],
+    "name": "GzipCompressorOutputStream"
+   }
+  ]
+ },
+ {
+  "filename": "GzipUtils.java",
+  "package_name": "org.apache.commons.compress.compressors.gzip",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "filename",
+        "type": "String"
+       }
+      ],
+      "name": "isCompressedFilename",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "filename",
+        "type": "String"
+       }
+      ],
+      "name": "getUncompressedFilename",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "filename",
+        "type": "String"
+       }
+      ],
+      "name": "getCompressedFilename",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "compressSuffix",
+      "type": "Map"
+     },
+     {
+      "name": "uncompressSuffix",
+      "type": "Map"
+     }
+    ],
+    "name": "GzipUtils"
+   }
+  ]
+ },
+ {
+  "filename": "GzipCompressorInputStream.java",
+  "package_name": "org.apache.commons.compress.compressors.gzip",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "read",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "byte"
+       }
+      ],
+      "name": "read",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "byte"
+       },
+       {
+        "name": "from",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "read",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "signature",
+        "type": "byte"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "matches",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "close",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "in",
+      "type": "GZIPInputStream"
+     }
+    ],
+    "name": "GzipCompressorInputStream"
+   }
+  ]
+ },
+ {
+  "filename": "Pack200CompressorInputStream.java",
+  "package_name": "org.apache.commons.compress.compressors.pack200",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "read",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "byte"
+       }
+      ],
+      "name": "read",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "byte"
+       },
+       {
+        "name": "off",
+        "type": "int"
+       },
+       {
+        "name": "count",
+        "type": "int"
+       }
+      ],
+      "name": "read",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "available",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "markSupported",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "limit",
+        "type": "int"
+       }
+      ],
+      "name": "mark",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "reset",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "count",
+        "type": "long"
+       }
+      ],
+      "name": "skip",
+      "type": "long"
+     },
+     {
+      "params": [],
+      "name": "close",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "signature",
+        "type": "byte"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "matches",
+      "type": "boolean"
+     }
+    ],
+    "fields": [
+     {
+      "name": "originalInput",
+      "type": "InputStream"
+     },
+     {
+      "name": "streamBridge",
+      "type": "StreamBridge"
+     },
+     {
+      "name": "CAFE_DOOD",
+      "type": "byte"
+     }
+    ],
+    "name": "Pack200CompressorInputStream"
+   }
+  ]
+ },
+ {
+  "filename": "StreamBridge.java",
+  "package_name": "org.apache.commons.compress.compressors.pack200",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getInput",
+      "type": "InputStream"
+     },
+     {
+      "params": [],
+      "name": "getInputView",
+      "type": "InputStream"
+     },
+     {
+      "params": [],
+      "name": "stop",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "input",
+      "type": "InputStream"
+     },
+     {
+      "name": "INPUT_LOCK",
+      "type": "Object"
+     }
+    ],
+    "name": "StreamBridge"
+   }
+  ]
+ },
+ {
+  "filename": "InMemoryCachingStreamBridge.java",
+  "package_name": "org.apache.commons.compress.compressors.pack200",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getInputView",
+      "type": "InputStream"
+     }
+    ],
+    "fields": [],
+    "name": "InMemoryCachingStreamBridge"
+   }
+  ]
+ },
+ {
+  "filename": "Pack200Utils.java",
+  "package_name": "org.apache.commons.compress.compressors.pack200",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "jar",
+        "type": "File"
+       }
+      ],
+      "name": "normalize",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "jar",
+        "type": "File"
+       },
+       {
+        "name": "props",
+        "type": "Map"
+       }
+      ],
+      "name": "normalize",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "from",
+        "type": "File"
+       },
+       {
+        "name": "to",
+        "type": "File"
+       }
+      ],
+      "name": "normalize",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "from",
+        "type": "File"
+       },
+       {
+        "name": "to",
+        "type": "File"
+       },
+       {
+        "name": "props",
+        "type": "Map"
+       }
+      ],
+      "name": "normalize",
+      "type": null
+     }
+    ],
+    "fields": [],
+    "name": "Pack200Utils"
+   }
+  ]
+ },
+ {
+  "filename": "Pack200CompressorOutputStream.java",
+  "package_name": "org.apache.commons.compress.compressors.pack200",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "int"
+       }
+      ],
+      "name": "write",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "byte"
+       }
+      ],
+      "name": "write",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "byte"
+       },
+       {
+        "name": "from",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "write",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "close",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "finish",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "finished",
+      "type": "boolean"
+     },
+     {
+      "name": "originalOutput",
+      "type": "OutputStream"
+     },
+     {
+      "name": "streamBridge",
+      "type": "StreamBridge"
+     },
+     {
+      "name": "properties",
+      "type": "Map"
+     }
+    ],
+    "name": "Pack200CompressorOutputStream"
+   }
+  ]
+ },
+ {
+  "filename": "Pack200Strategy.java",
+  "package_name": "org.apache.commons.compress.compressors.pack200",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "newStreamBridge",
+      "type": "StreamBridge"
+     }
+    ],
+    "fields": [],
+    "name": "Pack200Strategy"
+   }
+  ]
+ },
+ {
+  "filename": "TempFileCachingStreamBridge.java",
+  "package_name": "org.apache.commons.compress.compressors.pack200",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getInputView",
+      "type": "InputStream"
+     }
+    ],
+    "fields": [
+     {
+      "name": "f",
+      "type": "File"
+     }
+    ],
+    "name": "TempFileCachingStreamBridge"
+   }
+  ]
+ },
+ {
+  "filename": "IOUtils.java",
+  "package_name": "org.apache.commons.compress.utils",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "input",
+        "type": "InputStream"
+       },
+       {
+        "name": "output",
+        "type": "OutputStream"
+       }
+      ],
+      "name": "copy",
+      "type": "long"
+     },
+     {
+      "params": [
+       {
+        "name": "input",
+        "type": "InputStream"
+       },
+       {
+        "name": "output",
+        "type": "OutputStream"
+       },
+       {
+        "name": "buffersize",
+        "type": "int"
+       }
+      ],
+      "name": "copy",
+      "type": "long"
+     }
+    ],
+    "fields": [],
+    "name": "IOUtils"
+   }
+  ]
+ },
+ {
+  "filename": "ArchiveUtils.java",
+  "package_name": "org.apache.commons.compress.utils",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "entry",
+        "type": "ArchiveEntry"
+       }
+      ],
+      "name": "toString",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "expected",
+        "type": "String"
+       },
+       {
+        "name": "buffer",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "matchAsciiBuffer",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "expected",
+        "type": "String"
+       },
+       {
+        "name": "buffer",
+        "type": "byte"
+       }
+      ],
+      "name": "matchAsciiBuffer",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "inputString",
+        "type": "String"
+       }
+      ],
+      "name": "toAsciiBytes",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "inputBytes",
+        "type": "byte"
+       }
+      ],
+      "name": "toAsciiString",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "inputBytes",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "toAsciiString",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "buffer1",
+        "type": "byte"
+       },
+       {
+        "name": "offset1",
+        "type": "int"
+       },
+       {
+        "name": "length1",
+        "type": "int"
+       },
+       {
+        "name": "buffer2",
+        "type": "byte"
+       },
+       {
+        "name": "offset2",
+        "type": "int"
+       },
+       {
+        "name": "length2",
+        "type": "int"
+       },
+       {
+        "name": "ignoreTrailingNulls",
+        "type": "boolean"
+       }
+      ],
+      "name": "isEqual",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "buffer1",
+        "type": "byte"
+       },
+       {
+        "name": "offset1",
+        "type": "int"
+       },
+       {
+        "name": "length1",
+        "type": "int"
+       },
+       {
+        "name": "buffer2",
+        "type": "byte"
+       },
+       {
+        "name": "offset2",
+        "type": "int"
+       },
+       {
+        "name": "length2",
+        "type": "int"
+       }
+      ],
+      "name": "isEqual",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "buffer1",
+        "type": "byte"
+       },
+       {
+        "name": "buffer2",
+        "type": "byte"
+       }
+      ],
+      "name": "isEqual",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "buffer1",
+        "type": "byte"
+       },
+       {
+        "name": "buffer2",
+        "type": "byte"
+       },
+       {
+        "name": "ignoreTrailingNulls",
+        "type": "boolean"
+       }
+      ],
+      "name": "isEqual",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "buffer1",
+        "type": "byte"
+       },
+       {
+        "name": "offset1",
+        "type": "int"
+       },
+       {
+        "name": "length1",
+        "type": "int"
+       },
+       {
+        "name": "buffer2",
+        "type": "byte"
+       },
+       {
+        "name": "offset2",
+        "type": "int"
+       },
+       {
+        "name": "length2",
+        "type": "int"
+       }
+      ],
+      "name": "isEqualWithNull",
+      "type": "boolean"
+     }
+    ],
+    "fields": [],
+    "name": "ArchiveUtils"
+   }
+  ]
+ },
+ {
+  "filename": "CountingInputStream.java",
+  "package_name": "org.apache.commons.compress.utils",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "read",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "byte"
+       }
+      ],
+      "name": "read",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "byte"
+       },
+       {
+        "name": "off",
+        "type": "int"
+       },
+       {
+        "name": "len",
+        "type": "int"
+       }
+      ],
+      "name": "read",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "read",
+        "type": "long"
+       }
+      ],
+      "name": "count",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getBytesRead",
+      "type": "long"
+     }
+    ],
+    "fields": [
+     {
+      "name": "bytesRead",
+      "type": "AtomicLong"
+     }
+    ],
+    "name": "CountingInputStream"
+   }
+  ]
+ },
+ {
+  "filename": "CountingOutputStream.java",
+  "package_name": "org.apache.commons.compress.utils",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "int"
+       }
+      ],
+      "name": "write",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "byte"
+       }
+      ],
+      "name": "write",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "byte"
+       },
+       {
+        "name": "off",
+        "type": "int"
+       },
+       {
+        "name": "len",
+        "type": "int"
+       }
+      ],
+      "name": "write",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "written",
+        "type": "long"
+       }
+      ],
+      "name": "count",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getBytesWritten",
+      "type": "long"
+     }
+    ],
+    "fields": [
+     {
+      "name": "bytesWritten",
+      "type": "AtomicLong"
+     }
+    ],
+    "name": "CountingOutputStream"
+   }
+  ]
+ }
+]

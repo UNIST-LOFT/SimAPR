@@ -1,0 +1,5549 @@
+[
+ {
+  "filename": "Parent.java",
+  "package_name": "org.apache.commons.cli2",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       },
+       {
+        "name": "args",
+        "type": "ListIterator"
+       }
+      ],
+      "name": "processParent",
+      "type": null
+     }
+    ],
+    "fields": [],
+    "name": "Parent"
+   }
+  ]
+ },
+ {
+  "filename": "HelpLine.java",
+  "package_name": "org.apache.commons.cli2",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getDescription",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getIndent",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getOption",
+      "type": "Option"
+     },
+     {
+      "params": [
+       {
+        "name": "helpSettings",
+        "type": "Set"
+       },
+       {
+        "name": "comparator",
+        "type": "Comparator"
+       }
+      ],
+      "name": "usage",
+      "type": "String"
+     }
+    ],
+    "fields": [],
+    "name": "HelpLine"
+   }
+  ]
+ },
+ {
+  "filename": "DisplaySetting.java",
+  "package_name": "org.apache.commons.cli2",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "hashCode",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "that",
+        "type": "Object"
+       }
+      ],
+      "name": "equals",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "toString",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "all",
+      "type": "Set"
+     },
+     {
+      "name": "ALL",
+      "type": "Set"
+     },
+     {
+      "name": "NONE",
+      "type": "Set"
+     },
+     {
+      "name": "DISPLAY_ALIASES",
+      "type": "DisplaySetting"
+     },
+     {
+      "name": "DISPLAY_OPTIONAL",
+      "type": "DisplaySetting"
+     },
+     {
+      "name": "DISPLAY_OPTIONAL_CHILD_GROUP",
+      "type": "DisplaySetting"
+     },
+     {
+      "name": "DISPLAY_PROPERTY_OPTION",
+      "type": "DisplaySetting"
+     },
+     {
+      "name": "DISPLAY_SWITCH_ENABLED",
+      "type": "DisplaySetting"
+     },
+     {
+      "name": "DISPLAY_SWITCH_DISABLED",
+      "type": "DisplaySetting"
+     },
+     {
+      "name": "DISPLAY_GROUP_NAME",
+      "type": "DisplaySetting"
+     },
+     {
+      "name": "DISPLAY_GROUP_EXPANDED",
+      "type": "DisplaySetting"
+     },
+     {
+      "name": "DISPLAY_GROUP_ARGUMENT",
+      "type": "DisplaySetting"
+     },
+     {
+      "name": "DISPLAY_GROUP_OUTER",
+      "type": "DisplaySetting"
+     },
+     {
+      "name": "DISPLAY_ARGUMENT_NUMBERED",
+      "type": "DisplaySetting"
+     },
+     {
+      "name": "DISPLAY_ARGUMENT_BRACKETED",
+      "type": "DisplaySetting"
+     },
+     {
+      "name": "DISPLAY_PARENT_ARGUMENT",
+      "type": "DisplaySetting"
+     },
+     {
+      "name": "DISPLAY_PARENT_CHILDREN",
+      "type": "DisplaySetting"
+     },
+     {
+      "name": "name",
+      "type": "String"
+     },
+     {
+      "name": "hashCode",
+      "type": "int"
+     }
+    ],
+    "name": "DisplaySetting"
+   }
+  ]
+ },
+ {
+  "filename": "WriteableCommandLine.java",
+  "package_name": "org.apache.commons.cli2",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       }
+      ],
+      "name": "addOption",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       },
+       {
+        "name": "value",
+        "type": "Object"
+       }
+      ],
+      "name": "addValue",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       }
+      ],
+      "name": "getUndefaultedValues",
+      "type": "List"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       },
+       {
+        "name": "defaultValues",
+        "type": "List"
+       }
+      ],
+      "name": "setDefaultValues",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       },
+       {
+        "name": "value",
+        "type": "boolean"
+       }
+      ],
+      "name": "addSwitch",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       },
+       {
+        "name": "defaultSwitch",
+        "type": "Boolean"
+       }
+      ],
+      "name": "setDefaultSwitch",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       },
+       {
+        "name": "property",
+        "type": "String"
+       },
+       {
+        "name": "value",
+        "type": "String"
+       }
+      ],
+      "name": "addProperty",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "property",
+        "type": "String"
+       },
+       {
+        "name": "value",
+        "type": "String"
+       }
+      ],
+      "name": "addProperty",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "argument",
+        "type": "String"
+       }
+      ],
+      "name": "looksLikeOption",
+      "type": "boolean"
+     }
+    ],
+    "fields": [],
+    "name": "WriteableCommandLine"
+   }
+  ]
+ },
+ {
+  "filename": "CommandLine.java",
+  "package_name": "org.apache.commons.cli2",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "trigger",
+        "type": "String"
+       }
+      ],
+      "name": "hasOption",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       }
+      ],
+      "name": "hasOption",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "trigger",
+        "type": "String"
+       }
+      ],
+      "name": "getOption",
+      "type": "Option"
+     },
+     {
+      "params": [
+       {
+        "name": "trigger",
+        "type": "String"
+       }
+      ],
+      "name": "getValues",
+      "type": "List"
+     },
+     {
+      "params": [
+       {
+        "name": "trigger",
+        "type": "String"
+       },
+       {
+        "name": "defaultValues",
+        "type": "List"
+       }
+      ],
+      "name": "getValues",
+      "type": "List"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       }
+      ],
+      "name": "getValues",
+      "type": "List"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       },
+       {
+        "name": "defaultValues",
+        "type": "List"
+       }
+      ],
+      "name": "getValues",
+      "type": "List"
+     },
+     {
+      "params": [
+       {
+        "name": "trigger",
+        "type": "String"
+       }
+      ],
+      "name": "getValue",
+      "type": "Object"
+     },
+     {
+      "params": [
+       {
+        "name": "trigger",
+        "type": "String"
+       },
+       {
+        "name": "defaultValue",
+        "type": "Object"
+       }
+      ],
+      "name": "getValue",
+      "type": "Object"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       }
+      ],
+      "name": "getValue",
+      "type": "Object"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       },
+       {
+        "name": "defaultValue",
+        "type": "Object"
+       }
+      ],
+      "name": "getValue",
+      "type": "Object"
+     },
+     {
+      "params": [
+       {
+        "name": "trigger",
+        "type": "String"
+       }
+      ],
+      "name": "getSwitch",
+      "type": "Boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "trigger",
+        "type": "String"
+       },
+       {
+        "name": "defaultValue",
+        "type": "Boolean"
+       }
+      ],
+      "name": "getSwitch",
+      "type": "Boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       }
+      ],
+      "name": "getSwitch",
+      "type": "Boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       },
+       {
+        "name": "defaultValue",
+        "type": "Boolean"
+       }
+      ],
+      "name": "getSwitch",
+      "type": "Boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "property",
+        "type": "String"
+       }
+      ],
+      "name": "getProperty",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       },
+       {
+        "name": "property",
+        "type": "String"
+       }
+      ],
+      "name": "getProperty",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       },
+       {
+        "name": "property",
+        "type": "String"
+       },
+       {
+        "name": "defaultValue",
+        "type": "String"
+       }
+      ],
+      "name": "getProperty",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       }
+      ],
+      "name": "getProperties",
+      "type": "Set"
+     },
+     {
+      "params": [],
+      "name": "getProperties",
+      "type": "Set"
+     },
+     {
+      "params": [
+       {
+        "name": "trigger",
+        "type": "String"
+       }
+      ],
+      "name": "getOptionCount",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       }
+      ],
+      "name": "getOptionCount",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getOptions",
+      "type": "List"
+     },
+     {
+      "params": [],
+      "name": "getOptionTriggers",
+      "type": "Set"
+     }
+    ],
+    "fields": [],
+    "name": "CommandLine"
+   }
+  ]
+ },
+ {
+  "filename": "Option.java",
+  "package_name": "org.apache.commons.cli2",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       },
+       {
+        "name": "args",
+        "type": "ListIterator"
+       }
+      ],
+      "name": "process",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       }
+      ],
+      "name": "defaults",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       },
+       {
+        "name": "argument",
+        "type": "String"
+       }
+      ],
+      "name": "canProcess",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       },
+       {
+        "name": "arguments",
+        "type": "ListIterator"
+       }
+      ],
+      "name": "canProcess",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "getTriggers",
+      "type": "Set"
+     },
+     {
+      "params": [],
+      "name": "getPrefixes",
+      "type": "Set"
+     },
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       }
+      ],
+      "name": "validate",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "depth",
+        "type": "int"
+       },
+       {
+        "name": "helpSettings",
+        "type": "Set"
+       },
+       {
+        "name": "comp",
+        "type": "Comparator"
+       }
+      ],
+      "name": "helpLines",
+      "type": "List"
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "StringBuffer"
+       },
+       {
+        "name": "helpSettings",
+        "type": "Set"
+       },
+       {
+        "name": "comp",
+        "type": "Comparator"
+       }
+      ],
+      "name": "appendUsage",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getPreferredName",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getDescription",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getId",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "trigger",
+        "type": "String"
+       }
+      ],
+      "name": "findOption",
+      "type": "Option"
+     },
+     {
+      "params": [],
+      "name": "isRequired",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "getParent",
+      "type": "Option"
+     },
+     {
+      "params": [
+       {
+        "name": "parent",
+        "type": "Option"
+       }
+      ],
+      "name": "setParent",
+      "type": null
+     }
+    ],
+    "fields": [],
+    "name": "Option"
+   }
+  ]
+ },
+ {
+  "filename": "Argument.java",
+  "package_name": "org.apache.commons.cli2",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getInitialSeparator",
+      "type": "char"
+     },
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       },
+       {
+        "name": "args",
+        "type": "ListIterator"
+       },
+       {
+        "name": "option",
+        "type": "Option"
+       }
+      ],
+      "name": "processValues",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       },
+       {
+        "name": "option",
+        "type": "Option"
+       }
+      ],
+      "name": "defaultValues",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       },
+       {
+        "name": "option",
+        "type": "Option"
+       }
+      ],
+      "name": "validate",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "isRequired",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "getMinimum",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getMaximum",
+      "type": "int"
+     }
+    ],
+    "fields": [],
+    "name": "Argument"
+   }
+  ]
+ },
+ {
+  "filename": "Group.java",
+  "package_name": "org.apache.commons.cli2",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "StringBuffer"
+       },
+       {
+        "name": "helpSettings",
+        "type": "Set"
+       },
+       {
+        "name": "comp",
+        "type": "Comparator"
+       },
+       {
+        "name": "separator",
+        "type": "String"
+       }
+      ],
+      "name": "appendUsage",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "isRequired",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "getMinimum",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getMaximum",
+      "type": "int"
+     }
+    ],
+    "fields": [],
+    "name": "Group"
+   }
+  ]
+ },
+ {
+  "filename": "OptionException.java",
+  "package_name": "org.apache.commons.cli2",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getOption",
+      "type": "Option"
+     },
+     {
+      "params": [],
+      "name": "getMessage",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "HELP_SETTINGS",
+      "type": "Set"
+     },
+     {
+      "name": "helper",
+      "type": "ResourceHelper"
+     },
+     {
+      "name": "option",
+      "type": "Option"
+     },
+     {
+      "name": "message",
+      "type": "String"
+     }
+    ],
+    "name": "OptionException"
+   }
+  ]
+ },
+ {
+  "filename": "PatternBuilder.java",
+  "package_name": "org.apache.commons.cli2.builder",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "create",
+      "type": "Option"
+     },
+     {
+      "params": [],
+      "name": "reset",
+      "type": "PatternBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "type",
+        "type": "char"
+       },
+       {
+        "name": "required",
+        "type": "boolean"
+       },
+       {
+        "name": "opt",
+        "type": "char"
+       }
+      ],
+      "name": "createOption",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "pattern",
+        "type": "String"
+       }
+      ],
+      "name": "withPattern",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "c",
+        "type": "char"
+       }
+      ],
+      "name": "validator",
+      "type": "Validator"
+     }
+    ],
+    "fields": [
+     {
+      "name": "gbuilder",
+      "type": "GroupBuilder"
+     },
+     {
+      "name": "obuilder",
+      "type": "DefaultOptionBuilder"
+     },
+     {
+      "name": "abuilder",
+      "type": "ArgumentBuilder"
+     },
+     {
+      "name": "options",
+      "type": "Set"
+     }
+    ],
+    "name": "PatternBuilder"
+   }
+  ]
+ },
+ {
+  "filename": "CommandBuilder.java",
+  "package_name": "org.apache.commons.cli2.builder",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "create",
+      "type": "Command"
+     },
+     {
+      "params": [],
+      "name": "reset",
+      "type": "CommandBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ],
+      "name": "withName",
+      "type": "CommandBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "newDescription",
+        "type": "String"
+       }
+      ],
+      "name": "withDescription",
+      "type": "CommandBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "newRequired",
+        "type": "boolean"
+       }
+      ],
+      "name": "withRequired",
+      "type": "CommandBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "newChildren",
+        "type": "Group"
+       }
+      ],
+      "name": "withChildren",
+      "type": "CommandBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "newArgument",
+        "type": "Argument"
+       }
+      ],
+      "name": "withArgument",
+      "type": "CommandBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "newId",
+        "type": "int"
+       }
+      ],
+      "name": "withId",
+      "type": "CommandBuilder"
+     }
+    ],
+    "fields": [
+     {
+      "name": "preferredName",
+      "type": "String"
+     },
+     {
+      "name": "description",
+      "type": "String"
+     },
+     {
+      "name": "aliases",
+      "type": "Set"
+     },
+     {
+      "name": "required",
+      "type": "boolean"
+     },
+     {
+      "name": "argument",
+      "type": "Argument"
+     },
+     {
+      "name": "children",
+      "type": "Group"
+     },
+     {
+      "name": "id",
+      "type": "int"
+     }
+    ],
+    "name": "CommandBuilder"
+   }
+  ]
+ },
+ {
+  "filename": "GroupBuilder.java",
+  "package_name": "org.apache.commons.cli2.builder",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "create",
+      "type": "Group"
+     },
+     {
+      "params": [],
+      "name": "reset",
+      "type": "GroupBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "newDescription",
+        "type": "String"
+       }
+      ],
+      "name": "withDescription",
+      "type": "GroupBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "newName",
+        "type": "String"
+       }
+      ],
+      "name": "withName",
+      "type": "GroupBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "newMinimum",
+        "type": "int"
+       }
+      ],
+      "name": "withMinimum",
+      "type": "GroupBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "newMaximum",
+        "type": "int"
+       }
+      ],
+      "name": "withMaximum",
+      "type": "GroupBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       }
+      ],
+      "name": "withOption",
+      "type": "GroupBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "newRequired",
+        "type": "boolean"
+       }
+      ],
+      "name": "withRequired",
+      "type": "GroupBuilder"
+     }
+    ],
+    "fields": [
+     {
+      "name": "name",
+      "type": "String"
+     },
+     {
+      "name": "description",
+      "type": "String"
+     },
+     {
+      "name": "options",
+      "type": "List"
+     },
+     {
+      "name": "minimum",
+      "type": "int"
+     },
+     {
+      "name": "maximum",
+      "type": "int"
+     },
+     {
+      "name": "required",
+      "type": "boolean"
+     }
+    ],
+    "name": "GroupBuilder"
+   }
+  ]
+ },
+ {
+  "filename": "ArgumentBuilder.java",
+  "package_name": "org.apache.commons.cli2.builder",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "create",
+      "type": "Argument"
+     },
+     {
+      "params": [],
+      "name": "reset",
+      "type": "ArgumentBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "newName",
+        "type": "String"
+       }
+      ],
+      "name": "withName",
+      "type": "ArgumentBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "newDescription",
+        "type": "String"
+       }
+      ],
+      "name": "withDescription",
+      "type": "ArgumentBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "newMinimum",
+        "type": "int"
+       }
+      ],
+      "name": "withMinimum",
+      "type": "ArgumentBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "newMaximum",
+        "type": "int"
+       }
+      ],
+      "name": "withMaximum",
+      "type": "ArgumentBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "newInitialSeparator",
+        "type": "char"
+       }
+      ],
+      "name": "withInitialSeparator",
+      "type": "ArgumentBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "newSubsequentSeparator",
+        "type": "char"
+       }
+      ],
+      "name": "withSubsequentSeparator",
+      "type": "ArgumentBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "newValidator",
+        "type": "Validator"
+       }
+      ],
+      "name": "withValidator",
+      "type": "ArgumentBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "newConsumeRemaining",
+        "type": "String"
+       }
+      ],
+      "name": "withConsumeRemaining",
+      "type": "ArgumentBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "defaultValue",
+        "type": "Object"
+       }
+      ],
+      "name": "withDefault",
+      "type": "ArgumentBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "newDefaultValues",
+        "type": "List"
+       }
+      ],
+      "name": "withDefaults",
+      "type": "ArgumentBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "newId",
+        "type": "int"
+       }
+      ],
+      "name": "withId",
+      "type": "ArgumentBuilder"
+     }
+    ],
+    "fields": [
+     {
+      "name": "resources",
+      "type": "ResourceHelper"
+     },
+     {
+      "name": "name",
+      "type": "String"
+     },
+     {
+      "name": "description",
+      "type": "String"
+     },
+     {
+      "name": "minimum",
+      "type": "int"
+     },
+     {
+      "name": "maximum",
+      "type": "int"
+     },
+     {
+      "name": "initialSeparator",
+      "type": "char"
+     },
+     {
+      "name": "subsequentSeparator",
+      "type": "char"
+     },
+     {
+      "name": "validator",
+      "type": "Validator"
+     },
+     {
+      "name": "consumeRemaining",
+      "type": "String"
+     },
+     {
+      "name": "defaultValues",
+      "type": "List"
+     },
+     {
+      "name": "id",
+      "type": "int"
+     }
+    ],
+    "name": "ArgumentBuilder"
+   }
+  ]
+ },
+ {
+  "filename": "SwitchBuilder.java",
+  "package_name": "org.apache.commons.cli2.builder",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "create",
+      "type": "Switch"
+     },
+     {
+      "params": [],
+      "name": "reset",
+      "type": "SwitchBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "newDescription",
+        "type": "String"
+       }
+      ],
+      "name": "withDescription",
+      "type": "SwitchBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ],
+      "name": "withName",
+      "type": "SwitchBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "newRequired",
+        "type": "boolean"
+       }
+      ],
+      "name": "withRequired",
+      "type": "SwitchBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "newArgument",
+        "type": "Argument"
+       }
+      ],
+      "name": "withArgument",
+      "type": "SwitchBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "newChildren",
+        "type": "Group"
+       }
+      ],
+      "name": "withChildren",
+      "type": "SwitchBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "newId",
+        "type": "int"
+       }
+      ],
+      "name": "withId",
+      "type": "SwitchBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "newSwitchDefault",
+        "type": "Boolean"
+       }
+      ],
+      "name": "withSwitchDefault",
+      "type": "SwitchBuilder"
+     }
+    ],
+    "fields": [
+     {
+      "name": "enabledPrefix",
+      "type": "String"
+     },
+     {
+      "name": "disabledPrefix",
+      "type": "String"
+     },
+     {
+      "name": "description",
+      "type": "String"
+     },
+     {
+      "name": "preferredName",
+      "type": "String"
+     },
+     {
+      "name": "aliases",
+      "type": "Set"
+     },
+     {
+      "name": "required",
+      "type": "boolean"
+     },
+     {
+      "name": "argument",
+      "type": "Argument"
+     },
+     {
+      "name": "children",
+      "type": "Group"
+     },
+     {
+      "name": "id",
+      "type": "int"
+     },
+     {
+      "name": "switchDefault",
+      "type": "Boolean"
+     }
+    ],
+    "name": "SwitchBuilder"
+   }
+  ]
+ },
+ {
+  "filename": "DefaultOptionBuilder.java",
+  "package_name": "org.apache.commons.cli2.builder",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "create",
+      "type": "DefaultOption"
+     },
+     {
+      "params": [],
+      "name": "reset",
+      "type": "DefaultOptionBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "shortName",
+        "type": "String"
+       }
+      ],
+      "name": "withShortName",
+      "type": "DefaultOptionBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "longName",
+        "type": "String"
+       }
+      ],
+      "name": "withLongName",
+      "type": "DefaultOptionBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "newDescription",
+        "type": "String"
+       }
+      ],
+      "name": "withDescription",
+      "type": "DefaultOptionBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "newRequired",
+        "type": "boolean"
+       }
+      ],
+      "name": "withRequired",
+      "type": "DefaultOptionBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "newChildren",
+        "type": "Group"
+       }
+      ],
+      "name": "withChildren",
+      "type": "DefaultOptionBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "newArgument",
+        "type": "Argument"
+       }
+      ],
+      "name": "withArgument",
+      "type": "DefaultOptionBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "newId",
+        "type": "int"
+       }
+      ],
+      "name": "withId",
+      "type": "DefaultOptionBuilder"
+     }
+    ],
+    "fields": [
+     {
+      "name": "shortPrefix",
+      "type": "String"
+     },
+     {
+      "name": "longPrefix",
+      "type": "String"
+     },
+     {
+      "name": "burstEnabled",
+      "type": "boolean"
+     },
+     {
+      "name": "preferredName",
+      "type": "String"
+     },
+     {
+      "name": "aliases",
+      "type": "Set"
+     },
+     {
+      "name": "burstAliases",
+      "type": "Set"
+     },
+     {
+      "name": "required",
+      "type": "boolean"
+     },
+     {
+      "name": "description",
+      "type": "String"
+     },
+     {
+      "name": "argument",
+      "type": "Argument"
+     },
+     {
+      "name": "children",
+      "type": "Group"
+     },
+     {
+      "name": "id",
+      "type": "int"
+     }
+    ],
+    "name": "DefaultOptionBuilder"
+   }
+  ]
+ },
+ {
+  "filename": "DefaultingCommandLine.java",
+  "package_name": "org.apache.commons.cli2.commandline",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "CommandLine"
+       }
+      ],
+      "name": "appendCommandLine",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "index",
+        "type": "int"
+       },
+       {
+        "name": "commandLine",
+        "type": "CommandLine"
+       }
+      ],
+      "name": "insertCommandLine",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "commandLines",
+      "type": "Iterator"
+     },
+     {
+      "params": [
+       {
+        "name": "trigger",
+        "type": "String"
+       }
+      ],
+      "name": "getOption",
+      "type": "Option"
+     },
+     {
+      "params": [],
+      "name": "getOptions",
+      "type": "List"
+     },
+     {
+      "params": [],
+      "name": "getOptionTriggers",
+      "type": "Set"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       }
+      ],
+      "name": "hasOption",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       },
+       {
+        "name": "defaultValues",
+        "type": "List"
+       }
+      ],
+      "name": "getValues",
+      "type": "List"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       },
+       {
+        "name": "defaultValue",
+        "type": "Boolean"
+       }
+      ],
+      "name": "getSwitch",
+      "type": "Boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "property",
+        "type": "String"
+       }
+      ],
+      "name": "getProperty",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       },
+       {
+        "name": "property",
+        "type": "String"
+       },
+       {
+        "name": "defaultValue",
+        "type": "String"
+       }
+      ],
+      "name": "getProperty",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       }
+      ],
+      "name": "getProperties",
+      "type": "Set"
+     },
+     {
+      "params": [],
+      "name": "getProperties",
+      "type": "Set"
+     }
+    ],
+    "fields": [
+     {
+      "name": "commandLines",
+      "type": "List"
+     }
+    ],
+    "name": "DefaultingCommandLine"
+   }
+  ]
+ },
+ {
+  "filename": "WriteableCommandLineImpl.java",
+  "package_name": "org.apache.commons.cli2.commandline",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       }
+      ],
+      "name": "addOption",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       },
+       {
+        "name": "value",
+        "type": "Object"
+       }
+      ],
+      "name": "addValue",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       },
+       {
+        "name": "value",
+        "type": "boolean"
+       }
+      ],
+      "name": "addSwitch",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       }
+      ],
+      "name": "hasOption",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "trigger",
+        "type": "String"
+       }
+      ],
+      "name": "getOption",
+      "type": "Option"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       },
+       {
+        "name": "defaultValues",
+        "type": "List"
+       }
+      ],
+      "name": "getValues",
+      "type": "List"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       }
+      ],
+      "name": "getUndefaultedValues",
+      "type": "List"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       },
+       {
+        "name": "defaultValue",
+        "type": "Boolean"
+       }
+      ],
+      "name": "getSwitch",
+      "type": "Boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "property",
+        "type": "String"
+       }
+      ],
+      "name": "getProperty",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       },
+       {
+        "name": "property",
+        "type": "String"
+       },
+       {
+        "name": "value",
+        "type": "String"
+       }
+      ],
+      "name": "addProperty",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "property",
+        "type": "String"
+       },
+       {
+        "name": "value",
+        "type": "String"
+       }
+      ],
+      "name": "addProperty",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       },
+       {
+        "name": "property",
+        "type": "String"
+       },
+       {
+        "name": "defaultValue",
+        "type": "String"
+       }
+      ],
+      "name": "getProperty",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       }
+      ],
+      "name": "getProperties",
+      "type": "Set"
+     },
+     {
+      "params": [],
+      "name": "getProperties",
+      "type": "Set"
+     },
+     {
+      "params": [
+       {
+        "name": "trigger",
+        "type": "String"
+       }
+      ],
+      "name": "looksLikeOption",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "toString",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getOptions",
+      "type": "List"
+     },
+     {
+      "params": [],
+      "name": "getOptionTriggers",
+      "type": "Set"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       },
+       {
+        "name": "defaults",
+        "type": "List"
+       }
+      ],
+      "name": "setDefaultValues",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       },
+       {
+        "name": "defaultSwitch",
+        "type": "Boolean"
+       }
+      ],
+      "name": "setDefaultSwitch",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getNormalised",
+      "type": "List"
+     }
+    ],
+    "fields": [
+     {
+      "name": "optionToProperties",
+      "type": "Map"
+     },
+     {
+      "name": "options",
+      "type": "List"
+     },
+     {
+      "name": "nameToOption",
+      "type": "Map"
+     },
+     {
+      "name": "values",
+      "type": "Map"
+     },
+     {
+      "name": "switches",
+      "type": "Map"
+     },
+     {
+      "name": "defaultValues",
+      "type": "Map"
+     },
+     {
+      "name": "defaultSwitches",
+      "type": "Map"
+     },
+     {
+      "name": "normalised",
+      "type": "List"
+     },
+     {
+      "name": "prefixes",
+      "type": "Set"
+     }
+    ],
+    "name": "WriteableCommandLineImpl"
+   }
+  ]
+ },
+ {
+  "filename": "CommandLineImpl.java",
+  "package_name": "org.apache.commons.cli2.commandline",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "trigger",
+        "type": "String"
+       }
+      ],
+      "name": "hasOption",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "trigger",
+        "type": "String"
+       }
+      ],
+      "name": "getValues",
+      "type": "List"
+     },
+     {
+      "params": [
+       {
+        "name": "trigger",
+        "type": "String"
+       },
+       {
+        "name": "defaultValues",
+        "type": "List"
+       }
+      ],
+      "name": "getValues",
+      "type": "List"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       }
+      ],
+      "name": "getValues",
+      "type": "List"
+     },
+     {
+      "params": [
+       {
+        "name": "trigger",
+        "type": "String"
+       }
+      ],
+      "name": "getValue",
+      "type": "Object"
+     },
+     {
+      "params": [
+       {
+        "name": "trigger",
+        "type": "String"
+       },
+       {
+        "name": "defaultValue",
+        "type": "Object"
+       }
+      ],
+      "name": "getValue",
+      "type": "Object"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       }
+      ],
+      "name": "getValue",
+      "type": "Object"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       },
+       {
+        "name": "defaultValue",
+        "type": "Object"
+       }
+      ],
+      "name": "getValue",
+      "type": "Object"
+     },
+     {
+      "params": [
+       {
+        "name": "trigger",
+        "type": "String"
+       }
+      ],
+      "name": "getSwitch",
+      "type": "Boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "trigger",
+        "type": "String"
+       },
+       {
+        "name": "defaultValue",
+        "type": "Boolean"
+       }
+      ],
+      "name": "getSwitch",
+      "type": "Boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       }
+      ],
+      "name": "getSwitch",
+      "type": "Boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       },
+       {
+        "name": "property",
+        "type": "String"
+       }
+      ],
+      "name": "getProperty",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "trigger",
+        "type": "String"
+       }
+      ],
+      "name": "getOptionCount",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       }
+      ],
+      "name": "getOptionCount",
+      "type": "int"
+     }
+    ],
+    "fields": [],
+    "name": "CommandLineImpl"
+   }
+  ]
+ },
+ {
+  "filename": "PreferencesCommandLine.java",
+  "package_name": "org.apache.commons.cli2.commandline",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       }
+      ],
+      "name": "hasOption",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "trigger",
+        "type": "String"
+       }
+      ],
+      "name": "getOption",
+      "type": "Option"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       },
+       {
+        "name": "defaultValues",
+        "type": "List"
+       }
+      ],
+      "name": "getValues",
+      "type": "List"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       },
+       {
+        "name": "defaultValue",
+        "type": "Boolean"
+       }
+      ],
+      "name": "getSwitch",
+      "type": "Boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "property",
+        "type": "String"
+       }
+      ],
+      "name": "getProperty",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       },
+       {
+        "name": "property",
+        "type": "String"
+       },
+       {
+        "name": "defaultValue",
+        "type": "String"
+       }
+      ],
+      "name": "getProperty",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       }
+      ],
+      "name": "getProperties",
+      "type": "Set"
+     },
+     {
+      "params": [],
+      "name": "getProperties",
+      "type": "Set"
+     },
+     {
+      "params": [],
+      "name": "getOptions",
+      "type": "List"
+     },
+     {
+      "params": [],
+      "name": "getOptionTriggers",
+      "type": "Set"
+     }
+    ],
+    "fields": [
+     {
+      "name": "NUL",
+      "type": "char"
+     },
+     {
+      "name": "preferences",
+      "type": "Preferences"
+     },
+     {
+      "name": "root",
+      "type": "Option"
+     },
+     {
+      "name": "separator",
+      "type": "char"
+     }
+    ],
+    "name": "PreferencesCommandLine"
+   }
+  ]
+ },
+ {
+  "filename": "PropertiesCommandLine.java",
+  "package_name": "org.apache.commons.cli2.commandline",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       }
+      ],
+      "name": "hasOption",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "trigger",
+        "type": "String"
+       }
+      ],
+      "name": "getOption",
+      "type": "Option"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       },
+       {
+        "name": "defaultValues",
+        "type": "List"
+       }
+      ],
+      "name": "getValues",
+      "type": "List"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       },
+       {
+        "name": "defaultValue",
+        "type": "Boolean"
+       }
+      ],
+      "name": "getSwitch",
+      "type": "Boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "property",
+        "type": "String"
+       }
+      ],
+      "name": "getProperty",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       },
+       {
+        "name": "property",
+        "type": "String"
+       },
+       {
+        "name": "defaultValue",
+        "type": "String"
+       }
+      ],
+      "name": "getProperty",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "option",
+        "type": "Option"
+       }
+      ],
+      "name": "getProperties",
+      "type": "Set"
+     },
+     {
+      "params": [],
+      "name": "getProperties",
+      "type": "Set"
+     },
+     {
+      "params": [],
+      "name": "getOptions",
+      "type": "List"
+     },
+     {
+      "params": [],
+      "name": "getOptionTriggers",
+      "type": "Set"
+     }
+    ],
+    "fields": [
+     {
+      "name": "NUL",
+      "type": "char"
+     },
+     {
+      "name": "properties",
+      "type": "Properties"
+     },
+     {
+      "name": "root",
+      "type": "Option"
+     },
+     {
+      "name": "separator",
+      "type": "char"
+     }
+    ],
+    "name": "PropertiesCommandLine"
+   }
+  ]
+ },
+ {
+  "filename": "Parser.java",
+  "package_name": "org.apache.commons.cli2.commandline",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "arguments",
+        "type": "String"
+       }
+      ],
+      "name": "parse",
+      "type": "CommandLine"
+     },
+     {
+      "params": [
+       {
+        "name": "arguments",
+        "type": "String"
+       }
+      ],
+      "name": "parseAndHelp",
+      "type": "CommandLine"
+     },
+     {
+      "params": [
+       {
+        "name": "group",
+        "type": "Group"
+       }
+      ],
+      "name": "setGroup",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "helpFormatter",
+        "type": "HelpFormatter"
+       }
+      ],
+      "name": "setHelpFormatter",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "helpOption",
+        "type": "Option"
+       }
+      ],
+      "name": "setHelpOption",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "helpTrigger",
+        "type": "String"
+       }
+      ],
+      "name": "setHelpTrigger",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "helpFormatter",
+      "type": "HelpFormatter"
+     },
+     {
+      "name": "helpOption",
+      "type": "Option"
+     },
+     {
+      "name": "helpTrigger",
+      "type": "String"
+     },
+     {
+      "name": "group",
+      "type": "Group"
+     }
+    ],
+    "name": "Parser"
+   }
+  ]
+ },
+ {
+  "filename": "PropertyOption.java",
+  "package_name": "org.apache.commons.cli2.option",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       },
+       {
+        "name": "argument",
+        "type": "String"
+       }
+      ],
+      "name": "canProcess",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "getPrefixes",
+      "type": "Set"
+     },
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       },
+       {
+        "name": "arguments",
+        "type": "ListIterator"
+       }
+      ],
+      "name": "process",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getTriggers",
+      "type": "Set"
+     },
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       }
+      ],
+      "name": "validate",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "StringBuffer"
+       },
+       {
+        "name": "helpSettings",
+        "type": "Set"
+       },
+       {
+        "name": "comp",
+        "type": "Comparator"
+       }
+      ],
+      "name": "appendUsage",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getPreferredName",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getDescription",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "depth",
+        "type": "int"
+       },
+       {
+        "name": "helpSettings",
+        "type": "Set"
+       },
+       {
+        "name": "comp",
+        "type": "Comparator"
+       }
+      ],
+      "name": "helpLines",
+      "type": "List"
+     }
+    ],
+    "fields": [
+     {
+      "name": "DEFAULT_OPTION_STRING",
+      "type": "String"
+     },
+     {
+      "name": "DEFAULT_DESCRIPTION",
+      "type": "String"
+     },
+     {
+      "name": "INSTANCE",
+      "type": "PropertyOption"
+     },
+     {
+      "name": "optionString",
+      "type": "String"
+     },
+     {
+      "name": "description",
+      "type": "String"
+     },
+     {
+      "name": "prefixes",
+      "type": "Set"
+     }
+    ],
+    "name": "PropertyOption"
+   }
+  ]
+ },
+ {
+  "filename": "OptionImpl.java",
+  "package_name": "org.apache.commons.cli2.option",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       },
+       {
+        "name": "arguments",
+        "type": "ListIterator"
+       }
+      ],
+      "name": "canProcess",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "toString",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getId",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "thatObj",
+        "type": "Object"
+       }
+      ],
+      "name": "equals",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "left",
+        "type": "Object"
+       },
+       {
+        "name": "right",
+        "type": "Object"
+       }
+      ],
+      "name": "equals",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "hashCode",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "trigger",
+        "type": "String"
+       }
+      ],
+      "name": "findOption",
+      "type": "Option"
+     },
+     {
+      "params": [],
+      "name": "isRequired",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       }
+      ],
+      "name": "defaults",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getParent",
+      "type": "Option"
+     },
+     {
+      "params": [
+       {
+        "name": "parent",
+        "type": "Option"
+       }
+      ],
+      "name": "setParent",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "prefixes",
+        "type": "Set"
+       }
+      ],
+      "name": "checkPrefixes",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "prefixes",
+        "type": "Set"
+       },
+       {
+        "name": "trigger",
+        "type": "String"
+       }
+      ],
+      "name": "checkPrefix",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "id",
+      "type": "int"
+     },
+     {
+      "name": "required",
+      "type": "boolean"
+     },
+     {
+      "name": "parent",
+      "type": "Option"
+     }
+    ],
+    "name": "OptionImpl"
+   }
+  ]
+ },
+ {
+  "filename": "SourceDestArgument.java",
+  "package_name": "org.apache.commons.cli2.option",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "a",
+        "type": "int"
+       },
+       {
+        "name": "b",
+        "type": "int"
+       }
+      ],
+      "name": "sum",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "StringBuffer"
+       },
+       {
+        "name": "helpSettings",
+        "type": "Set"
+       },
+       {
+        "name": "comp",
+        "type": "Comparator"
+       }
+      ],
+      "name": "appendUsage",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "depth",
+        "type": "int"
+       },
+       {
+        "name": "helpSettings",
+        "type": "Set"
+       },
+       {
+        "name": "comp",
+        "type": "Comparator"
+       }
+      ],
+      "name": "helpLines",
+      "type": "List"
+     },
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       },
+       {
+        "name": "option",
+        "type": "Option"
+       }
+      ],
+      "name": "validate",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       },
+       {
+        "name": "arg",
+        "type": "String"
+       }
+      ],
+      "name": "canProcess",
+      "type": "boolean"
+     }
+    ],
+    "fields": [
+     {
+      "name": "source",
+      "type": "Argument"
+     },
+     {
+      "name": "dest",
+      "type": "Argument"
+     }
+    ],
+    "name": "SourceDestArgument"
+   }
+  ]
+ },
+ {
+  "filename": "ArgumentImpl.java",
+  "package_name": "org.apache.commons.cli2.option",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getPreferredName",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       },
+       {
+        "name": "arguments",
+        "type": "ListIterator"
+       },
+       {
+        "name": "option",
+        "type": "Option"
+       }
+      ],
+      "name": "processValues",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       },
+       {
+        "name": "arg",
+        "type": "String"
+       }
+      ],
+      "name": "canProcess",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "getPrefixes",
+      "type": "Set"
+     },
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       },
+       {
+        "name": "args",
+        "type": "ListIterator"
+       }
+      ],
+      "name": "process",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getInitialSeparator",
+      "type": "char"
+     },
+     {
+      "params": [],
+      "name": "getSubsequentSeparator",
+      "type": "char"
+     },
+     {
+      "params": [],
+      "name": "getTriggers",
+      "type": "Set"
+     },
+     {
+      "params": [],
+      "name": "getConsumeRemaining",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getDefaultValues",
+      "type": "List"
+     },
+     {
+      "params": [],
+      "name": "getValidator",
+      "type": "Validator"
+     },
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       }
+      ],
+      "name": "validate",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       },
+       {
+        "name": "option",
+        "type": "Option"
+       }
+      ],
+      "name": "validate",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "StringBuffer"
+       },
+       {
+        "name": "helpSettings",
+        "type": "Set"
+       },
+       {
+        "name": "comp",
+        "type": "Comparator"
+       }
+      ],
+      "name": "appendUsage",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getDescription",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "depth",
+        "type": "int"
+       },
+       {
+        "name": "helpSettings",
+        "type": "Set"
+       },
+       {
+        "name": "comp",
+        "type": "Comparator"
+       }
+      ],
+      "name": "helpLines",
+      "type": "List"
+     },
+     {
+      "params": [],
+      "name": "getMaximum",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getMinimum",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "token",
+        "type": "String"
+       }
+      ],
+      "name": "stripBoundaryQuotes",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "isRequired",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       }
+      ],
+      "name": "defaults",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       },
+       {
+        "name": "option",
+        "type": "Option"
+       }
+      ],
+      "name": "defaultValues",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "NUL",
+      "type": "char"
+     },
+     {
+      "name": "DEFAULT_INITIAL_SEPARATOR",
+      "type": "char"
+     },
+     {
+      "name": "DEFAULT_SUBSEQUENT_SEPARATOR",
+      "type": "char"
+     },
+     {
+      "name": "DEFAULT_CONSUME_REMAINING",
+      "type": "String"
+     },
+     {
+      "name": "name",
+      "type": "String"
+     },
+     {
+      "name": "description",
+      "type": "String"
+     },
+     {
+      "name": "minimum",
+      "type": "int"
+     },
+     {
+      "name": "maximum",
+      "type": "int"
+     },
+     {
+      "name": "initialSeparator",
+      "type": "char"
+     },
+     {
+      "name": "subsequentSeparator",
+      "type": "char"
+     },
+     {
+      "name": "subsequentSplit",
+      "type": "boolean"
+     },
+     {
+      "name": "validator",
+      "type": "Validator"
+     },
+     {
+      "name": "consumeRemaining",
+      "type": "String"
+     },
+     {
+      "name": "defaultValues",
+      "type": "List"
+     },
+     {
+      "name": "resources",
+      "type": "ResourceHelper"
+     }
+    ],
+    "name": "ArgumentImpl"
+   }
+  ]
+ },
+ {
+  "filename": "Switch.java",
+  "package_name": "org.apache.commons.cli2.option",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       },
+       {
+        "name": "arguments",
+        "type": "ListIterator"
+       }
+      ],
+      "name": "processParent",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getTriggers",
+      "type": "Set"
+     },
+     {
+      "params": [],
+      "name": "getPrefixes",
+      "type": "Set"
+     },
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       }
+      ],
+      "name": "validate",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "StringBuffer"
+       },
+       {
+        "name": "helpSettings",
+        "type": "Set"
+       },
+       {
+        "name": "comp",
+        "type": "Comparator"
+       }
+      ],
+      "name": "appendUsage",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getPreferredName",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       }
+      ],
+      "name": "defaults",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "resources",
+      "type": "ResourceHelper"
+     },
+     {
+      "name": "DEFAULT_ENABLED_PREFIX",
+      "type": "String"
+     },
+     {
+      "name": "DEFAULT_DISABLED_PREFIX",
+      "type": "String"
+     },
+     {
+      "name": "enabledPrefix",
+      "type": "String"
+     },
+     {
+      "name": "disabledPrefix",
+      "type": "String"
+     },
+     {
+      "name": "triggers",
+      "type": "Set"
+     },
+     {
+      "name": "preferredName",
+      "type": "String"
+     },
+     {
+      "name": "aliases",
+      "type": "Set"
+     },
+     {
+      "name": "prefixes",
+      "type": "Set"
+     },
+     {
+      "name": "defaultSwitch",
+      "type": "Boolean"
+     }
+    ],
+    "name": "Switch"
+   }
+  ]
+ },
+ {
+  "filename": "Command.java",
+  "package_name": "org.apache.commons.cli2.option",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       },
+       {
+        "name": "arguments",
+        "type": "ListIterator"
+       }
+      ],
+      "name": "processParent",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getTriggers",
+      "type": "Set"
+     },
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       }
+      ],
+      "name": "validate",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "StringBuffer"
+       },
+       {
+        "name": "helpSettings",
+        "type": "Set"
+       },
+       {
+        "name": "comp",
+        "type": "Comparator"
+       }
+      ],
+      "name": "appendUsage",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getPreferredName",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "preferredName",
+      "type": "String"
+     },
+     {
+      "name": "aliases",
+      "type": "Set"
+     },
+     {
+      "name": "triggers",
+      "type": "Set"
+     }
+    ],
+    "name": "Command"
+   }
+  ]
+ },
+ {
+  "filename": "GroupImpl.java",
+  "package_name": "org.apache.commons.cli2.option",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       },
+       {
+        "name": "arg",
+        "type": "String"
+       }
+      ],
+      "name": "canProcess",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "getPrefixes",
+      "type": "Set"
+     },
+     {
+      "params": [],
+      "name": "getTriggers",
+      "type": "Set"
+     },
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       },
+       {
+        "name": "arguments",
+        "type": "ListIterator"
+       }
+      ],
+      "name": "process",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       }
+      ],
+      "name": "validate",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getPreferredName",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getDescription",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "StringBuffer"
+       },
+       {
+        "name": "helpSettings",
+        "type": "Set"
+       },
+       {
+        "name": "comp",
+        "type": "Comparator"
+       }
+      ],
+      "name": "appendUsage",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "StringBuffer"
+       },
+       {
+        "name": "helpSettings",
+        "type": "Set"
+       },
+       {
+        "name": "comp",
+        "type": "Comparator"
+       },
+       {
+        "name": "separator",
+        "type": "String"
+       }
+      ],
+      "name": "appendUsage",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "depth",
+        "type": "int"
+       },
+       {
+        "name": "helpSettings",
+        "type": "Set"
+       },
+       {
+        "name": "comp",
+        "type": "Comparator"
+       }
+      ],
+      "name": "helpLines",
+      "type": "List"
+     },
+     {
+      "params": [],
+      "name": "getOptions",
+      "type": "List"
+     },
+     {
+      "params": [],
+      "name": "getAnonymous",
+      "type": "List"
+     },
+     {
+      "params": [
+       {
+        "name": "trigger",
+        "type": "String"
+       }
+      ],
+      "name": "findOption",
+      "type": "Option"
+     },
+     {
+      "params": [],
+      "name": "getMinimum",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getMaximum",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "isRequired",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       }
+      ],
+      "name": "defaults",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       },
+       {
+        "name": "trigger",
+        "type": "String"
+       }
+      ],
+      "name": "looksLikeOption",
+      "type": "boolean"
+     }
+    ],
+    "fields": [
+     {
+      "name": "name",
+      "type": "String"
+     },
+     {
+      "name": "description",
+      "type": "String"
+     },
+     {
+      "name": "options",
+      "type": "List"
+     },
+     {
+      "name": "minimum",
+      "type": "int"
+     },
+     {
+      "name": "maximum",
+      "type": "int"
+     },
+     {
+      "name": "anonymous",
+      "type": "List"
+     },
+     {
+      "name": "optionMap",
+      "type": "SortedMap"
+     },
+     {
+      "name": "prefixes",
+      "type": "Set"
+     }
+    ],
+    "name": "GroupImpl"
+   },
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getInstance",
+      "type": "Comparator"
+     },
+     {
+      "params": [
+       {
+        "name": "o1",
+        "type": "Object"
+       },
+       {
+        "name": "o2",
+        "type": "Object"
+       }
+      ],
+      "name": "compare",
+      "type": "int"
+     }
+    ],
+    "fields": [
+     {
+      "name": "instance",
+      "type": "Comparator"
+     }
+    ],
+    "name": "ReverseStringComparator"
+   }
+  ]
+ },
+ {
+  "filename": "ParentImpl.java",
+  "package_name": "org.apache.commons.cli2.option",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       },
+       {
+        "name": "arguments",
+        "type": "ListIterator"
+       }
+      ],
+      "name": "process",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       },
+       {
+        "name": "arg",
+        "type": "String"
+       }
+      ],
+      "name": "canProcess",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "getPrefixes",
+      "type": "Set"
+     },
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       }
+      ],
+      "name": "validate",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "StringBuffer"
+       },
+       {
+        "name": "helpSettings",
+        "type": "Set"
+       },
+       {
+        "name": "comp",
+        "type": "Comparator"
+       }
+      ],
+      "name": "appendUsage",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getDescription",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "depth",
+        "type": "int"
+       },
+       {
+        "name": "helpSettings",
+        "type": "Set"
+       },
+       {
+        "name": "comp",
+        "type": "Comparator"
+       }
+      ],
+      "name": "helpLines",
+      "type": "List"
+     },
+     {
+      "params": [],
+      "name": "getArgument",
+      "type": "Argument"
+     },
+     {
+      "params": [],
+      "name": "getChildren",
+      "type": "Group"
+     },
+     {
+      "params": [
+       {
+        "name": "arguments",
+        "type": "ListIterator"
+       },
+       {
+        "name": "separator",
+        "type": "char"
+       }
+      ],
+      "name": "handleInitialSeparator",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "trigger",
+        "type": "String"
+       }
+      ],
+      "name": "findOption",
+      "type": "Option"
+     },
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       }
+      ],
+      "name": "defaults",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "NUL",
+      "type": "char"
+     },
+     {
+      "name": "children",
+      "type": "Group"
+     },
+     {
+      "name": "argument",
+      "type": "Argument"
+     },
+     {
+      "name": "description",
+      "type": "String"
+     }
+    ],
+    "name": "ParentImpl"
+   }
+  ]
+ },
+ {
+  "filename": "DefaultOption.java",
+  "package_name": "org.apache.commons.cli2.option",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       },
+       {
+        "name": "argument",
+        "type": "String"
+       }
+      ],
+      "name": "canProcess",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       },
+       {
+        "name": "arguments",
+        "type": "ListIterator"
+       }
+      ],
+      "name": "processParent",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getTriggers",
+      "type": "Set"
+     },
+     {
+      "params": [],
+      "name": "getPrefixes",
+      "type": "Set"
+     },
+     {
+      "params": [
+       {
+        "name": "commandLine",
+        "type": "WriteableCommandLine"
+       }
+      ],
+      "name": "validate",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "StringBuffer"
+       },
+       {
+        "name": "helpSettings",
+        "type": "Set"
+       },
+       {
+        "name": "comp",
+        "type": "Comparator"
+       }
+      ],
+      "name": "appendUsage",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getPreferredName",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "DEFAULT_SHORT_PREFIX",
+      "type": "String"
+     },
+     {
+      "name": "DEFAULT_LONG_PREFIX",
+      "type": "String"
+     },
+     {
+      "name": "DEFAULT_BURST_ENABLED",
+      "type": "boolean"
+     },
+     {
+      "name": "preferredName",
+      "type": "String"
+     },
+     {
+      "name": "aliases",
+      "type": "Set"
+     },
+     {
+      "name": "burstAliases",
+      "type": "Set"
+     },
+     {
+      "name": "triggers",
+      "type": "Set"
+     },
+     {
+      "name": "prefixes",
+      "type": "Set"
+     },
+     {
+      "name": "shortPrefix",
+      "type": "String"
+     },
+     {
+      "name": "burstEnabled",
+      "type": "boolean"
+     },
+     {
+      "name": "burstLength",
+      "type": "int"
+     }
+    ],
+    "name": "DefaultOption"
+   }
+  ]
+ },
+ {
+  "filename": "HelpLineImpl.java",
+  "package_name": "org.apache.commons.cli2.option",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getDescription",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getIndent",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getOption",
+      "type": "Option"
+     },
+     {
+      "params": [
+       {
+        "name": "helpSettings",
+        "type": "Set"
+       },
+       {
+        "name": "comparator",
+        "type": "Comparator"
+       }
+      ],
+      "name": "usage",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "option",
+      "type": "Option"
+     },
+     {
+      "name": "indent",
+      "type": "int"
+     },
+     {
+      "name": "cachedHelpSettings",
+      "type": "Set"
+     },
+     {
+      "name": "cachedComparator",
+      "type": "Comparator"
+     },
+     {
+      "name": "cachedUsage",
+      "type": "String"
+     }
+    ],
+    "name": "HelpLineImpl"
+   }
+  ]
+ },
+ {
+  "filename": "Comparators.java",
+  "package_name": "org.apache.commons.cli2.util",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "c0",
+        "type": "Comparator"
+       },
+       {
+        "name": "c1",
+        "type": "Comparator"
+       }
+      ],
+      "name": "chain",
+      "type": "Comparator"
+     },
+     {
+      "params": [
+       {
+        "name": "c0",
+        "type": "Comparator"
+       },
+       {
+        "name": "c1",
+        "type": "Comparator"
+       },
+       {
+        "name": "c2",
+        "type": "Comparator"
+       }
+      ],
+      "name": "chain",
+      "type": "Comparator"
+     },
+     {
+      "params": [
+       {
+        "name": "c0",
+        "type": "Comparator"
+       },
+       {
+        "name": "c1",
+        "type": "Comparator"
+       },
+       {
+        "name": "c2",
+        "type": "Comparator"
+       },
+       {
+        "name": "c3",
+        "type": "Comparator"
+       }
+      ],
+      "name": "chain",
+      "type": "Comparator"
+     },
+     {
+      "params": [
+       {
+        "name": "c0",
+        "type": "Comparator"
+       },
+       {
+        "name": "c1",
+        "type": "Comparator"
+       },
+       {
+        "name": "c2",
+        "type": "Comparator"
+       },
+       {
+        "name": "c3",
+        "type": "Comparator"
+       },
+       {
+        "name": "c4",
+        "type": "Comparator"
+       }
+      ],
+      "name": "chain",
+      "type": "Comparator"
+     },
+     {
+      "params": [
+       {
+        "name": "comparators",
+        "type": "List"
+       }
+      ],
+      "name": "chain",
+      "type": "Comparator"
+     },
+     {
+      "params": [
+       {
+        "name": "comparators",
+        "type": "Comparator"
+       }
+      ],
+      "name": "chain",
+      "type": "Comparator"
+     },
+     {
+      "params": [
+       {
+        "name": "wrapped",
+        "type": "Comparator"
+       }
+      ],
+      "name": "reverse",
+      "type": "Comparator"
+     },
+     {
+      "params": [],
+      "name": "groupFirst",
+      "type": "Comparator"
+     },
+     {
+      "params": [],
+      "name": "groupLast",
+      "type": "Comparator"
+     },
+     {
+      "params": [],
+      "name": "switchFirst",
+      "type": "Comparator"
+     },
+     {
+      "params": [],
+      "name": "switchLast",
+      "type": "Comparator"
+     },
+     {
+      "params": [],
+      "name": "commandFirst",
+      "type": "Comparator"
+     },
+     {
+      "params": [],
+      "name": "commandLast",
+      "type": "Comparator"
+     },
+     {
+      "params": [],
+      "name": "defaultOptionFirst",
+      "type": "Comparator"
+     },
+     {
+      "params": [],
+      "name": "defaultOptionLast",
+      "type": "Comparator"
+     },
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ],
+      "name": "namedFirst",
+      "type": "Comparator"
+     },
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ],
+      "name": "namedLast",
+      "type": "Comparator"
+     },
+     {
+      "params": [],
+      "name": "preferredNameFirst",
+      "type": "Comparator"
+     },
+     {
+      "params": [],
+      "name": "preferredNameLast",
+      "type": "Comparator"
+     },
+     {
+      "params": [],
+      "name": "requiredFirst",
+      "type": "Comparator"
+     },
+     {
+      "params": [],
+      "name": "requiredLast",
+      "type": "Comparator"
+     }
+    ],
+    "fields": [],
+    "name": "Comparators"
+   }
+  ]
+ },
+ {
+  "filename": "HelpFormatter.java",
+  "package_name": "org.apache.commons.cli2.util",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "print",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "printException",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "printHelp",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "printUsage",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "printHeader",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "printFooter",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "text",
+        "type": "String"
+       }
+      ],
+      "name": "printWrapped",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "printGutterLeft",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "printGutterRight",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "printDivider",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "text",
+        "type": "String"
+       },
+       {
+        "name": "width",
+        "type": "int"
+       },
+       {
+        "name": "writer",
+        "type": "PrintWriter"
+       }
+      ],
+      "name": "pad",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "text",
+        "type": "String"
+       },
+       {
+        "name": "width",
+        "type": "int"
+       }
+      ],
+      "name": "wrap",
+      "type": "List"
+     },
+     {
+      "params": [
+       {
+        "name": "comparator",
+        "type": "Comparator"
+       }
+      ],
+      "name": "setComparator",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "displaySettings",
+        "type": "Set"
+       }
+      ],
+      "name": "setDisplaySettings",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "divider",
+        "type": "String"
+       }
+      ],
+      "name": "setDivider",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "exception",
+        "type": "OptionException"
+       }
+      ],
+      "name": "setException",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "footer",
+        "type": "String"
+       }
+      ],
+      "name": "setFooter",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "fullUsageSettings",
+        "type": "Set"
+       }
+      ],
+      "name": "setFullUsageSettings",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "group",
+        "type": "Group"
+       }
+      ],
+      "name": "setGroup",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "header",
+        "type": "String"
+       }
+      ],
+      "name": "setHeader",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "lineUsageSettings",
+        "type": "Set"
+       }
+      ],
+      "name": "setLineUsageSettings",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "shellCommand",
+        "type": "String"
+       }
+      ],
+      "name": "setShellCommand",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getComparator",
+      "type": "Comparator"
+     },
+     {
+      "params": [],
+      "name": "getDisplaySettings",
+      "type": "Set"
+     },
+     {
+      "params": [],
+      "name": "getDivider",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getException",
+      "type": "OptionException"
+     },
+     {
+      "params": [],
+      "name": "getFooter",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getFullUsageSettings",
+      "type": "Set"
+     },
+     {
+      "params": [],
+      "name": "getGroup",
+      "type": "Group"
+     },
+     {
+      "params": [],
+      "name": "getGutterCenter",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getGutterLeft",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getGutterRight",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getHeader",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getLineUsageSettings",
+      "type": "Set"
+     },
+     {
+      "params": [],
+      "name": "getPageWidth",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getShellCommand",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "out",
+        "type": "PrintWriter"
+       }
+      ],
+      "name": "setPrintWriter",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getPrintWriter",
+      "type": "PrintWriter"
+     }
+    ],
+    "fields": [
+     {
+      "name": "DEFAULT_FULL_WIDTH",
+      "type": "int"
+     },
+     {
+      "name": "DEFAULT_GUTTER_LEFT",
+      "type": "String"
+     },
+     {
+      "name": "DEFAULT_GUTTER_CENTER",
+      "type": "String"
+     },
+     {
+      "name": "DEFAULT_GUTTER_RIGHT",
+      "type": "String"
+     },
+     {
+      "name": "DEFAULT_FULL_USAGE_SETTINGS",
+      "type": "Set"
+     },
+     {
+      "name": "DEFAULT_LINE_USAGE_SETTINGS",
+      "type": "Set"
+     },
+     {
+      "name": "DEFAULT_DISPLAY_USAGE_SETTINGS",
+      "type": "Set"
+     },
+     {
+      "name": "fullUsageSettings",
+      "type": "Set"
+     },
+     {
+      "name": "lineUsageSettings",
+      "type": "Set"
+     },
+     {
+      "name": "displaySettings",
+      "type": "Set"
+     },
+     {
+      "name": "exception",
+      "type": "OptionException"
+     },
+     {
+      "name": "group",
+      "type": "Group"
+     },
+     {
+      "name": "comparator",
+      "type": "Comparator"
+     },
+     {
+      "name": "divider",
+      "type": "String"
+     },
+     {
+      "name": "header",
+      "type": "String"
+     },
+     {
+      "name": "footer",
+      "type": "String"
+     },
+     {
+      "name": "shellCommand",
+      "type": "String"
+     },
+     {
+      "name": "out",
+      "type": "PrintWriter"
+     },
+     {
+      "name": "gutterLeft",
+      "type": "String"
+     },
+     {
+      "name": "gutterCenter",
+      "type": "String"
+     },
+     {
+      "name": "gutterRight",
+      "type": "String"
+     },
+     {
+      "name": "pageWidth",
+      "type": "int"
+     }
+    ],
+    "name": "HelpFormatter"
+   }
+  ]
+ },
+ {
+  "filename": "ResourceConstants.java",
+  "package_name": "org.apache.commons.cli2.resource",
+  "classes": [
+   {
+    "methods": [],
+    "fields": [
+     {
+      "name": "CLASSVALIDATOR_BAD_CLASSNAME",
+      "type": "String"
+     },
+     {
+      "name": "CLASSVALIDATOR_CLASS_NOTFOUND",
+      "type": "String"
+     },
+     {
+      "name": "CLASSVALIDATOR_CLASS_ACCESS",
+      "type": "String"
+     },
+     {
+      "name": "CLASSVALIDATOR_CLASS_CREATE",
+      "type": "String"
+     },
+     {
+      "name": "DATEVALIDATOR_DATE_OUTOFRANGE",
+      "type": "String"
+     },
+     {
+      "name": "URLVALIDATOR_MALFORMED_URL",
+      "type": "String"
+     },
+     {
+      "name": "NUMBERVALIDATOR_NUMBER_OUTOFRANGE",
+      "type": "String"
+     },
+     {
+      "name": "ARGUMENT_UNEXPECTED_VALUE",
+      "type": "String"
+     },
+     {
+      "name": "ARGUMENT_MIN_EXCEEDS_MAX",
+      "type": "String"
+     },
+     {
+      "name": "ARGUMENT_TOO_FEW_DEFAULTS",
+      "type": "String"
+     },
+     {
+      "name": "ARGUMENT_TOO_MANY_DEFAULTS",
+      "type": "String"
+     },
+     {
+      "name": "ARGUMENT_MISSING_VALUES",
+      "type": "String"
+     },
+     {
+      "name": "ARGUMENT_TOO_MANY_VALUES",
+      "type": "String"
+     },
+     {
+      "name": "OPTION_TRIGGER_NEEDS_PREFIX",
+      "type": "String"
+     },
+     {
+      "name": "OPTION_MISSING_REQUIRED",
+      "type": "String"
+     },
+     {
+      "name": "OPTION_NO_NAME",
+      "type": "String"
+     },
+     {
+      "name": "OPTION_ILLEGAL_LONG_PREFIX",
+      "type": "String"
+     },
+     {
+      "name": "OPTION_ILLEGAL_SHORT_PREFIX",
+      "type": "String"
+     },
+     {
+      "name": "UNEXPECTED_TOKEN",
+      "type": "String"
+     },
+     {
+      "name": "MISSING_OPTION",
+      "type": "String"
+     },
+     {
+      "name": "CANNOT_BURST",
+      "type": "String"
+     },
+     {
+      "name": "COMMAND_PREFERRED_NAME_TOO_SHORT",
+      "type": "String"
+     },
+     {
+      "name": "SWITCH_ILLEGAL_ENABLED_PREFIX",
+      "type": "String"
+     },
+     {
+      "name": "SWITCH_ILLEGAL_DISABLED_PREFIX",
+      "type": "String"
+     },
+     {
+      "name": "SWITCH_IDENTICAL_PREFIXES",
+      "type": "String"
+     },
+     {
+      "name": "SWITCH_ALREADY_SET",
+      "type": "String"
+     },
+     {
+      "name": "SWITCH_NO_ENABLED_PREFIX",
+      "type": "String"
+     },
+     {
+      "name": "SWITCH_NO_DISABLED_PREFIX",
+      "type": "String"
+     },
+     {
+      "name": "SWITCH_ENABLED_STARTS_WITH_DISABLED",
+      "type": "String"
+     },
+     {
+      "name": "SWITCH_DISABLED_STARTWS_WITH_ENABLED",
+      "type": "String"
+     },
+     {
+      "name": "SWITCH_PREFERRED_NAME_TOO_SHORT",
+      "type": "String"
+     },
+     {
+      "name": "SOURCE_DEST_MUST_ENFORCE_VALUES",
+      "type": "String"
+     },
+     {
+      "name": "HELPFORMATTER_GUTTER_TOO_LONG",
+      "type": "String"
+     },
+     {
+      "name": "HELPFORMATTER_WIDTH_TOO_NARROW",
+      "type": "String"
+     },
+     {
+      "name": "ENUM_ILLEGAL_VALUE",
+      "type": "String"
+     },
+     {
+      "name": "ARGUMENT_BUILDER_NULL_CONSUME_REMAINING",
+      "type": "String"
+     },
+     {
+      "name": "ARGUMENT_BUILDER_EMPTY_CONSUME_REMAINING",
+      "type": "String"
+     },
+     {
+      "name": "ARGUMENT_BUILDER_NULL_DEFAULT",
+      "type": "String"
+     },
+     {
+      "name": "ARGUMENT_BUILDER_NULL_DEFAULTS",
+      "type": "String"
+     },
+     {
+      "name": "ARGUMENT_BUILDER_NEGATIVE_MAXIMUM",
+      "type": "String"
+     },
+     {
+      "name": "ARGUMENT_BUILDER_NEGATIVE_MINIMUM",
+      "type": "String"
+     },
+     {
+      "name": "ARGUMENT_BUILDER_NULL_NAME",
+      "type": "String"
+     },
+     {
+      "name": "ARGUMENT_BUILDER_EMPTY_NAME",
+      "type": "String"
+     },
+     {
+      "name": "ARGUMENT_BUILDER_NULL_VALIDATOR",
+      "type": "String"
+     }
+    ],
+    "name": "ResourceConstants"
+   }
+  ]
+ },
+ {
+  "filename": "ResourceHelper.java",
+  "package_name": "org.apache.commons.cli2.resource",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getBundleName",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getResourceHelper",
+      "type": "ResourceHelper"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       }
+      ],
+      "name": "getMessage",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       },
+       {
+        "name": "value",
+        "type": "Object"
+       }
+      ],
+      "name": "getMessage",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       },
+       {
+        "name": "value1",
+        "type": "Object"
+       },
+       {
+        "name": "value2",
+        "type": "Object"
+       }
+      ],
+      "name": "getMessage",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       },
+       {
+        "name": "value1",
+        "type": "Object"
+       },
+       {
+        "name": "value2",
+        "type": "Object"
+       },
+       {
+        "name": "value3",
+        "type": "Object"
+       }
+      ],
+      "name": "getMessage",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       },
+       {
+        "name": "values",
+        "type": "Object"
+       }
+      ],
+      "name": "getMessage",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "PROP_LOCALE",
+      "type": "String"
+     },
+     {
+      "name": "DEFAULT_BUNDLE",
+      "type": "String"
+     },
+     {
+      "name": "helper",
+      "type": "ResourceHelper"
+     },
+     {
+      "name": "bundle",
+      "type": "ResourceBundle"
+     },
+     {
+      "name": "prop",
+      "type": "String"
+     }
+    ],
+    "name": "ResourceHelper"
+   }
+  ]
+ },
+ {
+  "filename": "EnumValidator.java",
+  "package_name": "org.apache.commons.cli2.validation",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "values",
+        "type": "List"
+       }
+      ],
+      "name": "validate",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getValuesAsString",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getValidValues",
+      "type": "Set"
+     },
+     {
+      "params": [
+       {
+        "name": "validValues",
+        "type": "Set"
+       }
+      ],
+      "name": "setValidValues",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "validValues",
+      "type": "Set"
+     }
+    ],
+    "name": "EnumValidator"
+   }
+  ]
+ },
+ {
+  "filename": "DateValidator.java",
+  "package_name": "org.apache.commons.cli2.validation",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getDateInstance",
+      "type": "DateValidator"
+     },
+     {
+      "params": [],
+      "name": "getTimeInstance",
+      "type": "DateValidator"
+     },
+     {
+      "params": [],
+      "name": "getDateTimeInstance",
+      "type": "DateValidator"
+     },
+     {
+      "params": [
+       {
+        "name": "values",
+        "type": "List"
+       }
+      ],
+      "name": "validate",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "lenient",
+        "type": "boolean"
+       }
+      ],
+      "name": "setLenient",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "isLenient",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "getMaximum",
+      "type": "Date"
+     },
+     {
+      "params": [
+       {
+        "name": "maximum",
+        "type": "Date"
+       }
+      ],
+      "name": "setMaximum",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getMinimum",
+      "type": "Date"
+     },
+     {
+      "params": [
+       {
+        "name": "minimum",
+        "type": "Date"
+       }
+      ],
+      "name": "setMinimum",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "date",
+        "type": "Date"
+       }
+      ],
+      "name": "isDateLater",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "date",
+        "type": "Date"
+       }
+      ],
+      "name": "isDateEarlier",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "format",
+        "type": "DateFormat"
+       }
+      ],
+      "name": "setFormat",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "formats",
+        "type": "List"
+       }
+      ],
+      "name": "setFormats",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "formats",
+        "type": "DateFormat"
+       }
+      ],
+      "name": "setFormats",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getFormats",
+      "type": "DateFormat"
+     }
+    ],
+    "fields": [
+     {
+      "name": "resources",
+      "type": "ResourceHelper"
+     },
+     {
+      "name": "formats",
+      "type": "DateFormat"
+     },
+     {
+      "name": "minimum",
+      "type": "Date"
+     },
+     {
+      "name": "maximum",
+      "type": "Date"
+     },
+     {
+      "name": "isLenient",
+      "type": "boolean"
+     }
+    ],
+    "name": "DateValidator"
+   }
+  ]
+ },
+ {
+  "filename": "InvalidArgumentException.java",
+  "package_name": "org.apache.commons.cli2.validation",
+  "classes": [
+   {
+    "methods": [],
+    "fields": [],
+    "name": "InvalidArgumentException"
+   }
+  ]
+ },
+ {
+  "filename": "NumberValidator.java",
+  "package_name": "org.apache.commons.cli2.validation",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getCurrencyInstance",
+      "type": "NumberValidator"
+     },
+     {
+      "params": [],
+      "name": "getIntegerInstance",
+      "type": "NumberValidator"
+     },
+     {
+      "params": [],
+      "name": "getPercentInstance",
+      "type": "NumberValidator"
+     },
+     {
+      "params": [],
+      "name": "getNumberInstance",
+      "type": "NumberValidator"
+     },
+     {
+      "params": [
+       {
+        "name": "values",
+        "type": "List"
+       }
+      ],
+      "name": "validate",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getFormat",
+      "type": "NumberFormat"
+     },
+     {
+      "params": [
+       {
+        "name": "format",
+        "type": "NumberFormat"
+       }
+      ],
+      "name": "setFormat",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getMaximum",
+      "type": "Number"
+     },
+     {
+      "params": [
+       {
+        "name": "maximum",
+        "type": "Number"
+       }
+      ],
+      "name": "setMaximum",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getMinimum",
+      "type": "Number"
+     },
+     {
+      "params": [
+       {
+        "name": "minimum",
+        "type": "Number"
+       }
+      ],
+      "name": "setMinimum",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "format",
+      "type": "NumberFormat"
+     },
+     {
+      "name": "minimum",
+      "type": "Number"
+     },
+     {
+      "name": "maximum",
+      "type": "Number"
+     }
+    ],
+    "name": "NumberValidator"
+   }
+  ]
+ },
+ {
+  "filename": "UrlValidator.java",
+  "package_name": "org.apache.commons.cli2.validation",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "values",
+        "type": "List"
+       }
+      ],
+      "name": "validate",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getProtocol",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "protocol",
+        "type": "String"
+       }
+      ],
+      "name": "setProtocol",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "protocol",
+      "type": "String"
+     }
+    ],
+    "name": "UrlValidator"
+   }
+  ]
+ },
+ {
+  "filename": "FileValidator.java",
+  "package_name": "org.apache.commons.cli2.validation",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getExistingInstance",
+      "type": "FileValidator"
+     },
+     {
+      "params": [],
+      "name": "getExistingFileInstance",
+      "type": "FileValidator"
+     },
+     {
+      "params": [],
+      "name": "getExistingDirectoryInstance",
+      "type": "FileValidator"
+     },
+     {
+      "params": [
+       {
+        "name": "values",
+        "type": "List"
+       }
+      ],
+      "name": "validate",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "isDirectory",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "directory",
+        "type": "boolean"
+       }
+      ],
+      "name": "setDirectory",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "isExisting",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "existing",
+        "type": "boolean"
+       }
+      ],
+      "name": "setExisting",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "isFile",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "file",
+        "type": "boolean"
+       }
+      ],
+      "name": "setFile",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "isHidden",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "hidden",
+        "type": "boolean"
+       }
+      ],
+      "name": "setHidden",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "isReadable",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "readable",
+        "type": "boolean"
+       }
+      ],
+      "name": "setReadable",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "isWritable",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "writable",
+        "type": "boolean"
+       }
+      ],
+      "name": "setWritable",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "readable",
+      "type": "boolean"
+     },
+     {
+      "name": "writable",
+      "type": "boolean"
+     },
+     {
+      "name": "existing",
+      "type": "boolean"
+     },
+     {
+      "name": "directory",
+      "type": "boolean"
+     },
+     {
+      "name": "file",
+      "type": "boolean"
+     },
+     {
+      "name": "hidden",
+      "type": "boolean"
+     }
+    ],
+    "name": "FileValidator"
+   }
+  ]
+ },
+ {
+  "filename": "Validator.java",
+  "package_name": "org.apache.commons.cli2.validation",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "values",
+        "type": "List"
+       }
+      ],
+      "name": "validate",
+      "type": null
+     }
+    ],
+    "fields": [],
+    "name": "Validator"
+   }
+  ]
+ },
+ {
+  "filename": "ClassValidator.java",
+  "package_name": "org.apache.commons.cli2.validation",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "values",
+        "type": "List"
+       }
+      ],
+      "name": "validate",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "isLoadable",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "loadable",
+        "type": "boolean"
+       }
+      ],
+      "name": "setLoadable",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getClassLoader",
+      "type": "ClassLoader"
+     },
+     {
+      "params": [
+       {
+        "name": "loader",
+        "type": "ClassLoader"
+       }
+      ],
+      "name": "setClassLoader",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "isInstance",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "instance",
+        "type": "boolean"
+       }
+      ],
+      "name": "setInstance",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ],
+      "name": "isPotentialClassName",
+      "type": "boolean"
+     }
+    ],
+    "fields": [
+     {
+      "name": "resources",
+      "type": "ResourceHelper"
+     },
+     {
+      "name": "loadable",
+      "type": "boolean"
+     },
+     {
+      "name": "instance",
+      "type": "boolean"
+     },
+     {
+      "name": "loader",
+      "type": "ClassLoader"
+     }
+    ],
+    "name": "ClassValidator"
+   }
+  ]
+ }
+]

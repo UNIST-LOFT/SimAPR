@@ -1,0 +1,2 @@
+- c = bin_op.apply(a,b);
++ c =  bin_op.apply(b,a);

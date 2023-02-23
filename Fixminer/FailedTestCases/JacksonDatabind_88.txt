@@ -1,0 +1,2 @@
+Failing tests: 1
+  - com.fasterxml.jackson.databind.jsontype.GenericTypeId1735Test::testNestedTypeCheck1735

@@ -1,0 +1,2 @@
+- if hare.successor is None:
++ if hare is None or hare.successor is None:

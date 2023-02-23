@@ -1,0 +1,9 @@
+Failing tests: 8
+  - com.fasterxml.jackson.core.json.async.AsyncNumberCoercionTest::testToLongFailing
+  - com.fasterxml.jackson.core.json.async.AsyncNumberCoercionTest::testToIntFailing
+  - com.fasterxml.jackson.core.read.NumberCoercionTest::testToLongFailing
+  - com.fasterxml.jackson.core.read.NumberCoercionTest::testToIntFailing
+  - com.fasterxml.jackson.core.read.NumberOverflowTest::testMaliciousLongOverflow
+  - com.fasterxml.jackson.core.read.NumberOverflowTest::testSimpleLongOverflow
+  - com.fasterxml.jackson.core.read.NumberOverflowTest::testMaliciousIntOverflow
+  - com.fasterxml.jackson.core.read.NumberParsingTest::testSimpleLong

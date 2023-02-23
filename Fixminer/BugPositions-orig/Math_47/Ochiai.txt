@@ -1,0 +1,2 @@
+org.apache.commons.math.complex.Complex@1179@0.8164965809
+org.apache.commons.math.complex.Complex@257@0.5773502692

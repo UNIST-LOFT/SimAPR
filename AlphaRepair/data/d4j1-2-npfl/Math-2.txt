@@ -1,0 +1,2 @@
+- return (double) (getSampleSize() * getNumberOfSuccesses()) / (double) getPopulationSize();
++ return ((double) getSampleSize() * getNumberOfSuccesses()) / (double) getPopulationSize();

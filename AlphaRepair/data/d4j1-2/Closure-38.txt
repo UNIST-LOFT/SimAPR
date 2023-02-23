@@ -1,0 +1,2 @@
+- if (x < 0 && prev == '-') {
++ if (negativeZero|x < 0 && prev == '-') {

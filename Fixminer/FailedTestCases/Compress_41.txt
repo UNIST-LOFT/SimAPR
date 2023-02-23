@@ -1,0 +1,3 @@
+Failing tests: 2
+  - org.apache.commons.compress.archivers.ZipTestCase::testListAllFilesWithNestedArchive
+  - org.apache.commons.compress.archivers.zip.ZipArchiveInputStreamTest::testThrowOnInvalidEntry

@@ -1,0 +1,2 @@
+- if (options.dependencyOptions.needsManagement() && options.closurePass) {
++ if (options.dependencyOptions.needsManagement()) {

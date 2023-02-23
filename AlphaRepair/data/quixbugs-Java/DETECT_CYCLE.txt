@@ -1,0 +1,2 @@
+- if (hare.getSuccessor() == null)
++ if (hare == null || hare.getSuccessor() == null)

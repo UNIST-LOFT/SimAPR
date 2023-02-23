@@ -1,0 +1,14 @@
+.vscode/
+env/
+**/__pycache__/
+out/
+out-*/
+d4j/
+d4j-*/
+buggy/
+buggy-*/
+log/
+*.tar.gz
+sim/
+sim-*/
+log/

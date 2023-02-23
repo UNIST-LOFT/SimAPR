@@ -1,0 +1,5 @@
+com.google.javascript.jscomp.PeepholeSubstituteAlternateSyntax@226@0.5773502692
+com.google.javascript.jscomp.PeepholeSubstituteAlternateSyntax@225@0.5773502692
+com.google.javascript.jscomp.PeepholeSubstituteAlternateSyntax@224@0.5773502692
+com.google.javascript.jscomp.PeepholeSubstituteAlternateSyntax@221@0.5773502692
+com.google.javascript.jscomp.PeepholeSubstituteAlternateSyntax@220@0.5773502692

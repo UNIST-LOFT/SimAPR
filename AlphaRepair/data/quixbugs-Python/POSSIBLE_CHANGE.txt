@@ -1,0 +1,2 @@
+- if total < 0:
++ if total < 0 or not coins:

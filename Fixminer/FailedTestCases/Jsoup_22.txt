@@ -1,0 +1,4 @@
+Failing tests: 3
+  - org.jsoup.nodes.ElementTest::elementIsNotASiblingOfItself
+  - org.jsoup.nodes.NodeTest::nodeIsNotASiblingOfItself
+  - org.jsoup.nodes.NodeTest::orphanNodeReturnsNullForSiblingElements

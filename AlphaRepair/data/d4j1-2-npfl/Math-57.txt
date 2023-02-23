@@ -1,0 +1,2 @@
+- int sum = 0;
++ double sum=0;

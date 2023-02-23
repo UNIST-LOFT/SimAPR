@@ -1,0 +1,3 @@
+Failing tests: 2
+  - org.apache.commons.cli.HelpFormatterTest::testRenderWrappedTextWordCut
+  - org.apache.commons.cli.HelpFormatterTest::testFindWrapPos

@@ -1,0 +1,5 @@
+Failing tests: 4
+  - com.fasterxml.jackson.core.sym.TestByteBasedSymbols::testIssue207
+  - com.fasterxml.jackson.core.sym.TestSymbolTables::testCollisionsWithBytesNew187b
+  - com.fasterxml.jackson.core.sym.TestSymbolTables::testSyntheticWithBytesNew
+  - com.fasterxml.jackson.core.sym.TestSymbolTables::testShortNameCollisionsDirectNew

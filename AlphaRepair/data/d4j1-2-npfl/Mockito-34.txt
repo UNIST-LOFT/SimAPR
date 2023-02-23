@@ -1,0 +1,2 @@
+- ((CapturesArguments) m).captureFrom(i.getArguments()[k]);
++ if (i.getArguments().length > k) ((CapturesArguments) m).captureFrom(i.getArguments()[k]);

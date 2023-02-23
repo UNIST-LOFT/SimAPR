@@ -1,0 +1,2 @@
+- return [[first] + subset for subset in rest_subsets]
++ return list(rest_subsets) + [[first] + subset for subset in rest_subsets]

@@ -1,0 +1,3 @@
+Failing tests: 2
+  - org.jsoup.nodes.DocumentTypeTest::outerHtmlGeneration
+  - org.jsoup.nodes.DocumentTypeTest::constructorValidationThrowsExceptionOnBlankName

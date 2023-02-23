@@ -1,0 +1,2 @@
+- if (fnType != null) {
++ if (fnType != null && fnType.hasInstanceType()) {

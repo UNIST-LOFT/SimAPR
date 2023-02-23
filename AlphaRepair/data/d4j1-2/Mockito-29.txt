@@ -1,0 +1,2 @@
+- description.appendText(wanted.toString());
++ if (wanted instanceof Object) description.appendText(wanted.toString());

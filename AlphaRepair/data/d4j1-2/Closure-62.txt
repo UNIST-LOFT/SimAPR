@@ -1,0 +1,2 @@
+- && 0 <= charno && charno < sourceExcerpt.length()) {
++ && 0 <= charno && charno <= sourceExcerpt.length()) {

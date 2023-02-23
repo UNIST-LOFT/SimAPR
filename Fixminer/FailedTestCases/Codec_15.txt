@@ -1,0 +1,2 @@
+Failing tests: 1
+  - org.apache.commons.codec.language.SoundexTest::testHWRuleEx1

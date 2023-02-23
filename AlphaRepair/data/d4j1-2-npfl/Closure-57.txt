@@ -1,0 +1,2 @@
+- if (target != null) {
++ if (target != null && target.getType() == Token.STRING) {

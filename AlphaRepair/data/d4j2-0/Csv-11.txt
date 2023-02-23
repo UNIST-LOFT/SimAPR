@@ -1,0 +1,2 @@
+- final boolean emptyHeader = header.trim().isEmpty();
++ final boolean emptyHeader = header == null || header.trim().isEmpty();

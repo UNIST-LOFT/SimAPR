@@ -1,0 +1,2 @@
++ if (markers == null) {return false; }
+  boolean removed = markers.remove(marker);

@@ -1,0 +1,4676 @@
+[
+ {
+  "filename": "XmlTypeResolverBuilder.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml",
+  "classes": [
+   {
+    "name": "XmlTypeResolverBuilder",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "JsonTypeInfo",
+        "name": "idType"
+       },
+       {
+        "type": "TypeIdResolver",
+        "name": "idRes"
+       }
+      ],
+      "type": "StdTypeResolverBuilder",
+      "name": "init"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "typeIdPropName"
+       }
+      ],
+      "type": "StdTypeResolverBuilder",
+      "name": "typeProperty"
+     },
+     {
+      "params": [
+       {
+        "type": "MapperConfig",
+        "name": "config"
+       },
+       {
+        "type": "JavaType",
+        "name": "baseType"
+       },
+       {
+        "type": "Collection",
+        "name": "subtypes"
+       },
+       {
+        "type": "boolean",
+        "name": "forSer"
+       },
+       {
+        "type": "boolean",
+        "name": "forDeser"
+       }
+      ],
+      "type": "TypeIdResolver",
+      "name": "idResolver"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "className"
+       }
+      ],
+      "type": "String",
+      "name": "encodeXmlClassName"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "className"
+       }
+      ],
+      "type": "String",
+      "name": "decodeXmlClassName"
+     }
+    ],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "XmlAnnotationIntrospector.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml",
+  "classes": [
+   {
+    "name": "XmlAnnotationIntrospector",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "Annotated",
+        "name": "ann"
+       }
+      ],
+      "type": "String",
+      "name": "findNamespace"
+     },
+     {
+      "params": [
+       {
+        "type": "Annotated",
+        "name": "ann"
+       }
+      ],
+      "type": "Boolean",
+      "name": "isOutputAsAttribute"
+     },
+     {
+      "params": [
+       {
+        "type": "Annotated",
+        "name": "ann"
+       }
+      ],
+      "type": "Boolean",
+      "name": "isOutputAsText"
+     },
+     {
+      "params": [
+       {
+        "type": "Annotated",
+        "name": "ann"
+       }
+      ],
+      "type": "Boolean",
+      "name": "isOutputAsCData"
+     },
+     {
+      "params": [
+       {
+        "type": "boolean",
+        "name": "b"
+       }
+      ],
+      "type": null,
+      "name": "setDefaultUseWrapper"
+     }
+    ],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "PackageVersion.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml",
+  "classes": [
+   {
+    "name": "PackageVersion",
+    "methods": [
+     {
+      "params": [],
+      "type": "Version",
+      "name": "version"
+     }
+    ],
+    "fields": [
+     {
+      "type": "Version",
+      "name": "VERSION"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "JacksonXmlModule.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml",
+  "classes": [
+   {
+    "name": "JacksonXmlModule",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "SetupContext",
+        "name": "context"
+       }
+      ],
+      "type": null,
+      "name": "setupModule"
+     },
+     {
+      "params": [
+       {
+        "type": "boolean",
+        "name": "state"
+       }
+      ],
+      "type": null,
+      "name": "setDefaultUseWrapper"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "name"
+       }
+      ],
+      "type": null,
+      "name": "setXMLTextElementName"
+     },
+     {
+      "params": [],
+      "type": "AnnotationIntrospector",
+      "name": "_constructIntrospector"
+     }
+    ],
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "boolean",
+      "name": "_cfgDefaultUseWrapper"
+     },
+     {
+      "type": "String",
+      "name": "_cfgNameForTextElement"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "XmlPrettyPrinter.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml",
+  "classes": [
+   {
+    "name": "XmlPrettyPrinter",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "XMLStreamWriter2",
+        "name": "sw"
+       },
+       {
+        "type": "String",
+        "name": "nsURI"
+       },
+       {
+        "type": "String",
+        "name": "localName"
+       }
+      ],
+      "type": null,
+      "name": "writeStartElement"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamWriter2",
+        "name": "sw"
+       },
+       {
+        "type": "int",
+        "name": "nrOfEntries"
+       }
+      ],
+      "type": null,
+      "name": "writeEndElement"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamWriter2",
+        "name": "sw"
+       }
+      ],
+      "type": null,
+      "name": "writePrologLinefeed"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamWriter2",
+        "name": "sw"
+       },
+       {
+        "type": "String",
+        "name": "nsURI"
+       },
+       {
+        "type": "String",
+        "name": "localName"
+       },
+       {
+        "type": "String",
+        "name": "text"
+       },
+       {
+        "type": "boolean",
+        "name": "isCData"
+       }
+      ],
+      "type": null,
+      "name": "writeLeafElement"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamWriter2",
+        "name": "sw"
+       },
+       {
+        "type": "String",
+        "name": "nsURI"
+       },
+       {
+        "type": "String",
+        "name": "localName"
+       },
+       {
+        "type": "char",
+        "name": "buffer"
+       },
+       {
+        "type": "int",
+        "name": "offset"
+       },
+       {
+        "type": "int",
+        "name": "len"
+       },
+       {
+        "type": "boolean",
+        "name": "isCData"
+       }
+      ],
+      "type": null,
+      "name": "writeLeafElement"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamWriter2",
+        "name": "sw"
+       },
+       {
+        "type": "String",
+        "name": "nsURI"
+       },
+       {
+        "type": "String",
+        "name": "localName"
+       },
+       {
+        "type": "boolean",
+        "name": "value"
+       }
+      ],
+      "type": null,
+      "name": "writeLeafElement"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamWriter2",
+        "name": "sw"
+       },
+       {
+        "type": "String",
+        "name": "nsURI"
+       },
+       {
+        "type": "String",
+        "name": "localName"
+       },
+       {
+        "type": "int",
+        "name": "value"
+       }
+      ],
+      "type": null,
+      "name": "writeLeafElement"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamWriter2",
+        "name": "sw"
+       },
+       {
+        "type": "String",
+        "name": "nsURI"
+       },
+       {
+        "type": "String",
+        "name": "localName"
+       },
+       {
+        "type": "long",
+        "name": "value"
+       }
+      ],
+      "type": null,
+      "name": "writeLeafElement"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamWriter2",
+        "name": "sw"
+       },
+       {
+        "type": "String",
+        "name": "nsURI"
+       },
+       {
+        "type": "String",
+        "name": "localName"
+       },
+       {
+        "type": "double",
+        "name": "value"
+       }
+      ],
+      "type": null,
+      "name": "writeLeafElement"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamWriter2",
+        "name": "sw"
+       },
+       {
+        "type": "String",
+        "name": "nsURI"
+       },
+       {
+        "type": "String",
+        "name": "localName"
+       },
+       {
+        "type": "float",
+        "name": "value"
+       }
+      ],
+      "type": null,
+      "name": "writeLeafElement"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamWriter2",
+        "name": "sw"
+       },
+       {
+        "type": "String",
+        "name": "nsURI"
+       },
+       {
+        "type": "String",
+        "name": "localName"
+       },
+       {
+        "type": "BigInteger",
+        "name": "value"
+       }
+      ],
+      "type": null,
+      "name": "writeLeafElement"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamWriter2",
+        "name": "sw"
+       },
+       {
+        "type": "String",
+        "name": "nsURI"
+       },
+       {
+        "type": "String",
+        "name": "localName"
+       },
+       {
+        "type": "BigDecimal",
+        "name": "value"
+       }
+      ],
+      "type": null,
+      "name": "writeLeafElement"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamWriter2",
+        "name": "sw"
+       },
+       {
+        "type": "String",
+        "name": "nsURI"
+       },
+       {
+        "type": "String",
+        "name": "localName"
+       },
+       {
+        "type": "byte",
+        "name": "data"
+       },
+       {
+        "type": "int",
+        "name": "offset"
+       },
+       {
+        "type": "int",
+        "name": "len"
+       }
+      ],
+      "type": null,
+      "name": "writeLeafElement"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamWriter2",
+        "name": "sw"
+       },
+       {
+        "type": "String",
+        "name": "nsURI"
+       },
+       {
+        "type": "String",
+        "name": "localName"
+       }
+      ],
+      "type": null,
+      "name": "writeLeafNullElement"
+     }
+    ],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "package-info.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml",
+  "classes": []
+ },
+ {
+  "filename": "XmlFactory.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml",
+  "classes": [
+   {
+    "name": "XmlFactory",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "XMLInputFactory",
+        "name": "xmlIn"
+       },
+       {
+        "type": "XMLOutputFactory",
+        "name": "xmlOut"
+       }
+      ],
+      "type": null,
+      "name": "_initFactories"
+     },
+     {
+      "params": [],
+      "type": "XmlFactory",
+      "name": "copy"
+     },
+     {
+      "params": [],
+      "type": "Version",
+      "name": "version"
+     },
+     {
+      "params": [],
+      "type": "Object",
+      "name": "readResolve"
+     },
+     {
+      "params": [
+       {
+        "type": "ObjectInputStream",
+        "name": "in"
+       }
+      ],
+      "type": null,
+      "name": "readObject"
+     },
+     {
+      "params": [
+       {
+        "type": "ObjectOutputStream",
+        "name": "out"
+       }
+      ],
+      "type": null,
+      "name": "writeObject"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "name"
+       }
+      ],
+      "type": null,
+      "name": "setXMLTextElementName"
+     },
+     {
+      "params": [],
+      "type": "String",
+      "name": "getXMLTextElementName"
+     },
+     {
+      "params": [
+       {
+        "type": "FromXmlParser",
+        "name": "f"
+       },
+       {
+        "type": "boolean",
+        "name": "state"
+       }
+      ],
+      "type": "XmlFactory",
+      "name": "configure"
+     },
+     {
+      "params": [
+       {
+        "type": "FromXmlParser",
+        "name": "f"
+       }
+      ],
+      "type": "XmlFactory",
+      "name": "enable"
+     },
+     {
+      "params": [
+       {
+        "type": "FromXmlParser",
+        "name": "f"
+       }
+      ],
+      "type": "XmlFactory",
+      "name": "disable"
+     },
+     {
+      "params": [
+       {
+        "type": "FromXmlParser",
+        "name": "f"
+       }
+      ],
+      "type": "boolean",
+      "name": "isEnabled"
+     },
+     {
+      "params": [
+       {
+        "type": "ToXmlGenerator",
+        "name": "f"
+       },
+       {
+        "type": "boolean",
+        "name": "state"
+       }
+      ],
+      "type": "XmlFactory",
+      "name": "configure"
+     },
+     {
+      "params": [
+       {
+        "type": "ToXmlGenerator",
+        "name": "f"
+       }
+      ],
+      "type": "XmlFactory",
+      "name": "enable"
+     },
+     {
+      "params": [
+       {
+        "type": "ToXmlGenerator",
+        "name": "f"
+       }
+      ],
+      "type": "XmlFactory",
+      "name": "disable"
+     },
+     {
+      "params": [
+       {
+        "type": "ToXmlGenerator",
+        "name": "f"
+       }
+      ],
+      "type": "boolean",
+      "name": "isEnabled"
+     },
+     {
+      "params": [],
+      "type": "XMLInputFactory",
+      "name": "getXMLInputFactory"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLInputFactory",
+        "name": "f"
+       }
+      ],
+      "type": null,
+      "name": "setXMLInputFactory"
+     },
+     {
+      "params": [],
+      "type": "XMLOutputFactory",
+      "name": "getXMLOutputFactory"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLOutputFactory",
+        "name": "f"
+       }
+      ],
+      "type": null,
+      "name": "setXMLOutputFactory"
+     },
+     {
+      "params": [],
+      "type": "String",
+      "name": "getFormatName"
+     },
+     {
+      "params": [
+       {
+        "type": "InputAccessor",
+        "name": "acc"
+       }
+      ],
+      "type": "MatchStrength",
+      "name": "hasFormat"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "requiresCustomCodec"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "canUseCharArrays"
+     },
+     {
+      "params": [],
+      "type": "Class",
+      "name": "getFormatReadFeatureType"
+     },
+     {
+      "params": [],
+      "type": "Class",
+      "name": "getFormatWriteFeatureType"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "content"
+       }
+      ],
+      "type": "JsonParser",
+      "name": "createParser"
+     },
+     {
+      "params": [
+       {
+        "type": "OutputStream",
+        "name": "out"
+       }
+      ],
+      "type": "ToXmlGenerator",
+      "name": "createGenerator"
+     },
+     {
+      "params": [
+       {
+        "type": "OutputStream",
+        "name": "out"
+       },
+       {
+        "type": "JsonEncoding",
+        "name": "enc"
+       }
+      ],
+      "type": "ToXmlGenerator",
+      "name": "createGenerator"
+     },
+     {
+      "params": [
+       {
+        "type": "Writer",
+        "name": "out"
+       }
+      ],
+      "type": "ToXmlGenerator",
+      "name": "createGenerator"
+     },
+     {
+      "params": [
+       {
+        "type": "File",
+        "name": "f"
+       },
+       {
+        "type": "JsonEncoding",
+        "name": "enc"
+       }
+      ],
+      "type": "ToXmlGenerator",
+      "name": "createGenerator"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamReader",
+        "name": "sr"
+       }
+      ],
+      "type": "FromXmlParser",
+      "name": "createParser"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamWriter",
+        "name": "sw"
+       }
+      ],
+      "type": "ToXmlGenerator",
+      "name": "createGenerator"
+     },
+     {
+      "params": [
+       {
+        "type": "InputStream",
+        "name": "in"
+       },
+       {
+        "type": "IOContext",
+        "name": "ctxt"
+       }
+      ],
+      "type": "FromXmlParser",
+      "name": "_createParser"
+     },
+     {
+      "params": [
+       {
+        "type": "Reader",
+        "name": "r"
+       },
+       {
+        "type": "IOContext",
+        "name": "ctxt"
+       }
+      ],
+      "type": "FromXmlParser",
+      "name": "_createParser"
+     },
+     {
+      "params": [
+       {
+        "type": "char",
+        "name": "data"
+       },
+       {
+        "type": "int",
+        "name": "offset"
+       },
+       {
+        "type": "int",
+        "name": "len"
+       },
+       {
+        "type": "IOContext",
+        "name": "ctxt"
+       },
+       {
+        "type": "boolean",
+        "name": "recycleBuffer"
+       }
+      ],
+      "type": "FromXmlParser",
+      "name": "_createParser"
+     },
+     {
+      "params": [
+       {
+        "type": "byte",
+        "name": "data"
+       },
+       {
+        "type": "int",
+        "name": "offset"
+       },
+       {
+        "type": "int",
+        "name": "len"
+       },
+       {
+        "type": "IOContext",
+        "name": "ctxt"
+       }
+      ],
+      "type": "FromXmlParser",
+      "name": "_createParser"
+     },
+     {
+      "params": [
+       {
+        "type": "Writer",
+        "name": "out"
+       },
+       {
+        "type": "IOContext",
+        "name": "ctxt"
+       }
+      ],
+      "type": "JsonGenerator",
+      "name": "_createGenerator"
+     },
+     {
+      "params": [
+       {
+        "type": "OutputStream",
+        "name": "out"
+       }
+      ],
+      "type": "XMLStreamWriter",
+      "name": "_createXmlWriter"
+     },
+     {
+      "params": [
+       {
+        "type": "Writer",
+        "name": "w"
+       }
+      ],
+      "type": "XMLStreamWriter",
+      "name": "_createXmlWriter"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamWriter",
+        "name": "sw"
+       }
+      ],
+      "type": "XMLStreamWriter",
+      "name": "_initializeXmlWriter"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamReader",
+        "name": "sr"
+       }
+      ],
+      "type": "XMLStreamReader",
+      "name": "_initializeXmlReader"
+     },
+     {
+      "params": [
+       {
+        "type": "InputAccessor",
+        "name": "acc"
+       }
+      ],
+      "type": "MatchStrength",
+      "name": "hasXMLFormat"
+     },
+     {
+      "params": [
+       {
+        "type": "InputAccessor",
+        "name": "acc"
+       },
+       {
+        "type": "byte",
+        "name": "b"
+       }
+      ],
+      "type": "boolean",
+      "name": "validXmlNameStartChar"
+     },
+     {
+      "params": [
+       {
+        "type": "InputAccessor",
+        "name": "acc"
+       },
+       {
+        "type": "String",
+        "name": "matchStr"
+       },
+       {
+        "type": "MatchStrength",
+        "name": "fullMatchStrength"
+       }
+      ],
+      "type": "MatchStrength",
+      "name": "tryMatch"
+     },
+     {
+      "params": [
+       {
+        "type": "InputAccessor",
+        "name": "acc"
+       },
+       {
+        "type": "byte",
+        "name": "b"
+       }
+      ],
+      "type": "int",
+      "name": "skipSpace"
+     }
+    ],
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "String",
+      "name": "FORMAT_NAME_XML"
+     },
+     {
+      "type": "int",
+      "name": "DEFAULT_XML_PARSER_FEATURE_FLAGS"
+     },
+     {
+      "type": "int",
+      "name": "DEFAULT_XML_GENERATOR_FEATURE_FLAGS"
+     },
+     {
+      "type": "int",
+      "name": "_xmlParserFeatures"
+     },
+     {
+      "type": "int",
+      "name": "_xmlGeneratorFeatures"
+     },
+     {
+      "type": "XMLInputFactory",
+      "name": "_xmlInputFactory"
+     },
+     {
+      "type": "XMLOutputFactory",
+      "name": "_xmlOutputFactory"
+     },
+     {
+      "type": "String",
+      "name": "_cfgNameForTextElement"
+     },
+     {
+      "type": "String",
+      "name": "_jdkXmlInFactory"
+     },
+     {
+      "type": "String",
+      "name": "_jdkXmlOutFactory"
+     },
+     {
+      "type": "byte",
+      "name": "UTF8_BOM_1"
+     },
+     {
+      "type": "byte",
+      "name": "UTF8_BOM_2"
+     },
+     {
+      "type": "byte",
+      "name": "UTF8_BOM_3"
+     },
+     {
+      "type": "byte",
+      "name": "BYTE_x"
+     },
+     {
+      "type": "byte",
+      "name": "BYTE_m"
+     },
+     {
+      "type": "byte",
+      "name": "BYTE_l"
+     },
+     {
+      "type": "byte",
+      "name": "BYTE_D"
+     },
+     {
+      "type": "byte",
+      "name": "BYTE_LT"
+     },
+     {
+      "type": "byte",
+      "name": "BYTE_QMARK"
+     },
+     {
+      "type": "byte",
+      "name": "BYTE_EXCL"
+     },
+     {
+      "type": "byte",
+      "name": "BYTE_HYPHEN"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "XmlMapper.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml",
+  "classes": [
+   {
+    "name": "XmlMapper",
+    "methods": [
+     {
+      "params": [],
+      "type": "XmlMapper",
+      "name": "copy"
+     },
+     {
+      "params": [],
+      "type": "Version",
+      "name": "version"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "name"
+       }
+      ],
+      "type": null,
+      "name": "setXMLTextElementName"
+     },
+     {
+      "params": [
+       {
+        "type": "boolean",
+        "name": "state"
+       }
+      ],
+      "type": "XmlMapper",
+      "name": "setDefaultUseWrapper"
+     },
+     {
+      "params": [],
+      "type": "XmlFactory",
+      "name": "getFactory"
+     },
+     {
+      "params": [
+       {
+        "type": "ToXmlGenerator",
+        "name": "f"
+       },
+       {
+        "type": "boolean",
+        "name": "state"
+       }
+      ],
+      "type": "ObjectMapper",
+      "name": "configure"
+     },
+     {
+      "params": [
+       {
+        "type": "FromXmlParser",
+        "name": "f"
+       },
+       {
+        "type": "boolean",
+        "name": "state"
+       }
+      ],
+      "type": "ObjectMapper",
+      "name": "configure"
+     },
+     {
+      "params": [
+       {
+        "type": "ToXmlGenerator",
+        "name": "f"
+       }
+      ],
+      "type": "ObjectMapper",
+      "name": "enable"
+     },
+     {
+      "params": [
+       {
+        "type": "FromXmlParser",
+        "name": "f"
+       }
+      ],
+      "type": "ObjectMapper",
+      "name": "enable"
+     },
+     {
+      "params": [
+       {
+        "type": "ToXmlGenerator",
+        "name": "f"
+       }
+      ],
+      "type": "ObjectMapper",
+      "name": "disable"
+     },
+     {
+      "params": [
+       {
+        "type": "FromXmlParser",
+        "name": "f"
+       }
+      ],
+      "type": "ObjectMapper",
+      "name": "disable"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamReader",
+        "name": "r"
+       },
+       {
+        "type": "Class",
+        "name": "valueType"
+       }
+      ],
+      "type": "T",
+      "name": "readValue"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamReader",
+        "name": "r"
+       },
+       {
+        "type": "TypeReference",
+        "name": "valueTypeRef"
+       }
+      ],
+      "type": "T",
+      "name": "readValue"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamReader",
+        "name": "r"
+       },
+       {
+        "type": "JavaType",
+        "name": "valueType"
+       }
+      ],
+      "type": "T",
+      "name": "readValue"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamWriter",
+        "name": "w0"
+       },
+       {
+        "type": "Object",
+        "name": "value"
+       }
+      ],
+      "type": null,
+      "name": "writeValue"
+     },
+     {
+      "params": [],
+      "type": "PrettyPrinter",
+      "name": "_defaultPrettyPrinter"
+     }
+    ],
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "JacksonXmlModule",
+      "name": "DEFAULT_XML_MODULE"
+     },
+     {
+      "type": "DefaultXmlPrettyPrinter",
+      "name": "DEFAULT_XML_PRETTY_PRINTER"
+     },
+     {
+      "type": "JacksonXmlModule",
+      "name": "_xmlModule"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "JacksonXmlAnnotationIntrospector.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml",
+  "classes": [
+   {
+    "name": "JacksonXmlAnnotationIntrospector",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "Annotated",
+        "name": "ann"
+       }
+      ],
+      "type": "PropertyName",
+      "name": "findWrapperName"
+     },
+     {
+      "params": [
+       {
+        "type": "AnnotatedClass",
+        "name": "ac"
+       }
+      ],
+      "type": "PropertyName",
+      "name": "findRootName"
+     },
+     {
+      "params": [
+       {
+        "type": "Annotated",
+        "name": "ann"
+       }
+      ],
+      "type": "String",
+      "name": "findNamespace"
+     },
+     {
+      "params": [
+       {
+        "type": "Annotated",
+        "name": "ann"
+       }
+      ],
+      "type": "Boolean",
+      "name": "isOutputAsAttribute"
+     },
+     {
+      "params": [
+       {
+        "type": "Annotated",
+        "name": "ann"
+       }
+      ],
+      "type": "Boolean",
+      "name": "isOutputAsText"
+     },
+     {
+      "params": [
+       {
+        "type": "Annotated",
+        "name": "ann"
+       }
+      ],
+      "type": "Boolean",
+      "name": "isOutputAsCData"
+     },
+     {
+      "params": [
+       {
+        "type": "boolean",
+        "name": "b"
+       }
+      ],
+      "type": null,
+      "name": "setDefaultUseWrapper"
+     },
+     {
+      "params": [
+       {
+        "type": "Annotated",
+        "name": "a"
+       }
+      ],
+      "type": "PropertyName",
+      "name": "findNameForSerialization"
+     },
+     {
+      "params": [
+       {
+        "type": "Annotated",
+        "name": "a"
+       }
+      ],
+      "type": "PropertyName",
+      "name": "findNameForDeserialization"
+     },
+     {
+      "params": [],
+      "type": "StdTypeResolverBuilder",
+      "name": "_constructStdTypeResolverBuilder"
+     },
+     {
+      "params": [
+       {
+        "type": "Annotated",
+        "name": "a"
+       }
+      ],
+      "type": "PropertyName",
+      "name": "_findXmlName"
+     }
+    ],
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "boolean",
+      "name": "DEFAULT_USE_WRAPPER"
+     },
+     {
+      "type": "boolean",
+      "name": "_cfgDefaultUseWrapper"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "XmlBeanDeserializerModifier.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml.deser",
+  "classes": [
+   {
+    "name": "XmlBeanDeserializerModifier",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "DeserializationConfig",
+        "name": "config"
+       },
+       {
+        "type": "BeanDescription",
+        "name": "beanDesc"
+       },
+       {
+        "type": "List",
+        "name": "propDefs"
+       }
+      ],
+      "type": "List",
+      "name": "updateProperties"
+     },
+     {
+      "params": [
+       {
+        "type": "DeserializationConfig",
+        "name": "config"
+       },
+       {
+        "type": "BeanDescription",
+        "name": "beanDesc"
+       },
+       {
+        "type": "JsonDeserializer",
+        "name": "deser0"
+       }
+      ],
+      "type": "JsonDeserializer",
+      "name": "modifyDeserializer"
+     },
+     {
+      "params": [
+       {
+        "type": "DeserializationConfig",
+        "name": "config"
+       },
+       {
+        "type": "Iterator",
+        "name": "propIt"
+       }
+      ],
+      "type": "SettableBeanProperty",
+      "name": "_findSoleTextProp"
+     }
+    ],
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "String",
+      "name": "_cfgNameForTextValue"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "ElementWrapper.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml.deser",
+  "classes": [
+   {
+    "name": "ElementWrapper",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "ElementWrapper",
+        "name": "parent"
+       },
+       {
+        "type": "String",
+        "name": "wrapperLocalName"
+       },
+       {
+        "type": "String",
+        "name": "wrapperNamespace"
+       }
+      ],
+      "type": "ElementWrapper",
+      "name": "matchingWrapper"
+     },
+     {
+      "params": [],
+      "type": "ElementWrapper",
+      "name": "intermediateWrapper"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "isMatching"
+     },
+     {
+      "params": [],
+      "type": "String",
+      "name": "getWrapperLocalName"
+     },
+     {
+      "params": [],
+      "type": "String",
+      "name": "getWrapperNamespace"
+     },
+     {
+      "params": [],
+      "type": "ElementWrapper",
+      "name": "getParent"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "localName"
+       },
+       {
+        "type": "String",
+        "name": "ns"
+       }
+      ],
+      "type": "boolean",
+      "name": "matchesWrapper"
+     },
+     {
+      "params": [],
+      "type": "String",
+      "name": "toString"
+     }
+    ],
+    "fields": [
+     {
+      "type": "ElementWrapper",
+      "name": "_parent"
+     },
+     {
+      "type": "String",
+      "name": "_wrapperName"
+     },
+     {
+      "type": "String",
+      "name": "_wrapperNamespace"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "XmlTextDeserializer.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml.deser",
+  "classes": [
+   {
+    "name": "XmlTextDeserializer",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "JsonDeserializer",
+        "name": "newDelegatee0"
+       }
+      ],
+      "type": "JsonDeserializer",
+      "name": "newDelegatingInstance"
+     },
+     {
+      "params": [
+       {
+        "type": "DeserializationContext",
+        "name": "ctxt"
+       },
+       {
+        "type": "BeanProperty",
+        "name": "property"
+       }
+      ],
+      "type": "JsonDeserializer",
+      "name": "createContextual"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonParser",
+        "name": "jp"
+       },
+       {
+        "type": "DeserializationContext",
+        "name": "ctxt"
+       }
+      ],
+      "type": "Object",
+      "name": "deserialize"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonParser",
+        "name": "jp"
+       },
+       {
+        "type": "DeserializationContext",
+        "name": "ctxt"
+       },
+       {
+        "type": "Object",
+        "name": "bean"
+       }
+      ],
+      "type": "Object",
+      "name": "deserialize"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonParser",
+        "name": "jp"
+       },
+       {
+        "type": "DeserializationContext",
+        "name": "ctxt"
+       },
+       {
+        "type": "TypeDeserializer",
+        "name": "typeDeserializer"
+       }
+      ],
+      "type": "Object",
+      "name": "deserializeWithType"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonDeserializer",
+        "name": "deser"
+       }
+      ],
+      "type": "BeanDeserializerBase",
+      "name": "_verifyDeserType"
+     }
+    ],
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "int",
+      "name": "_xmlTextPropertyIndex"
+     },
+     {
+      "type": "SettableBeanProperty",
+      "name": "_xmlTextProperty"
+     },
+     {
+      "type": "ValueInstantiator",
+      "name": "_valueInstantiator"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "WrapperHandlingDeserializer.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml.deser",
+  "classes": [
+   {
+    "name": "WrapperHandlingDeserializer",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "JsonDeserializer",
+        "name": "newDelegatee0"
+       }
+      ],
+      "type": "JsonDeserializer",
+      "name": "newDelegatingInstance"
+     },
+     {
+      "params": [
+       {
+        "type": "DeserializationContext",
+        "name": "ctxt"
+       },
+       {
+        "type": "BeanProperty",
+        "name": "property"
+       }
+      ],
+      "type": "JsonDeserializer",
+      "name": "createContextual"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonParser",
+        "name": "jp"
+       },
+       {
+        "type": "DeserializationContext",
+        "name": "ctxt"
+       }
+      ],
+      "type": "Object",
+      "name": "deserialize"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonParser",
+        "name": "jp"
+       },
+       {
+        "type": "DeserializationContext",
+        "name": "ctxt"
+       },
+       {
+        "type": "Object",
+        "name": "intoValue"
+       }
+      ],
+      "type": "Object",
+      "name": "deserialize"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonParser",
+        "name": "jp"
+       },
+       {
+        "type": "DeserializationContext",
+        "name": "ctxt"
+       },
+       {
+        "type": "TypeDeserializer",
+        "name": "typeDeserializer"
+       }
+      ],
+      "type": "Object",
+      "name": "deserializeWithType"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonParser",
+        "name": "jp"
+       }
+      ],
+      "type": null,
+      "name": "_configureParser"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonDeserializer",
+        "name": "deser"
+       }
+      ],
+      "type": "BeanDeserializerBase",
+      "name": "_verifyDeserType"
+     }
+    ],
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "Set",
+      "name": "_namesToWrap"
+     },
+     {
+      "type": "JavaType",
+      "name": "_type"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "XmlReadContext.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml.deser",
+  "classes": [
+   {
+    "name": "XmlReadContext",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "int",
+        "name": "type"
+       },
+       {
+        "type": "int",
+        "name": "lineNr"
+       },
+       {
+        "type": "int",
+        "name": "colNr"
+       }
+      ],
+      "type": null,
+      "name": "reset"
+     },
+     {
+      "params": [
+       {
+        "type": "int",
+        "name": "lineNr"
+       },
+       {
+        "type": "int",
+        "name": "colNr"
+       }
+      ],
+      "type": "XmlReadContext",
+      "name": "createRootContext"
+     },
+     {
+      "params": [],
+      "type": "XmlReadContext",
+      "name": "createRootContext"
+     },
+     {
+      "params": [
+       {
+        "type": "int",
+        "name": "lineNr"
+       },
+       {
+        "type": "int",
+        "name": "colNr"
+       }
+      ],
+      "type": "XmlReadContext",
+      "name": "createChildArrayContext"
+     },
+     {
+      "params": [
+       {
+        "type": "int",
+        "name": "lineNr"
+       },
+       {
+        "type": "int",
+        "name": "colNr"
+       }
+      ],
+      "type": "XmlReadContext",
+      "name": "createChildObjectContext"
+     },
+     {
+      "params": [],
+      "type": "String",
+      "name": "getCurrentName"
+     },
+     {
+      "params": [],
+      "type": "XmlReadContext",
+      "name": "getParent"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "expectComma"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "name"
+       }
+      ],
+      "type": null,
+      "name": "setCurrentName"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "srcRef"
+       }
+      ],
+      "type": "JsonLocation",
+      "name": "getStartLocation"
+     },
+     {
+      "params": [
+       {
+        "type": "Set",
+        "name": "namesToWrap"
+       }
+      ],
+      "type": null,
+      "name": "setNamesToWrap"
+     },
+     {
+      "params": [],
+      "type": "Set",
+      "name": "getNamesToWrap"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "convertToArray"
+     },
+     {
+      "params": [],
+      "type": "String",
+      "name": "toString"
+     }
+    ],
+    "fields": [
+     {
+      "type": "XmlReadContext",
+      "name": "_parent"
+     },
+     {
+      "type": "int",
+      "name": "_lineNr"
+     },
+     {
+      "type": "int",
+      "name": "_columnNr"
+     },
+     {
+      "type": "String",
+      "name": "_currentName"
+     },
+     {
+      "type": "Set",
+      "name": "_namesToWrap"
+     },
+     {
+      "type": "String",
+      "name": "_wrappedName"
+     },
+     {
+      "type": "XmlReadContext",
+      "name": "_child"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "FromXmlParser.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml.deser",
+  "classes": [
+   {
+    "name": "FromXmlParser",
+    "methods": [
+     {
+      "params": [],
+      "type": "Version",
+      "name": "version"
+     },
+     {
+      "params": [],
+      "type": "ObjectCodec",
+      "name": "getCodec"
+     },
+     {
+      "params": [
+       {
+        "type": "ObjectCodec",
+        "name": "c"
+       }
+      ],
+      "type": null,
+      "name": "setCodec"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "name"
+       }
+      ],
+      "type": null,
+      "name": "setXMLTextElementName"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "requiresCustomCodec"
+     },
+     {
+      "params": [
+       {
+        "type": "Feature",
+        "name": "f"
+       }
+      ],
+      "type": "FromXmlParser",
+      "name": "enable"
+     },
+     {
+      "params": [
+       {
+        "type": "Feature",
+        "name": "f"
+       }
+      ],
+      "type": "FromXmlParser",
+      "name": "disable"
+     },
+     {
+      "params": [
+       {
+        "type": "Feature",
+        "name": "f"
+       }
+      ],
+      "type": "boolean",
+      "name": "isEnabled"
+     },
+     {
+      "params": [
+       {
+        "type": "Feature",
+        "name": "f"
+       },
+       {
+        "type": "boolean",
+        "name": "state"
+       }
+      ],
+      "type": "FromXmlParser",
+      "name": "configure"
+     },
+     {
+      "params": [],
+      "type": "int",
+      "name": "getFormatFeatures"
+     },
+     {
+      "params": [
+       {
+        "type": "int",
+        "name": "values"
+       },
+       {
+        "type": "int",
+        "name": "mask"
+       }
+      ],
+      "type": "JsonParser",
+      "name": "overrideFormatFeatures"
+     },
+     {
+      "params": [],
+      "type": "XMLStreamReader",
+      "name": "getStaxReader"
+     },
+     {
+      "params": [
+       {
+        "type": "Set",
+        "name": "namesToWrap"
+       }
+      ],
+      "type": null,
+      "name": "addVirtualWrapping"
+     },
+     {
+      "params": [],
+      "type": "String",
+      "name": "getCurrentName"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "name"
+       }
+      ],
+      "type": null,
+      "name": "overrideCurrentName"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "close"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "isClosed"
+     },
+     {
+      "params": [],
+      "type": "XmlReadContext",
+      "name": "getParsingContext"
+     },
+     {
+      "params": [],
+      "type": "JsonLocation",
+      "name": "getTokenLocation"
+     },
+     {
+      "params": [],
+      "type": "JsonLocation",
+      "name": "getCurrentLocation"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "isExpectedStartArrayToken"
+     },
+     {
+      "params": [],
+      "type": "JsonToken",
+      "name": "nextToken"
+     },
+     {
+      "params": [],
+      "type": "String",
+      "name": "nextTextValue"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonToken",
+        "name": "t"
+       }
+      ],
+      "type": null,
+      "name": "_updateState"
+     },
+     {
+      "params": [],
+      "type": "String",
+      "name": "getText"
+     },
+     {
+      "params": [],
+      "type": "String",
+      "name": "getValueAsString"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "defValue"
+       }
+      ],
+      "type": "String",
+      "name": "getValueAsString"
+     },
+     {
+      "params": [],
+      "type": "char",
+      "name": "getTextCharacters"
+     },
+     {
+      "params": [],
+      "type": "int",
+      "name": "getTextLength"
+     },
+     {
+      "params": [],
+      "type": "int",
+      "name": "getTextOffset"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "hasTextCharacters"
+     },
+     {
+      "params": [],
+      "type": "Object",
+      "name": "getEmbeddedObject"
+     },
+     {
+      "params": [
+       {
+        "type": "Base64Variant",
+        "name": "b64variant"
+       }
+      ],
+      "type": "byte",
+      "name": "getBinaryValue"
+     },
+     {
+      "params": [
+       {
+        "type": "Base64Variant",
+        "name": "b64variant"
+       }
+      ],
+      "type": "byte",
+      "name": "_decodeBase64"
+     },
+     {
+      "params": [],
+      "type": "BigInteger",
+      "name": "getBigIntegerValue"
+     },
+     {
+      "params": [],
+      "type": "BigDecimal",
+      "name": "getDecimalValue"
+     },
+     {
+      "params": [],
+      "type": "double",
+      "name": "getDoubleValue"
+     },
+     {
+      "params": [],
+      "type": "float",
+      "name": "getFloatValue"
+     },
+     {
+      "params": [],
+      "type": "int",
+      "name": "getIntValue"
+     },
+     {
+      "params": [],
+      "type": "long",
+      "name": "getLongValue"
+     },
+     {
+      "params": [],
+      "type": "NumberType",
+      "name": "getNumberType"
+     },
+     {
+      "params": [],
+      "type": "Number",
+      "name": "getNumberValue"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "_handleEOF"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "_releaseBuffers"
+     },
+     {
+      "params": [],
+      "type": "ByteArrayBuilder",
+      "name": "_getByteArrayBuilder"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "str"
+       }
+      ],
+      "type": "boolean",
+      "name": "_isEmpty"
+     }
+    ],
+    "fields": [
+     {
+      "type": "String",
+      "name": "DEFAULT_UNNAMED_TEXT_PROPERTY"
+     },
+     {
+      "type": "String",
+      "name": "_cfgNameForTextElement"
+     },
+     {
+      "type": "int",
+      "name": "_formatFeatures"
+     },
+     {
+      "type": "ObjectCodec",
+      "name": "_objectCodec"
+     },
+     {
+      "type": "boolean",
+      "name": "_closed"
+     },
+     {
+      "type": "IOContext",
+      "name": "_ioContext"
+     },
+     {
+      "type": "XmlReadContext",
+      "name": "_parsingContext"
+     },
+     {
+      "type": "XmlTokenStream",
+      "name": "_xmlTokens"
+     },
+     {
+      "type": "boolean",
+      "name": "_mayBeLeaf"
+     },
+     {
+      "type": "JsonToken",
+      "name": "_nextToken"
+     },
+     {
+      "type": "String",
+      "name": "_currText"
+     },
+     {
+      "type": "Set",
+      "name": "_namesToWrap"
+     },
+     {
+      "type": "ByteArrayBuilder",
+      "name": "_byteArrayBuilder"
+     },
+     {
+      "type": "byte",
+      "name": "_binaryValue"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "XmlTokenStream.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml.deser",
+  "classes": [
+   {
+    "name": "XmlTokenStream",
+    "methods": [
+     {
+      "params": [],
+      "type": "XMLStreamReader2",
+      "name": "getXmlReader"
+     },
+     {
+      "params": [],
+      "type": "int",
+      "name": "next"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "skipEndElement"
+     },
+     {
+      "params": [],
+      "type": "int",
+      "name": "getCurrentToken"
+     },
+     {
+      "params": [],
+      "type": "String",
+      "name": "getText"
+     },
+     {
+      "params": [],
+      "type": "String",
+      "name": "getLocalName"
+     },
+     {
+      "params": [],
+      "type": "String",
+      "name": "getNamespaceURI"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "hasAttributes"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "closeCompletely"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "close"
+     },
+     {
+      "params": [],
+      "type": "JsonLocation",
+      "name": "getCurrentLocation"
+     },
+     {
+      "params": [],
+      "type": "JsonLocation",
+      "name": "getTokenLocation"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "repeatStartElement"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "skipAttributes"
+     },
+     {
+      "params": [],
+      "type": "String",
+      "name": "convertToString"
+     },
+     {
+      "params": [],
+      "type": "int",
+      "name": "_next"
+     },
+     {
+      "params": [],
+      "type": "String",
+      "name": "_collectUntilTag"
+     },
+     {
+      "params": [],
+      "type": "int",
+      "name": "_skipUntilTag"
+     },
+     {
+      "params": [],
+      "type": "int",
+      "name": "_initStartElement"
+     },
+     {
+      "params": [],
+      "type": "int",
+      "name": "_handleRepeatElement"
+     },
+     {
+      "params": [],
+      "type": "int",
+      "name": "_handleEndElement"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamLocation2",
+        "name": "location"
+       }
+      ],
+      "type": "JsonLocation",
+      "name": "_extractLocation"
+     },
+     {
+      "params": [],
+      "type": "String",
+      "name": "toString"
+     }
+    ],
+    "fields": [
+     {
+      "type": "int",
+      "name": "XML_START_ELEMENT"
+     },
+     {
+      "type": "int",
+      "name": "XML_END_ELEMENT"
+     },
+     {
+      "type": "int",
+      "name": "XML_ATTRIBUTE_NAME"
+     },
+     {
+      "type": "int",
+      "name": "XML_ATTRIBUTE_VALUE"
+     },
+     {
+      "type": "int",
+      "name": "XML_TEXT"
+     },
+     {
+      "type": "int",
+      "name": "XML_END"
+     },
+     {
+      "type": "int",
+      "name": "REPLAY_START_DUP"
+     },
+     {
+      "type": "int",
+      "name": "REPLAY_END"
+     },
+     {
+      "type": "int",
+      "name": "REPLAY_START_DELAYED"
+     },
+     {
+      "type": "XMLStreamReader2",
+      "name": "_xmlReader"
+     },
+     {
+      "type": "Object",
+      "name": "_sourceReference"
+     },
+     {
+      "type": "int",
+      "name": "_currentState"
+     },
+     {
+      "type": "int",
+      "name": "_attributeCount"
+     },
+     {
+      "type": "int",
+      "name": "_nextAttributeIndex"
+     },
+     {
+      "type": "String",
+      "name": "_localName"
+     },
+     {
+      "type": "String",
+      "name": "_namespaceURI"
+     },
+     {
+      "type": "String",
+      "name": "_textValue"
+     },
+     {
+      "type": "int",
+      "name": "_repeatElement"
+     },
+     {
+      "type": "ElementWrapper",
+      "name": "_currentWrapper"
+     },
+     {
+      "type": "String",
+      "name": "_nextLocalName"
+     },
+     {
+      "type": "String",
+      "name": "_nextNamespaceURI"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "JacksonXmlRootElement.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml.annotation",
+  "classes": []
+ },
+ {
+  "filename": "JacksonXmlProperty.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml.annotation",
+  "classes": []
+ },
+ {
+  "filename": "package-info.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml.annotation",
+  "classes": []
+ },
+ {
+  "filename": "JacksonXmlCData.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml.annotation",
+  "classes": []
+ },
+ {
+  "filename": "JacksonXmlElementWrapper.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml.annotation",
+  "classes": []
+ },
+ {
+  "filename": "JacksonXmlText.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml.annotation",
+  "classes": []
+ },
+ {
+  "filename": "AnnotationUtil.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml.util",
+  "classes": [
+   {
+    "name": "AnnotationUtil",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "AnnotationIntrospector",
+        "name": "ai"
+       },
+       {
+        "type": "AnnotatedMember",
+        "name": "prop"
+       }
+      ],
+      "type": "String",
+      "name": "findNamespaceAnnotation"
+     },
+     {
+      "params": [
+       {
+        "type": "AnnotationIntrospector",
+        "name": "ai"
+       },
+       {
+        "type": "AnnotatedMember",
+        "name": "prop"
+       }
+      ],
+      "type": "Boolean",
+      "name": "findIsAttributeAnnotation"
+     },
+     {
+      "params": [
+       {
+        "type": "AnnotationIntrospector",
+        "name": "ai"
+       },
+       {
+        "type": "AnnotatedMember",
+        "name": "prop"
+       }
+      ],
+      "type": "Boolean",
+      "name": "findIsTextAnnotation"
+     },
+     {
+      "params": [
+       {
+        "type": "AnnotationIntrospector",
+        "name": "ai"
+       },
+       {
+        "type": "AnnotatedMember",
+        "name": "prop"
+       }
+      ],
+      "type": "Boolean",
+      "name": "findIsCDataAnnotation"
+     }
+    ],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "DefaultXmlPrettyPrinter.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml.util",
+  "classes": [
+   {
+    "name": "DefaultXmlPrettyPrinter",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "Indenter",
+        "name": "i"
+       }
+      ],
+      "type": null,
+      "name": "indentArraysWith"
+     },
+     {
+      "params": [
+       {
+        "type": "Indenter",
+        "name": "i"
+       }
+      ],
+      "type": null,
+      "name": "indentObjectsWith"
+     },
+     {
+      "params": [
+       {
+        "type": "boolean",
+        "name": "b"
+       }
+      ],
+      "type": null,
+      "name": "spacesInObjectEntries"
+     },
+     {
+      "params": [],
+      "type": "DefaultXmlPrettyPrinter",
+      "name": "createInstance"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonGenerator",
+        "name": "gen"
+       }
+      ],
+      "type": null,
+      "name": "writeRootValueSeparator"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonGenerator",
+        "name": "gen"
+       }
+      ],
+      "type": null,
+      "name": "beforeArrayValues"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonGenerator",
+        "name": "gen"
+       }
+      ],
+      "type": null,
+      "name": "writeStartArray"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonGenerator",
+        "name": "gen"
+       }
+      ],
+      "type": null,
+      "name": "writeArrayValueSeparator"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonGenerator",
+        "name": "gen"
+       },
+       {
+        "type": "int",
+        "name": "nrOfValues"
+       }
+      ],
+      "type": null,
+      "name": "writeEndArray"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonGenerator",
+        "name": "gen"
+       }
+      ],
+      "type": null,
+      "name": "beforeObjectEntries"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonGenerator",
+        "name": "gen"
+       }
+      ],
+      "type": null,
+      "name": "writeStartObject"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonGenerator",
+        "name": "gen"
+       }
+      ],
+      "type": null,
+      "name": "writeObjectEntrySeparator"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonGenerator",
+        "name": "gen"
+       }
+      ],
+      "type": null,
+      "name": "writeObjectFieldValueSeparator"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonGenerator",
+        "name": "gen"
+       },
+       {
+        "type": "int",
+        "name": "nrOfEntries"
+       }
+      ],
+      "type": null,
+      "name": "writeEndObject"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamWriter2",
+        "name": "sw"
+       },
+       {
+        "type": "String",
+        "name": "nsURI"
+       },
+       {
+        "type": "String",
+        "name": "localName"
+       }
+      ],
+      "type": null,
+      "name": "writeStartElement"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamWriter2",
+        "name": "sw"
+       },
+       {
+        "type": "int",
+        "name": "nrOfEntries"
+       }
+      ],
+      "type": null,
+      "name": "writeEndElement"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamWriter2",
+        "name": "sw"
+       },
+       {
+        "type": "String",
+        "name": "nsURI"
+       },
+       {
+        "type": "String",
+        "name": "localName"
+       },
+       {
+        "type": "String",
+        "name": "text"
+       },
+       {
+        "type": "boolean",
+        "name": "isCData"
+       }
+      ],
+      "type": null,
+      "name": "writeLeafElement"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamWriter2",
+        "name": "sw"
+       },
+       {
+        "type": "String",
+        "name": "nsURI"
+       },
+       {
+        "type": "String",
+        "name": "localName"
+       },
+       {
+        "type": "char",
+        "name": "buffer"
+       },
+       {
+        "type": "int",
+        "name": "offset"
+       },
+       {
+        "type": "int",
+        "name": "len"
+       },
+       {
+        "type": "boolean",
+        "name": "isCData"
+       }
+      ],
+      "type": null,
+      "name": "writeLeafElement"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamWriter2",
+        "name": "sw"
+       },
+       {
+        "type": "String",
+        "name": "nsURI"
+       },
+       {
+        "type": "String",
+        "name": "localName"
+       },
+       {
+        "type": "boolean",
+        "name": "value"
+       }
+      ],
+      "type": null,
+      "name": "writeLeafElement"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamWriter2",
+        "name": "sw"
+       },
+       {
+        "type": "String",
+        "name": "nsURI"
+       },
+       {
+        "type": "String",
+        "name": "localName"
+       },
+       {
+        "type": "int",
+        "name": "value"
+       }
+      ],
+      "type": null,
+      "name": "writeLeafElement"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamWriter2",
+        "name": "sw"
+       },
+       {
+        "type": "String",
+        "name": "nsURI"
+       },
+       {
+        "type": "String",
+        "name": "localName"
+       },
+       {
+        "type": "long",
+        "name": "value"
+       }
+      ],
+      "type": null,
+      "name": "writeLeafElement"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamWriter2",
+        "name": "sw"
+       },
+       {
+        "type": "String",
+        "name": "nsURI"
+       },
+       {
+        "type": "String",
+        "name": "localName"
+       },
+       {
+        "type": "double",
+        "name": "value"
+       }
+      ],
+      "type": null,
+      "name": "writeLeafElement"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamWriter2",
+        "name": "sw"
+       },
+       {
+        "type": "String",
+        "name": "nsURI"
+       },
+       {
+        "type": "String",
+        "name": "localName"
+       },
+       {
+        "type": "float",
+        "name": "value"
+       }
+      ],
+      "type": null,
+      "name": "writeLeafElement"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamWriter2",
+        "name": "sw"
+       },
+       {
+        "type": "String",
+        "name": "nsURI"
+       },
+       {
+        "type": "String",
+        "name": "localName"
+       },
+       {
+        "type": "BigInteger",
+        "name": "value"
+       }
+      ],
+      "type": null,
+      "name": "writeLeafElement"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamWriter2",
+        "name": "sw"
+       },
+       {
+        "type": "String",
+        "name": "nsURI"
+       },
+       {
+        "type": "String",
+        "name": "localName"
+       },
+       {
+        "type": "BigDecimal",
+        "name": "value"
+       }
+      ],
+      "type": null,
+      "name": "writeLeafElement"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamWriter2",
+        "name": "sw"
+       },
+       {
+        "type": "String",
+        "name": "nsURI"
+       },
+       {
+        "type": "String",
+        "name": "localName"
+       },
+       {
+        "type": "byte",
+        "name": "data"
+       },
+       {
+        "type": "int",
+        "name": "offset"
+       },
+       {
+        "type": "int",
+        "name": "len"
+       }
+      ],
+      "type": null,
+      "name": "writeLeafElement"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamWriter2",
+        "name": "sw"
+       },
+       {
+        "type": "String",
+        "name": "nsURI"
+       },
+       {
+        "type": "String",
+        "name": "localName"
+       }
+      ],
+      "type": null,
+      "name": "writeLeafNullElement"
+     },
+     {
+      "params": [
+       {
+        "type": "XMLStreamWriter2",
+        "name": "sw"
+       }
+      ],
+      "type": null,
+      "name": "writePrologLinefeed"
+     }
+    ],
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "Indenter",
+      "name": "_arrayIndenter"
+     },
+     {
+      "type": "Indenter",
+      "name": "_objectIndenter"
+     },
+     {
+      "type": "boolean",
+      "name": "_spacesInObjectEntries"
+     },
+     {
+      "type": "int",
+      "name": "_nesting"
+     },
+     {
+      "type": "boolean",
+      "name": "_justHadStartElement"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "StaxUtil.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml.util",
+  "classes": [
+   {
+    "name": "StaxUtil",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "XMLStreamException",
+        "name": "e"
+       }
+      ],
+      "type": "T",
+      "name": "throwXmlAsIOException"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "name"
+       }
+      ],
+      "type": "String",
+      "name": "sanitizeXmlTypeName"
+     }
+    ],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "XmlRootNameLookup.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml.util",
+  "classes": [
+   {
+    "name": "XmlRootNameLookup",
+    "methods": [
+     {
+      "params": [],
+      "type": "Object",
+      "name": "readResolve"
+     },
+     {
+      "params": [
+       {
+        "type": "JavaType",
+        "name": "rootType"
+       },
+       {
+        "type": "MapperConfig",
+        "name": "config"
+       }
+      ],
+      "type": "QName",
+      "name": "findRootName"
+     },
+     {
+      "params": [
+       {
+        "type": "Class",
+        "name": "rootType"
+       },
+       {
+        "type": "MapperConfig",
+        "name": "config"
+       }
+      ],
+      "type": "QName",
+      "name": "findRootName"
+     },
+     {
+      "params": [
+       {
+        "type": "Class",
+        "name": "rootType"
+       },
+       {
+        "type": "MapperConfig",
+        "name": "config"
+       }
+      ],
+      "type": "QName",
+      "name": "_findRootName"
+     },
+     {
+      "params": [
+       {
+        "type": "AnnotationIntrospector",
+        "name": "ai"
+       },
+       {
+        "type": "AnnotatedClass",
+        "name": "ann"
+       }
+      ],
+      "type": "String",
+      "name": "findNamespace"
+     }
+    ],
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "LRUMap",
+      "name": "_rootNames"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "TypeUtil.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml.util",
+  "classes": [
+   {
+    "name": "TypeUtil",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "JavaType",
+        "name": "type"
+       }
+      ],
+      "type": "boolean",
+      "name": "isIndexedType"
+     },
+     {
+      "params": [
+       {
+        "type": "Class",
+        "name": "cls"
+       }
+      ],
+      "type": "boolean",
+      "name": "isIndexedType"
+     }
+    ],
+    "fields": []
+   }
+  ]
+ },
+ {
+  "filename": "XmlInfo.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml.util",
+  "classes": [
+   {
+    "name": "XmlInfo",
+    "methods": [
+     {
+      "params": [],
+      "type": "String",
+      "name": "getNamespace"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "isAttribute"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "isText"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "isCData"
+     }
+    ],
+    "fields": [
+     {
+      "type": "String",
+      "name": "_namespace"
+     },
+     {
+      "type": "boolean",
+      "name": "_isAttribute"
+     },
+     {
+      "type": "boolean",
+      "name": "_isText"
+     },
+     {
+      "type": "boolean",
+      "name": "_isCData"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "UnwrappingXmlBeanSerializer.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml.ser",
+  "classes": [
+   {
+    "name": "UnwrappingXmlBeanSerializer",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "NameTransformer",
+        "name": "transformer"
+       }
+      ],
+      "type": "JsonSerializer",
+      "name": "unwrappingSerializer"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "isUnwrappingSerializer"
+     },
+     {
+      "params": [
+       {
+        "type": "ObjectIdWriter",
+        "name": "objectIdWriter"
+       }
+      ],
+      "type": "BeanSerializerBase",
+      "name": "withObjectIdWriter"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "filterId"
+       }
+      ],
+      "type": "BeanSerializerBase",
+      "name": "withFilterId"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "toIgnore"
+       }
+      ],
+      "type": "BeanSerializerBase",
+      "name": "withIgnorals"
+     },
+     {
+      "params": [],
+      "type": "BeanSerializerBase",
+      "name": "asArraySerializer"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "bean"
+       },
+       {
+        "type": "JsonGenerator",
+        "name": "jgen"
+       },
+       {
+        "type": "SerializerProvider",
+        "name": "provider"
+       }
+      ],
+      "type": null,
+      "name": "serialize"
+     },
+     {
+      "params": [],
+      "type": "String",
+      "name": "toString"
+     }
+    ],
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "NameTransformer",
+      "name": "_nameTransformer"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "XmlBeanPropertyWriter.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml.ser",
+  "classes": [
+   {
+    "name": "XmlBeanPropertyWriter",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "PropertyName",
+        "name": "n"
+       }
+      ],
+      "type": "QName",
+      "name": "_qname"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "bean"
+       },
+       {
+        "type": "JsonGenerator",
+        "name": "jgen"
+       },
+       {
+        "type": "SerializerProvider",
+        "name": "prov"
+       }
+      ],
+      "type": null,
+      "name": "serializeAsField"
+     }
+    ],
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "QName",
+      "name": "_wrapperQName"
+     },
+     {
+      "type": "QName",
+      "name": "_wrappedQName"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "XmlBeanSerializerModifier.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml.ser",
+  "classes": [
+   {
+    "name": "XmlBeanSerializerModifier",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "SerializationConfig",
+        "name": "config"
+       },
+       {
+        "type": "BeanDescription",
+        "name": "beanDesc"
+       },
+       {
+        "type": "List",
+        "name": "beanProperties"
+       }
+      ],
+      "type": "List",
+      "name": "changeProperties"
+     },
+     {
+      "params": [
+       {
+        "type": "SerializationConfig",
+        "name": "config"
+       },
+       {
+        "type": "BeanDescription",
+        "name": "beanDesc"
+       },
+       {
+        "type": "JsonSerializer",
+        "name": "serializer"
+       }
+      ],
+      "type": "JsonSerializer",
+      "name": "modifySerializer"
+     }
+    ],
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "XmlBeanSerializerBase.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml.ser",
+  "classes": [
+   {
+    "name": "XmlBeanSerializerBase",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "bean"
+       },
+       {
+        "type": "JsonGenerator",
+        "name": "gen0"
+       },
+       {
+        "type": "SerializerProvider",
+        "name": "provider"
+       }
+      ],
+      "type": null,
+      "name": "serializeFields"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "bean"
+       },
+       {
+        "type": "JsonGenerator",
+        "name": "gen0"
+       },
+       {
+        "type": "SerializerProvider",
+        "name": "provider"
+       }
+      ],
+      "type": null,
+      "name": "serializeFieldsFiltered"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "bean"
+       },
+       {
+        "type": "JsonGenerator",
+        "name": "gen"
+       },
+       {
+        "type": "SerializerProvider",
+        "name": "provider"
+       },
+       {
+        "type": "TypeSerializer",
+        "name": "typeSer"
+       }
+      ],
+      "type": null,
+      "name": "serializeWithType"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "bean"
+       },
+       {
+        "type": "JsonGenerator",
+        "name": "gen"
+       },
+       {
+        "type": "SerializerProvider",
+        "name": "provider"
+       },
+       {
+        "type": "TypeSerializer",
+        "name": "typeSer"
+       },
+       {
+        "type": "WritableObjectId",
+        "name": "objectId"
+       }
+      ],
+      "type": null,
+      "name": "_serializeObjectId"
+     },
+     {
+      "params": [
+       {
+        "type": "BeanPropertyWriter",
+        "name": "bpw"
+       }
+      ],
+      "type": "boolean",
+      "name": "_isAttribute"
+     },
+     {
+      "params": [
+       {
+        "type": "BeanPropertyWriter",
+        "name": "bpw"
+       }
+      ],
+      "type": "boolean",
+      "name": "_isCData"
+     },
+     {
+      "params": [
+       {
+        "type": "BeanPropertyWriter",
+        "name": "properties"
+       },
+       {
+        "type": "BeanPropertyWriter",
+        "name": "filteredProperties"
+       }
+      ],
+      "type": "int",
+      "name": "_orderAttributesFirst"
+     }
+    ],
+    "fields": [
+     {
+      "type": "String",
+      "name": "KEY_XML_INFO"
+     },
+     {
+      "type": "int",
+      "name": "_attributeCount"
+     },
+     {
+      "type": "int",
+      "name": "_textPropertyIndex"
+     },
+     {
+      "type": "QName",
+      "name": "_xmlNames"
+     },
+     {
+      "type": "BitSet",
+      "name": "_cdata"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "XmlSerializerProvider.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml.ser",
+  "classes": [
+   {
+    "name": "XmlSerializerProvider",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "SerializationConfig",
+        "name": "config"
+       },
+       {
+        "type": "SerializerFactory",
+        "name": "jsf"
+       }
+      ],
+      "type": "DefaultSerializerProvider",
+      "name": "createInstance"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonGenerator",
+        "name": "gen"
+       },
+       {
+        "type": "Object",
+        "name": "value"
+       }
+      ],
+      "type": null,
+      "name": "serializeValue"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonGenerator",
+        "name": "gen"
+       },
+       {
+        "type": "Object",
+        "name": "value"
+       },
+       {
+        "type": "JavaType",
+        "name": "rootType"
+       }
+      ],
+      "type": null,
+      "name": "serializeValue"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonGenerator",
+        "name": "gen"
+       },
+       {
+        "type": "Object",
+        "name": "value"
+       },
+       {
+        "type": "JavaType",
+        "name": "rootType"
+       },
+       {
+        "type": "JsonSerializer",
+        "name": "ser"
+       }
+      ],
+      "type": null,
+      "name": "serializeValue"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonGenerator",
+        "name": "jgen"
+       }
+      ],
+      "type": null,
+      "name": "_serializeXmlNull"
+     },
+     {
+      "params": [
+       {
+        "type": "ToXmlGenerator",
+        "name": "xgen"
+       },
+       {
+        "type": "QName",
+        "name": "rootName"
+       }
+      ],
+      "type": null,
+      "name": "_startRootArray"
+     },
+     {
+      "params": [
+       {
+        "type": "ToXmlGenerator",
+        "name": "xgen"
+       },
+       {
+        "type": "QName",
+        "name": "rootName"
+       }
+      ],
+      "type": null,
+      "name": "_initWithRootName"
+     },
+     {
+      "params": [],
+      "type": "QName",
+      "name": "_rootNameFromConfig"
+     },
+     {
+      "params": [
+       {
+        "type": "JsonGenerator",
+        "name": "gen"
+       }
+      ],
+      "type": "ToXmlGenerator",
+      "name": "_asXmlGenerator"
+     }
+    ],
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     },
+     {
+      "type": "QName",
+      "name": "ROOT_NAME_FOR_NULL"
+     },
+     {
+      "type": "XmlRootNameLookup",
+      "name": "_rootNameLookup"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "XmlBeanSerializer.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml.ser",
+  "classes": [
+   {
+    "name": "XmlBeanSerializer",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "NameTransformer",
+        "name": "unwrapper"
+       }
+      ],
+      "type": "JsonSerializer",
+      "name": "unwrappingSerializer"
+     },
+     {
+      "params": [
+       {
+        "type": "ObjectIdWriter",
+        "name": "objectIdWriter"
+       }
+      ],
+      "type": "BeanSerializerBase",
+      "name": "withObjectIdWriter"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "filterId"
+       }
+      ],
+      "type": "BeanSerializerBase",
+      "name": "withFilterId"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "toIgnore"
+       }
+      ],
+      "type": "BeanSerializerBase",
+      "name": "withIgnorals"
+     },
+     {
+      "params": [],
+      "type": "BeanSerializerBase",
+      "name": "asArraySerializer"
+     },
+     {
+      "params": [
+       {
+        "type": "Object",
+        "name": "bean"
+       },
+       {
+        "type": "JsonGenerator",
+        "name": "jgen"
+       },
+       {
+        "type": "SerializerProvider",
+        "name": "provider"
+       }
+      ],
+      "type": null,
+      "name": "serialize"
+     },
+     {
+      "params": [],
+      "type": "String",
+      "name": "toString"
+     }
+    ],
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "ToXmlGenerator.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml.ser",
+  "classes": [
+   {
+    "name": "ToXmlGenerator",
+    "methods": [
+     {
+      "params": [],
+      "type": null,
+      "name": "initGenerator"
+     },
+     {
+      "params": [],
+      "type": "JsonGenerator",
+      "name": "useDefaultPrettyPrinter"
+     },
+     {
+      "params": [],
+      "type": "PrettyPrinter",
+      "name": "_constructDefaultPrettyPrinter"
+     },
+     {
+      "params": [
+       {
+        "type": "PrettyPrinter",
+        "name": "pp"
+       }
+      ],
+      "type": "JsonGenerator",
+      "name": "setPrettyPrinter"
+     },
+     {
+      "params": [],
+      "type": "Object",
+      "name": "getOutputTarget"
+     },
+     {
+      "params": [],
+      "type": "int",
+      "name": "getOutputBuffered"
+     },
+     {
+      "params": [],
+      "type": "int",
+      "name": "getFormatFeatures"
+     },
+     {
+      "params": [
+       {
+        "type": "int",
+        "name": "values"
+       },
+       {
+        "type": "int",
+        "name": "mask"
+       }
+      ],
+      "type": "JsonGenerator",
+      "name": "overrideFormatFeatures"
+     },
+     {
+      "params": [
+       {
+        "type": "Feature",
+        "name": "f"
+       }
+      ],
+      "type": "ToXmlGenerator",
+      "name": "enable"
+     },
+     {
+      "params": [
+       {
+        "type": "Feature",
+        "name": "f"
+       }
+      ],
+      "type": "ToXmlGenerator",
+      "name": "disable"
+     },
+     {
+      "params": [
+       {
+        "type": "Feature",
+        "name": "f"
+       }
+      ],
+      "type": "boolean",
+      "name": "isEnabled"
+     },
+     {
+      "params": [
+       {
+        "type": "Feature",
+        "name": "f"
+       },
+       {
+        "type": "boolean",
+        "name": "state"
+       }
+      ],
+      "type": "ToXmlGenerator",
+      "name": "configure"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "inRoot"
+     },
+     {
+      "params": [],
+      "type": "XMLStreamWriter",
+      "name": "getStaxWriter"
+     },
+     {
+      "params": [
+       {
+        "type": "boolean",
+        "name": "isAttribute"
+       }
+      ],
+      "type": null,
+      "name": "setNextIsAttribute"
+     },
+     {
+      "params": [
+       {
+        "type": "boolean",
+        "name": "isUnwrapped"
+       }
+      ],
+      "type": null,
+      "name": "setNextIsUnwrapped"
+     },
+     {
+      "params": [
+       {
+        "type": "boolean",
+        "name": "isCData"
+       }
+      ],
+      "type": null,
+      "name": "setNextIsCData"
+     },
+     {
+      "params": [
+       {
+        "type": "QName",
+        "name": "name"
+       }
+      ],
+      "type": null,
+      "name": "setNextName"
+     },
+     {
+      "params": [
+       {
+        "type": "QName",
+        "name": "name"
+       }
+      ],
+      "type": "boolean",
+      "name": "setNextNameIfMissing"
+     },
+     {
+      "params": [
+       {
+        "type": "QName",
+        "name": "wrapperName"
+       },
+       {
+        "type": "QName",
+        "name": "wrappedName"
+       }
+      ],
+      "type": null,
+      "name": "startWrappedValue"
+     },
+     {
+      "params": [
+       {
+        "type": "QName",
+        "name": "wrapperName"
+       },
+       {
+        "type": "QName",
+        "name": "wrappedName"
+       }
+      ],
+      "type": null,
+      "name": "finishWrappedValue"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "writeRepeatedFieldName"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "name"
+       }
+      ],
+      "type": null,
+      "name": "writeFieldName"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "fieldName"
+       },
+       {
+        "type": "String",
+        "name": "value"
+       }
+      ],
+      "type": null,
+      "name": "writeStringField"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "writeStartArray"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "writeEndArray"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "writeStartObject"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "writeEndObject"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "_handleStartObject"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "_handleEndObject"
+     },
+     {
+      "params": [
+       {
+        "type": "SerializableString",
+        "name": "name"
+       }
+      ],
+      "type": null,
+      "name": "writeFieldName"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "text"
+       }
+      ],
+      "type": null,
+      "name": "writeString"
+     },
+     {
+      "params": [
+       {
+        "type": "char",
+        "name": "text"
+       },
+       {
+        "type": "int",
+        "name": "offset"
+       },
+       {
+        "type": "int",
+        "name": "len"
+       }
+      ],
+      "type": null,
+      "name": "writeString"
+     },
+     {
+      "params": [
+       {
+        "type": "SerializableString",
+        "name": "text"
+       }
+      ],
+      "type": null,
+      "name": "writeString"
+     },
+     {
+      "params": [
+       {
+        "type": "byte",
+        "name": "text"
+       },
+       {
+        "type": "int",
+        "name": "offset"
+       },
+       {
+        "type": "int",
+        "name": "length"
+       }
+      ],
+      "type": null,
+      "name": "writeRawUTF8String"
+     },
+     {
+      "params": [
+       {
+        "type": "byte",
+        "name": "text"
+       },
+       {
+        "type": "int",
+        "name": "offset"
+       },
+       {
+        "type": "int",
+        "name": "length"
+       }
+      ],
+      "type": null,
+      "name": "writeUTF8String"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "text"
+       }
+      ],
+      "type": null,
+      "name": "writeRaw"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "text"
+       },
+       {
+        "type": "int",
+        "name": "offset"
+       },
+       {
+        "type": "int",
+        "name": "len"
+       }
+      ],
+      "type": null,
+      "name": "writeRaw"
+     },
+     {
+      "params": [
+       {
+        "type": "char",
+        "name": "text"
+       },
+       {
+        "type": "int",
+        "name": "offset"
+       },
+       {
+        "type": "int",
+        "name": "len"
+       }
+      ],
+      "type": null,
+      "name": "writeRaw"
+     },
+     {
+      "params": [
+       {
+        "type": "char",
+        "name": "c"
+       }
+      ],
+      "type": null,
+      "name": "writeRaw"
+     },
+     {
+      "params": [
+       {
+        "type": "Base64Variant",
+        "name": "b64variant"
+       },
+       {
+        "type": "byte",
+        "name": "data"
+       },
+       {
+        "type": "int",
+        "name": "offset"
+       },
+       {
+        "type": "int",
+        "name": "len"
+       }
+      ],
+      "type": null,
+      "name": "writeBinary"
+     },
+     {
+      "params": [
+       {
+        "type": "byte",
+        "name": "data"
+       },
+       {
+        "type": "int",
+        "name": "offset"
+       },
+       {
+        "type": "int",
+        "name": "len"
+       }
+      ],
+      "type": "byte",
+      "name": "toFullBuffer"
+     },
+     {
+      "params": [
+       {
+        "type": "boolean",
+        "name": "value"
+       }
+      ],
+      "type": null,
+      "name": "writeBoolean"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "writeNull"
+     },
+     {
+      "params": [
+       {
+        "type": "int",
+        "name": "i"
+       }
+      ],
+      "type": null,
+      "name": "writeNumber"
+     },
+     {
+      "params": [
+       {
+        "type": "long",
+        "name": "l"
+       }
+      ],
+      "type": null,
+      "name": "writeNumber"
+     },
+     {
+      "params": [
+       {
+        "type": "double",
+        "name": "d"
+       }
+      ],
+      "type": null,
+      "name": "writeNumber"
+     },
+     {
+      "params": [
+       {
+        "type": "float",
+        "name": "f"
+       }
+      ],
+      "type": null,
+      "name": "writeNumber"
+     },
+     {
+      "params": [
+       {
+        "type": "BigDecimal",
+        "name": "dec"
+       }
+      ],
+      "type": null,
+      "name": "writeNumber"
+     },
+     {
+      "params": [
+       {
+        "type": "BigInteger",
+        "name": "value"
+       }
+      ],
+      "type": null,
+      "name": "writeNumber"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "encodedValue"
+       }
+      ],
+      "type": null,
+      "name": "writeNumber"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "typeMsg"
+       }
+      ],
+      "type": null,
+      "name": "_verifyValueWrite"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "flush"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "close"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "_releaseBuffers"
+     },
+     {
+      "params": [],
+      "type": "boolean",
+      "name": "checkNextIsUnwrapped"
+     },
+     {
+      "params": [],
+      "type": null,
+      "name": "handleMissingName"
+     },
+     {
+      "params": [
+       {
+        "type": "String",
+        "name": "missingMethod"
+       }
+      ],
+      "type": null,
+      "name": "_reportUnimplementedStax2"
+     }
+    ],
+    "fields": [
+     {
+      "type": "String",
+      "name": "DEFAULT_UNKNOWN_ELEMENT"
+     },
+     {
+      "type": "XMLStreamWriter2",
+      "name": "_xmlWriter"
+     },
+     {
+      "type": "XMLStreamWriter",
+      "name": "_originalXmlWriter"
+     },
+     {
+      "type": "boolean",
+      "name": "_stax2Emulation"
+     },
+     {
+      "type": "IOContext",
+      "name": "_ioContext"
+     },
+     {
+      "type": "int",
+      "name": "_formatFeatures"
+     },
+     {
+      "type": "XmlPrettyPrinter",
+      "name": "_xmlPrettyPrinter"
+     },
+     {
+      "type": "boolean",
+      "name": "_initialized"
+     },
+     {
+      "type": "QName",
+      "name": "_nextName"
+     },
+     {
+      "type": "boolean",
+      "name": "_nextIsAttribute"
+     },
+     {
+      "type": "boolean",
+      "name": "_nextIsUnwrapped"
+     },
+     {
+      "type": "boolean",
+      "name": "_nextIsCData"
+     },
+     {
+      "type": "LinkedList",
+      "name": "_elementNameStack"
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "filename": "XmlJaxbAnnotationIntrospector.java",
+  "package_name": "com.fasterxml.jackson.dataformat.xml.jaxb",
+  "classes": [
+   {
+    "name": "XmlJaxbAnnotationIntrospector",
+    "methods": [
+     {
+      "params": [
+       {
+        "type": "Annotated",
+        "name": "ann"
+       }
+      ],
+      "type": "String",
+      "name": "findNamespace"
+     },
+     {
+      "params": [
+       {
+        "type": "Annotated",
+        "name": "ann"
+       }
+      ],
+      "type": "Boolean",
+      "name": "isOutputAsAttribute"
+     },
+     {
+      "params": [
+       {
+        "type": "Annotated",
+        "name": "ann"
+       }
+      ],
+      "type": "Boolean",
+      "name": "isOutputAsText"
+     },
+     {
+      "params": [
+       {
+        "type": "Annotated",
+        "name": "ann"
+       }
+      ],
+      "type": "Boolean",
+      "name": "isOutputAsCData"
+     },
+     {
+      "params": [
+       {
+        "type": "boolean",
+        "name": "b"
+       }
+      ],
+      "type": null,
+      "name": "setDefaultUseWrapper"
+     },
+     {
+      "params": [
+       {
+        "type": "Class",
+        "name": "annotationClass"
+       },
+       {
+        "type": "Annotated",
+        "name": "annotated"
+       },
+       {
+        "type": "boolean",
+        "name": "includePackage"
+       },
+       {
+        "type": "boolean",
+        "name": "includeClass"
+       },
+       {
+        "type": "boolean",
+        "name": "includeSuperclasses"
+       }
+      ],
+      "type": "A",
+      "name": "findAnnotation"
+     }
+    ],
+    "fields": [
+     {
+      "type": "long",
+      "name": "serialVersionUID"
+     }
+    ]
+   }
+  ]
+ }
+]

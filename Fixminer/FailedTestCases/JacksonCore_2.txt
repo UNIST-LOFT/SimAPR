@@ -1,0 +1,3 @@
+Failing tests: 2
+  - com.fasterxml.jackson.core.json.TestParserErrorHandling::testMangledNumbersBytes
+  - com.fasterxml.jackson.core.json.TestParserErrorHandling::testMangledNumbersChars

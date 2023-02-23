@@ -1,0 +1,2 @@
+- op(token, b, a)
++ op(token, a, b)

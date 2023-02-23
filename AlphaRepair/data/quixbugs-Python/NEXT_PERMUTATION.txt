@@ -1,0 +1,2 @@
+- if perm[j] < perm[i]:
++ if perm[j] > perm[i]:

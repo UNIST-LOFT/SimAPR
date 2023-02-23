@@ -1,0 +1,2 @@
+- return fit(new Gaussian.Parametric(), guess);
++ return fit(guess);

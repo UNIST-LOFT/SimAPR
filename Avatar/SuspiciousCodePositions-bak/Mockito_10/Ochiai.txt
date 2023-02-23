@@ -1,0 +1,16 @@
+org.mockito.exceptions.Reporter@761@0.0
+org.mockito.exceptions.Reporter@760@0.7071067812
+org.mockito.internal.util.MockCreationValidator@63@0.7071067812
+org.mockito.internal.util.reflection.Constructors@17@0.7071067812
+org.mockito.internal.util.reflection.Constructors@16@0.7071067812
+org.mockito.internal.util.MockCreationValidator@61@0.7071067812
+org.mockito.internal.util.reflection.Constructors@15@0.5
+org.mockito.internal.util.reflection.GenericMetadataSupport@215@0.3535533906
+org.mockito.internal.util.reflection.GenericMetadataSupport@162@0.3333333333
+org.mockito.internal.stubbing.defaultanswers.ReturnsDeepStubs@97@0.3333333333
+org.mockito.internal.util.MockCreationValidator@60@0.3333333333
+org.mockito.internal.util.reflection.GenericMetadataSupport@169@0.2886751346
+org.mockito.internal.stubbing.InvocationContainerImpl@125@0.2886751346
+org.mockito.internal.stubbing.defaultanswers.ReturnsDeepStubs@105@0.2886751346
+org.mockito.internal.stubbing.defaultanswers.ReturnsDeepStubs@100@0.2886751346
+org.mockito.internal.stubbing.defaultanswers.ReturnsDeepStubs@99@0.2886751346

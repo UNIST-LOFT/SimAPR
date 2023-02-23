@@ -1,0 +1,2 @@
+- group_by_node[node].update(group_by_node[u])
++ group_by_node[node] = group_by_node[u] #

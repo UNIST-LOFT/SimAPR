@@ -1,0 +1,224 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="AutoImportSettings">
+    <option name="autoReloadType" value="SELECTIVE" />
+  </component>
+  <component name="ChangeListManager">
+    <list default="true" id="f154dd3b-6b4e-4ae5-a75b-e6b65b277423" name="Changes" comment="">
+      <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" beforeDir="false" afterPath="$PROJECT_DIR$/.idea/workspace.xml" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/lu/uni/serval/tbar/TBarFixerPatchSpace.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/lu/uni/serval/tbar/TBarFixerPatchSpace.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/src/main/java/edu/lu/uni/serval/tbar/json/PatchesLogs.java" beforeDir="false" afterPath="$PROJECT_DIR$/src/main/java/edu/lu/uni/serval/tbar/json/PatchesLogs.java" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/AST/ASTGenerator$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/AST/ASTGenerator$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/AST/ASTGenerator$TokenType.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/AST/ASTGenerator$TokenType.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/AST/ASTGenerator.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/AST/ASTGenerator.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/entity/EntityType$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/entity/EntityType$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/entity/EntityType.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/entity/EntityType.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/generator/AbstractJdtTreeGenerator.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/generator/AbstractJdtTreeGenerator.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/generator/AbstractRawTokenJdtTreeGenerator.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/generator/AbstractRawTokenJdtTreeGenerator.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/generator/Registry$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/generator/Registry$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/generator/Registry$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/generator/Registry$2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/generator/Registry$Entry.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/generator/Registry$Entry.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/generator/Registry$Priority.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/generator/Registry$Priority.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/generator/Registry.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/generator/Registry.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/AbstractTree$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/AbstractTree$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/AbstractTree$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/AbstractTree$2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/AbstractTree$3.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/AbstractTree$3.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/AbstractTree$FakeTree$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/AbstractTree$FakeTree$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/AbstractTree$FakeTree$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/AbstractTree$FakeTree$2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/AbstractTree$FakeTree.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/AbstractTree$FakeTree.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/AbstractTree.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/AbstractTree.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/AssociationMap$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/AssociationMap$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/AssociationMap.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/AssociationMap.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/ITree.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/ITree.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/Tree.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/Tree.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/TreeContext$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/TreeContext$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/TreeContext.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/TreeContext.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/TreeUtils$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/TreeUtils$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/TreeUtils$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/TreeUtils$2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/TreeUtils$3.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/TreeUtils$3.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/TreeUtils$4.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/TreeUtils$4.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/TreeUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/TreeUtils.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/hash/HashUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/hash/HashUtils.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/hash/RollingHashGenerator$RandomRollingHashGenerator.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/hash/RollingHashGenerator$RandomRollingHashGenerator.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/hash/RollingHashGenerator.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/tree/hash/RollingHashGenerator.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/visitor/ExpJdtVisitor.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/visitor/ExpJdtVisitor.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/visitor/JdtVisitor.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/jdt/visitor/JdtVisitor.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/AbstractFixer.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/AbstractFixer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/MiniUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/MiniUtils.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/TBarFixer$Granularity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/TBarFixer$Granularity.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/TBarFixer.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/TBarFixer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/TBarFixerPatchSpace.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/TBarFixerPatchSpace.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/TBarFixer_NFL$Granularity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/TBarFixer_NFL$Granularity.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/TBarFixer_NFL.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/TBarFixer_NFL.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/TBarTransformerFixer$Granularity.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/TBarTransformerFixer$Granularity.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/TBarTransformerFixer.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/TBarTransformerFixer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/code/analyser/JavaCodeFileParser.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/code/analyser/JavaCodeFileParser.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/context/ContextReader.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/context/ContextReader.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/context/Dictionary.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/context/Dictionary.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/context/MethodInvocationType.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/context/MethodInvocationType.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/context/ModifierType.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/context/ModifierType.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/dataprepare/ClassloaderFinder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/dataprepare/ClassloaderFinder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/dataprepare/DataPreparer.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/dataprepare/DataPreparer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/dataprepare/DataPreparerPlase.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/dataprepare/DataPreparerPlase.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/dataprepare/SourceFolderFinder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/dataprepare/SourceFolderFinder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/dataprepare/TestClassesFinder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/dataprepare/TestClassesFinder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/dataprepare/TestFilter.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/dataprepare/TestFilter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/dataprepare/TestFinder$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/dataprepare/TestFinder$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/dataprepare/TestFinder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/dataprepare/TestFinder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/dataprepare/TestType.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/dataprepare/TestType.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/AlterMethodInvocation$MethodInvocationExpression.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/AlterMethodInvocation$MethodInvocationExpression.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/AlterMethodInvocation.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/AlterMethodInvocation.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/CNIdiomNoSuperCall.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/CNIdiomNoSuperCall.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/ChangeCondition$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/ChangeCondition$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/ChangeCondition.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/ChangeCondition.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/ClassCastChecker.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/ClassCastChecker.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/ConditionalExpressionMutator$ExpressionAdder.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/ConditionalExpressionMutator$ExpressionAdder.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/ConditionalExpressionMutator$ExpressionRemover.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/ConditionalExpressionMutator$ExpressionRemover.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/ConditionalExpressionMutator$ExpressionReplacer.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/ConditionalExpressionMutator$ExpressionReplacer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/DataTypeReplacer$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/DataTypeReplacer$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/DataTypeReplacer.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/DataTypeReplacer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/ICASTIdivCastToDouble.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/ICASTIdivCastToDouble.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/LiteralExpressionMutator.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/LiteralExpressionMutator.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/MethodInvocationMutator.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/MethodInvocationMutator.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/NPEqualsShouldHandleNullArgument.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/NPEqualsShouldHandleNullArgument.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/NullPointerChecker$NPNullOnSomePathFromReturnValue$ExpStr.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/NullPointerChecker$NPNullOnSomePathFromReturnValue$ExpStr.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/NullPointerChecker$NPNullOnSomePathFromReturnValue.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/NullPointerChecker$NPNullOnSomePathFromReturnValue.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/NullPointerChecker$SuspNullExpStr.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/NullPointerChecker$SuspNullExpStr.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/NullPointerChecker.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/NullPointerChecker.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/OperatorMutator$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/OperatorMutator$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/OperatorMutator$ArithmeticOperatorMutator.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/OperatorMutator$ArithmeticOperatorMutator.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/OperatorMutator$AssignmentOperatorMuataor.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/OperatorMutator$AssignmentOperatorMuataor.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/OperatorMutator$BitIorOperatorMutator.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/OperatorMutator$BitIorOperatorMutator.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/OperatorMutator$ConditionalExpressionOperatorMutator.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/OperatorMutator$ConditionalExpressionOperatorMutator.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/OperatorMutator$DLSDeadLocalStoreInReturn.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/OperatorMutator$DLSDeadLocalStoreInReturn.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/OperatorMutator$OperatorPriorityMutator.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/OperatorMutator$OperatorPriorityMutator.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/OperatorMutator.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/OperatorMutator.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/RangeChecker$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/RangeChecker$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/RangeChecker$ArrayRangeChecker.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/RangeChecker$ArrayRangeChecker.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/RangeChecker$CollectionRangeChecker.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/RangeChecker$CollectionRangeChecker.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/RangeChecker.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/RangeChecker.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/ReturnStatementMutator.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/ReturnStatementMutator.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/StatementInserter.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/StatementInserter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/StatementMover.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/StatementMover.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/StatementRemover.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/StatementRemover.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/VariableReplacer$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/VariableReplacer$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/VariableReplacer$LongestCommonSubsequence.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/VariableReplacer$LongestCommonSubsequence.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/VariableReplacer.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixpatterns/VariableReplacer.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixtemplate/FixTemplate.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/fixtemplate/FixTemplate.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/json/MethodInfoUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/json/MethodInfoUtils.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/json/PatchesLogs$MethodMutationInfo.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/json/PatchesLogs$MethodMutationInfo.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/json/PatchesLogs$MutationInfo.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/json/PatchesLogs$MutationInfo.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/json/PatchesLogs$MutationRanking.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/json/PatchesLogs$MutationRanking.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/json/PatchesLogs.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/json/PatchesLogs.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/json/util/PatchSpaceUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/json/util/PatchSpaceUtils.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/main/Main.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/main/Main.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/main/MainPerfectFL$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/main/MainPerfectFL$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/main/MainPerfectFL.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/main/MainPerfectFL.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/main/MainPerfectFLPatchSpace.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/main/MainPerfectFLPatchSpace.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/main/MainTransformerCheck.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/main/MainTransformerCheck.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/main/Main_NFL.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/main/Main_NFL.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/Checker.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/Checker.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/CodeUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/CodeUtils.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/FileHelper.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/FileHelper.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/FileUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/FileUtils.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/JavaLibrary.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/JavaLibrary.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/JunitRunner.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/JunitRunner.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/ListSorter$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/ListSorter$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/ListSorter.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/ListSorter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/MapSorter$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/MapSorter$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/MapSorter$2.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/MapSorter$2.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/MapSorter$3.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/MapSorter$3.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/MapSorter$4.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/MapSorter$4.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/MapSorter.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/MapSorter.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/PathUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/PathUtils.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/PathUtilsPlase.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/PathUtilsPlase.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/ReadShellProcess.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/ReadShellProcess.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/ShellUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/ShellUtils.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/SuspiciousCodeParser$1.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/SuspiciousCodeParser$1.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/SuspiciousCodeParser$MyUnit.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/SuspiciousCodeParser$MyUnit.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/SuspiciousCodeParser.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/SuspiciousCodeParser.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/TestUtils.class" beforeDir="false" afterPath="$PROJECT_DIR$/target/classes/edu/lu/uni/serval/tbar/utils/TestUtils.class" afterDir="false" />
+      <change beforePath="$PROJECT_DIR$/target/dependency/TBar-0.0.1-SNAPSHOT.jar" beforeDir="false" afterPath="$PROJECT_DIR$/target/dependency/TBar-0.0.1-SNAPSHOT.jar" afterDir="false" />
+    </list>
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="Interface" />
+        <option value="Class" />
+      </list>
+    </option>
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="GitSEFilterConfiguration">
+    <file-type-list>
+      <filtered-out-file-type name="LOCAL_BRANCH" />
+      <filtered-out-file-type name="REMOTE_BRANCH" />
+      <filtered-out-file-type name="TAG" />
+      <filtered-out-file-type name="COMMIT_BY_MESSAGE" />
+    </file-type-list>
+  </component>
+  <component name="MarkdownSettingsMigration">
+    <option name="stateVersion" value="1" />
+  </component>
+  <component name="MavenImportPreferences">
+    <option name="generalSettings">
+      <MavenGeneralSettings>
+        <option name="useMavenConfig" value="true" />
+      </MavenGeneralSettings>
+    </option>
+    <option name="importingSettings">
+      <MavenImportingSettings>
+        <option name="jdkForImporter" value="1.7" />
+        <option name="vmOptionsForImporter" value="-Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2" />
+      </MavenImportingSettings>
+    </option>
+  </component>
+  <component name="MavenRunner">
+    <option name="jreName" value="1.7" />
+    <option name="vmOptions" value="-Dhttps.protocols=TLSv1,TLSv1.1,TLSv1.2" />
+  </component>
+  <component name="ProjectId" id="26mDxjeuULiaDCOVDbFXrIHDVxA" />
+  <component name="ProjectLevelVcsManager">
+    <ConfirmationsSetting value="1" id="Add" />
+  </component>
+  <component name="ProjectViewState">
+    <option name="hideEmptyMiddlePackages" value="true" />
+    <option name="showLibraryContents" value="true" />
+  </component>
+  <component name="PropertiesComponent"><![CDATA[{
+  "keyToString": {
+    "last_opened_file_path": "/home/unist/askar/aprapr/test/failed-pass",
+    "project.structure.last.edited": "SDKs",
+    "project.structure.proportion": "0.15",
+    "project.structure.side.proportion": "0.2",
+    "settings.editor.selected.configurable": "reference.settings.project.maven.runner"
+  }
+}]]></component>
+  <component name="RecentsManager">
+    <key name="MoveFile.RECENT_KEYS">
+      <recent name="$PROJECT_DIR$/target/dependency" />
+    </key>
+  </component>
+  <component name="SpellCheckerSettings" RuntimeDictionaries="0" Folders="0" CustomDictionaries="0" DefaultDictionary="application-level" UseSingleDictionary="true" transferred="true" />
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="f154dd3b-6b4e-4ae5-a75b-e6b65b277423" name="Changes" comment="" />
+      <created>1648020117834</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1648020117834</updated>
+    </task>
+    <servers />
+  </component>
+  <component name="XSLT-Support.FileAssociations.UIState">
+    <expand />
+    <select />
+  </component>
+</project>

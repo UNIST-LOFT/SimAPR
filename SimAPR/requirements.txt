@@ -1,0 +1,15 @@
+cycler
+dataclasses
+kiwisolver
+matplotlib
+numpy
+Pillow
+psutil
+pyparsing
+python-dateutil
+python-Levenshtein
+six
+nltk
+gensim
+pyemd
+pyyaml

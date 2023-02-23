@@ -1,0 +1,2 @@
+- else if (weight < j) {
++ else if (weight <=j) {

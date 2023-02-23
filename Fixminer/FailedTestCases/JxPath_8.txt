@@ -1,0 +1,2 @@
+Failing tests: 1
+  - org.apache.commons.jxpath.ri.compiler.CoreOperationTest::testNan

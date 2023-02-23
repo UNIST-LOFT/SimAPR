@@ -1,0 +1,2 @@
+- return NaN;
++ return INF;

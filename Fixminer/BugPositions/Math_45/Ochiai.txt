@@ -1,0 +1,10 @@
+org.apache.commons.math.linear.OpenMapRealMatrix@49@0.1796053020267749
+org.apache.commons.math.linear.OpenMapRealMatrix@50@0.1796053020267749
+org.apache.commons.math.linear.OpenMapRealMatrix@51@0.1796053020267749
+org.apache.commons.math.linear.OpenMapRealMatrix@52@0.1796053020267749
+org.apache.commons.math.linear.OpenMapRealMatrix@53@0.1796053020267749
+org.apache.commons.math.linear.AbstractRealMatrix@57@0.051366549693751415
+org.apache.commons.math.linear.AbstractRealMatrix@60@0.051366549693751415
+org.apache.commons.math.linear.AbstractRealMatrix@53@0.051298917604257706
+org.apache.commons.math.linear.AbstractRealMatrix@54@0.051298917604257706
+org.apache.commons.math.linear.RealLinearOperator@52@0.0468292905790847

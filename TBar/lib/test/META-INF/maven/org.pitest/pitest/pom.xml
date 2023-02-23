@@ -1,0 +1,302 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+	<modelVersion>4.0.0</modelVersion>
+	<parent>
+		<artifactId>pitest-parent</artifactId>
+		<groupId>org.pitest</groupId>
+		<version>1.1.7</version>
+	</parent>
+	<artifactId>pitest</artifactId>
+	<packaging>jar</packaging>
+	<name>pitest</name>
+	<url>http://pitest.org</url>
+	<description>Mutation testing system for Java.</description>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-jar-plugin</artifactId>
+				<configuration>
+					<archive>
+						<manifest>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
+						</manifest>
+						<index>true</index>
+					</archive>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>test-jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<testNGArtifactName>none:none</testNGArtifactName>
+
+					<includes>
+						<include>org/**/Test*.java</include>
+						<include>org/**/*Test.java</include>
+					</includes>
+					<excludes>
+						<exclude>**/*$*</exclude>
+						<exclude>com/*/**.java</exclude>
+						<exclude>**/FullyCoveredByTestNGTesteeTest.java</exclude>
+					</excludes>
+					<excludedGroups>org.pitest.SystemTest</excludedGroups>
+				</configuration>
+				<dependencies>
+					<dependency>
+						<groupId>org.testng</groupId>
+						<artifactId>testng</artifactId>
+						<version>${testng.version}</version>
+					</dependency>
+				</dependencies>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-failsafe-plugin</artifactId>
+				<configuration>
+
+					<!-- for PowerMockAgentTest -javaagent:"${settings.localRepository}"/org/powermock/powermock-module-javaagent/${powermock.version}/powermock-module-javaagent-${powermock.version}.jar -->
+					<argLine>-Dfoo=foo</argLine>
+
+					<groups>org.pitest.SystemTest</groups>
+				</configuration>
+				<executions>
+					<execution>
+						<goals>
+							<goal>integration-test</goal>
+							<goal>verify</goal>
+						</goals>
+						<configuration>
+							<includes>
+								<include>**/*.class</include>
+							</includes>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-shade-plugin</artifactId>
+				<executions>
+					<execution>
+						<phase>package</phase>
+						<goals>
+							<goal>shade</goal>
+						</goals>
+						<configuration>
+
+							<artifactSet>
+								<includes>
+									<include>xmlpull:xmlpull</include>
+									<include>com.thoughtworks.xstream:*</include>
+									<include>org.ow2.asm:*</include>
+									<include>xpp3:*</include>
+								</includes>
+							</artifactSet>
+
+							<transformers>
+								<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+							</transformers>
+
+							<relocations>
+								<relocation>
+									<pattern>org.xmlpull</pattern>
+									<shadedPattern>org.pitest.reloc.xmlpull</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>org.objectweb.asm</pattern>
+									<shadedPattern>org.pitest.reloc.asm</shadedPattern>
+								</relocation>
+								<relocation>
+									<pattern>com.thoughtworks.xstream</pattern>
+									<shadedPattern>org.pitest.reloc.xstream</shadedPattern>
+								</relocation>
+							</relocations>
+						</configuration>
+					</execution>
+				</executions>
+
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-source-plugin</artifactId>
+				<executions>
+					<execution>
+						<id>attach-sources</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<version>2.10.3</version>
+				<executions>
+					<execution>
+						<id>javadoc</id>
+						<goals>
+							<goal>jar</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<version>1.8</version>
+				<executions>
+					<execution>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>run</goal>
+						</goals>
+						<configuration>
+							<target>
+								<!--Workaround copied from https://github.com/orfjackal/jumi for 
+									issue with maven-shade-plugin There appears to be some stale state from previous 
+									executions of the Shade plugin, which manifest themselves as "We have a duplicate" 
+									warnings on build and also as some classes not being updated on build. -->
+								<delete file="${project.build.directory}/${project.build.finalName}.${project.packaging}" />
+							</target>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<groupId>org.pitest</groupId>
+				<artifactId>classycle-maven-plugin</artifactId>
+				<version>0.4</version>
+				<executions>
+					<execution>
+						<id>verify</id>
+						<phase>verify</phase>
+						<goals>
+							<goal>check</goal>
+						</goals>
+						<configuration>
+							<dependencyDefinition>
+								show allResults
+								check absenceOfPackageCycles &gt; 3 in org.pitest.*
+							</dependencyDefinition>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
+
+		<resources>
+			<resource>
+				<directory>src/main/resources</directory>
+				<filtering>true</filtering>
+			</resource>
+		</resources>
+	</build>
+
+	<dependencies>
+		<dependency>
+			<groupId>org.ow2.asm</groupId>
+			<artifactId>asm</artifactId>
+			<version>${asm.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>org.ow2.asm</groupId>
+			<artifactId>asm-commons</artifactId>
+			<version>${asm.version}</version>
+		</dependency>
+		<dependency>
+			<groupId>com.thoughtworks.xstream</groupId>
+			<artifactId>xstream</artifactId>
+			<version>1.4.8</version>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>${junit.version}</version>
+			<scope>compile</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.ow2.asm</groupId>
+			<artifactId>asm-util</artifactId>
+			<version>${asm.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.ow2.asm</groupId>
+			<artifactId>asm-analysis</artifactId>
+			<version>${asm.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.6</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>jmock</groupId>
+			<artifactId>jmock</artifactId>
+			<version>1.2.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.easymock</groupId>
+			<artifactId>easymock</artifactId>
+			<version>3.3.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.dspace.dependencies.jmockit</groupId>
+			<artifactId>dspace-jmockit</artifactId>
+			<version>0.999.4</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.testng</groupId>
+			<artifactId>testng</artifactId>
+			<version>${testng.version}</version>
+			<scope>provided</scope>
+		</dependency>
+
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-core</artifactId>
+			<version>${hamcrest.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.hamcrest</groupId>
+			<artifactId>hamcrest-library</artifactId>
+			<version>${hamcrest.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>pl.pragmatists</groupId>
+			<artifactId>JUnitParams</artifactId>
+			<version>1.0.4</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>nl.jqno.equalsverifier</groupId>
+			<artifactId>equalsverifier</artifactId>
+			<version>1.7.2</version>
+			<scope>test</scope>
+		</dependency>
+
+	</dependencies>
+
+</project>

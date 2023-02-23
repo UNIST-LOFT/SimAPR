@@ -1,0 +1,79 @@
+Chart-1,28-1
+Chart-3,4-25,5-22
+Chart-4,51-31
+Chart-8,0-6
+Chart-9,12-14
+Chart-11,4-4
+Chart-12,9-11
+Chart-20,4-6
+Chart-24,2-10
+Chart-26,129-3,128-40,129-21
+Closure-2,2-19,2-25,3-13
+#Closure-7, only plausible
+Closure-14,2-4
+Closure-21,2-1,5-222,2-32,3-12,3-21,3-95
+Closure-33,3-34
+Closure-40,14-1
+Closure-46,0-6,4-330
+Closure-57,6-47
+Closure-62,3-4
+Closure-63,3-4
+Closure-73,5-17
+Closure-86,1-7,1-8
+Closure-92,12-2
+Closure-93,12-2
+# Recheck Closure-104
+Closure-104,7-89,7-299,
+# Closure-109,3-1
+Closure-115,0-1,12-3,12-40
+Closure-118,0-36,0-122
+Closure-126,6-4
+Lang-6,47-6
+Lang-26,4-2
+# Lang-29, not found - no location
+#Lang-33,6-92 when beamsize=150
+# Lang-38 not found
+Lang-43,5-32
+Lang-51,12-6,12-20
+Lang-55,5-14
+Lang-57,0-2
+Lang-59,5-21
+Math-5,0-3
+Math-27,0-1
+Math-30,13-19
+Math-33,19-29
+Math-34,1-2
+Math-41,22-13
+Math-50,0-1
+Math-57,2-16
+Math-58,8-2
+Math-65,3-52
+Math-70,0-12
+Math-75,0-3
+Math-82,53-2
+Math-94,5-6
+Math-96,13-15
+#Math-98,13-22
+Math-105,14-2
+#Time-4,1013-19
+Time-7,251-26
+Mockito-38,0-1
+# Mockito-29, not found
+# Math-98,3-14
+
+#PFL
+#Chart-4,
+#Chart-12,9-11
+#Closure-10,
+#Closure-11,
+#Closure-18,
+#Closure-31,
+#Closure-40,
+#Closure-70,
+#Closure-125,
+#Closure-126,
+#Lang-43,
+#Math-58,
+#Math-82,
+#Math-85,
+#Time-19,

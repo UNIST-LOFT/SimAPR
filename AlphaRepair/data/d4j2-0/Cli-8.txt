@@ -1,0 +1,2 @@
+- pos = findWrapPos(text, width, nextLineTabStop);
++ pos = findWrapPos(text, width, 0);

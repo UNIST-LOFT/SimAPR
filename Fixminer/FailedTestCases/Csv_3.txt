@@ -1,0 +1,4 @@
+Failing tests: 3
+  - org.apache.commons.csv.CSVLexerTest::testEscapedMySqlNullValue
+  - org.apache.commons.csv.CSVLexerTest::testEscapedCharacter
+  - org.apache.commons.csv.CSVParserTest::testBackslashEscaping

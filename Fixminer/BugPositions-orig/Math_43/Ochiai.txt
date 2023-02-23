@@ -1,0 +1,15 @@
+org.apache.commons.math.stat.descriptive.SummaryStatistics@647@0.7171371656
+org.apache.commons.math.stat.descriptive.SummaryStatistics@643@0.6546536707
+org.apache.commons.math.stat.descriptive.SummaryStatistics@637@0.5345224838
+org.apache.commons.math.stat.descriptive.SummaryStatistics@636@0.5345224838
+org.apache.commons.math.stat.descriptive.SummaryStatistics@635@0.5345224838
+org.apache.commons.math.stat.descriptive.SummaryStatistics@579@0.5345224838
+org.apache.commons.math.stat.descriptive.SummaryStatistics@578@0.5345224838
+org.apache.commons.math.stat.descriptive.SummaryStatistics@577@0.5345224838
+org.apache.commons.math.stat.descriptive.SummaryStatistics@608@0.377964473
+org.apache.commons.math.stat.descriptive.SummaryStatistics@607@0.377964473
+org.apache.commons.math.stat.descriptive.SummaryStatistics@606@0.3086066999
+org.apache.commons.math.stat.descriptive.moment.Variance@420@0.2857142857
+org.apache.commons.math.stat.descriptive.SummaryStatistics@168@0.2377286555
+org.apache.commons.math.stat.descriptive.SummaryStatistics@167@0.2377286555
+org.apache.commons.math.stat.descriptive.SummaryStatistics@164@0.2377286555

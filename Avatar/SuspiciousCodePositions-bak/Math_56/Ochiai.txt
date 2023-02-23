@@ -1,0 +1,3 @@
+org.apache.commons.math.util.MultidimensionalCounter@281@0.7071067812
+org.apache.commons.math.util.MultidimensionalCounter@245@0.7071067812
+org.apache.commons.math.util.MultidimensionalCounter@243@0.7071067812

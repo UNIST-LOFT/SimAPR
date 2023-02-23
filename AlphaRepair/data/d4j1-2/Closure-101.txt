@@ -1,0 +1,2 @@
+- if (flags.process_closure_primitives) {
++ if (options.closurePass=flags.process_closure_primitives) {

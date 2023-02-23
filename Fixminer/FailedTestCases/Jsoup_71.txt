@@ -1,0 +1,3 @@
+Failing tests: 2
+  - org.jsoup.select.SelectorTest::splitOnBr
+  - org.jsoup.select.SelectorTest::textAsElements

@@ -1,0 +1,3 @@
+Failing tests: 2
+  - org.apache.commons.codec.binary.Base64Test::testByteToStringVariations
+  - org.apache.commons.codec.binary.Base64Test::testRfc4648Section10Encode

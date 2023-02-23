@@ -1,0 +1,2 @@
+- int len = thisBuf.length - strLen;
++ int len = size + 1 - strLen ;

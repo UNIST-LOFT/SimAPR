@@ -1,0 +1,7 @@
+Failing tests: 6
+  - org.apache.commons.csv.CSVPrinterTest::testEscapeNull1
+  - org.apache.commons.csv.CSVPrinterTest::testEscapeNull4
+  - org.apache.commons.csv.CSVPrinterTest::testEscapeNull5
+  - org.apache.commons.csv.CSVPrinterTest::testEscapeBackslash1
+  - org.apache.commons.csv.CSVPrinterTest::testEscapeBackslash4
+  - org.apache.commons.csv.CSVPrinterTest::testEscapeBackslash5

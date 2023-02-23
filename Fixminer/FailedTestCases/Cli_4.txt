@@ -1,0 +1,3 @@
+Failing tests: 2
+  - org.apache.commons.cli.OptionsTest::testMissingOptionsException
+  - org.apache.commons.cli.OptionsTest::testMissingOptionException

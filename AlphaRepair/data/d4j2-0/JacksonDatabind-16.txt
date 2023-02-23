@@ -1,0 +1,2 @@
+- return (previous != null) && previous.equals(ann);
++ return (previous  == null) || previous. equals(ann);

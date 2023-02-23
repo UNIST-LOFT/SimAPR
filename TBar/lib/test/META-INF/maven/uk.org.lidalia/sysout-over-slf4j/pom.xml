@@ -1,0 +1,260 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+	<modelVersion>4.0.0</modelVersion>
+	
+	<groupId>uk.org.lidalia</groupId>
+	<artifactId>sysout-over-slf4j</artifactId>
+	<packaging>jar</packaging>
+    <name>System Out and Err redirected to SLF4J</name>
+
+    <url>http://projects.lidalia.org.uk/sysout-over-slf4j/</url>
+    <version>1.0.2</version>
+    <description>Library to send raw System.out and System.err output to SLF4J for proper logging control</description>
+    
+    <issueManagement>
+    	<system>GitHub Issues</system>
+    	<url>http://github.com/Mahoney/sysout-over-slf4j/issues</url>
+    </issueManagement>
+    
+    <developers>
+    	<developer>
+    		<name>Robert Elliot</name>
+    		<email>rob@lidalia.org.uk</email>
+    	</developer>
+    </developers>
+
+	<licenses>
+		<license>
+			<name>MIT X11 License</name>
+			<url>http://github.com/Mahoney/sysout-over-slf4j/raw/master/LICENSE.txt</url>
+			<distribution>repo</distribution>
+		</license>
+	</licenses>
+    
+	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+		<powermock.version>1.4</powermock.version>
+		<logback.version>0.9.24</logback.version>
+	</properties>
+	
+	<scm>
+		<connection>scm:git:git@github.com:Mahoney/sysout-over-slf4j.git</connection>
+		<developerConnection>scm:git:git@github.com:Mahoney/sysout-over-slf4j.git</developerConnection>
+		<url>http://github.com/Mahoney/sysout-over-slf4j</url>
+	</scm>
+	
+	<mailingLists>
+		<mailingList>
+			<name>slf4j-announcements list</name>
+			<subscribe>http://www.qos.ch/mailman/listinfo/announce</subscribe>
+			<unsubscribe>http://www.qos.ch/mailman/options/announce</unsubscribe>
+			<archive>http://www.qos.ch/pipermail/announce/</archive>
+			<otherArchives>
+				<otherArchive>http://marc.theaimsgroup.com/?l=slf4j-announce</otherArchive>
+			</otherArchives>
+		</mailingList>
+		<mailingList>
+			<name>slf4j-user list</name>
+			<subscribe>http://www.qos.ch/mailman/listinfo/slf4j-user</subscribe>
+			<unsubscribe>http://www.qos.ch/mailman/options/slf4j-user</unsubscribe>
+			<post>slf4j-user@qos.ch</post>
+			<archive>http://www.qos.ch/pipermail/slf4j-user/</archive>
+			<otherArchives>
+				<otherArchive>http://news.gmane.org/gmane.comp.java.slf4j.user</otherArchive>
+				<otherArchive>http://marc.theaimsgroup.com/?l=slf4j-user</otherArchive>
+				<otherArchive>http://www.nabble.com/Slf4J---user-f13203.html</otherArchive>
+				<otherArchive>http://www.mail-archive.com/user%40slf4j.org/</otherArchive>
+			</otherArchives>
+		</mailingList>
+	</mailingLists>
+
+	<build>
+		<plugins>
+			<plugin>
+				<groupId>org.apache.maven.plugins</groupId>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<configuration>
+					<source>1.6</source>
+					<target>1.6</target>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-surefire-plugin</artifactId>
+				<configuration>
+					<forkMode>once</forkMode>
+					<excludes>
+						<exclude>**/*$*.java</exclude>
+					</excludes>
+				</configuration>
+			</plugin>
+		</plugins>
+	</build>
+
+	<reporting>
+		<plugins>
+			<plugin>
+				<artifactId>maven-javadoc-plugin</artifactId>
+				<configuration>
+					<links>
+						<link>http://download.oracle.com/javase/6/docs/api/</link>
+						<link>http://www.slf4j.org/apidocs/</link>
+					</links>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-jxr-plugin</artifactId>
+				<configuration>
+					<linkJavadoc>true</linkJavadoc>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-surefire-report-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<artifactId>maven-checkstyle-plugin</artifactId>
+				<configuration>
+					<configLocation>${basedir}/checkstyle.xml</configLocation>
+				</configuration>
+			</plugin>
+			<plugin>
+				<artifactId>maven-pmd-plugin</artifactId>
+				<configuration>
+					<targetJdk>1.6</targetJdk>
+					<rulesets>
+						<ruleset>${basedir}/pmd-rules.xml</ruleset>
+					</rulesets>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>findbugs-maven-plugin</artifactId>
+				<configuration>
+					<threshold>Low</threshold>
+					<effort>Max</effort>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>cobertura-maven-plugin</artifactId>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>taglist-maven-plugin</artifactId>
+				<configuration>
+					<tagListOptions>
+						<tagClasses>
+							<tagClass>
+								<displayName>Todo Work</displayName>
+								<tags>
+									<tag>
+										<matchString>todo</matchString>
+										<matchType>ignoreCase</matchType>
+									</tag>
+									<tag>
+										<matchString>FIXME</matchString>
+										<matchType>ignoreCase</matchType>
+									</tag>
+								</tags>
+							</tagClass>
+							<tagClass>
+								<displayName>Deliberate PMD Suppression</displayName>
+								<tags>
+									<tag>
+										<matchString>NOPMD</matchString>
+										<matchType>exact</matchType>
+									</tag>
+								</tags>
+							</tagClass>
+						</tagClasses>
+					</tagListOptions>
+				</configuration>
+			</plugin>
+			<plugin>
+				<groupId>org.codehaus.mojo</groupId>
+				<artifactId>clirr-maven-plugin</artifactId>
+			</plugin>
+		</plugins>
+	</reporting>
+
+	<repositories>
+		<repository>
+			<id>powermock-repo</id>
+			<url>http://powermock.googlecode.com/svn/repo/</url>
+		</repository>
+	</repositories>
+
+	<dependencies>
+		<!-- COMPILE -->
+		<dependency>
+			<groupId>org.slf4j</groupId>
+			<artifactId>slf4j-api</artifactId>
+			<version>1.6.0</version>
+		</dependency>
+
+		<!-- PROVIDED -->
+		<dependency>
+			<groupId>javax.servlet</groupId>
+			<artifactId>servlet-api</artifactId>
+			<version>2.3</version>
+			<scope>provided</scope>
+			<optional>true</optional>
+		</dependency>
+
+		<!-- TEST -->
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-core</artifactId>
+			<version>${logback.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>ch.qos.logback</groupId>
+			<artifactId>logback-classic</artifactId>
+			<version>${logback.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>junit</groupId>
+			<artifactId>junit</artifactId>
+			<version>4.8.1</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>log4j</groupId>
+			<artifactId>log4j</artifactId>
+			<version>1.2.13</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.easymock</groupId>
+			<artifactId>easymock</artifactId>
+			<version>3.0</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock.modules</groupId>
+			<artifactId>powermock-module-junit4</artifactId>
+			<version>${powermock.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>org.powermock.api</groupId>
+			<artifactId>powermock-api-easymock</artifactId>
+			<version>${powermock.version}</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-io</groupId>
+			<artifactId>commons-io</artifactId>
+			<version>1.4</version>
+			<scope>test</scope>
+		</dependency>
+		<dependency>
+			<groupId>commons-lang</groupId>
+			<artifactId>commons-lang</artifactId>
+			<version>2.4</version>
+			<scope>test</scope>
+		</dependency>
+	</dependencies>
+</project>

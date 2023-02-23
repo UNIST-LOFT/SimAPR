@@ -1,0 +1,2 @@
++ case Token.THIS: break;
+  default:

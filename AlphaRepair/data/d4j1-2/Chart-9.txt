@@ -1,0 +1,2 @@
+- if (endIndex < 0) {
++ if (endIndex < 0 || startIndex > endIndex) {

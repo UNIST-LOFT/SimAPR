@@ -1,0 +1,998 @@
+[
+ {
+  "filename": "Token.java",
+  "package_name": "org.apache.commons.csv",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "reset",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "toString",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "INITIAL_TOKEN_LENGTH",
+      "type": "int"
+     },
+     {
+      "name": "type",
+      "type": "Token"
+     },
+     {
+      "name": "content",
+      "type": "StringBuilder"
+     },
+     {
+      "name": "isReady",
+      "type": "boolean"
+     }
+    ],
+    "name": "Token"
+   }
+  ]
+ },
+ {
+  "filename": "CSVFormat.java",
+  "package_name": "org.apache.commons.csv",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "c",
+        "type": "Character"
+       }
+      ],
+      "name": "isLineBreak",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "newBuilder",
+      "type": "CSVFormatBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "c",
+        "type": "char"
+       }
+      ],
+      "name": "isLineBreak",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "delimiter",
+        "type": "char"
+       }
+      ],
+      "name": "newBuilder",
+      "type": "CSVFormatBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "format",
+        "type": "CSVFormat"
+       }
+      ],
+      "name": "newBuilder",
+      "type": "CSVFormatBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "obj",
+        "type": "Object"
+       }
+      ],
+      "name": "equals",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "values",
+        "type": "Object"
+       }
+      ],
+      "name": "format",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getCommentStart",
+      "type": "Character"
+     },
+     {
+      "params": [],
+      "name": "getDelimiter",
+      "type": "char"
+     },
+     {
+      "params": [],
+      "name": "getEscape",
+      "type": "Character"
+     },
+     {
+      "params": [],
+      "name": "getHeader",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getIgnoreEmptyLines",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "getIgnoreSurroundingSpaces",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "getNullToString",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getQuoteChar",
+      "type": "Character"
+     },
+     {
+      "params": [],
+      "name": "getQuotePolicy",
+      "type": "Quote"
+     },
+     {
+      "params": [],
+      "name": "getRecordSeparator",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "hashCode",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "isCommentingEnabled",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "isEscaping",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "isQuoting",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "in",
+        "type": "Reader"
+       }
+      ],
+      "name": "parse",
+      "type": "Iterable"
+     },
+     {
+      "params": [],
+      "name": "toBuilder",
+      "type": "CSVFormatBuilder"
+     },
+     {
+      "params": [],
+      "name": "toString",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "serialVersionUID",
+      "type": "long"
+     },
+     {
+      "name": "delimiter",
+      "type": "char"
+     },
+     {
+      "name": "quoteChar",
+      "type": "Character"
+     },
+     {
+      "name": "quotePolicy",
+      "type": "Quote"
+     },
+     {
+      "name": "commentStart",
+      "type": "Character"
+     },
+     {
+      "name": "escape",
+      "type": "Character"
+     },
+     {
+      "name": "ignoreSurroundingSpaces",
+      "type": "boolean"
+     },
+     {
+      "name": "ignoreEmptyLines",
+      "type": "boolean"
+     },
+     {
+      "name": "recordSeparator",
+      "type": "String"
+     },
+     {
+      "name": "nullToString",
+      "type": "String"
+     },
+     {
+      "name": "header",
+      "type": "String"
+     },
+     {
+      "name": "RFC4180",
+      "type": "CSVFormat"
+     },
+     {
+      "name": "DEFAULT",
+      "type": "CSVFormat"
+     },
+     {
+      "name": "EXCEL",
+      "type": "CSVFormat"
+     },
+     {
+      "name": "TDF",
+      "type": "CSVFormat"
+     },
+     {
+      "name": "MYSQL",
+      "type": "CSVFormat"
+     }
+    ],
+    "name": "CSVFormat"
+   }
+  ]
+ },
+ {
+  "filename": "CSVParser.java",
+  "package_name": "org.apache.commons.csv",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getHeaderMap",
+      "type": "Map"
+     },
+     {
+      "params": [],
+      "name": "getLineNumber",
+      "type": "long"
+     },
+     {
+      "params": [],
+      "name": "getRecordNumber",
+      "type": "long"
+     },
+     {
+      "params": [],
+      "name": "nextRecord",
+      "type": "CSVRecord"
+     },
+     {
+      "params": [],
+      "name": "getRecords",
+      "type": "List"
+     },
+     {
+      "params": [
+       {
+        "name": "format",
+        "type": "CSVFormat"
+       }
+      ],
+      "name": "initializeHeader",
+      "type": "Map"
+     },
+     {
+      "params": [],
+      "name": "iterator",
+      "type": "Iterator"
+     }
+    ],
+    "fields": [
+     {
+      "name": "lexer",
+      "type": "Lexer"
+     },
+     {
+      "name": "headerMap",
+      "type": "Map"
+     },
+     {
+      "name": "recordNumber",
+      "type": "long"
+     },
+     {
+      "name": "record",
+      "type": "List"
+     },
+     {
+      "name": "reusableToken",
+      "type": "Token"
+     }
+    ],
+    "name": "CSVParser"
+   }
+  ]
+ },
+ {
+  "filename": "Lexer.java",
+  "package_name": "org.apache.commons.csv",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "c",
+        "type": "Character"
+       }
+      ],
+      "name": "mapNullToDisabled",
+      "type": "char"
+     },
+     {
+      "params": [],
+      "name": "getLineNumber",
+      "type": "long"
+     },
+     {
+      "params": [],
+      "name": "readEscape",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "StringBuilder"
+       }
+      ],
+      "name": "trimTrailingSpaces",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "c",
+        "type": "int"
+       }
+      ],
+      "name": "readEndOfLine",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "reusableToken",
+        "type": "Token"
+       }
+      ],
+      "name": "nextToken",
+      "type": "Token"
+     },
+     {
+      "params": [
+       {
+        "name": "c",
+        "type": "int"
+       }
+      ],
+      "name": "isWhitespace",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "c",
+        "type": "int"
+       }
+      ],
+      "name": "isStartOfLine",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "c",
+        "type": "int"
+       }
+      ],
+      "name": "isEndOfFile",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "c",
+        "type": "int"
+       }
+      ],
+      "name": "isDelimiter",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "c",
+        "type": "int"
+       }
+      ],
+      "name": "isEscape",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "c",
+        "type": "int"
+       }
+      ],
+      "name": "isQuoteChar",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "c",
+        "type": "int"
+       }
+      ],
+      "name": "isCommentStart",
+      "type": "boolean"
+     }
+    ],
+    "fields": [
+     {
+      "name": "DISABLED",
+      "type": "char"
+     },
+     {
+      "name": "delimiter",
+      "type": "char"
+     },
+     {
+      "name": "escape",
+      "type": "char"
+     },
+     {
+      "name": "quoteChar",
+      "type": "char"
+     },
+     {
+      "name": "commmentStart",
+      "type": "char"
+     },
+     {
+      "name": "ignoreSurroundingSpaces",
+      "type": "boolean"
+     },
+     {
+      "name": "ignoreEmptyLines",
+      "type": "boolean"
+     },
+     {
+      "name": "format",
+      "type": "CSVFormat"
+     },
+     {
+      "name": "in",
+      "type": "ExtendedBufferedReader"
+     }
+    ],
+    "name": "Lexer"
+   }
+  ]
+ },
+ {
+  "filename": "package-info.java",
+  "package_name": "org.apache.commons.csv",
+  "classes": []
+ },
+ {
+  "filename": "CSVRecord.java",
+  "package_name": "org.apache.commons.csv",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "i",
+        "type": "int"
+       }
+      ],
+      "name": "get",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ],
+      "name": "get",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "isConsistent",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ],
+      "name": "isMapped",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ],
+      "name": "isSet",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "iterator",
+      "type": "Iterator"
+     },
+     {
+      "params": [],
+      "name": "values",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getComment",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getRecordNumber",
+      "type": "long"
+     },
+     {
+      "params": [],
+      "name": "size",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "toString",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "serialVersionUID",
+      "type": "long"
+     },
+     {
+      "name": "EMPTY_STRING_ARRAY",
+      "type": "String"
+     },
+     {
+      "name": "values",
+      "type": "String"
+     },
+     {
+      "name": "mapping",
+      "type": "Map"
+     },
+     {
+      "name": "comment",
+      "type": "String"
+     },
+     {
+      "name": "recordNumber",
+      "type": "long"
+     }
+    ],
+    "name": "CSVRecord"
+   }
+  ]
+ },
+ {
+  "filename": "ExtendedBufferedReader.java",
+  "package_name": "org.apache.commons.csv",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "read",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getLastChar",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "buf",
+        "type": "char"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "read",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "readLine",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "lookAhead",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getLineNumber",
+      "type": "long"
+     }
+    ],
+    "fields": [
+     {
+      "name": "lastChar",
+      "type": "int"
+     },
+     {
+      "name": "lineCounter",
+      "type": "long"
+     }
+    ],
+    "name": "ExtendedBufferedReader"
+   }
+  ]
+ },
+ {
+  "filename": "CSVPrinter.java",
+  "package_name": "org.apache.commons.csv",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "println",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "flush",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "values",
+        "type": "Object"
+       }
+      ],
+      "name": "printRecord",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "values",
+        "type": "Iterable"
+       }
+      ],
+      "name": "printRecord",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "comment",
+        "type": "String"
+       }
+      ],
+      "name": "printComment",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "object",
+        "type": "Object"
+       },
+       {
+        "name": "value",
+        "type": "CharSequence"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "len",
+        "type": "int"
+       }
+      ],
+      "name": "print",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "printDelimiter",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "CharSequence"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "len",
+        "type": "int"
+       }
+      ],
+      "name": "printAndEscape",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "object",
+        "type": "Object"
+       },
+       {
+        "name": "value",
+        "type": "CharSequence"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "len",
+        "type": "int"
+       }
+      ],
+      "name": "printAndQuote",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "Object"
+       }
+      ],
+      "name": "print",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "values",
+        "type": "Object"
+       }
+      ],
+      "name": "printRecords",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "values",
+        "type": "Iterable"
+       }
+      ],
+      "name": "printRecords",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "resultSet",
+        "type": "ResultSet"
+       }
+      ],
+      "name": "printRecords",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "close",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "out",
+      "type": "Appendable"
+     },
+     {
+      "name": "format",
+      "type": "CSVFormat"
+     },
+     {
+      "name": "newRecord",
+      "type": "boolean"
+     }
+    ],
+    "name": "CSVPrinter"
+   }
+  ]
+ },
+ {
+  "filename": "Constants.java",
+  "package_name": "org.apache.commons.csv",
+  "classes": [
+   {
+    "methods": [],
+    "fields": [
+     {
+      "name": "BACKSPACE",
+      "type": "char"
+     },
+     {
+      "name": "COMMA",
+      "type": "char"
+     },
+     {
+      "name": "COMMENT",
+      "type": "char"
+     },
+     {
+      "name": "CR",
+      "type": "char"
+     },
+     {
+      "name": "DOUBLE_QUOTE_CHAR",
+      "type": "Character"
+     },
+     {
+      "name": "BACKSLASH",
+      "type": "char"
+     },
+     {
+      "name": "FF",
+      "type": "char"
+     },
+     {
+      "name": "LF",
+      "type": "char"
+     },
+     {
+      "name": "SP",
+      "type": "char"
+     },
+     {
+      "name": "TAB",
+      "type": "char"
+     },
+     {
+      "name": "EMPTY",
+      "type": "String"
+     },
+     {
+      "name": "END_OF_STREAM",
+      "type": "int"
+     },
+     {
+      "name": "UNDEFINED",
+      "type": "int"
+     },
+     {
+      "name": "CRLF",
+      "type": "String"
+     }
+    ],
+    "name": "Constants"
+   }
+  ]
+ },
+ {
+  "filename": "Quote.java",
+  "package_name": "org.apache.commons.csv",
+  "classes": [
+   {
+    "methods": [],
+    "fields": [],
+    "name": "Quote"
+   }
+  ]
+ },
+ {
+  "filename": "CSVLexer.java",
+  "package_name": "org.apache.commons.csv",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "token",
+        "type": "Token"
+       }
+      ],
+      "name": "nextToken",
+      "type": "Token"
+     },
+     {
+      "params": [
+       {
+        "name": "tkn",
+        "type": "Token"
+       },
+       {
+        "name": "c",
+        "type": "int"
+       }
+      ],
+      "name": "parseSimpleToken",
+      "type": "Token"
+     },
+     {
+      "params": [
+       {
+        "name": "tkn",
+        "type": "Token"
+       }
+      ],
+      "name": "parseEncapsulatedToken",
+      "type": "Token"
+     }
+    ],
+    "fields": [],
+    "name": "CSVLexer"
+   }
+  ]
+ }
+]

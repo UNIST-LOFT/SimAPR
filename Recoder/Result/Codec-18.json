@@ -1,0 +1,7681 @@
+[
+ {
+  "filename": "StringEncoderComparator.java",
+  "package_name": "org.apache.commons.codec",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "o1",
+        "type": "Object"
+       },
+       {
+        "name": "o2",
+        "type": "Object"
+       }
+      ],
+      "name": "compare",
+      "type": "int"
+     }
+    ],
+    "fields": [
+     {
+      "name": "stringEncoder",
+      "type": "StringEncoder"
+     }
+    ],
+    "name": "StringEncoderComparator"
+   }
+  ]
+ },
+ {
+  "filename": "EncoderException.java",
+  "package_name": "org.apache.commons.codec",
+  "classes": [
+   {
+    "methods": [],
+    "fields": [
+     {
+      "name": "serialVersionUID",
+      "type": "long"
+     }
+    ],
+    "name": "EncoderException"
+   }
+  ]
+ },
+ {
+  "filename": "DecoderException.java",
+  "package_name": "org.apache.commons.codec",
+  "classes": [
+   {
+    "methods": [],
+    "fields": [
+     {
+      "name": "serialVersionUID",
+      "type": "long"
+     }
+    ],
+    "name": "DecoderException"
+   }
+  ]
+ },
+ {
+  "filename": "BinaryEncoder.java",
+  "package_name": "org.apache.commons.codec",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "source",
+        "type": "byte"
+       }
+      ],
+      "name": "encode",
+      "type": "byte"
+     }
+    ],
+    "fields": [],
+    "name": "BinaryEncoder"
+   }
+  ]
+ },
+ {
+  "filename": "BinaryDecoder.java",
+  "package_name": "org.apache.commons.codec",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "source",
+        "type": "byte"
+       }
+      ],
+      "name": "decode",
+      "type": "byte"
+     }
+    ],
+    "fields": [],
+    "name": "BinaryDecoder"
+   }
+  ]
+ },
+ {
+  "filename": "Charsets.java",
+  "package_name": "org.apache.commons.codec",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "charset",
+        "type": "Charset"
+       }
+      ],
+      "name": "toCharset",
+      "type": "Charset"
+     },
+     {
+      "params": [
+       {
+        "name": "charset",
+        "type": "String"
+       }
+      ],
+      "name": "toCharset",
+      "type": "Charset"
+     }
+    ],
+    "fields": [
+     {
+      "name": "ISO_8859_1",
+      "type": "Charset"
+     },
+     {
+      "name": "US_ASCII",
+      "type": "Charset"
+     },
+     {
+      "name": "UTF_16",
+      "type": "Charset"
+     },
+     {
+      "name": "UTF_16BE",
+      "type": "Charset"
+     },
+     {
+      "name": "UTF_16LE",
+      "type": "Charset"
+     },
+     {
+      "name": "UTF_8",
+      "type": "Charset"
+     }
+    ],
+    "name": "Charsets"
+   }
+  ]
+ },
+ {
+  "filename": "StringEncoder.java",
+  "package_name": "org.apache.commons.codec",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "source",
+        "type": "String"
+       }
+      ],
+      "name": "encode",
+      "type": "String"
+     }
+    ],
+    "fields": [],
+    "name": "StringEncoder"
+   }
+  ]
+ },
+ {
+  "filename": "Decoder.java",
+  "package_name": "org.apache.commons.codec",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "source",
+        "type": "Object"
+       }
+      ],
+      "name": "decode",
+      "type": "Object"
+     }
+    ],
+    "fields": [],
+    "name": "Decoder"
+   }
+  ]
+ },
+ {
+  "filename": "Encoder.java",
+  "package_name": "org.apache.commons.codec",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "source",
+        "type": "Object"
+       }
+      ],
+      "name": "encode",
+      "type": "Object"
+     }
+    ],
+    "fields": [],
+    "name": "Encoder"
+   }
+  ]
+ },
+ {
+  "filename": "CharEncoding.java",
+  "package_name": "org.apache.commons.codec",
+  "classes": [
+   {
+    "methods": [],
+    "fields": [
+     {
+      "name": "ISO_8859_1",
+      "type": "String"
+     },
+     {
+      "name": "US_ASCII",
+      "type": "String"
+     },
+     {
+      "name": "UTF_16",
+      "type": "String"
+     },
+     {
+      "name": "UTF_16BE",
+      "type": "String"
+     },
+     {
+      "name": "UTF_16LE",
+      "type": "String"
+     },
+     {
+      "name": "UTF_8",
+      "type": "String"
+     }
+    ],
+    "name": "CharEncoding"
+   }
+  ]
+ },
+ {
+  "filename": "StringDecoder.java",
+  "package_name": "org.apache.commons.codec",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "source",
+        "type": "String"
+       }
+      ],
+      "name": "decode",
+      "type": "String"
+     }
+    ],
+    "fields": [],
+    "name": "StringDecoder"
+   }
+  ]
+ },
+ {
+  "filename": "QCodec.java",
+  "package_name": "org.apache.commons.codec.net",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getEncoding",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "bytes",
+        "type": "byte"
+       }
+      ],
+      "name": "doEncoding",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "bytes",
+        "type": "byte"
+       }
+      ],
+      "name": "doDecoding",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       },
+       {
+        "name": "charset",
+        "type": "Charset"
+       }
+      ],
+      "name": "encode",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       },
+       {
+        "name": "charset",
+        "type": "String"
+       }
+      ],
+      "name": "encode",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       }
+      ],
+      "name": "encode",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       }
+      ],
+      "name": "decode",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "obj",
+        "type": "Object"
+       }
+      ],
+      "name": "encode",
+      "type": "Object"
+     },
+     {
+      "params": [
+       {
+        "name": "obj",
+        "type": "Object"
+       }
+      ],
+      "name": "decode",
+      "type": "Object"
+     },
+     {
+      "params": [],
+      "name": "getCharset",
+      "type": "Charset"
+     },
+     {
+      "params": [],
+      "name": "getDefaultCharset",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "isEncodeBlanks",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "boolean"
+       }
+      ],
+      "name": "setEncodeBlanks",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "charset",
+      "type": "Charset"
+     },
+     {
+      "name": "PRINTABLE_CHARS",
+      "type": "BitSet"
+     },
+     {
+      "name": "BLANK",
+      "type": "byte"
+     },
+     {
+      "name": "UNDERSCORE",
+      "type": "byte"
+     },
+     {
+      "name": "encodeBlanks",
+      "type": "boolean"
+     }
+    ],
+    "name": "QCodec"
+   }
+  ]
+ },
+ {
+  "filename": "QuotedPrintableCodec.java",
+  "package_name": "org.apache.commons.codec.net",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "int"
+       },
+       {
+        "name": "buffer",
+        "type": "ByteArrayOutputStream"
+       }
+      ],
+      "name": "encodeQuotedPrintable",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "index",
+        "type": "int"
+       },
+       {
+        "name": "bytes",
+        "type": "byte"
+       }
+      ],
+      "name": "getUnsignedOctet",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "int"
+       },
+       {
+        "name": "encode",
+        "type": "boolean"
+       },
+       {
+        "name": "buffer",
+        "type": "ByteArrayOutputStream"
+       }
+      ],
+      "name": "encodeByte",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "int"
+       }
+      ],
+      "name": "isWhitespace",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "printable",
+        "type": "BitSet"
+       },
+       {
+        "name": "bytes",
+        "type": "byte"
+       }
+      ],
+      "name": "encodeQuotedPrintable",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "printable",
+        "type": "BitSet"
+       },
+       {
+        "name": "bytes",
+        "type": "byte"
+       },
+       {
+        "name": "strict",
+        "type": "boolean"
+       }
+      ],
+      "name": "encodeQuotedPrintable",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "bytes",
+        "type": "byte"
+       }
+      ],
+      "name": "decodeQuotedPrintable",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "bytes",
+        "type": "byte"
+       }
+      ],
+      "name": "encode",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "bytes",
+        "type": "byte"
+       }
+      ],
+      "name": "decode",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       }
+      ],
+      "name": "encode",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       },
+       {
+        "name": "charset",
+        "type": "Charset"
+       }
+      ],
+      "name": "decode",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       },
+       {
+        "name": "charset",
+        "type": "String"
+       }
+      ],
+      "name": "decode",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       }
+      ],
+      "name": "decode",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "obj",
+        "type": "Object"
+       }
+      ],
+      "name": "encode",
+      "type": "Object"
+     },
+     {
+      "params": [
+       {
+        "name": "obj",
+        "type": "Object"
+       }
+      ],
+      "name": "decode",
+      "type": "Object"
+     },
+     {
+      "params": [],
+      "name": "getCharset",
+      "type": "Charset"
+     },
+     {
+      "params": [],
+      "name": "getDefaultCharset",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       },
+       {
+        "name": "charset",
+        "type": "Charset"
+       }
+      ],
+      "name": "encode",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       },
+       {
+        "name": "charset",
+        "type": "String"
+       }
+      ],
+      "name": "encode",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "charset",
+      "type": "Charset"
+     },
+     {
+      "name": "strict",
+      "type": "boolean"
+     },
+     {
+      "name": "PRINTABLE_CHARS",
+      "type": "BitSet"
+     },
+     {
+      "name": "ESCAPE_CHAR",
+      "type": "byte"
+     },
+     {
+      "name": "TAB",
+      "type": "byte"
+     },
+     {
+      "name": "SPACE",
+      "type": "byte"
+     },
+     {
+      "name": "CR",
+      "type": "byte"
+     },
+     {
+      "name": "LF",
+      "type": "byte"
+     },
+     {
+      "name": "SAFE_LENGTH",
+      "type": "int"
+     }
+    ],
+    "name": "QuotedPrintableCodec"
+   }
+  ]
+ },
+ {
+  "filename": "BCodec.java",
+  "package_name": "org.apache.commons.codec.net",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getEncoding",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "bytes",
+        "type": "byte"
+       }
+      ],
+      "name": "doEncoding",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "bytes",
+        "type": "byte"
+       }
+      ],
+      "name": "doDecoding",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       },
+       {
+        "name": "charset",
+        "type": "Charset"
+       }
+      ],
+      "name": "encode",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       },
+       {
+        "name": "charset",
+        "type": "String"
+       }
+      ],
+      "name": "encode",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       }
+      ],
+      "name": "encode",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       }
+      ],
+      "name": "decode",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "Object"
+       }
+      ],
+      "name": "encode",
+      "type": "Object"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "Object"
+       }
+      ],
+      "name": "decode",
+      "type": "Object"
+     },
+     {
+      "params": [],
+      "name": "getCharset",
+      "type": "Charset"
+     },
+     {
+      "params": [],
+      "name": "getDefaultCharset",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "charset",
+      "type": "Charset"
+     }
+    ],
+    "name": "BCodec"
+   }
+  ]
+ },
+ {
+  "filename": "Utils.java",
+  "package_name": "org.apache.commons.codec.net",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "byte"
+       }
+      ],
+      "name": "digit16",
+      "type": "int"
+     }
+    ],
+    "fields": [],
+    "name": "Utils"
+   }
+  ]
+ },
+ {
+  "filename": "URLCodec.java",
+  "package_name": "org.apache.commons.codec.net",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "urlsafe",
+        "type": "BitSet"
+       },
+       {
+        "name": "bytes",
+        "type": "byte"
+       }
+      ],
+      "name": "encodeUrl",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "bytes",
+        "type": "byte"
+       }
+      ],
+      "name": "decodeUrl",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "bytes",
+        "type": "byte"
+       }
+      ],
+      "name": "encode",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "bytes",
+        "type": "byte"
+       }
+      ],
+      "name": "decode",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       },
+       {
+        "name": "charset",
+        "type": "String"
+       }
+      ],
+      "name": "encode",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       }
+      ],
+      "name": "encode",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       },
+       {
+        "name": "charset",
+        "type": "String"
+       }
+      ],
+      "name": "decode",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       }
+      ],
+      "name": "decode",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "obj",
+        "type": "Object"
+       }
+      ],
+      "name": "encode",
+      "type": "Object"
+     },
+     {
+      "params": [
+       {
+        "name": "obj",
+        "type": "Object"
+       }
+      ],
+      "name": "decode",
+      "type": "Object"
+     },
+     {
+      "params": [],
+      "name": "getDefaultCharset",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getEncoding",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "RADIX",
+      "type": "int"
+     },
+     {
+      "name": "charset",
+      "type": "String"
+     },
+     {
+      "name": "ESCAPE_CHAR",
+      "type": "byte"
+     },
+     {
+      "name": "WWW_FORM_URL",
+      "type": "BitSet"
+     },
+     {
+      "name": "WWW_FORM_URL_SAFE",
+      "type": "BitSet"
+     }
+    ],
+    "name": "URLCodec"
+   }
+  ]
+ },
+ {
+  "filename": "RFC1522Codec.java",
+  "package_name": "org.apache.commons.codec.net",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "text",
+        "type": "String"
+       },
+       {
+        "name": "charset",
+        "type": "Charset"
+       }
+      ],
+      "name": "encodeText",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "text",
+        "type": "String"
+       },
+       {
+        "name": "charsetName",
+        "type": "String"
+       }
+      ],
+      "name": "encodeText",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "text",
+        "type": "String"
+       }
+      ],
+      "name": "decodeText",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getEncoding",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "bytes",
+        "type": "byte"
+       }
+      ],
+      "name": "doEncoding",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "bytes",
+        "type": "byte"
+       }
+      ],
+      "name": "doDecoding",
+      "type": "byte"
+     }
+    ],
+    "fields": [
+     {
+      "name": "SEP",
+      "type": "char"
+     },
+     {
+      "name": "POSTFIX",
+      "type": "String"
+     },
+     {
+      "name": "PREFIX",
+      "type": "String"
+     }
+    ],
+    "name": "RFC1522Codec"
+   }
+  ]
+ },
+ {
+  "filename": "Base64.java",
+  "package_name": "org.apache.commons.codec.binary",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "isUrlSafe",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "in",
+        "type": "byte"
+       },
+       {
+        "name": "inPos",
+        "type": "int"
+       },
+       {
+        "name": "inAvail",
+        "type": "int"
+       },
+       {
+        "name": "context",
+        "type": "Context"
+       }
+      ],
+      "name": "encode",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "in",
+        "type": "byte"
+       },
+       {
+        "name": "inPos",
+        "type": "int"
+       },
+       {
+        "name": "inAvail",
+        "type": "int"
+       },
+       {
+        "name": "context",
+        "type": "Context"
+       }
+      ],
+      "name": "decode",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "arrayOctet",
+        "type": "byte"
+       }
+      ],
+      "name": "isArrayByteBase64",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "octet",
+        "type": "byte"
+       }
+      ],
+      "name": "isBase64",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "base64",
+        "type": "String"
+       }
+      ],
+      "name": "isBase64",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "arrayOctet",
+        "type": "byte"
+       }
+      ],
+      "name": "isBase64",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "binaryData",
+        "type": "byte"
+       }
+      ],
+      "name": "encodeBase64",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "binaryData",
+        "type": "byte"
+       }
+      ],
+      "name": "encodeBase64String",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "binaryData",
+        "type": "byte"
+       }
+      ],
+      "name": "encodeBase64URLSafe",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "binaryData",
+        "type": "byte"
+       }
+      ],
+      "name": "encodeBase64URLSafeString",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "binaryData",
+        "type": "byte"
+       }
+      ],
+      "name": "encodeBase64Chunked",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "binaryData",
+        "type": "byte"
+       },
+       {
+        "name": "isChunked",
+        "type": "boolean"
+       }
+      ],
+      "name": "encodeBase64",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "binaryData",
+        "type": "byte"
+       },
+       {
+        "name": "isChunked",
+        "type": "boolean"
+       },
+       {
+        "name": "urlSafe",
+        "type": "boolean"
+       }
+      ],
+      "name": "encodeBase64",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "binaryData",
+        "type": "byte"
+       },
+       {
+        "name": "isChunked",
+        "type": "boolean"
+       },
+       {
+        "name": "urlSafe",
+        "type": "boolean"
+       },
+       {
+        "name": "maxResultSize",
+        "type": "int"
+       }
+      ],
+      "name": "encodeBase64",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "base64String",
+        "type": "String"
+       }
+      ],
+      "name": "decodeBase64",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "base64Data",
+        "type": "byte"
+       }
+      ],
+      "name": "decodeBase64",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "pArray",
+        "type": "byte"
+       }
+      ],
+      "name": "decodeInteger",
+      "type": "BigInteger"
+     },
+     {
+      "params": [
+       {
+        "name": "bigInt",
+        "type": "BigInteger"
+       }
+      ],
+      "name": "encodeInteger",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "bigInt",
+        "type": "BigInteger"
+       }
+      ],
+      "name": "toIntegerBytes",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "octet",
+        "type": "byte"
+       }
+      ],
+      "name": "isInAlphabet",
+      "type": "boolean"
+     }
+    ],
+    "fields": [
+     {
+      "name": "BITS_PER_ENCODED_BYTE",
+      "type": "int"
+     },
+     {
+      "name": "BYTES_PER_UNENCODED_BLOCK",
+      "type": "int"
+     },
+     {
+      "name": "BYTES_PER_ENCODED_BLOCK",
+      "type": "int"
+     },
+     {
+      "name": "CHUNK_SEPARATOR",
+      "type": "byte"
+     },
+     {
+      "name": "STANDARD_ENCODE_TABLE",
+      "type": "byte"
+     },
+     {
+      "name": "URL_SAFE_ENCODE_TABLE",
+      "type": "byte"
+     },
+     {
+      "name": "DECODE_TABLE",
+      "type": "byte"
+     },
+     {
+      "name": "MASK_6BITS",
+      "type": "int"
+     },
+     {
+      "name": "encodeTable",
+      "type": "byte"
+     },
+     {
+      "name": "decodeTable",
+      "type": "byte"
+     },
+     {
+      "name": "lineSeparator",
+      "type": "byte"
+     },
+     {
+      "name": "decodeSize",
+      "type": "int"
+     },
+     {
+      "name": "encodeSize",
+      "type": "int"
+     }
+    ],
+    "name": "Base64"
+   }
+  ]
+ },
+ {
+  "filename": "BaseNCodecInputStream.java",
+  "package_name": "org.apache.commons.codec.binary",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "available",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "readLimit",
+        "type": "int"
+       }
+      ],
+      "name": "mark",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "markSupported",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "read",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "len",
+        "type": "int"
+       }
+      ],
+      "name": "read",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "reset",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "n",
+        "type": "long"
+       }
+      ],
+      "name": "skip",
+      "type": "long"
+     }
+    ],
+    "fields": [
+     {
+      "name": "baseNCodec",
+      "type": "BaseNCodec"
+     },
+     {
+      "name": "doEncode",
+      "type": "boolean"
+     },
+     {
+      "name": "singleByte",
+      "type": "byte"
+     },
+     {
+      "name": "context",
+      "type": "Context"
+     }
+    ],
+    "name": "BaseNCodecInputStream"
+   }
+  ]
+ },
+ {
+  "filename": "BinaryCodec.java",
+  "package_name": "org.apache.commons.codec.binary",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "raw",
+        "type": "byte"
+       }
+      ],
+      "name": "encode",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "raw",
+        "type": "Object"
+       }
+      ],
+      "name": "encode",
+      "type": "Object"
+     },
+     {
+      "params": [
+       {
+        "name": "ascii",
+        "type": "Object"
+       }
+      ],
+      "name": "decode",
+      "type": "Object"
+     },
+     {
+      "params": [
+       {
+        "name": "ascii",
+        "type": "byte"
+       }
+      ],
+      "name": "decode",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "ascii",
+        "type": "String"
+       }
+      ],
+      "name": "toByteArray",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "ascii",
+        "type": "char"
+       }
+      ],
+      "name": "fromAscii",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "ascii",
+        "type": "byte"
+       }
+      ],
+      "name": "fromAscii",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "array",
+        "type": "byte"
+       }
+      ],
+      "name": "isEmpty",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "raw",
+        "type": "byte"
+       }
+      ],
+      "name": "toAsciiBytes",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "raw",
+        "type": "byte"
+       }
+      ],
+      "name": "toAsciiChars",
+      "type": "char"
+     },
+     {
+      "params": [
+       {
+        "name": "raw",
+        "type": "byte"
+       }
+      ],
+      "name": "toAsciiString",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "EMPTY_CHAR_ARRAY",
+      "type": "char"
+     },
+     {
+      "name": "EMPTY_BYTE_ARRAY",
+      "type": "byte"
+     },
+     {
+      "name": "BIT_0",
+      "type": "int"
+     },
+     {
+      "name": "BIT_1",
+      "type": "int"
+     },
+     {
+      "name": "BIT_2",
+      "type": "int"
+     },
+     {
+      "name": "BIT_3",
+      "type": "int"
+     },
+     {
+      "name": "BIT_4",
+      "type": "int"
+     },
+     {
+      "name": "BIT_5",
+      "type": "int"
+     },
+     {
+      "name": "BIT_6",
+      "type": "int"
+     },
+     {
+      "name": "BIT_7",
+      "type": "int"
+     },
+     {
+      "name": "BITS",
+      "type": "int"
+     }
+    ],
+    "name": "BinaryCodec"
+   }
+  ]
+ },
+ {
+  "filename": "Base32.java",
+  "package_name": "org.apache.commons.codec.binary",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "in",
+        "type": "byte"
+       },
+       {
+        "name": "inPos",
+        "type": "int"
+       },
+       {
+        "name": "inAvail",
+        "type": "int"
+       },
+       {
+        "name": "context",
+        "type": "Context"
+       }
+      ],
+      "name": "decode",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "in",
+        "type": "byte"
+       },
+       {
+        "name": "inPos",
+        "type": "int"
+       },
+       {
+        "name": "inAvail",
+        "type": "int"
+       },
+       {
+        "name": "context",
+        "type": "Context"
+       }
+      ],
+      "name": "encode",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "octet",
+        "type": "byte"
+       }
+      ],
+      "name": "isInAlphabet",
+      "type": "boolean"
+     }
+    ],
+    "fields": [
+     {
+      "name": "BITS_PER_ENCODED_BYTE",
+      "type": "int"
+     },
+     {
+      "name": "BYTES_PER_ENCODED_BLOCK",
+      "type": "int"
+     },
+     {
+      "name": "BYTES_PER_UNENCODED_BLOCK",
+      "type": "int"
+     },
+     {
+      "name": "CHUNK_SEPARATOR",
+      "type": "byte"
+     },
+     {
+      "name": "DECODE_TABLE",
+      "type": "byte"
+     },
+     {
+      "name": "ENCODE_TABLE",
+      "type": "byte"
+     },
+     {
+      "name": "HEX_DECODE_TABLE",
+      "type": "byte"
+     },
+     {
+      "name": "HEX_ENCODE_TABLE",
+      "type": "byte"
+     },
+     {
+      "name": "MASK_5BITS",
+      "type": "int"
+     },
+     {
+      "name": "decodeSize",
+      "type": "int"
+     },
+     {
+      "name": "decodeTable",
+      "type": "byte"
+     },
+     {
+      "name": "encodeSize",
+      "type": "int"
+     },
+     {
+      "name": "encodeTable",
+      "type": "byte"
+     },
+     {
+      "name": "lineSeparator",
+      "type": "byte"
+     }
+    ],
+    "name": "Base32"
+   }
+  ]
+ },
+ {
+  "filename": "Base64InputStream.java",
+  "package_name": "org.apache.commons.codec.binary",
+  "classes": [
+   {
+    "methods": [],
+    "fields": [],
+    "name": "Base64InputStream"
+   }
+  ]
+ },
+ {
+  "filename": "Base32InputStream.java",
+  "package_name": "org.apache.commons.codec.binary",
+  "classes": [
+   {
+    "methods": [],
+    "fields": [],
+    "name": "Base32InputStream"
+   }
+  ]
+ },
+ {
+  "filename": "Hex.java",
+  "package_name": "org.apache.commons.codec.binary",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "String"
+       }
+      ],
+      "name": "decodeHex",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "char"
+       }
+      ],
+      "name": "decodeHex",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       }
+      ],
+      "name": "encodeHex",
+      "type": "char"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "ByteBuffer"
+       }
+      ],
+      "name": "encodeHex",
+      "type": "char"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       },
+       {
+        "name": "toLowerCase",
+        "type": "boolean"
+       }
+      ],
+      "name": "encodeHex",
+      "type": "char"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "ByteBuffer"
+       },
+       {
+        "name": "toLowerCase",
+        "type": "boolean"
+       }
+      ],
+      "name": "encodeHex",
+      "type": "char"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       },
+       {
+        "name": "toDigits",
+        "type": "char"
+       }
+      ],
+      "name": "encodeHex",
+      "type": "char"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "ByteBuffer"
+       },
+       {
+        "name": "toDigits",
+        "type": "char"
+       }
+      ],
+      "name": "encodeHex",
+      "type": "char"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       }
+      ],
+      "name": "encodeHexString",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       },
+       {
+        "name": "toLowerCase",
+        "type": "boolean"
+       }
+      ],
+      "name": "encodeHexString",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "ByteBuffer"
+       }
+      ],
+      "name": "encodeHexString",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "ByteBuffer"
+       },
+       {
+        "name": "toLowerCase",
+        "type": "boolean"
+       }
+      ],
+      "name": "encodeHexString",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "ch",
+        "type": "char"
+       },
+       {
+        "name": "index",
+        "type": "int"
+       }
+      ],
+      "name": "toDigit",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "array",
+        "type": "byte"
+       }
+      ],
+      "name": "decode",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "buffer",
+        "type": "ByteBuffer"
+       }
+      ],
+      "name": "decode",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "object",
+        "type": "Object"
+       }
+      ],
+      "name": "decode",
+      "type": "Object"
+     },
+     {
+      "params": [
+       {
+        "name": "array",
+        "type": "byte"
+       }
+      ],
+      "name": "encode",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "array",
+        "type": "ByteBuffer"
+       }
+      ],
+      "name": "encode",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "object",
+        "type": "Object"
+       }
+      ],
+      "name": "encode",
+      "type": "Object"
+     },
+     {
+      "params": [],
+      "name": "getCharset",
+      "type": "Charset"
+     },
+     {
+      "params": [],
+      "name": "getCharsetName",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "toString",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "DEFAULT_CHARSET",
+      "type": "Charset"
+     },
+     {
+      "name": "DEFAULT_CHARSET_NAME",
+      "type": "String"
+     },
+     {
+      "name": "DIGITS_LOWER",
+      "type": "char"
+     },
+     {
+      "name": "DIGITS_UPPER",
+      "type": "char"
+     },
+     {
+      "name": "charset",
+      "type": "Charset"
+     }
+    ],
+    "name": "Hex"
+   }
+  ]
+ },
+ {
+  "filename": "BaseNCodec.java",
+  "package_name": "org.apache.commons.codec.binary",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "context",
+        "type": "Context"
+       }
+      ],
+      "name": "hasData",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "context",
+        "type": "Context"
+       }
+      ],
+      "name": "available",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getDefaultBufferSize",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "context",
+        "type": "Context"
+       }
+      ],
+      "name": "resizeBuffer",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "size",
+        "type": "int"
+       },
+       {
+        "name": "context",
+        "type": "Context"
+       }
+      ],
+      "name": "ensureBufferSize",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "byte"
+       },
+       {
+        "name": "bPos",
+        "type": "int"
+       },
+       {
+        "name": "bAvail",
+        "type": "int"
+       },
+       {
+        "name": "context",
+        "type": "Context"
+       }
+      ],
+      "name": "readResults",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "byteToCheck",
+        "type": "byte"
+       }
+      ],
+      "name": "isWhiteSpace",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "obj",
+        "type": "Object"
+       }
+      ],
+      "name": "encode",
+      "type": "Object"
+     },
+     {
+      "params": [
+       {
+        "name": "pArray",
+        "type": "byte"
+       }
+      ],
+      "name": "encodeToString",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "pArray",
+        "type": "byte"
+       }
+      ],
+      "name": "encodeAsString",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "obj",
+        "type": "Object"
+       }
+      ],
+      "name": "decode",
+      "type": "Object"
+     },
+     {
+      "params": [
+       {
+        "name": "pArray",
+        "type": "String"
+       }
+      ],
+      "name": "decode",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "pArray",
+        "type": "byte"
+       }
+      ],
+      "name": "decode",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "pArray",
+        "type": "byte"
+       }
+      ],
+      "name": "encode",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "pArray",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "encode",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "pArray",
+        "type": "byte"
+       },
+       {
+        "name": "i",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       },
+       {
+        "name": "context",
+        "type": "Context"
+       }
+      ],
+      "name": "encode",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "pArray",
+        "type": "byte"
+       },
+       {
+        "name": "i",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       },
+       {
+        "name": "context",
+        "type": "Context"
+       }
+      ],
+      "name": "decode",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "byte"
+       }
+      ],
+      "name": "isInAlphabet",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "arrayOctet",
+        "type": "byte"
+       },
+       {
+        "name": "allowWSPad",
+        "type": "boolean"
+       }
+      ],
+      "name": "isInAlphabet",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "basen",
+        "type": "String"
+       }
+      ],
+      "name": "isInAlphabet",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "arrayOctet",
+        "type": "byte"
+       }
+      ],
+      "name": "containsAlphabetOrPad",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "pArray",
+        "type": "byte"
+       }
+      ],
+      "name": "getEncodedLength",
+      "type": "long"
+     }
+    ],
+    "fields": [
+     {
+      "name": "EOF",
+      "type": "int"
+     },
+     {
+      "name": "MIME_CHUNK_SIZE",
+      "type": "int"
+     },
+     {
+      "name": "PEM_CHUNK_SIZE",
+      "type": "int"
+     },
+     {
+      "name": "DEFAULT_BUFFER_RESIZE_FACTOR",
+      "type": "int"
+     },
+     {
+      "name": "DEFAULT_BUFFER_SIZE",
+      "type": "int"
+     },
+     {
+      "name": "MASK_8BITS",
+      "type": "int"
+     },
+     {
+      "name": "PAD_DEFAULT",
+      "type": "byte"
+     },
+     {
+      "name": "PAD",
+      "type": "byte"
+     },
+     {
+      "name": "pad",
+      "type": "byte"
+     },
+     {
+      "name": "unencodedBlockSize",
+      "type": "int"
+     },
+     {
+      "name": "encodedBlockSize",
+      "type": "int"
+     },
+     {
+      "name": "lineLength",
+      "type": "int"
+     },
+     {
+      "name": "chunkSeparatorLength",
+      "type": "int"
+     }
+    ],
+    "name": "BaseNCodec"
+   }
+  ]
+ },
+ {
+  "filename": "CharSequenceUtils.java",
+  "package_name": "org.apache.commons.codec.binary",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "cs",
+        "type": "CharSequence"
+       },
+       {
+        "name": "ignoreCase",
+        "type": "boolean"
+       },
+       {
+        "name": "thisStart",
+        "type": "int"
+       },
+       {
+        "name": "substring",
+        "type": "CharSequence"
+       },
+       {
+        "name": "start",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       }
+      ],
+      "name": "regionMatches",
+      "type": "boolean"
+     }
+    ],
+    "fields": [],
+    "name": "CharSequenceUtils"
+   }
+  ]
+ },
+ {
+  "filename": "Base32OutputStream.java",
+  "package_name": "org.apache.commons.codec.binary",
+  "classes": [
+   {
+    "methods": [],
+    "fields": [],
+    "name": "Base32OutputStream"
+   }
+  ]
+ },
+ {
+  "filename": "StringUtils.java",
+  "package_name": "org.apache.commons.codec.binary",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "cs1",
+        "type": "CharSequence"
+       },
+       {
+        "name": "cs2",
+        "type": "CharSequence"
+       }
+      ],
+      "name": "equals",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "string",
+        "type": "String"
+       },
+       {
+        "name": "charset",
+        "type": "Charset"
+       }
+      ],
+      "name": "getBytes",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "string",
+        "type": "String"
+       },
+       {
+        "name": "charset",
+        "type": "Charset"
+       }
+      ],
+      "name": "getByteBuffer",
+      "type": "ByteBuffer"
+     },
+     {
+      "params": [
+       {
+        "name": "string",
+        "type": "String"
+       }
+      ],
+      "name": "getByteBufferUtf8",
+      "type": "ByteBuffer"
+     },
+     {
+      "params": [
+       {
+        "name": "string",
+        "type": "String"
+       }
+      ],
+      "name": "getBytesIso8859_1",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "string",
+        "type": "String"
+       },
+       {
+        "name": "charsetName",
+        "type": "String"
+       }
+      ],
+      "name": "getBytesUnchecked",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "string",
+        "type": "String"
+       }
+      ],
+      "name": "getBytesUsAscii",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "string",
+        "type": "String"
+       }
+      ],
+      "name": "getBytesUtf16",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "string",
+        "type": "String"
+       }
+      ],
+      "name": "getBytesUtf16Be",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "string",
+        "type": "String"
+       }
+      ],
+      "name": "getBytesUtf16Le",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "string",
+        "type": "String"
+       }
+      ],
+      "name": "getBytesUtf8",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "charsetName",
+        "type": "String"
+       },
+       {
+        "name": "e",
+        "type": "UnsupportedEncodingException"
+       }
+      ],
+      "name": "newIllegalStateException",
+      "type": "IllegalStateException"
+     },
+     {
+      "params": [
+       {
+        "name": "bytes",
+        "type": "byte"
+       },
+       {
+        "name": "charset",
+        "type": "Charset"
+       }
+      ],
+      "name": "newString",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "bytes",
+        "type": "byte"
+       },
+       {
+        "name": "charsetName",
+        "type": "String"
+       }
+      ],
+      "name": "newString",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "bytes",
+        "type": "byte"
+       }
+      ],
+      "name": "newStringIso8859_1",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "bytes",
+        "type": "byte"
+       }
+      ],
+      "name": "newStringUsAscii",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "bytes",
+        "type": "byte"
+       }
+      ],
+      "name": "newStringUtf16",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "bytes",
+        "type": "byte"
+       }
+      ],
+      "name": "newStringUtf16Be",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "bytes",
+        "type": "byte"
+       }
+      ],
+      "name": "newStringUtf16Le",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "bytes",
+        "type": "byte"
+       }
+      ],
+      "name": "newStringUtf8",
+      "type": "String"
+     }
+    ],
+    "fields": [],
+    "name": "StringUtils"
+   }
+  ]
+ },
+ {
+  "filename": "BaseNCodecOutputStream.java",
+  "package_name": "org.apache.commons.codec.binary",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "i",
+        "type": "int"
+       }
+      ],
+      "name": "write",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "len",
+        "type": "int"
+       }
+      ],
+      "name": "write",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "propagate",
+        "type": "boolean"
+       }
+      ],
+      "name": "flush",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "flush",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "close",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "eof",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "doEncode",
+      "type": "boolean"
+     },
+     {
+      "name": "baseNCodec",
+      "type": "BaseNCodec"
+     },
+     {
+      "name": "singleByte",
+      "type": "byte"
+     },
+     {
+      "name": "context",
+      "type": "Context"
+     }
+    ],
+    "name": "BaseNCodecOutputStream"
+   }
+  ]
+ },
+ {
+  "filename": "Base64OutputStream.java",
+  "package_name": "org.apache.commons.codec.binary",
+  "classes": [
+   {
+    "methods": [],
+    "fields": [],
+    "name": "Base64OutputStream"
+   }
+  ]
+ },
+ {
+  "filename": "Md5Crypt.java",
+  "package_name": "org.apache.commons.codec.digest",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "keyBytes",
+        "type": "byte"
+       }
+      ],
+      "name": "apr1Crypt",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "keyBytes",
+        "type": "byte"
+       },
+       {
+        "name": "salt",
+        "type": "String"
+       }
+      ],
+      "name": "apr1Crypt",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "keyBytes",
+        "type": "String"
+       }
+      ],
+      "name": "apr1Crypt",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "keyBytes",
+        "type": "String"
+       },
+       {
+        "name": "salt",
+        "type": "String"
+       }
+      ],
+      "name": "apr1Crypt",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "keyBytes",
+        "type": "byte"
+       }
+      ],
+      "name": "md5Crypt",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "keyBytes",
+        "type": "byte"
+       },
+       {
+        "name": "salt",
+        "type": "String"
+       }
+      ],
+      "name": "md5Crypt",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "keyBytes",
+        "type": "byte"
+       },
+       {
+        "name": "salt",
+        "type": "String"
+       },
+       {
+        "name": "prefix",
+        "type": "String"
+       }
+      ],
+      "name": "md5Crypt",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "APR1_PREFIX",
+      "type": "String"
+     },
+     {
+      "name": "BLOCKSIZE",
+      "type": "int"
+     },
+     {
+      "name": "MD5_PREFIX",
+      "type": "String"
+     },
+     {
+      "name": "ROUNDS",
+      "type": "int"
+     }
+    ],
+    "name": "Md5Crypt"
+   }
+  ]
+ },
+ {
+  "filename": "HmacUtils.java",
+  "package_name": "org.apache.commons.codec.digest",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ],
+      "name": "isAvailable",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "HmacAlgorithms"
+       }
+      ],
+      "name": "isAvailable",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "byte"
+       }
+      ],
+      "name": "getHmacMd5",
+      "type": "Mac"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "byte"
+       }
+      ],
+      "name": "getHmacSha1",
+      "type": "Mac"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "byte"
+       }
+      ],
+      "name": "getHmacSha256",
+      "type": "Mac"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "byte"
+       }
+      ],
+      "name": "getHmacSha384",
+      "type": "Mac"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "byte"
+       }
+      ],
+      "name": "getHmacSha512",
+      "type": "Mac"
+     },
+     {
+      "params": [
+       {
+        "name": "algorithm",
+        "type": "HmacAlgorithms"
+       },
+       {
+        "name": "key",
+        "type": "byte"
+       }
+      ],
+      "name": "getInitializedMac",
+      "type": "Mac"
+     },
+     {
+      "params": [
+       {
+        "name": "algorithm",
+        "type": "String"
+       },
+       {
+        "name": "key",
+        "type": "byte"
+       }
+      ],
+      "name": "getInitializedMac",
+      "type": "Mac"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "byte"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "byte"
+       }
+      ],
+      "name": "hmacMd5",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "byte"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "InputStream"
+       }
+      ],
+      "name": "hmacMd5",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "String"
+       }
+      ],
+      "name": "hmacMd5",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "byte"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "byte"
+       }
+      ],
+      "name": "hmacMd5Hex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "byte"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "InputStream"
+       }
+      ],
+      "name": "hmacMd5Hex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "String"
+       }
+      ],
+      "name": "hmacMd5Hex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "byte"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "byte"
+       }
+      ],
+      "name": "hmacSha1",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "byte"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "InputStream"
+       }
+      ],
+      "name": "hmacSha1",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "String"
+       }
+      ],
+      "name": "hmacSha1",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "byte"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "byte"
+       }
+      ],
+      "name": "hmacSha1Hex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "byte"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "InputStream"
+       }
+      ],
+      "name": "hmacSha1Hex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "String"
+       }
+      ],
+      "name": "hmacSha1Hex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "byte"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "byte"
+       }
+      ],
+      "name": "hmacSha256",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "byte"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "InputStream"
+       }
+      ],
+      "name": "hmacSha256",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "String"
+       }
+      ],
+      "name": "hmacSha256",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "byte"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "byte"
+       }
+      ],
+      "name": "hmacSha256Hex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "byte"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "InputStream"
+       }
+      ],
+      "name": "hmacSha256Hex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "String"
+       }
+      ],
+      "name": "hmacSha256Hex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "byte"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "byte"
+       }
+      ],
+      "name": "hmacSha384",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "byte"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "InputStream"
+       }
+      ],
+      "name": "hmacSha384",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "String"
+       }
+      ],
+      "name": "hmacSha384",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "byte"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "byte"
+       }
+      ],
+      "name": "hmacSha384Hex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "byte"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "InputStream"
+       }
+      ],
+      "name": "hmacSha384Hex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "String"
+       }
+      ],
+      "name": "hmacSha384Hex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "byte"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "byte"
+       }
+      ],
+      "name": "hmacSha512",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "byte"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "InputStream"
+       }
+      ],
+      "name": "hmacSha512",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "String"
+       }
+      ],
+      "name": "hmacSha512",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "byte"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "byte"
+       }
+      ],
+      "name": "hmacSha512Hex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "byte"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "InputStream"
+       }
+      ],
+      "name": "hmacSha512Hex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "String"
+       }
+      ],
+      "name": "hmacSha512Hex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "mac",
+        "type": "Mac"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "byte"
+       }
+      ],
+      "name": "updateHmac",
+      "type": "Mac"
+     },
+     {
+      "params": [
+       {
+        "name": "mac",
+        "type": "Mac"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "InputStream"
+       }
+      ],
+      "name": "updateHmac",
+      "type": "Mac"
+     },
+     {
+      "params": [
+       {
+        "name": "mac",
+        "type": "Mac"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "String"
+       }
+      ],
+      "name": "updateHmac",
+      "type": "Mac"
+     },
+     {
+      "params": [
+       {
+        "name": "valueToDigest",
+        "type": "byte"
+       }
+      ],
+      "name": "hmac",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "valueToDigest",
+        "type": "byte"
+       }
+      ],
+      "name": "hmacHex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "valueToDigest",
+        "type": "String"
+       }
+      ],
+      "name": "hmac",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "valueToDigest",
+        "type": "String"
+       }
+      ],
+      "name": "hmacHex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "valueToDigest",
+        "type": "ByteBuffer"
+       }
+      ],
+      "name": "hmac",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "valueToDigest",
+        "type": "ByteBuffer"
+       }
+      ],
+      "name": "hmacHex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "valueToDigest",
+        "type": "InputStream"
+       }
+      ],
+      "name": "hmac",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "valueToDigest",
+        "type": "InputStream"
+       }
+      ],
+      "name": "hmacHex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "valueToDigest",
+        "type": "File"
+       }
+      ],
+      "name": "hmac",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "valueToDigest",
+        "type": "File"
+       }
+      ],
+      "name": "hmacHex",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "STREAM_BUFFER_LENGTH",
+      "type": "int"
+     },
+     {
+      "name": "mac",
+      "type": "Mac"
+     }
+    ],
+    "name": "HmacUtils"
+   }
+  ]
+ },
+ {
+  "filename": "HmacAlgorithms.java",
+  "package_name": "org.apache.commons.codec.digest",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getName",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "toString",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "name",
+      "type": "String"
+     }
+    ],
+    "name": "HmacAlgorithms"
+   }
+  ]
+ },
+ {
+  "filename": "B64.java",
+  "package_name": "org.apache.commons.codec.digest",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "b2",
+        "type": "byte"
+       },
+       {
+        "name": "b1",
+        "type": "byte"
+       },
+       {
+        "name": "b0",
+        "type": "byte"
+       },
+       {
+        "name": "outLen",
+        "type": "int"
+       },
+       {
+        "name": "buffer",
+        "type": "StringBuilder"
+       }
+      ],
+      "name": "b64from24bit",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "num",
+        "type": "int"
+       }
+      ],
+      "name": "getRandomSalt",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "B64T",
+      "type": "String"
+     }
+    ],
+    "name": "B64"
+   }
+  ]
+ },
+ {
+  "filename": "MessageDigestAlgorithms.java",
+  "package_name": "org.apache.commons.codec.digest",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "values",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "MD2",
+      "type": "String"
+     },
+     {
+      "name": "MD5",
+      "type": "String"
+     },
+     {
+      "name": "SHA_1",
+      "type": "String"
+     },
+     {
+      "name": "SHA_224",
+      "type": "String"
+     },
+     {
+      "name": "SHA_256",
+      "type": "String"
+     },
+     {
+      "name": "SHA_384",
+      "type": "String"
+     },
+     {
+      "name": "SHA_512",
+      "type": "String"
+     },
+     {
+      "name": "SHA3_224",
+      "type": "String"
+     },
+     {
+      "name": "SHA3_256",
+      "type": "String"
+     },
+     {
+      "name": "SHA3_384",
+      "type": "String"
+     },
+     {
+      "name": "SHA3_512",
+      "type": "String"
+     }
+    ],
+    "name": "MessageDigestAlgorithms"
+   }
+  ]
+ },
+ {
+  "filename": "Sha2Crypt.java",
+  "package_name": "org.apache.commons.codec.digest",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "keyBytes",
+        "type": "byte"
+       }
+      ],
+      "name": "sha256Crypt",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "keyBytes",
+        "type": "byte"
+       },
+       {
+        "name": "salt",
+        "type": "String"
+       }
+      ],
+      "name": "sha256Crypt",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "keyBytes",
+        "type": "byte"
+       },
+       {
+        "name": "salt",
+        "type": "String"
+       },
+       {
+        "name": "saltPrefix",
+        "type": "String"
+       },
+       {
+        "name": "blocksize",
+        "type": "int"
+       },
+       {
+        "name": "algorithm",
+        "type": "String"
+       }
+      ],
+      "name": "sha2Crypt",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "keyBytes",
+        "type": "byte"
+       }
+      ],
+      "name": "sha512Crypt",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "keyBytes",
+        "type": "byte"
+       },
+       {
+        "name": "salt",
+        "type": "String"
+       }
+      ],
+      "name": "sha512Crypt",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "ROUNDS_DEFAULT",
+      "type": "int"
+     },
+     {
+      "name": "ROUNDS_MAX",
+      "type": "int"
+     },
+     {
+      "name": "ROUNDS_MIN",
+      "type": "int"
+     },
+     {
+      "name": "ROUNDS_PREFIX",
+      "type": "String"
+     },
+     {
+      "name": "SHA256_BLOCKSIZE",
+      "type": "int"
+     },
+     {
+      "name": "SHA256_PREFIX",
+      "type": "String"
+     },
+     {
+      "name": "SHA512_BLOCKSIZE",
+      "type": "int"
+     },
+     {
+      "name": "SHA512_PREFIX",
+      "type": "String"
+     },
+     {
+      "name": "SALT_PATTERN",
+      "type": "Pattern"
+     }
+    ],
+    "name": "Sha2Crypt"
+   }
+  ]
+ },
+ {
+  "filename": "DigestUtils.java",
+  "package_name": "org.apache.commons.codec.digest",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "messageDigest",
+        "type": "MessageDigest"
+       },
+       {
+        "name": "data",
+        "type": "byte"
+       }
+      ],
+      "name": "digest",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "messageDigest",
+        "type": "MessageDigest"
+       },
+       {
+        "name": "data",
+        "type": "ByteBuffer"
+       }
+      ],
+      "name": "digest",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "messageDigest",
+        "type": "MessageDigest"
+       },
+       {
+        "name": "data",
+        "type": "File"
+       }
+      ],
+      "name": "digest",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "messageDigest",
+        "type": "MessageDigest"
+       },
+       {
+        "name": "data",
+        "type": "InputStream"
+       }
+      ],
+      "name": "digest",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "algorithm",
+        "type": "String"
+       }
+      ],
+      "name": "getDigest",
+      "type": "MessageDigest"
+     },
+     {
+      "params": [
+       {
+        "name": "algorithm",
+        "type": "String"
+       },
+       {
+        "name": "defaultMessageDigest",
+        "type": "MessageDigest"
+       }
+      ],
+      "name": "getDigest",
+      "type": "MessageDigest"
+     },
+     {
+      "params": [],
+      "name": "getMd2Digest",
+      "type": "MessageDigest"
+     },
+     {
+      "params": [],
+      "name": "getMd5Digest",
+      "type": "MessageDigest"
+     },
+     {
+      "params": [],
+      "name": "getSha1Digest",
+      "type": "MessageDigest"
+     },
+     {
+      "params": [],
+      "name": "getSha256Digest",
+      "type": "MessageDigest"
+     },
+     {
+      "params": [],
+      "name": "getSha384Digest",
+      "type": "MessageDigest"
+     },
+     {
+      "params": [],
+      "name": "getSha512Digest",
+      "type": "MessageDigest"
+     },
+     {
+      "params": [],
+      "name": "getShaDigest",
+      "type": "MessageDigest"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       }
+      ],
+      "name": "md2",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "InputStream"
+       }
+      ],
+      "name": "md2",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "String"
+       }
+      ],
+      "name": "md2",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       }
+      ],
+      "name": "md2Hex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "InputStream"
+       }
+      ],
+      "name": "md2Hex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "String"
+       }
+      ],
+      "name": "md2Hex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       }
+      ],
+      "name": "md5",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "InputStream"
+       }
+      ],
+      "name": "md5",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "String"
+       }
+      ],
+      "name": "md5",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       }
+      ],
+      "name": "md5Hex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "InputStream"
+       }
+      ],
+      "name": "md5Hex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "String"
+       }
+      ],
+      "name": "md5Hex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       }
+      ],
+      "name": "sha",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "InputStream"
+       }
+      ],
+      "name": "sha",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "String"
+       }
+      ],
+      "name": "sha",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       }
+      ],
+      "name": "sha1",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "InputStream"
+       }
+      ],
+      "name": "sha1",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "String"
+       }
+      ],
+      "name": "sha1",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       }
+      ],
+      "name": "sha1Hex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "InputStream"
+       }
+      ],
+      "name": "sha1Hex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "String"
+       }
+      ],
+      "name": "sha1Hex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       }
+      ],
+      "name": "sha256",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "InputStream"
+       }
+      ],
+      "name": "sha256",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "String"
+       }
+      ],
+      "name": "sha256",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       }
+      ],
+      "name": "sha256Hex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "InputStream"
+       }
+      ],
+      "name": "sha256Hex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "String"
+       }
+      ],
+      "name": "sha256Hex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       }
+      ],
+      "name": "sha384",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "InputStream"
+       }
+      ],
+      "name": "sha384",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "String"
+       }
+      ],
+      "name": "sha384",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       }
+      ],
+      "name": "sha384Hex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "InputStream"
+       }
+      ],
+      "name": "sha384Hex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "String"
+       }
+      ],
+      "name": "sha384Hex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       }
+      ],
+      "name": "sha512",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "InputStream"
+       }
+      ],
+      "name": "sha512",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "String"
+       }
+      ],
+      "name": "sha512",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       }
+      ],
+      "name": "sha512Hex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "InputStream"
+       }
+      ],
+      "name": "sha512Hex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "String"
+       }
+      ],
+      "name": "sha512Hex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       }
+      ],
+      "name": "shaHex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "InputStream"
+       }
+      ],
+      "name": "shaHex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "String"
+       }
+      ],
+      "name": "shaHex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "messageDigest",
+        "type": "MessageDigest"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "byte"
+       }
+      ],
+      "name": "updateDigest",
+      "type": "MessageDigest"
+     },
+     {
+      "params": [
+       {
+        "name": "messageDigest",
+        "type": "MessageDigest"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "ByteBuffer"
+       }
+      ],
+      "name": "updateDigest",
+      "type": "MessageDigest"
+     },
+     {
+      "params": [
+       {
+        "name": "digest",
+        "type": "MessageDigest"
+       },
+       {
+        "name": "data",
+        "type": "File"
+       }
+      ],
+      "name": "updateDigest",
+      "type": "MessageDigest"
+     },
+     {
+      "params": [
+       {
+        "name": "digest",
+        "type": "MessageDigest"
+       },
+       {
+        "name": "data",
+        "type": "InputStream"
+       }
+      ],
+      "name": "updateDigest",
+      "type": "MessageDigest"
+     },
+     {
+      "params": [
+       {
+        "name": "messageDigest",
+        "type": "MessageDigest"
+       },
+       {
+        "name": "valueToDigest",
+        "type": "String"
+       }
+      ],
+      "name": "updateDigest",
+      "type": "MessageDigest"
+     },
+     {
+      "params": [
+       {
+        "name": "messageDigestAlgorithm",
+        "type": "String"
+       }
+      ],
+      "name": "isAvailable",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "getMessageDigest",
+      "type": "MessageDigest"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       }
+      ],
+      "name": "digest",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "String"
+       }
+      ],
+      "name": "digest",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "ByteBuffer"
+       }
+      ],
+      "name": "digest",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "File"
+       }
+      ],
+      "name": "digest",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "InputStream"
+       }
+      ],
+      "name": "digest",
+      "type": "byte"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "byte"
+       }
+      ],
+      "name": "digestAsHex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "String"
+       }
+      ],
+      "name": "digestAsHex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "ByteBuffer"
+       }
+      ],
+      "name": "digestAsHex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "File"
+       }
+      ],
+      "name": "digestAsHex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "data",
+        "type": "InputStream"
+       }
+      ],
+      "name": "digestAsHex",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "STREAM_BUFFER_LENGTH",
+      "type": "int"
+     },
+     {
+      "name": "messageDigest",
+      "type": "MessageDigest"
+     }
+    ],
+    "name": "DigestUtils"
+   }
+  ]
+ },
+ {
+  "filename": "UnixCrypt.java",
+  "package_name": "org.apache.commons.codec.digest",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "original",
+        "type": "byte"
+       }
+      ],
+      "name": "crypt",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "original",
+        "type": "byte"
+       },
+       {
+        "name": "salt",
+        "type": "String"
+       }
+      ],
+      "name": "crypt",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "original",
+        "type": "String"
+       }
+      ],
+      "name": "crypt",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "original",
+        "type": "String"
+       },
+       {
+        "name": "salt",
+        "type": "String"
+       }
+      ],
+      "name": "crypt",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "schedule",
+        "type": "int"
+       },
+       {
+        "name": "eSwap0",
+        "type": "int"
+       },
+       {
+        "name": "eSwap1",
+        "type": "int"
+       }
+      ],
+      "name": "body",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "byte"
+       }
+      ],
+      "name": "byteToUnsigned",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "el",
+        "type": "int"
+       },
+       {
+        "name": "r",
+        "type": "int"
+       },
+       {
+        "name": "s",
+        "type": "int"
+       },
+       {
+        "name": "e0",
+        "type": "int"
+       },
+       {
+        "name": "e1",
+        "type": "int"
+       },
+       {
+        "name": "sArr",
+        "type": "int"
+       }
+      ],
+      "name": "dEncrypt",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "byte"
+       }
+      ],
+      "name": "desSetKey",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       }
+      ],
+      "name": "fourBytesToInt",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "a",
+        "type": "int"
+       },
+       {
+        "name": "n",
+        "type": "int"
+       },
+       {
+        "name": "m",
+        "type": "int"
+       }
+      ],
+      "name": "hPermOp",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "iValue",
+        "type": "int"
+       },
+       {
+        "name": "b",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       }
+      ],
+      "name": "intToFourBytes",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "a",
+        "type": "int"
+       },
+       {
+        "name": "b",
+        "type": "int"
+       },
+       {
+        "name": "n",
+        "type": "int"
+       },
+       {
+        "name": "m",
+        "type": "int"
+       },
+       {
+        "name": "results",
+        "type": "int"
+       }
+      ],
+      "name": "permOp",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "CON_SALT",
+      "type": "int"
+     },
+     {
+      "name": "COV2CHAR",
+      "type": "int"
+     },
+     {
+      "name": "SALT_CHARS",
+      "type": "char"
+     },
+     {
+      "name": "SHIFT2",
+      "type": "boolean"
+     },
+     {
+      "name": "SKB",
+      "type": "int"
+     },
+     {
+      "name": "SPTRANS",
+      "type": "int"
+     }
+    ],
+    "name": "UnixCrypt"
+   }
+  ]
+ },
+ {
+  "filename": "Crypt.java",
+  "package_name": "org.apache.commons.codec.digest",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "keyBytes",
+        "type": "byte"
+       }
+      ],
+      "name": "crypt",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "keyBytes",
+        "type": "byte"
+       },
+       {
+        "name": "salt",
+        "type": "String"
+       }
+      ],
+      "name": "crypt",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       }
+      ],
+      "name": "crypt",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "key",
+        "type": "String"
+       },
+       {
+        "name": "salt",
+        "type": "String"
+       }
+      ],
+      "name": "crypt",
+      "type": "String"
+     }
+    ],
+    "fields": [],
+    "name": "Crypt"
+   }
+  ]
+ },
+ {
+  "filename": "PureJavaCrc32.java",
+  "package_name": "org.apache.commons.codec.digest",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getValue",
+      "type": "long"
+     },
+     {
+      "params": [],
+      "name": "reset",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "_reset",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "byte"
+       },
+       {
+        "name": "offset",
+        "type": "int"
+       },
+       {
+        "name": "len",
+        "type": "int"
+       }
+      ],
+      "name": "update",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "int"
+       }
+      ],
+      "name": "update",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "crc",
+      "type": "int"
+     },
+     {
+      "name": "T",
+      "type": "int"
+     }
+    ],
+    "name": "PureJavaCrc32"
+   }
+  ]
+ },
+ {
+  "filename": "PureJavaCrc32C.java",
+  "package_name": "org.apache.commons.codec.digest",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getValue",
+      "type": "long"
+     },
+     {
+      "params": [],
+      "name": "reset",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "byte"
+       },
+       {
+        "name": "off",
+        "type": "int"
+       },
+       {
+        "name": "len",
+        "type": "int"
+       }
+      ],
+      "name": "update",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "b",
+        "type": "int"
+       }
+      ],
+      "name": "update",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "crc",
+      "type": "int"
+     },
+     {
+      "name": "T8_0_start",
+      "type": "int"
+     },
+     {
+      "name": "T8_1_start",
+      "type": "int"
+     },
+     {
+      "name": "T8_2_start",
+      "type": "int"
+     },
+     {
+      "name": "T8_3_start",
+      "type": "int"
+     },
+     {
+      "name": "T8_4_start",
+      "type": "int"
+     },
+     {
+      "name": "T8_5_start",
+      "type": "int"
+     },
+     {
+      "name": "T8_6_start",
+      "type": "int"
+     },
+     {
+      "name": "T8_7_start",
+      "type": "int"
+     },
+     {
+      "name": "T",
+      "type": "int"
+     }
+    ],
+    "name": "PureJavaCrc32C"
+   }
+  ]
+ },
+ {
+  "filename": "DoubleMetaphone.java",
+  "package_name": "org.apache.commons.codec.language",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       }
+      ],
+      "name": "doubleMetaphone",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       },
+       {
+        "name": "alternate",
+        "type": "boolean"
+       }
+      ],
+      "name": "doubleMetaphone",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "obj",
+        "type": "Object"
+       }
+      ],
+      "name": "encode",
+      "type": "Object"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       }
+      ],
+      "name": "encode",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "value1",
+        "type": "String"
+       },
+       {
+        "name": "value2",
+        "type": "String"
+       }
+      ],
+      "name": "isDoubleMetaphoneEqual",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "value1",
+        "type": "String"
+       },
+       {
+        "name": "value2",
+        "type": "String"
+       },
+       {
+        "name": "alternate",
+        "type": "boolean"
+       }
+      ],
+      "name": "isDoubleMetaphoneEqual",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "getMaxCodeLen",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "maxCodeLen",
+        "type": "int"
+       }
+      ],
+      "name": "setMaxCodeLen",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "result",
+        "type": "DoubleMetaphoneResult"
+       },
+       {
+        "name": "index",
+        "type": "int"
+       }
+      ],
+      "name": "handleAEIOUY",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       },
+       {
+        "name": "result",
+        "type": "DoubleMetaphoneResult"
+       },
+       {
+        "name": "index",
+        "type": "int"
+       }
+      ],
+      "name": "handleC",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       },
+       {
+        "name": "result",
+        "type": "DoubleMetaphoneResult"
+       },
+       {
+        "name": "index",
+        "type": "int"
+       }
+      ],
+      "name": "handleCC",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       },
+       {
+        "name": "result",
+        "type": "DoubleMetaphoneResult"
+       },
+       {
+        "name": "index",
+        "type": "int"
+       }
+      ],
+      "name": "handleCH",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       },
+       {
+        "name": "result",
+        "type": "DoubleMetaphoneResult"
+       },
+       {
+        "name": "index",
+        "type": "int"
+       }
+      ],
+      "name": "handleD",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       },
+       {
+        "name": "result",
+        "type": "DoubleMetaphoneResult"
+       },
+       {
+        "name": "index",
+        "type": "int"
+       },
+       {
+        "name": "slavoGermanic",
+        "type": "boolean"
+       }
+      ],
+      "name": "handleG",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       },
+       {
+        "name": "result",
+        "type": "DoubleMetaphoneResult"
+       },
+       {
+        "name": "index",
+        "type": "int"
+       }
+      ],
+      "name": "handleGH",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       },
+       {
+        "name": "result",
+        "type": "DoubleMetaphoneResult"
+       },
+       {
+        "name": "index",
+        "type": "int"
+       }
+      ],
+      "name": "handleH",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       },
+       {
+        "name": "result",
+        "type": "DoubleMetaphoneResult"
+       },
+       {
+        "name": "index",
+        "type": "int"
+       },
+       {
+        "name": "slavoGermanic",
+        "type": "boolean"
+       }
+      ],
+      "name": "handleJ",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       },
+       {
+        "name": "result",
+        "type": "DoubleMetaphoneResult"
+       },
+       {
+        "name": "index",
+        "type": "int"
+       }
+      ],
+      "name": "handleL",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       },
+       {
+        "name": "result",
+        "type": "DoubleMetaphoneResult"
+       },
+       {
+        "name": "index",
+        "type": "int"
+       }
+      ],
+      "name": "handleP",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       },
+       {
+        "name": "result",
+        "type": "DoubleMetaphoneResult"
+       },
+       {
+        "name": "index",
+        "type": "int"
+       },
+       {
+        "name": "slavoGermanic",
+        "type": "boolean"
+       }
+      ],
+      "name": "handleR",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       },
+       {
+        "name": "result",
+        "type": "DoubleMetaphoneResult"
+       },
+       {
+        "name": "index",
+        "type": "int"
+       },
+       {
+        "name": "slavoGermanic",
+        "type": "boolean"
+       }
+      ],
+      "name": "handleS",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       },
+       {
+        "name": "result",
+        "type": "DoubleMetaphoneResult"
+       },
+       {
+        "name": "index",
+        "type": "int"
+       }
+      ],
+      "name": "handleSC",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       },
+       {
+        "name": "result",
+        "type": "DoubleMetaphoneResult"
+       },
+       {
+        "name": "index",
+        "type": "int"
+       }
+      ],
+      "name": "handleT",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       },
+       {
+        "name": "result",
+        "type": "DoubleMetaphoneResult"
+       },
+       {
+        "name": "index",
+        "type": "int"
+       }
+      ],
+      "name": "handleW",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       },
+       {
+        "name": "result",
+        "type": "DoubleMetaphoneResult"
+       },
+       {
+        "name": "index",
+        "type": "int"
+       }
+      ],
+      "name": "handleX",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       },
+       {
+        "name": "result",
+        "type": "DoubleMetaphoneResult"
+       },
+       {
+        "name": "index",
+        "type": "int"
+       },
+       {
+        "name": "slavoGermanic",
+        "type": "boolean"
+       }
+      ],
+      "name": "handleZ",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       },
+       {
+        "name": "index",
+        "type": "int"
+       }
+      ],
+      "name": "conditionC0",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       },
+       {
+        "name": "index",
+        "type": "int"
+       }
+      ],
+      "name": "conditionCH0",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       },
+       {
+        "name": "index",
+        "type": "int"
+       }
+      ],
+      "name": "conditionCH1",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       },
+       {
+        "name": "index",
+        "type": "int"
+       }
+      ],
+      "name": "conditionL0",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       },
+       {
+        "name": "index",
+        "type": "int"
+       }
+      ],
+      "name": "conditionM0",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       }
+      ],
+      "name": "isSlavoGermanic",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "ch",
+        "type": "char"
+       }
+      ],
+      "name": "isVowel",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       }
+      ],
+      "name": "isSilentStart",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "input",
+        "type": "String"
+       }
+      ],
+      "name": "cleanInput",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       },
+       {
+        "name": "index",
+        "type": "int"
+       }
+      ],
+      "name": "charAt",
+      "type": "char"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       },
+       {
+        "name": "start",
+        "type": "int"
+       },
+       {
+        "name": "length",
+        "type": "int"
+       },
+       {
+        "name": "criteria",
+        "type": "String"
+       }
+      ],
+      "name": "contains",
+      "type": "boolean"
+     }
+    ],
+    "fields": [
+     {
+      "name": "VOWELS",
+      "type": "String"
+     },
+     {
+      "name": "SILENT_START",
+      "type": "String"
+     },
+     {
+      "name": "L_R_N_M_B_H_F_V_W_SPACE",
+      "type": "String"
+     },
+     {
+      "name": "ES_EP_EB_EL_EY_IB_IL_IN_IE_EI_ER",
+      "type": "String"
+     },
+     {
+      "name": "L_T_K_S_N_M_B_Z",
+      "type": "String"
+     },
+     {
+      "name": "maxCodeLen",
+      "type": "int"
+     }
+    ],
+    "name": "DoubleMetaphone"
+   }
+  ]
+ },
+ {
+  "filename": "RefinedSoundex.java",
+  "package_name": "org.apache.commons.codec.language",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "s1",
+        "type": "String"
+       },
+       {
+        "name": "s2",
+        "type": "String"
+       }
+      ],
+      "name": "difference",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "obj",
+        "type": "Object"
+       }
+      ],
+      "name": "encode",
+      "type": "Object"
+     },
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       }
+      ],
+      "name": "encode",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "c",
+        "type": "char"
+       }
+      ],
+      "name": "getMappingCode",
+      "type": "char"
+     },
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       }
+      ],
+      "name": "soundex",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "US_ENGLISH_MAPPING_STRING",
+      "type": "String"
+     },
+     {
+      "name": "US_ENGLISH_MAPPING",
+      "type": "char"
+     },
+     {
+      "name": "soundexMapping",
+      "type": "char"
+     },
+     {
+      "name": "US_ENGLISH",
+      "type": "RefinedSoundex"
+     }
+    ],
+    "name": "RefinedSoundex"
+   }
+  ]
+ },
+ {
+  "filename": "Metaphone.java",
+  "package_name": "org.apache.commons.codec.language",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "txt",
+        "type": "String"
+       }
+      ],
+      "name": "metaphone",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "string",
+        "type": "StringBuilder"
+       },
+       {
+        "name": "index",
+        "type": "int"
+       }
+      ],
+      "name": "isVowel",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "string",
+        "type": "StringBuilder"
+       },
+       {
+        "name": "index",
+        "type": "int"
+       },
+       {
+        "name": "c",
+        "type": "char"
+       }
+      ],
+      "name": "isPreviousChar",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "string",
+        "type": "StringBuilder"
+       },
+       {
+        "name": "index",
+        "type": "int"
+       },
+       {
+        "name": "c",
+        "type": "char"
+       }
+      ],
+      "name": "isNextChar",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "string",
+        "type": "StringBuilder"
+       },
+       {
+        "name": "index",
+        "type": "int"
+       },
+       {
+        "name": "test",
+        "type": "String"
+       }
+      ],
+      "name": "regionMatch",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "wdsz",
+        "type": "int"
+       },
+       {
+        "name": "n",
+        "type": "int"
+       }
+      ],
+      "name": "isLastChar",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "obj",
+        "type": "Object"
+       }
+      ],
+      "name": "encode",
+      "type": "Object"
+     },
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       }
+      ],
+      "name": "encode",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "str1",
+        "type": "String"
+       },
+       {
+        "name": "str2",
+        "type": "String"
+       }
+      ],
+      "name": "isMetaphoneEqual",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "getMaxCodeLen",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "maxCodeLen",
+        "type": "int"
+       }
+      ],
+      "name": "setMaxCodeLen",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "VOWELS",
+      "type": "String"
+     },
+     {
+      "name": "FRONTV",
+      "type": "String"
+     },
+     {
+      "name": "VARSON",
+      "type": "String"
+     },
+     {
+      "name": "maxCodeLen",
+      "type": "int"
+     }
+    ],
+    "name": "Metaphone"
+   }
+  ]
+ },
+ {
+  "filename": "SoundexUtils.java",
+  "package_name": "org.apache.commons.codec.language",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       }
+      ],
+      "name": "clean",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "encoder",
+        "type": "StringEncoder"
+       },
+       {
+        "name": "s1",
+        "type": "String"
+       },
+       {
+        "name": "s2",
+        "type": "String"
+       }
+      ],
+      "name": "difference",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "es1",
+        "type": "String"
+       },
+       {
+        "name": "es2",
+        "type": "String"
+       }
+      ],
+      "name": "differenceEncoded",
+      "type": "int"
+     }
+    ],
+    "fields": [],
+    "name": "SoundexUtils"
+   }
+  ]
+ },
+ {
+  "filename": "Soundex.java",
+  "package_name": "org.apache.commons.codec.language",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "s1",
+        "type": "String"
+       },
+       {
+        "name": "s2",
+        "type": "String"
+       }
+      ],
+      "name": "difference",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "obj",
+        "type": "Object"
+       }
+      ],
+      "name": "encode",
+      "type": "Object"
+     },
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       }
+      ],
+      "name": "encode",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getMaxLength",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getSoundexMapping",
+      "type": "char"
+     },
+     {
+      "params": [
+       {
+        "name": "ch",
+        "type": "char"
+       }
+      ],
+      "name": "map",
+      "type": "char"
+     },
+     {
+      "params": [
+       {
+        "name": "maxLength",
+        "type": "int"
+       }
+      ],
+      "name": "setMaxLength",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       }
+      ],
+      "name": "soundex",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "US_ENGLISH_MAPPING_STRING",
+      "type": "String"
+     },
+     {
+      "name": "US_ENGLISH_MAPPING",
+      "type": "char"
+     },
+     {
+      "name": "US_ENGLISH",
+      "type": "Soundex"
+     },
+     {
+      "name": "maxLength",
+      "type": "int"
+     },
+     {
+      "name": "soundexMapping",
+      "type": "char"
+     }
+    ],
+    "name": "Soundex"
+   }
+  ]
+ },
+ {
+  "filename": "AbstractCaverphone.java",
+  "package_name": "org.apache.commons.codec.language",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "source",
+        "type": "Object"
+       }
+      ],
+      "name": "encode",
+      "type": "Object"
+     },
+     {
+      "params": [
+       {
+        "name": "str1",
+        "type": "String"
+       },
+       {
+        "name": "str2",
+        "type": "String"
+       }
+      ],
+      "name": "isEncodeEqual",
+      "type": "boolean"
+     }
+    ],
+    "fields": [],
+    "name": "AbstractCaverphone"
+   }
+  ]
+ },
+ {
+  "filename": "MatchRatingApproachEncoder.java",
+  "package_name": "org.apache.commons.codec.language",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ],
+      "name": "cleanName",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "pObject",
+        "type": "Object"
+       }
+      ],
+      "name": "encode",
+      "type": "Object"
+     },
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ],
+      "name": "encode",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ],
+      "name": "getFirst3Last3",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "sumLength",
+        "type": "int"
+       }
+      ],
+      "name": "getMinRating",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "name1",
+        "type": "String"
+       },
+       {
+        "name": "name2",
+        "type": "String"
+       }
+      ],
+      "name": "isEncodeEquals",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "letter",
+        "type": "String"
+       }
+      ],
+      "name": "isVowel",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "name1",
+        "type": "String"
+       },
+       {
+        "name": "name2",
+        "type": "String"
+       }
+      ],
+      "name": "leftToRightThenRightToLeftProcessing",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "accentedWord",
+        "type": "String"
+       }
+      ],
+      "name": "removeAccents",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ],
+      "name": "removeDoubleConsonants",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ],
+      "name": "removeVowels",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "SPACE",
+      "type": "String"
+     },
+     {
+      "name": "EMPTY",
+      "type": "String"
+     },
+     {
+      "name": "ONE",
+      "type": "int"
+     },
+     {
+      "name": "TWO",
+      "type": "int"
+     },
+     {
+      "name": "THREE",
+      "type": "int"
+     },
+     {
+      "name": "FOUR",
+      "type": "int"
+     },
+     {
+      "name": "FIVE",
+      "type": "int"
+     },
+     {
+      "name": "SIX",
+      "type": "int"
+     },
+     {
+      "name": "SEVEN",
+      "type": "int"
+     },
+     {
+      "name": "ELEVEN",
+      "type": "int"
+     },
+     {
+      "name": "TWELVE",
+      "type": "int"
+     },
+     {
+      "name": "PLAIN_ASCII",
+      "type": "String"
+     },
+     {
+      "name": "UNICODE",
+      "type": "String"
+     },
+     {
+      "name": "DOUBLE_CONSONANT",
+      "type": "String"
+     }
+    ],
+    "name": "MatchRatingApproachEncoder"
+   }
+  ]
+ },
+ {
+  "filename": "Caverphone1.java",
+  "package_name": "org.apache.commons.codec.language",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "source",
+        "type": "String"
+       }
+      ],
+      "name": "encode",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "SIX_1",
+      "type": "String"
+     }
+    ],
+    "name": "Caverphone1"
+   }
+  ]
+ },
+ {
+  "filename": "Caverphone.java",
+  "package_name": "org.apache.commons.codec.language",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "source",
+        "type": "String"
+       }
+      ],
+      "name": "caverphone",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "obj",
+        "type": "Object"
+       }
+      ],
+      "name": "encode",
+      "type": "Object"
+     },
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       }
+      ],
+      "name": "encode",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "str1",
+        "type": "String"
+       },
+       {
+        "name": "str2",
+        "type": "String"
+       }
+      ],
+      "name": "isCaverphoneEqual",
+      "type": "boolean"
+     }
+    ],
+    "fields": [
+     {
+      "name": "encoder",
+      "type": "Caverphone2"
+     }
+    ],
+    "name": "Caverphone"
+   }
+  ]
+ },
+ {
+  "filename": "Nysiis.java",
+  "package_name": "org.apache.commons.codec.language",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "c",
+        "type": "char"
+       }
+      ],
+      "name": "isVowel",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "prev",
+        "type": "char"
+       },
+       {
+        "name": "curr",
+        "type": "char"
+       },
+       {
+        "name": "next",
+        "type": "char"
+       },
+       {
+        "name": "aNext",
+        "type": "char"
+       }
+      ],
+      "name": "transcodeRemaining",
+      "type": "char"
+     },
+     {
+      "params": [
+       {
+        "name": "obj",
+        "type": "Object"
+       }
+      ],
+      "name": "encode",
+      "type": "Object"
+     },
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       }
+      ],
+      "name": "encode",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "isStrict",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       }
+      ],
+      "name": "nysiis",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "CHARS_A",
+      "type": "char"
+     },
+     {
+      "name": "CHARS_AF",
+      "type": "char"
+     },
+     {
+      "name": "CHARS_C",
+      "type": "char"
+     },
+     {
+      "name": "CHARS_FF",
+      "type": "char"
+     },
+     {
+      "name": "CHARS_G",
+      "type": "char"
+     },
+     {
+      "name": "CHARS_N",
+      "type": "char"
+     },
+     {
+      "name": "CHARS_NN",
+      "type": "char"
+     },
+     {
+      "name": "CHARS_S",
+      "type": "char"
+     },
+     {
+      "name": "CHARS_SSS",
+      "type": "char"
+     },
+     {
+      "name": "PAT_MAC",
+      "type": "Pattern"
+     },
+     {
+      "name": "PAT_KN",
+      "type": "Pattern"
+     },
+     {
+      "name": "PAT_K",
+      "type": "Pattern"
+     },
+     {
+      "name": "PAT_PH_PF",
+      "type": "Pattern"
+     },
+     {
+      "name": "PAT_SCH",
+      "type": "Pattern"
+     },
+     {
+      "name": "PAT_EE_IE",
+      "type": "Pattern"
+     },
+     {
+      "name": "PAT_DT_ETC",
+      "type": "Pattern"
+     },
+     {
+      "name": "SPACE",
+      "type": "char"
+     },
+     {
+      "name": "TRUE_LENGTH",
+      "type": "int"
+     },
+     {
+      "name": "strict",
+      "type": "boolean"
+     }
+    ],
+    "name": "Nysiis"
+   }
+  ]
+ },
+ {
+  "filename": "DaitchMokotoffSoundex.java",
+  "package_name": "org.apache.commons.codec.language",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "scanner",
+        "type": "Scanner"
+       },
+       {
+        "name": "location",
+        "type": "String"
+       },
+       {
+        "name": "ruleMapping",
+        "type": "Map"
+       },
+       {
+        "name": "asciiFoldings",
+        "type": "Map"
+       }
+      ],
+      "name": "parseRules",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       }
+      ],
+      "name": "stripQuotes",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "input",
+        "type": "String"
+       }
+      ],
+      "name": "cleanup",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "obj",
+        "type": "Object"
+       }
+      ],
+      "name": "encode",
+      "type": "Object"
+     },
+     {
+      "params": [
+       {
+        "name": "source",
+        "type": "String"
+       }
+      ],
+      "name": "encode",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "source",
+        "type": "String"
+       }
+      ],
+      "name": "soundex",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "source",
+        "type": "String"
+       },
+       {
+        "name": "branching",
+        "type": "boolean"
+       }
+      ],
+      "name": "soundex",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "COMMENT",
+      "type": "String"
+     },
+     {
+      "name": "DOUBLE_QUOTE",
+      "type": "String"
+     },
+     {
+      "name": "MULTILINE_COMMENT_END",
+      "type": "String"
+     },
+     {
+      "name": "MULTILINE_COMMENT_START",
+      "type": "String"
+     },
+     {
+      "name": "RESOURCE_FILE",
+      "type": "String"
+     },
+     {
+      "name": "MAX_LENGTH",
+      "type": "int"
+     },
+     {
+      "name": "RULES",
+      "type": "Map"
+     },
+     {
+      "name": "FOLDINGS",
+      "type": "Map"
+     },
+     {
+      "name": "folding",
+      "type": "boolean"
+     }
+    ],
+    "name": "DaitchMokotoffSoundex"
+   }
+  ]
+ },
+ {
+  "filename": "ColognePhonetic.java",
+  "package_name": "org.apache.commons.codec.language",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "arr",
+        "type": "char"
+       },
+       {
+        "name": "key",
+        "type": "char"
+       }
+      ],
+      "name": "arrayContains",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "text",
+        "type": "String"
+       }
+      ],
+      "name": "colognePhonetic",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "object",
+        "type": "Object"
+       }
+      ],
+      "name": "encode",
+      "type": "Object"
+     },
+     {
+      "params": [
+       {
+        "name": "text",
+        "type": "String"
+       }
+      ],
+      "name": "encode",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "text1",
+        "type": "String"
+       },
+       {
+        "name": "text2",
+        "type": "String"
+       }
+      ],
+      "name": "isEncodeEqual",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "text",
+        "type": "String"
+       }
+      ],
+      "name": "preprocess",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "AEIJOUY",
+      "type": "char"
+     },
+     {
+      "name": "SCZ",
+      "type": "char"
+     },
+     {
+      "name": "WFPV",
+      "type": "char"
+     },
+     {
+      "name": "GKQ",
+      "type": "char"
+     },
+     {
+      "name": "CKQ",
+      "type": "char"
+     },
+     {
+      "name": "AHKLOQRUX",
+      "type": "char"
+     },
+     {
+      "name": "SZ",
+      "type": "char"
+     },
+     {
+      "name": "AHOUKQX",
+      "type": "char"
+     },
+     {
+      "name": "TDX",
+      "type": "char"
+     },
+     {
+      "name": "PREPROCESS_MAP",
+      "type": "char"
+     }
+    ],
+    "name": "ColognePhonetic"
+   }
+  ]
+ },
+ {
+  "filename": "Caverphone2.java",
+  "package_name": "org.apache.commons.codec.language",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "source",
+        "type": "String"
+       }
+      ],
+      "name": "encode",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "TEN_1",
+      "type": "String"
+     }
+    ],
+    "name": "Caverphone2"
+   }
+  ]
+ },
+ {
+  "filename": "PhoneticEngine.java",
+  "package_name": "org.apache.commons.codec.language.bm",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "strings",
+        "type": "Iterable"
+       },
+       {
+        "name": "sep",
+        "type": "String"
+       }
+      ],
+      "name": "join",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "phonemeBuilder",
+        "type": "PhonemeBuilder"
+       },
+       {
+        "name": "finalRules",
+        "type": "Map"
+       }
+      ],
+      "name": "applyFinalRules",
+      "type": "PhonemeBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "input",
+        "type": "String"
+       }
+      ],
+      "name": "encode",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "input",
+        "type": "String"
+       },
+       {
+        "name": "languageSet",
+        "type": "Languages"
+       }
+      ],
+      "name": "encode",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getLang",
+      "type": "Lang"
+     },
+     {
+      "params": [],
+      "name": "getNameType",
+      "type": "NameType"
+     },
+     {
+      "params": [],
+      "name": "getRuleType",
+      "type": "RuleType"
+     },
+     {
+      "params": [],
+      "name": "isConcat",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "getMaxPhonemes",
+      "type": "int"
+     }
+    ],
+    "fields": [
+     {
+      "name": "NAME_PREFIXES",
+      "type": "Map"
+     },
+     {
+      "name": "DEFAULT_MAX_PHONEMES",
+      "type": "int"
+     },
+     {
+      "name": "lang",
+      "type": "Lang"
+     },
+     {
+      "name": "nameType",
+      "type": "NameType"
+     },
+     {
+      "name": "ruleType",
+      "type": "RuleType"
+     },
+     {
+      "name": "concat",
+      "type": "boolean"
+     },
+     {
+      "name": "maxPhonemes",
+      "type": "int"
+     }
+    ],
+    "name": "PhoneticEngine"
+   }
+  ]
+ },
+ {
+  "filename": "ResourceConstants.java",
+  "package_name": "org.apache.commons.codec.language.bm",
+  "classes": [
+   {
+    "methods": [],
+    "fields": [
+     {
+      "name": "CMT",
+      "type": "String"
+     },
+     {
+      "name": "ENCODING",
+      "type": "String"
+     },
+     {
+      "name": "EXT_CMT_END",
+      "type": "String"
+     },
+     {
+      "name": "EXT_CMT_START",
+      "type": "String"
+     }
+    ],
+    "name": "ResourceConstants"
+   }
+  ]
+ },
+ {
+  "filename": "Rule.java",
+  "package_name": "org.apache.commons.codec.language.bm",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "chars",
+        "type": "CharSequence"
+       },
+       {
+        "name": "input",
+        "type": "char"
+       }
+      ],
+      "name": "contains",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "nameType",
+        "type": "NameType"
+       },
+       {
+        "name": "rt",
+        "type": "RuleType"
+       },
+       {
+        "name": "lang",
+        "type": "String"
+       }
+      ],
+      "name": "createResourceName",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "nameType",
+        "type": "NameType"
+       },
+       {
+        "name": "rt",
+        "type": "RuleType"
+       },
+       {
+        "name": "lang",
+        "type": "String"
+       }
+      ],
+      "name": "createScanner",
+      "type": "Scanner"
+     },
+     {
+      "params": [
+       {
+        "name": "lang",
+        "type": "String"
+       }
+      ],
+      "name": "createScanner",
+      "type": "Scanner"
+     },
+     {
+      "params": [
+       {
+        "name": "input",
+        "type": "CharSequence"
+       },
+       {
+        "name": "suffix",
+        "type": "CharSequence"
+       }
+      ],
+      "name": "endsWith",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "nameType",
+        "type": "NameType"
+       },
+       {
+        "name": "rt",
+        "type": "RuleType"
+       },
+       {
+        "name": "langs",
+        "type": "Languages"
+       }
+      ],
+      "name": "getInstance",
+      "type": "List"
+     },
+     {
+      "params": [
+       {
+        "name": "nameType",
+        "type": "NameType"
+       },
+       {
+        "name": "rt",
+        "type": "RuleType"
+       },
+       {
+        "name": "lang",
+        "type": "String"
+       }
+      ],
+      "name": "getInstance",
+      "type": "List"
+     },
+     {
+      "params": [
+       {
+        "name": "nameType",
+        "type": "NameType"
+       },
+       {
+        "name": "rt",
+        "type": "RuleType"
+       },
+       {
+        "name": "langs",
+        "type": "Languages"
+       }
+      ],
+      "name": "getInstanceMap",
+      "type": "Map"
+     },
+     {
+      "params": [
+       {
+        "name": "nameType",
+        "type": "NameType"
+       },
+       {
+        "name": "rt",
+        "type": "RuleType"
+       },
+       {
+        "name": "lang",
+        "type": "String"
+       }
+      ],
+      "name": "getInstanceMap",
+      "type": "Map"
+     },
+     {
+      "params": [
+       {
+        "name": "ph",
+        "type": "String"
+       }
+      ],
+      "name": "parsePhoneme",
+      "type": "Phoneme"
+     },
+     {
+      "params": [
+       {
+        "name": "ph",
+        "type": "String"
+       }
+      ],
+      "name": "parsePhonemeExpr",
+      "type": "PhonemeExpr"
+     },
+     {
+      "params": [
+       {
+        "name": "scanner",
+        "type": "Scanner"
+       },
+       {
+        "name": "location",
+        "type": "String"
+       }
+      ],
+      "name": "parseRules",
+      "type": "Map"
+     },
+     {
+      "params": [
+       {
+        "name": "regex",
+        "type": "String"
+       }
+      ],
+      "name": "pattern",
+      "type": "RPattern"
+     },
+     {
+      "params": [
+       {
+        "name": "input",
+        "type": "CharSequence"
+       },
+       {
+        "name": "prefix",
+        "type": "CharSequence"
+       }
+      ],
+      "name": "startsWith",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       }
+      ],
+      "name": "stripQuotes",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getLContext",
+      "type": "RPattern"
+     },
+     {
+      "params": [],
+      "name": "getPattern",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getPhoneme",
+      "type": "PhonemeExpr"
+     },
+     {
+      "params": [],
+      "name": "getRContext",
+      "type": "RPattern"
+     },
+     {
+      "params": [
+       {
+        "name": "input",
+        "type": "CharSequence"
+       },
+       {
+        "name": "i",
+        "type": "int"
+       }
+      ],
+      "name": "patternAndContextMatches",
+      "type": "boolean"
+     }
+    ],
+    "fields": [
+     {
+      "name": "ALL_STRINGS_RMATCHER",
+      "type": "RPattern"
+     },
+     {
+      "name": "ALL",
+      "type": "String"
+     },
+     {
+      "name": "DOUBLE_QUOTE",
+      "type": "String"
+     },
+     {
+      "name": "HASH_INCLUDE",
+      "type": "String"
+     },
+     {
+      "name": "RULES",
+      "type": "Map"
+     },
+     {
+      "name": "lContext",
+      "type": "RPattern"
+     },
+     {
+      "name": "pattern",
+      "type": "String"
+     },
+     {
+      "name": "phoneme",
+      "type": "PhonemeExpr"
+     },
+     {
+      "name": "rContext",
+      "type": "RPattern"
+     }
+    ],
+    "name": "Rule"
+   }
+  ]
+ },
+ {
+  "filename": "NameType.java",
+  "package_name": "org.apache.commons.codec.language.bm",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getName",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "name",
+      "type": "String"
+     }
+    ],
+    "name": "NameType"
+   }
+  ]
+ },
+ {
+  "filename": "Languages.java",
+  "package_name": "org.apache.commons.codec.language.bm",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "nameType",
+        "type": "NameType"
+       }
+      ],
+      "name": "getInstance",
+      "type": "Languages"
+     },
+     {
+      "params": [
+       {
+        "name": "languagesResourceName",
+        "type": "String"
+       }
+      ],
+      "name": "getInstance",
+      "type": "Languages"
+     },
+     {
+      "params": [
+       {
+        "name": "nameType",
+        "type": "NameType"
+       }
+      ],
+      "name": "langResourceName",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getLanguages",
+      "type": "Set"
+     }
+    ],
+    "fields": [
+     {
+      "name": "ANY",
+      "type": "String"
+     },
+     {
+      "name": "LANGUAGES",
+      "type": "Map"
+     },
+     {
+      "name": "languages",
+      "type": "Set"
+     },
+     {
+      "name": "NO_LANGUAGES",
+      "type": "LanguageSet"
+     },
+     {
+      "name": "ANY_LANGUAGE",
+      "type": "LanguageSet"
+     }
+    ],
+    "name": "Languages"
+   }
+  ]
+ },
+ {
+  "filename": "RuleType.java",
+  "package_name": "org.apache.commons.codec.language.bm",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getName",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "name",
+      "type": "String"
+     }
+    ],
+    "name": "RuleType"
+   }
+  ]
+ },
+ {
+  "filename": "Lang.java",
+  "package_name": "org.apache.commons.codec.language.bm",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "nameType",
+        "type": "NameType"
+       }
+      ],
+      "name": "instance",
+      "type": "Lang"
+     },
+     {
+      "params": [
+       {
+        "name": "languageRulesResourceName",
+        "type": "String"
+       },
+       {
+        "name": "languages",
+        "type": "Languages"
+       }
+      ],
+      "name": "loadFromResource",
+      "type": "Lang"
+     },
+     {
+      "params": [
+       {
+        "name": "text",
+        "type": "String"
+       }
+      ],
+      "name": "guessLanguage",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "input",
+        "type": "String"
+       }
+      ],
+      "name": "guessLanguages",
+      "type": "Languages"
+     }
+    ],
+    "fields": [
+     {
+      "name": "Langs",
+      "type": "Map"
+     },
+     {
+      "name": "LANGUAGE_RULES_RN",
+      "type": "String"
+     },
+     {
+      "name": "languages",
+      "type": "Languages"
+     },
+     {
+      "name": "rules",
+      "type": "List"
+     }
+    ],
+    "name": "Lang"
+   }
+  ]
+ },
+ {
+  "filename": "BeiderMorseEncoder.java",
+  "package_name": "org.apache.commons.codec.language.bm",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "source",
+        "type": "Object"
+       }
+      ],
+      "name": "encode",
+      "type": "Object"
+     },
+     {
+      "params": [
+       {
+        "name": "source",
+        "type": "String"
+       }
+      ],
+      "name": "encode",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getNameType",
+      "type": "NameType"
+     },
+     {
+      "params": [],
+      "name": "getRuleType",
+      "type": "RuleType"
+     },
+     {
+      "params": [],
+      "name": "isConcat",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "concat",
+        "type": "boolean"
+       }
+      ],
+      "name": "setConcat",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "nameType",
+        "type": "NameType"
+       }
+      ],
+      "name": "setNameType",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "ruleType",
+        "type": "RuleType"
+       }
+      ],
+      "name": "setRuleType",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "maxPhonemes",
+        "type": "int"
+       }
+      ],
+      "name": "setMaxPhonemes",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "engine",
+      "type": "PhoneticEngine"
+     }
+    ],
+    "name": "BeiderMorseEncoder"
+   }
+  ]
+ },
+ {
+  "filename": "Digest.java",
+  "package_name": "org.apache.commons.codec.cli",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "args",
+        "type": "String"
+       }
+      ],
+      "name": "main",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "prefix",
+        "type": "String"
+       },
+       {
+        "name": "digest",
+        "type": "byte"
+       }
+      ],
+      "name": "println",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "prefix",
+        "type": "String"
+       },
+       {
+        "name": "digest",
+        "type": "byte"
+       },
+       {
+        "name": "fileName",
+        "type": "String"
+       }
+      ],
+      "name": "println",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "run",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "digestAlgorithms",
+        "type": "String"
+       }
+      ],
+      "name": "run",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "prefix",
+        "type": "String"
+       },
+       {
+        "name": "messageDigest",
+        "type": "MessageDigest"
+       }
+      ],
+      "name": "run",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "prefix",
+        "type": "String"
+       },
+       {
+        "name": "messageDigest",
+        "type": "MessageDigest"
+       },
+       {
+        "name": "files",
+        "type": "File"
+       }
+      ],
+      "name": "run",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "prefix",
+        "type": "String"
+       },
+       {
+        "name": "messageDigestAlgorithm",
+        "type": "String"
+       }
+      ],
+      "name": "run",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "toString",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "algorithm",
+      "type": "String"
+     },
+     {
+      "name": "args",
+      "type": "String"
+     },
+     {
+      "name": "inputs",
+      "type": "String"
+     }
+    ],
+    "name": "Digest"
+   }
+  ]
+ }
+]

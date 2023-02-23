@@ -1,0 +1,2 @@
+- String name = t.asEndTag().normalName();
++ String name = t.asEndTag().name();

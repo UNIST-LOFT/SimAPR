@@ -1,0 +1,2 @@
+- nextLineTabStop = width - 1;
++ nextLineTabStop = 1 ; pos=width - 1;

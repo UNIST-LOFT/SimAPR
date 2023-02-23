@@ -1,0 +1,2 @@
++ lines. append(text) #
+  return lines

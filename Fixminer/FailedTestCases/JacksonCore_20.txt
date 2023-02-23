@@ -1,0 +1,3 @@
+Failing tests: 2
+  - com.fasterxml.jackson.core.base64.Base64GenerationTest::testBinaryAsEmbeddedObject
+  - com.fasterxml.jackson.core.main.TestGeneratorMisc::testAsEmbedded

@@ -1,0 +1,2 @@
+Failing tests: 1
+  - org.apache.commons.compress.compressors.bzip2.BZip2CompressorInputStreamTest::readOfLength0ShouldReturn0

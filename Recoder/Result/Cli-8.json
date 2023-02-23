@@ -1,0 +1,2284 @@
+[
+ {
+  "filename": "MissingOptionException.java",
+  "package_name": "org.apache.commons.cli",
+  "classes": [
+   {
+    "methods": [],
+    "fields": [],
+    "name": "MissingOptionException"
+   }
+  ]
+ },
+ {
+  "filename": "CommandLineParser.java",
+  "package_name": "org.apache.commons.cli",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "options",
+        "type": "Options"
+       },
+       {
+        "name": "arguments",
+        "type": "String"
+       }
+      ],
+      "name": "parse",
+      "type": "CommandLine"
+     },
+     {
+      "params": [
+       {
+        "name": "options",
+        "type": "Options"
+       },
+       {
+        "name": "arguments",
+        "type": "String"
+       },
+       {
+        "name": "stopAtNonOption",
+        "type": "boolean"
+       }
+      ],
+      "name": "parse",
+      "type": "CommandLine"
+     }
+    ],
+    "fields": [],
+    "name": "CommandLineParser"
+   }
+  ]
+ },
+ {
+  "filename": "CommandLine.java",
+  "package_name": "org.apache.commons.cli",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "opt",
+        "type": "String"
+       }
+      ],
+      "name": "hasOption",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "opt",
+        "type": "char"
+       }
+      ],
+      "name": "hasOption",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "opt",
+        "type": "String"
+       }
+      ],
+      "name": "getOptionObject",
+      "type": "Object"
+     },
+     {
+      "params": [
+       {
+        "name": "opt",
+        "type": "char"
+       }
+      ],
+      "name": "getOptionObject",
+      "type": "Object"
+     },
+     {
+      "params": [
+       {
+        "name": "opt",
+        "type": "String"
+       }
+      ],
+      "name": "getOptionValue",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "opt",
+        "type": "char"
+       }
+      ],
+      "name": "getOptionValue",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "opt",
+        "type": "String"
+       }
+      ],
+      "name": "getOptionValues",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "opt",
+        "type": "String"
+       }
+      ],
+      "name": "resolveOption",
+      "type": "Option"
+     },
+     {
+      "params": [
+       {
+        "name": "opt",
+        "type": "char"
+       }
+      ],
+      "name": "getOptionValues",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "opt",
+        "type": "String"
+       },
+       {
+        "name": "defaultValue",
+        "type": "String"
+       }
+      ],
+      "name": "getOptionValue",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "opt",
+        "type": "char"
+       },
+       {
+        "name": "defaultValue",
+        "type": "String"
+       }
+      ],
+      "name": "getOptionValue",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getArgs",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getArgList",
+      "type": "List"
+     },
+     {
+      "params": [
+       {
+        "name": "arg",
+        "type": "String"
+       }
+      ],
+      "name": "addArg",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "opt",
+        "type": "Option"
+       }
+      ],
+      "name": "addOption",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "iterator",
+      "type": "Iterator"
+     },
+     {
+      "params": [],
+      "name": "getOptions",
+      "type": "Option"
+     }
+    ],
+    "fields": [
+     {
+      "name": "serialVersionUID",
+      "type": "long"
+     },
+     {
+      "name": "args",
+      "type": "List"
+     },
+     {
+      "name": "options",
+      "type": "Set"
+     }
+    ],
+    "name": "CommandLine"
+   }
+  ]
+ },
+ {
+  "filename": "ParseException.java",
+  "package_name": "org.apache.commons.cli",
+  "classes": [
+   {
+    "methods": [],
+    "fields": [],
+    "name": "ParseException"
+   }
+  ]
+ },
+ {
+  "filename": "Option.java",
+  "package_name": "org.apache.commons.cli",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "getId",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "getKey",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getOpt",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getType",
+      "type": "Object"
+     },
+     {
+      "params": [
+       {
+        "name": "type",
+        "type": "Object"
+       }
+      ],
+      "name": "setType",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getLongOpt",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "longOpt",
+        "type": "String"
+       }
+      ],
+      "name": "setLongOpt",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "optionalArg",
+        "type": "boolean"
+       }
+      ],
+      "name": "setOptionalArg",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "hasOptionalArg",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "hasLongOpt",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "hasArg",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "getDescription",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "description",
+        "type": "String"
+       }
+      ],
+      "name": "setDescription",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "isRequired",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "required",
+        "type": "boolean"
+       }
+      ],
+      "name": "setRequired",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "argName",
+        "type": "String"
+       }
+      ],
+      "name": "setArgName",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getArgName",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "hasArgName",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "hasArgs",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "num",
+        "type": "int"
+       }
+      ],
+      "name": "setArgs",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "sep",
+        "type": "char"
+       }
+      ],
+      "name": "setValueSeparator",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getValueSeparator",
+      "type": "char"
+     },
+     {
+      "params": [],
+      "name": "hasValueSeparator",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "getArgs",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       }
+      ],
+      "name": "addValueForProcessing",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       }
+      ],
+      "name": "processValue",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       }
+      ],
+      "name": "add",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getValue",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "index",
+        "type": "int"
+       }
+      ],
+      "name": "getValue",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "defaultValue",
+        "type": "String"
+       }
+      ],
+      "name": "getValue",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getValues",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "getValuesList",
+      "type": "java"
+     },
+     {
+      "params": [],
+      "name": "toString",
+      "type": "String"
+     },
+     {
+      "params": [],
+      "name": "hasNoValues",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "o",
+        "type": "Object"
+       }
+      ],
+      "name": "equals",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "hashCode",
+      "type": "int"
+     },
+     {
+      "params": [],
+      "name": "clone",
+      "type": "Object"
+     },
+     {
+      "params": [],
+      "name": "clearValues",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       }
+      ],
+      "name": "addValue",
+      "type": "boolean"
+     }
+    ],
+    "fields": [
+     {
+      "name": "serialVersionUID",
+      "type": "long"
+     },
+     {
+      "name": "UNINITIALIZED",
+      "type": "int"
+     },
+     {
+      "name": "UNLIMITED_VALUES",
+      "type": "int"
+     },
+     {
+      "name": "opt",
+      "type": "String"
+     },
+     {
+      "name": "longOpt",
+      "type": "String"
+     },
+     {
+      "name": "argName",
+      "type": "String"
+     },
+     {
+      "name": "description",
+      "type": "String"
+     },
+     {
+      "name": "required",
+      "type": "boolean"
+     },
+     {
+      "name": "optionalArg",
+      "type": "boolean"
+     },
+     {
+      "name": "numberOfArgs",
+      "type": "int"
+     },
+     {
+      "name": "type",
+      "type": "Object"
+     },
+     {
+      "name": "values",
+      "type": "ArrayList"
+     },
+     {
+      "name": "valuesep",
+      "type": "char"
+     }
+    ],
+    "name": "Option"
+   }
+  ]
+ },
+ {
+  "filename": "OptionValidator.java",
+  "package_name": "org.apache.commons.cli",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "opt",
+        "type": "String"
+       }
+      ],
+      "name": "validateOption",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "c",
+        "type": "char"
+       }
+      ],
+      "name": "isValidOpt",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "c",
+        "type": "char"
+       }
+      ],
+      "name": "isValidChar",
+      "type": "boolean"
+     }
+    ],
+    "fields": [],
+    "name": "OptionValidator"
+   }
+  ]
+ },
+ {
+  "filename": "UnrecognizedOptionException.java",
+  "package_name": "org.apache.commons.cli",
+  "classes": [
+   {
+    "methods": [],
+    "fields": [],
+    "name": "UnrecognizedOptionException"
+   }
+  ]
+ },
+ {
+  "filename": "BasicParser.java",
+  "package_name": "org.apache.commons.cli",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "options",
+        "type": "Options"
+       },
+       {
+        "name": "arguments",
+        "type": "String"
+       },
+       {
+        "name": "stopAtNonOption",
+        "type": "boolean"
+       }
+      ],
+      "name": "flatten",
+      "type": "String"
+     }
+    ],
+    "fields": [],
+    "name": "BasicParser"
+   }
+  ]
+ },
+ {
+  "filename": "Util.java",
+  "package_name": "org.apache.commons.cli",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       }
+      ],
+      "name": "stripLeadingHyphens",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       }
+      ],
+      "name": "stripLeadingAndTrailingQuotes",
+      "type": "String"
+     }
+    ],
+    "fields": [],
+    "name": "Util"
+   }
+  ]
+ },
+ {
+  "filename": "AlreadySelectedException.java",
+  "package_name": "org.apache.commons.cli",
+  "classes": [
+   {
+    "methods": [],
+    "fields": [],
+    "name": "AlreadySelectedException"
+   }
+  ]
+ },
+ {
+  "filename": "PatternOptionBuilder.java",
+  "package_name": "org.apache.commons.cli",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "ch",
+        "type": "char"
+       }
+      ],
+      "name": "getValueClass",
+      "type": "Object"
+     },
+     {
+      "params": [
+       {
+        "name": "ch",
+        "type": "char"
+       }
+      ],
+      "name": "isValueCode",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "pattern",
+        "type": "String"
+       }
+      ],
+      "name": "parsePattern",
+      "type": "Options"
+     }
+    ],
+    "fields": [
+     {
+      "name": "STRING_VALUE",
+      "type": "Class"
+     },
+     {
+      "name": "OBJECT_VALUE",
+      "type": "Class"
+     },
+     {
+      "name": "NUMBER_VALUE",
+      "type": "Class"
+     },
+     {
+      "name": "DATE_VALUE",
+      "type": "Class"
+     },
+     {
+      "name": "CLASS_VALUE",
+      "type": "Class"
+     },
+     {
+      "name": "EXISTING_FILE_VALUE",
+      "type": "Class"
+     },
+     {
+      "name": "FILE_VALUE",
+      "type": "Class"
+     },
+     {
+      "name": "FILES_VALUE",
+      "type": "Class"
+     },
+     {
+      "name": "URL_VALUE",
+      "type": "Class"
+     }
+    ],
+    "name": "PatternOptionBuilder"
+   }
+  ]
+ },
+ {
+  "filename": "OptionGroup.java",
+  "package_name": "org.apache.commons.cli",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "opt",
+        "type": "Option"
+       }
+      ],
+      "name": "addOption",
+      "type": "OptionGroup"
+     },
+     {
+      "params": [],
+      "name": "getNames",
+      "type": "Collection"
+     },
+     {
+      "params": [],
+      "name": "getOptions",
+      "type": "Collection"
+     },
+     {
+      "params": [
+       {
+        "name": "opt",
+        "type": "Option"
+       }
+      ],
+      "name": "setSelected",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getSelected",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "required",
+        "type": "boolean"
+       }
+      ],
+      "name": "setRequired",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "isRequired",
+      "type": "boolean"
+     },
+     {
+      "params": [],
+      "name": "toString",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "serialVersionUID",
+      "type": "long"
+     },
+     {
+      "name": "optionMap",
+      "type": "HashMap"
+     },
+     {
+      "name": "selected",
+      "type": "String"
+     },
+     {
+      "name": "required",
+      "type": "boolean"
+     }
+    ],
+    "name": "OptionGroup"
+   }
+  ]
+ },
+ {
+  "filename": "TypeHandler.java",
+  "package_name": "org.apache.commons.cli",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       },
+       {
+        "name": "obj",
+        "type": "Object"
+       }
+      ],
+      "name": "createValue",
+      "type": "Object"
+     },
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       },
+       {
+        "name": "clazz",
+        "type": "Class"
+       }
+      ],
+      "name": "createValue",
+      "type": "Object"
+     },
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       }
+      ],
+      "name": "createObject",
+      "type": "Object"
+     },
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       }
+      ],
+      "name": "createNumber",
+      "type": "Number"
+     },
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       }
+      ],
+      "name": "createClass",
+      "type": "Class"
+     },
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       }
+      ],
+      "name": "createDate",
+      "type": "Date"
+     },
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       }
+      ],
+      "name": "createURL",
+      "type": "URL"
+     },
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       }
+      ],
+      "name": "createFile",
+      "type": "File"
+     },
+     {
+      "params": [
+       {
+        "name": "str",
+        "type": "String"
+       }
+      ],
+      "name": "createFiles",
+      "type": "File"
+     }
+    ],
+    "fields": [],
+    "name": "TypeHandler"
+   }
+  ]
+ },
+ {
+  "filename": "MissingArgumentException.java",
+  "package_name": "org.apache.commons.cli",
+  "classes": [
+   {
+    "methods": [],
+    "fields": [],
+    "name": "MissingArgumentException"
+   }
+  ]
+ },
+ {
+  "filename": "OptionBuilder.java",
+  "package_name": "org.apache.commons.cli",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "reset",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "newLongopt",
+        "type": "String"
+       }
+      ],
+      "name": "withLongOpt",
+      "type": "OptionBuilder"
+     },
+     {
+      "params": [],
+      "name": "hasArg",
+      "type": "OptionBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "hasArg",
+        "type": "boolean"
+       }
+      ],
+      "name": "hasArg",
+      "type": "OptionBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ],
+      "name": "withArgName",
+      "type": "OptionBuilder"
+     },
+     {
+      "params": [],
+      "name": "isRequired",
+      "type": "OptionBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "sep",
+        "type": "char"
+       }
+      ],
+      "name": "withValueSeparator",
+      "type": "OptionBuilder"
+     },
+     {
+      "params": [],
+      "name": "withValueSeparator",
+      "type": "OptionBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "newRequired",
+        "type": "boolean"
+       }
+      ],
+      "name": "isRequired",
+      "type": "OptionBuilder"
+     },
+     {
+      "params": [],
+      "name": "hasArgs",
+      "type": "OptionBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "num",
+        "type": "int"
+       }
+      ],
+      "name": "hasArgs",
+      "type": "OptionBuilder"
+     },
+     {
+      "params": [],
+      "name": "hasOptionalArg",
+      "type": "OptionBuilder"
+     },
+     {
+      "params": [],
+      "name": "hasOptionalArgs",
+      "type": "OptionBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "numArgs",
+        "type": "int"
+       }
+      ],
+      "name": "hasOptionalArgs",
+      "type": "OptionBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "newType",
+        "type": "Object"
+       }
+      ],
+      "name": "withType",
+      "type": "OptionBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "newDescription",
+        "type": "String"
+       }
+      ],
+      "name": "withDescription",
+      "type": "OptionBuilder"
+     },
+     {
+      "params": [
+       {
+        "name": "opt",
+        "type": "char"
+       }
+      ],
+      "name": "create",
+      "type": "Option"
+     },
+     {
+      "params": [],
+      "name": "create",
+      "type": "Option"
+     },
+     {
+      "params": [
+       {
+        "name": "opt",
+        "type": "String"
+       }
+      ],
+      "name": "create",
+      "type": "Option"
+     }
+    ],
+    "fields": [
+     {
+      "name": "longopt",
+      "type": "String"
+     },
+     {
+      "name": "description",
+      "type": "String"
+     },
+     {
+      "name": "argName",
+      "type": "String"
+     },
+     {
+      "name": "required",
+      "type": "boolean"
+     },
+     {
+      "name": "numberOfArgs",
+      "type": "int"
+     },
+     {
+      "name": "type",
+      "type": "Object"
+     },
+     {
+      "name": "optionalArg",
+      "type": "boolean"
+     },
+     {
+      "name": "valuesep",
+      "type": "char"
+     },
+     {
+      "name": "instance",
+      "type": "OptionBuilder"
+     }
+    ],
+    "name": "OptionBuilder"
+   }
+  ]
+ },
+ {
+  "filename": "HelpFormatter.java",
+  "package_name": "org.apache.commons.cli",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "width",
+        "type": "int"
+       }
+      ],
+      "name": "setWidth",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getWidth",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "padding",
+        "type": "int"
+       }
+      ],
+      "name": "setLeftPadding",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getLeftPadding",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "padding",
+        "type": "int"
+       }
+      ],
+      "name": "setDescPadding",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getDescPadding",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "prefix",
+        "type": "String"
+       }
+      ],
+      "name": "setSyntaxPrefix",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getSyntaxPrefix",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "newline",
+        "type": "String"
+       }
+      ],
+      "name": "setNewLine",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getNewLine",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "prefix",
+        "type": "String"
+       }
+      ],
+      "name": "setOptPrefix",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getOptPrefix",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "prefix",
+        "type": "String"
+       }
+      ],
+      "name": "setLongOptPrefix",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getLongOptPrefix",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "name",
+        "type": "String"
+       }
+      ],
+      "name": "setArgName",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "getArgName",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "cmdLineSyntax",
+        "type": "String"
+       },
+       {
+        "name": "options",
+        "type": "Options"
+       }
+      ],
+      "name": "printHelp",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "cmdLineSyntax",
+        "type": "String"
+       },
+       {
+        "name": "options",
+        "type": "Options"
+       },
+       {
+        "name": "autoUsage",
+        "type": "boolean"
+       }
+      ],
+      "name": "printHelp",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "cmdLineSyntax",
+        "type": "String"
+       },
+       {
+        "name": "header",
+        "type": "String"
+       },
+       {
+        "name": "options",
+        "type": "Options"
+       },
+       {
+        "name": "footer",
+        "type": "String"
+       }
+      ],
+      "name": "printHelp",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "cmdLineSyntax",
+        "type": "String"
+       },
+       {
+        "name": "header",
+        "type": "String"
+       },
+       {
+        "name": "options",
+        "type": "Options"
+       },
+       {
+        "name": "footer",
+        "type": "String"
+       },
+       {
+        "name": "autoUsage",
+        "type": "boolean"
+       }
+      ],
+      "name": "printHelp",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "width",
+        "type": "int"
+       },
+       {
+        "name": "cmdLineSyntax",
+        "type": "String"
+       },
+       {
+        "name": "header",
+        "type": "String"
+       },
+       {
+        "name": "options",
+        "type": "Options"
+       },
+       {
+        "name": "footer",
+        "type": "String"
+       }
+      ],
+      "name": "printHelp",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "width",
+        "type": "int"
+       },
+       {
+        "name": "cmdLineSyntax",
+        "type": "String"
+       },
+       {
+        "name": "header",
+        "type": "String"
+       },
+       {
+        "name": "options",
+        "type": "Options"
+       },
+       {
+        "name": "footer",
+        "type": "String"
+       },
+       {
+        "name": "autoUsage",
+        "type": "boolean"
+       }
+      ],
+      "name": "printHelp",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "pw",
+        "type": "PrintWriter"
+       },
+       {
+        "name": "width",
+        "type": "int"
+       },
+       {
+        "name": "cmdLineSyntax",
+        "type": "String"
+       },
+       {
+        "name": "header",
+        "type": "String"
+       },
+       {
+        "name": "options",
+        "type": "Options"
+       },
+       {
+        "name": "leftPad",
+        "type": "int"
+       },
+       {
+        "name": "descPad",
+        "type": "int"
+       },
+       {
+        "name": "footer",
+        "type": "String"
+       }
+      ],
+      "name": "printHelp",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "pw",
+        "type": "PrintWriter"
+       },
+       {
+        "name": "width",
+        "type": "int"
+       },
+       {
+        "name": "cmdLineSyntax",
+        "type": "String"
+       },
+       {
+        "name": "header",
+        "type": "String"
+       },
+       {
+        "name": "options",
+        "type": "Options"
+       },
+       {
+        "name": "leftPad",
+        "type": "int"
+       },
+       {
+        "name": "descPad",
+        "type": "int"
+       },
+       {
+        "name": "footer",
+        "type": "String"
+       },
+       {
+        "name": "autoUsage",
+        "type": "boolean"
+       }
+      ],
+      "name": "printHelp",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "pw",
+        "type": "PrintWriter"
+       },
+       {
+        "name": "width",
+        "type": "int"
+       },
+       {
+        "name": "app",
+        "type": "String"
+       },
+       {
+        "name": "options",
+        "type": "Options"
+       }
+      ],
+      "name": "printUsage",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "buff",
+        "type": "StringBuffer"
+       },
+       {
+        "name": "group",
+        "type": "OptionGroup"
+       }
+      ],
+      "name": "appendOptionGroup",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "buff",
+        "type": "StringBuffer"
+       },
+       {
+        "name": "option",
+        "type": "Option"
+       },
+       {
+        "name": "required",
+        "type": "boolean"
+       }
+      ],
+      "name": "appendOption",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "pw",
+        "type": "PrintWriter"
+       },
+       {
+        "name": "width",
+        "type": "int"
+       },
+       {
+        "name": "cmdLineSyntax",
+        "type": "String"
+       }
+      ],
+      "name": "printUsage",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "pw",
+        "type": "PrintWriter"
+       },
+       {
+        "name": "width",
+        "type": "int"
+       },
+       {
+        "name": "options",
+        "type": "Options"
+       },
+       {
+        "name": "leftPad",
+        "type": "int"
+       },
+       {
+        "name": "descPad",
+        "type": "int"
+       }
+      ],
+      "name": "printOptions",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "pw",
+        "type": "PrintWriter"
+       },
+       {
+        "name": "width",
+        "type": "int"
+       },
+       {
+        "name": "text",
+        "type": "String"
+       }
+      ],
+      "name": "printWrapped",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "pw",
+        "type": "PrintWriter"
+       },
+       {
+        "name": "width",
+        "type": "int"
+       },
+       {
+        "name": "nextLineTabStop",
+        "type": "int"
+       },
+       {
+        "name": "text",
+        "type": "String"
+       }
+      ],
+      "name": "printWrapped",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "sb",
+        "type": "StringBuffer"
+       },
+       {
+        "name": "width",
+        "type": "int"
+       },
+       {
+        "name": "options",
+        "type": "Options"
+       },
+       {
+        "name": "leftPad",
+        "type": "int"
+       },
+       {
+        "name": "descPad",
+        "type": "int"
+       }
+      ],
+      "name": "renderOptions",
+      "type": "StringBuffer"
+     },
+     {
+      "params": [
+       {
+        "name": "sb",
+        "type": "StringBuffer"
+       },
+       {
+        "name": "width",
+        "type": "int"
+       },
+       {
+        "name": "nextLineTabStop",
+        "type": "int"
+       },
+       {
+        "name": "text",
+        "type": "String"
+       }
+      ],
+      "name": "renderWrappedText",
+      "type": "StringBuffer"
+     },
+     {
+      "params": [
+       {
+        "name": "text",
+        "type": "String"
+       },
+       {
+        "name": "width",
+        "type": "int"
+       },
+       {
+        "name": "startPos",
+        "type": "int"
+       }
+      ],
+      "name": "findWrapPos",
+      "type": "int"
+     },
+     {
+      "params": [
+       {
+        "name": "len",
+        "type": "int"
+       }
+      ],
+      "name": "createPadding",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "s",
+        "type": "String"
+       }
+      ],
+      "name": "rtrim",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "DEFAULT_WIDTH",
+      "type": "int"
+     },
+     {
+      "name": "DEFAULT_LEFT_PAD",
+      "type": "int"
+     },
+     {
+      "name": "DEFAULT_DESC_PAD",
+      "type": "int"
+     },
+     {
+      "name": "DEFAULT_SYNTAX_PREFIX",
+      "type": "String"
+     },
+     {
+      "name": "DEFAULT_OPT_PREFIX",
+      "type": "String"
+     },
+     {
+      "name": "DEFAULT_LONG_OPT_PREFIX",
+      "type": "String"
+     },
+     {
+      "name": "DEFAULT_ARG_NAME",
+      "type": "String"
+     },
+     {
+      "name": "defaultWidth",
+      "type": "int"
+     },
+     {
+      "name": "defaultLeftPad",
+      "type": "int"
+     },
+     {
+      "name": "defaultDescPad",
+      "type": "int"
+     },
+     {
+      "name": "defaultSyntaxPrefix",
+      "type": "String"
+     },
+     {
+      "name": "defaultNewLine",
+      "type": "String"
+     },
+     {
+      "name": "defaultOptPrefix",
+      "type": "String"
+     },
+     {
+      "name": "defaultLongOptPrefix",
+      "type": "String"
+     },
+     {
+      "name": "defaultArgName",
+      "type": "String"
+     }
+    ],
+    "name": "HelpFormatter"
+   }
+  ]
+ },
+ {
+  "filename": "Options.java",
+  "package_name": "org.apache.commons.cli",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "group",
+        "type": "OptionGroup"
+       }
+      ],
+      "name": "addOptionGroup",
+      "type": "Options"
+     },
+     {
+      "params": [],
+      "name": "getOptionGroups",
+      "type": "Collection"
+     },
+     {
+      "params": [
+       {
+        "name": "opt",
+        "type": "String"
+       },
+       {
+        "name": "hasArg",
+        "type": "boolean"
+       },
+       {
+        "name": "description",
+        "type": "String"
+       }
+      ],
+      "name": "addOption",
+      "type": "Options"
+     },
+     {
+      "params": [
+       {
+        "name": "opt",
+        "type": "String"
+       },
+       {
+        "name": "longOpt",
+        "type": "String"
+       },
+       {
+        "name": "hasArg",
+        "type": "boolean"
+       },
+       {
+        "name": "description",
+        "type": "String"
+       }
+      ],
+      "name": "addOption",
+      "type": "Options"
+     },
+     {
+      "params": [
+       {
+        "name": "opt",
+        "type": "Option"
+       }
+      ],
+      "name": "addOption",
+      "type": "Options"
+     },
+     {
+      "params": [],
+      "name": "getOptions",
+      "type": "Collection"
+     },
+     {
+      "params": [],
+      "name": "helpOptions",
+      "type": "List"
+     },
+     {
+      "params": [],
+      "name": "getRequiredOptions",
+      "type": "List"
+     },
+     {
+      "params": [
+       {
+        "name": "opt",
+        "type": "String"
+       }
+      ],
+      "name": "getOption",
+      "type": "Option"
+     },
+     {
+      "params": [
+       {
+        "name": "opt",
+        "type": "String"
+       }
+      ],
+      "name": "hasOption",
+      "type": "boolean"
+     },
+     {
+      "params": [
+       {
+        "name": "opt",
+        "type": "Option"
+       }
+      ],
+      "name": "getOptionGroup",
+      "type": "OptionGroup"
+     },
+     {
+      "params": [],
+      "name": "toString",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "serialVersionUID",
+      "type": "long"
+     },
+     {
+      "name": "shortOpts",
+      "type": "Map"
+     },
+     {
+      "name": "longOpts",
+      "type": "Map"
+     },
+     {
+      "name": "requiredOpts",
+      "type": "List"
+     },
+     {
+      "name": "optionGroups",
+      "type": "Map"
+     }
+    ],
+    "name": "Options"
+   }
+  ]
+ },
+ {
+  "filename": "Parser.java",
+  "package_name": "org.apache.commons.cli",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [
+       {
+        "name": "opts",
+        "type": "Options"
+       },
+       {
+        "name": "arguments",
+        "type": "String"
+       },
+       {
+        "name": "stopAtNonOption",
+        "type": "boolean"
+       }
+      ],
+      "name": "flatten",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "options",
+        "type": "Options"
+       },
+       {
+        "name": "arguments",
+        "type": "String"
+       }
+      ],
+      "name": "parse",
+      "type": "CommandLine"
+     },
+     {
+      "params": [
+       {
+        "name": "options",
+        "type": "Options"
+       },
+       {
+        "name": "arguments",
+        "type": "String"
+       },
+       {
+        "name": "properties",
+        "type": "Properties"
+       }
+      ],
+      "name": "parse",
+      "type": "CommandLine"
+     },
+     {
+      "params": [
+       {
+        "name": "options",
+        "type": "Options"
+       },
+       {
+        "name": "arguments",
+        "type": "String"
+       },
+       {
+        "name": "stopAtNonOption",
+        "type": "boolean"
+       }
+      ],
+      "name": "parse",
+      "type": "CommandLine"
+     },
+     {
+      "params": [
+       {
+        "name": "options",
+        "type": "Options"
+       },
+       {
+        "name": "arguments",
+        "type": "String"
+       },
+       {
+        "name": "properties",
+        "type": "Properties"
+       },
+       {
+        "name": "stopAtNonOption",
+        "type": "boolean"
+       }
+      ],
+      "name": "parse",
+      "type": "CommandLine"
+     },
+     {
+      "params": [
+       {
+        "name": "properties",
+        "type": "Properties"
+       }
+      ],
+      "name": "processProperties",
+      "type": null
+     },
+     {
+      "params": [],
+      "name": "checkRequiredOptions",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "opt",
+        "type": "Option"
+       },
+       {
+        "name": "iter",
+        "type": "ListIterator"
+       }
+      ],
+      "name": "processArgs",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "arg",
+        "type": "String"
+       },
+       {
+        "name": "iter",
+        "type": "ListIterator"
+       }
+      ],
+      "name": "processOption",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "cmd",
+      "type": "CommandLine"
+     },
+     {
+      "name": "options",
+      "type": "Options"
+     },
+     {
+      "name": "requiredOptions",
+      "type": "List"
+     }
+    ],
+    "name": "Parser"
+   }
+  ]
+ },
+ {
+  "filename": "GnuParser.java",
+  "package_name": "org.apache.commons.cli",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "init",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "options",
+        "type": "Options"
+       },
+       {
+        "name": "arguments",
+        "type": "String"
+       },
+       {
+        "name": "stopAtNonOption",
+        "type": "boolean"
+       }
+      ],
+      "name": "flatten",
+      "type": "String"
+     }
+    ],
+    "fields": [
+     {
+      "name": "tokens",
+      "type": "ArrayList"
+     }
+    ],
+    "name": "GnuParser"
+   }
+  ]
+ },
+ {
+  "filename": "PosixParser.java",
+  "package_name": "org.apache.commons.cli",
+  "classes": [
+   {
+    "methods": [
+     {
+      "params": [],
+      "name": "init",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "options",
+        "type": "Options"
+       },
+       {
+        "name": "arguments",
+        "type": "String"
+       },
+       {
+        "name": "stopAtNonOption",
+        "type": "boolean"
+       }
+      ],
+      "name": "flatten",
+      "type": "String"
+     },
+     {
+      "params": [
+       {
+        "name": "iter",
+        "type": "Iterator"
+       }
+      ],
+      "name": "gobble",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "value",
+        "type": "String"
+       }
+      ],
+      "name": "process",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "hyphen",
+        "type": "String"
+       }
+      ],
+      "name": "processSingleHyphen",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "token",
+        "type": "String"
+       },
+       {
+        "name": "stopAtNonOption",
+        "type": "boolean"
+       }
+      ],
+      "name": "processOptionToken",
+      "type": null
+     },
+     {
+      "params": [
+       {
+        "name": "token",
+        "type": "String"
+       },
+       {
+        "name": "stopAtNonOption",
+        "type": "boolean"
+       }
+      ],
+      "name": "burstToken",
+      "type": null
+     }
+    ],
+    "fields": [
+     {
+      "name": "tokens",
+      "type": "ArrayList"
+     },
+     {
+      "name": "eatTheRest",
+      "type": "boolean"
+     },
+     {
+      "name": "currentOption",
+      "type": "Option"
+     },
+     {
+      "name": "options",
+      "type": "Options"
+     }
+    ],
+    "name": "PosixParser"
+   }
+  ]
+ }
+]

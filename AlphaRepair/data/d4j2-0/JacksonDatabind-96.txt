@@ -1,0 +1,2 @@
+- paramName = candidate.findImplicitParamName(0);
++ paramName =  candidate.paramName(0);

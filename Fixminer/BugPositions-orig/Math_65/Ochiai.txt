@@ -1,0 +1,9 @@
+org.apache.commons.math.optimization.general.AbstractLeastSquaresOptimizer@323@1
+org.apache.commons.math.optimization.general.AbstractLeastSquaresOptimizer@321@1
+org.apache.commons.math.optimization.general.AbstractLeastSquaresOptimizer@320@1
+org.apache.commons.math.optimization.general.AbstractLeastSquaresOptimizer@319@1
+org.apache.commons.math.optimization.general.AbstractLeastSquaresOptimizer@318@1
+org.apache.commons.math.optimization.general.AbstractLeastSquaresOptimizer@317@1
+org.apache.commons.math.optimization.general.AbstractLeastSquaresOptimizer@294@1
+org.apache.commons.math.optimization.general.AbstractLeastSquaresOptimizer@260@1
+org.apache.commons.math.optimization.general.AbstractLeastSquaresOptimizer@258@1

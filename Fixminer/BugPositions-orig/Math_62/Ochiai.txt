@@ -1,0 +1,10 @@
+org.apache.commons.math.optimization.univariate.MultiStartUnivariateRealOptimizer@205@0.7071067812
+org.apache.commons.math.optimization.univariate.MultiStartUnivariateRealOptimizer@191@0.7071067812
+org.apache.commons.math.optimization.univariate.MultiStartUnivariateRealOptimizer@182@0.7071067812
+org.apache.commons.math.optimization.univariate.MultiStartUnivariateRealOptimizer@176@0.7071067812
+org.apache.commons.math.optimization.univariate.MultiStartUnivariateRealOptimizer@174@0.7071067812
+org.apache.commons.math.optimization.univariate.MultiStartUnivariateRealOptimizer@171@0.7071067812
+org.apache.commons.math.optimization.univariate.MultiStartUnivariateRealOptimizer@170@0.7071067812
+org.apache.commons.math.optimization.univariate.MultiStartUnivariateRealOptimizer@169@0.7071067812
+org.apache.commons.math.optimization.univariate.MultiStartUnivariateRealOptimizer@167@0.7071067812
+org.apache.commons.math.optimization.univariate.MultiStartUnivariateRealOptimizer@162@0.7071067812

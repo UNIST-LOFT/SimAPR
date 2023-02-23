@@ -1,0 +1,2 @@
+Failing tests: 1
+  - com.fasterxml.jackson.databind.jsontype.TypeRefinementForMap1215Test::testMapRefinement

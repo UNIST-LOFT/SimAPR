@@ -1,0 +1,2 @@
++ if ( implicitProto == null) { return; }
+  Set<String> currentPropertyNames;

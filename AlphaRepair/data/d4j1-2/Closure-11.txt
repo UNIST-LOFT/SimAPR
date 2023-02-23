@@ -1,0 +1,2 @@
+- } else if (n.getJSType() != null && parent.isAssign()) {
++ } else  if (childType == null) {

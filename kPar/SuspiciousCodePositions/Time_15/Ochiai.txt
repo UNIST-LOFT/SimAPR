@@ -1,0 +1,17 @@
+org.joda.time.field.FieldUtils@140@0.2773500981126146
+org.joda.time.field.FieldUtils@138@0.07692307692307693
+org.joda.time.field.FieldUtils@219@0.0687889735451044
+org.joda.time.field.FieldUtils@214@0.06877149445104885
+org.joda.time.field.FieldUtils@70@0.06259488240051807
+org.joda.time.field.FieldUtils@64@0.06252991623625644
+org.joda.time.field.FieldUtils@66@0.06252991623625644
+org.joda.time.field.FieldUtils@82@0.05762732135648112
+org.joda.time.field.FieldUtils@84@0.05762732135648112
+org.joda.time.field.FieldUtils@88@0.05762732135648112
+org.joda.time.field.FieldUtils@142@0.05439282932204212
+org.joda.time.field.FieldUtils@144@0.05337605126836238
+org.joda.time.field.FieldUtils@145@0.05337605126836238
+org.joda.time.field.FieldUtils@148@0.05337605126836238
+org.joda.time.field.FieldUtils@136@0.038461538461538464
+org.joda.time.field.FieldUtils@237@0.030755984889622782
+org.joda.time.field.FieldUtils@232@0.03074842349187123

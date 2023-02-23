@@ -1,0 +1,2 @@
+- classes[i] = array[i].getClass();
++ if (array[i]!= null) classes[i] = array[i].getClass();

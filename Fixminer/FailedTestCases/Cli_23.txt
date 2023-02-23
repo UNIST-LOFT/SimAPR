@@ -1,0 +1,3 @@
+Failing tests: 2
+  - org.apache.commons.cli.bug.BugCLI162Test::testInfiniteLoop
+  - org.apache.commons.cli.bug.BugCLI162Test::testPrintHelpLongLines

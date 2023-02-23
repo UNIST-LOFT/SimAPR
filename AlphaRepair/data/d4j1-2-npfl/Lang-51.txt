@@ -1,0 +1,2 @@
++ break;
+  char ch = str.charAt(0);

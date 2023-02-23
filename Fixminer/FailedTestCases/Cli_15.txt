@@ -1,0 +1,4 @@
+Failing tests: 3
+  - org.apache.commons.cli2.bug.BugCLI158Test::testSingleOptionSingleArgument
+  - org.apache.commons.cli2.bug.BugCLI158Test::testSingleOptionMaximumNumberOfArgument
+  - org.apache.commons.cli2.validation.FileValidatorTest::testValidate_WritableFile

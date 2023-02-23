@@ -1,0 +1,2 @@
+- if (arr.size() == 0) {
++ if (arr.size() <= 1) {

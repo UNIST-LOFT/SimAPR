@@ -1,0 +1,2 @@
+Failing tests: 1
+  - com.fasterxml.jackson.databind.objectid.Objecid1083Test::testSimple
