@@ -1,8 +1,6 @@
 import os
 import sys
-import d4j_avatar
 import subprocess
-import multiprocessing as mp
 
 
 def run(project):
@@ -18,9 +16,8 @@ def run(project):
     result=subprocess.run(['python3',f'{new_cur_dir}/SimAPR/simapr.py','-o',f'result/{project}-seapr','-m','seapr','--ignore-compile-error','--use-pattern',
                 '--tbar-mode','-w',f'{new_cur_dir}/Avatar/d4j/{project}','-t','180000','--use-pass-test','--use-simulation-mode',f'result/{project}-cache.json','-T','18000',
                 '--','python3',
-                f'{new_cur_dir}/SimAPR/script/d4j_run_test.py',f'{new_cur_dir}/Avatar/buggy'],stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+                f'{new_cur_dir}/SimAPR/script/d4j_run_test.py',f'{new_cur_dir}/Avatar/buggy'])
     
-    print(result.stdout.decode('utf-8'))
     print(f'{project} seapr finish with return code {result.returncode}')
 
 if __name__ == '__main__':

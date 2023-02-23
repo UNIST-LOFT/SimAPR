@@ -1,4 +1,3 @@
-import d4j_tbar
 import subprocess
 import sys
 import os
@@ -31,9 +30,7 @@ def run(project):
     
     result=subprocess.run(['./TBarFixRunner.sh',
             'buggy/',project,'/defects4j/',
-            'd4j/'],stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
-    output=result.stdout.decode('utf-8')
-    print(output)
+            'd4j/'])
     print(f'{project} finish with return code {result.returncode}')
 
 if __name__ == '__main__':

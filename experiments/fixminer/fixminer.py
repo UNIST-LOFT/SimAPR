@@ -1,4 +1,3 @@
-import d4j_fixminer
 import subprocess
 import sys
 import os
@@ -32,9 +31,7 @@ def run(project):
     result=subprocess.run(['java','-Xmx100G','-cp', 'lib/JavaCodeParser-1.0.jar:target/FixMiner-0.0.1-SNAPSHOT-jar-with-dependencies.jar',
                 'edu.lu.uni.serval.fixminer.main.Main',
                 'FailedTestCases/','BugPositions/','buggy/',
-                '/defects4j/',project],stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
-    output=result.stdout.decode('utf-8')
-    print(output)
+                '/defects4j/',project])
     print(f'{project} finish with return code {result.returncode}')
 
 if __name__ == '__main__':

@@ -1,4 +1,3 @@
-import d4j_avatar
 import subprocess
 import sys
 import os
@@ -30,9 +29,7 @@ def run(project):
         f.write(result.stdout.decode('utf-8'))
     
     result=subprocess.run(['java','-Xmx100g','-cp','target/dependency/*','edu.lu.uni.serval.main.Main',
-            'buggy/','/defects4j/',project,'Ochiai'],stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
-    output=result.stdout.decode('utf-8')
-    print(output)
+            'buggy/','/defects4j/',project,'Ochiai'])
     print(f'{project} finish with return code {result.returncode}')
 
 if __name__ == '__main__':

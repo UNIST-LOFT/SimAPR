@@ -1,8 +1,7 @@
-import d4j_kpar
 import subprocess
-import multiprocessing as mp
 import sys
 import os
+
 
 def run(project):
     cur_dir=os.getcwd()
@@ -17,9 +16,8 @@ def run(project):
     result=subprocess.run(['python3',f'{new_cur_dir}/SimAPR/simapr.py','-o',f'result/{project}-orig','-m','tbar',
                 '--tbar-mode','-w',f'{new_cur_dir}/kPar/d4j/{project}','-t','180000','--use-pass-test','--use-simulation-mode',f'result/{project}-cache.json',
                 '-T','18000', '--','python3',
-                f'{new_cur_dir}/SimAPR/script/d4j_run_test.py',f'{new_cur_dir}/kPar/buggy'],stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+                f'{new_cur_dir}/SimAPR/script/d4j_run_test.py',f'{new_cur_dir}/kPar/buggy'])
     
-    print(result.stdout.decode('utf-8'))
     print(f'{project} original finish with return code {result.returncode}')
 
 if __name__ == '__main__':
