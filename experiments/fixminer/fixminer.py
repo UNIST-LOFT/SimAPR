@@ -5,6 +5,10 @@ import os
 
 def run(project):
     os.chdir('../../Fixminer')
+    if not os.path.exists('buggy'):
+        os.mkdir('buggy')
+    if not os.path.exists('d4j'):
+        os.mkdir('d4j')
     print(f"Run {project}")
     result=subprocess.run(['defects4j','checkout','-p',project.split('_')[0],'-v',project.split('_')[1]+'b',
                         '-w',f'buggy/{project}'],stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
