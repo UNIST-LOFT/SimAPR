@@ -6,21 +6,21 @@ import os
 def run(project,defects4j_path):
     os.chdir('../../kPar')
     print(f"Run {project}")
-    result=subprocess.run([defects4j_path,'checkout','-p',project.split('_')[0],'-v',project.split('_')[1]+'b',
+    result=subprocess.run([defects4j_path+'/framework/bin/defects4j','checkout','-p',project.split('_')[0],'-v',project.split('_')[1]+'b',
                         '-w',f'buggy/{project}'],stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
     if result.returncode!=0:
         print(result.stdout.decode('utf-8'))
         print(f'{project} checkout failed with return code {result.returncode}')
         return
     
-    result=subprocess.run([defects4j_path,'compile','-w',f'buggy/{project}'],
+    result=subprocess.run([defects4j_path+'/framework/bin/defects4j','compile','-w',f'buggy/{project}'],
                     stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
     if result.returncode!=0:
         print(result.stdout.decode('utf-8'))
         print(f'{project} checkout failed with return code {result.returncode}')
         return
 
-    result=subprocess.run([defects4j_path,'test','-w',f'buggy/{project}'],
+    result=subprocess.run([defects4j_path+'/framework/bin/defects4j','test','-w',f'buggy/{project}'],
                     stdout=subprocess.PIPE,stderr=subprocess.PIPE)
     with open(f'FailedTestCases/{project}.txt','w') as f:
         f.write(result.stdout.decode('utf-8'))
