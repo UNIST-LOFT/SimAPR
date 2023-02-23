@@ -21,7 +21,7 @@ def run(project):
                     stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
     if result.returncode!=0:
         print(result.stdout.decode('utf-8'))
-        print(f'{project} checkout failed with return code {result.returncode}')
+        print(f'{project} compile failed with return code {result.returncode}')
         return
 
     result=subprocess.run(['defects4j','test','-w',f'buggy/{project}'],
