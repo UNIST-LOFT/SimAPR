@@ -31,6 +31,7 @@ def run(project):
     result=subprocess.run(['java','-Xmx100g','-cp','target/dependency/*','edu.lu.uni.serval.main.Main',
             'buggy/','/defects4j/',project,'Ochiai'])
     print(f'{project} finish with return code {result.returncode}')
+    exit(result.returncode)
 
 if __name__ == '__main__':
     args=sys.argv

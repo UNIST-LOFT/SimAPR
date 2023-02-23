@@ -25,6 +25,7 @@ def run(project,mode,seed):
                     '-T','18000','--not-use-epsilon', '--','python3',
                     f'{new_cur_dir}/SimAPR/script/d4j_run_test.py',f'{new_cur_dir}/Avatar/buggy'])
     print(f'{project} ablation finish with return code {result.returncode}')
+    exit(result.returncode)
 
 if __name__ == '__main__':
     args=sys.argv

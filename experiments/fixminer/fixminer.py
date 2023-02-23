@@ -33,6 +33,7 @@ def run(project):
                 'FailedTestCases/','BugPositions/','buggy/',
                 '/defects4j/',project])
     print(f'{project} finish with return code {result.returncode}')
+    exit(result.returncode)
 
 if __name__ == '__main__':
     args=sys.argv

@@ -32,6 +32,7 @@ def run(project):
             'buggy/',project,'/defects4j/',
             'd4j/'])
     print(f'{project} finish with return code {result.returncode}')
+    exit(result.returncode)
 
 if __name__ == '__main__':
     args=sys.argv
