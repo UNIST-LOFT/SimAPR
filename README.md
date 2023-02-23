@@ -16,8 +16,10 @@ We prepared 6 APR tools to run SimAPR: `TBar`, `Avatar`, `kPar` and `Fixminer` a
 ### Environment
 - Python >= 3.8
 - JDK 1.8
-- [Defects4j](https://github.com/rjust/defects4j) 1.2.0
+- [Defects4j](https://github.com/rjust/defects4j) 1.2.0 or 2.0.0
 - Maven
+
+IMPORTANT: Defects4j should be installed in `/defects4j/` to use the scripts we already prepared. Dockerfile provided by Defects4j or our docker image, Defects4j is already installed in `/defects4j/`.
 
 ### Preparing the patch space
 
