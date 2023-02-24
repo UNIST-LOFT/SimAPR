@@ -125,12 +125,16 @@ public abstract class AbstractFixer implements IFixer {
 
 	public List<SuspiciousPosition> readSuspiciousCodeFromFile(String metric, String buggyProject, DataPreparer dp) {
 		File suspiciousFile = null;
+		File suspiciousFile2 = null;
 		if (this.suspCodePosFile == null) {
-			suspiciousFile = new File(Configuration.suspPositionsFilePath);
+			suspiciousFile2 = new File(Configuration.suspPositionsFilePath);
 		} else {
-			suspiciousFile = this.suspCodePosFile;
+			suspiciousFile2 = this.suspCodePosFile;
 		}
-		suspiciousFile = new File(suspiciousFile.getPath() + "/" + this.buggyProject + "/" + this.metric + ".txt");
+		suspiciousFile = new File(suspiciousFile2.getPath() + "/" + this.buggyProject + "/" + this.metric + ".txt");
+		if (!suspiciousFile.exists()) {
+			suspiciousFile=new File(suspiciousFile2.getPath() + "/" + this.buggyProject + "/" + this.metric.toLowerCase() + ".txt");
+		}
 
 		List<SuspiciousPosition> suspiciousCodeList = new ArrayList<>();
 		try {
