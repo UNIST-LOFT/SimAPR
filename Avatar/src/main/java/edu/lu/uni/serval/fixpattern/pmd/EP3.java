@@ -32,7 +32,11 @@ public class EP3 extends FixTemplate {
 			int startPos = firstBuggyExp.getPos();
 			StringBuilder fixedCodeStr1 = new StringBuilder(this.getSubSuspiciouCodeStr(this.suspCodeStartPos, startPos));
 			
-			fixedCodeStr1.append(generatedFix(firstBuggyExp, fisTypes.get(0)));
+			try{
+				fixedCodeStr1.append(generatedFix(firstBuggyExp, fisTypes.get(0)));
+			} catch (StringIndexOutOfBoundsException e){
+				return;
+			}
 			startPos = startPos + firstBuggyExp.getLength();
 			
 			fixedCodeStr1.append(this.getSubSuspiciouCodeStr(startPos, this.suspCodeEndPos));
@@ -43,7 +47,11 @@ public class EP3 extends FixTemplate {
 			int startPos = firstBuggyExp.getPos();
 			StringBuilder fixedCodeStr1 = new StringBuilder(this.getSubSuspiciouCodeStr(this.suspCodeStartPos, startPos));
 			
-			fixedCodeStr1.append(generatedFix(firstBuggyExp, fosTypes.get(0)));
+			try{
+				fixedCodeStr1.append(generatedFix(firstBuggyExp, fosTypes.get(0)));
+			} catch (StringIndexOutOfBoundsException e){
+				return;
+			}
 			startPos = startPos + firstBuggyExp.getLength();
 			
 			fixedCodeStr1.append(this.getSubSuspiciouCodeStr(startPos, this.suspCodeEndPos));
