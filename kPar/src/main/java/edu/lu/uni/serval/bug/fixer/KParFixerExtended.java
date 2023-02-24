@@ -2,6 +2,7 @@ package edu.lu.uni.serval.bug.fixer;
 
 import java.io.BufferedWriter;
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -301,7 +302,12 @@ public class KParFixerExtended extends AbstractFixer {
 
     private void readPassingAndFailingTests() {
         System.out.println(fullBuggyProjectPath + "/" + "all-tests.txt");
-        String[] allTests = FileHelper.readFile(fullBuggyProjectPath + "/" + "all-tests.txt").split("\n");
+        String[] allTests;
+        try{
+            allTests = FileHelper.readFile(fullBuggyProjectPath + "/" + "all-tests.txt").split("\n");
+        } catch (NullPointerException e){
+            allTests=FileHelper.readFile(fullBuggyProjectPath + "/" + "all_tests").split("\n");
+        }
         Set<String> passingTests = new HashSet<>();
         Set<String> failingTests = new HashSet<>();
         Set<String> failedPassingTests = new HashSet<>();

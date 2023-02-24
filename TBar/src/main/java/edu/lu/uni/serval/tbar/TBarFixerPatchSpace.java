@@ -445,7 +445,12 @@ public class TBarFixerPatchSpace extends TBarFixer {
 
     private void readPassingAndFailingTests() {
         System.out.println(fullBuggyProjectPath + "/" + "all-tests.txt");
-        String[] allTests = FileHelper.readFile(fullBuggyProjectPath + "/" + "all-tests.txt").split("\n");
+        String[] allTests;
+        try{
+            allTests = FileHelper.readFile(fullBuggyProjectPath + "/" + "all-tests.txt").split("\n");
+        } catch (NullPointerException e){
+            allTests = FileHelper.readFile(fullBuggyProjectPath + "/" + "all_tests").split("\n");
+        }
         Set<String> passingTests = new HashSet<>();
         Set<String> failingTests = new HashSet<>();
         Set<String> failedPassingTests = new HashSet<>();
