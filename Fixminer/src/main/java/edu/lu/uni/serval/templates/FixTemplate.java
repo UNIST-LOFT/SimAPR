@@ -371,7 +371,12 @@ public abstract class FixTemplate implements IFixTemplate {
 			boolean readVar = false;
 			for (ITree child : children) {
 				if (readVar) {
-					String varName = child.getChild(0).getLabel();
+					String varName;
+					try {
+						varName = child.getChild(0).getLabel();
+					} catch (IndexOutOfBoundsException e){
+						continue;
+					}
 					List<String> varNames = varNamesMap.get(varType);
 					if (varNames == null) {
 						varNames = new ArrayList<>();
