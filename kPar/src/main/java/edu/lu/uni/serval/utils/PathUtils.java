@@ -81,7 +81,80 @@ public class PathUtils {
 				path.add("/src/");
 				path.add("/test/");
 			}
-		}
+		} else if (projectName.equals("Cli")) {
+			if (bugId >= 30 && bugId <= 40){
+				path.add("/target/classes/");
+				path.add("/target/test-classes/");
+				path.add("/src/main/java/");
+				path.add("/src/test/java");
+			}
+			path.add("/target/classes/");
+			path.add("/target/test-classes/");
+			path.add("/src/java/");
+			path.add("/src/test/");
+		} else if (projectName.equals("Codec")){
+			if (bugId <= 10) {
+				path.add("/target/classes/");
+				path.add("/target/tests/");
+				path.add("/src/java/");
+				path.add("/src/test/");
+			} else if (bugId >= 11 && bugId <= 16){
+				path.add("/target/classes/");
+				path.add("/target/tests/");
+				path.add("/src/main/java/");
+				path.add("/src/test/java/");
+			} else{
+				path.add("/target/classes/");
+				path.add("/target/test-classes/");
+				path.add("/src/main/java/");
+				path.add("/src/test/jav/a");
+			}
+		} else if (projectName.equals("Collections")) {
+			path.add("/target/classes/");
+			path.add("/target/tests/");
+			path.add("/src/main/java/");
+			path.add("/src/test/java/");
+		} else if (projectName.equals("Compress")) {
+			path.add("/target/classes/");
+			path.add("/target/test-classes/");
+			path.add("/src/main/java/");
+			path.add("/src/test/java/");
+		} else if (projectName.equals("Csv")) {
+			path.add("/target/classes/");
+			path.add("/target/test-classes/");
+			path.add("/src/main/java/");
+			path.add("/src/test/java/");
+		} else if (projectName.equals("Gson")) {
+			path.add("/target/classes/");
+			path.add("/target/test-classes/");
+			path.add("/gson/src/main/java/");
+			path.add("/gson/src/test/java/");
+		} else if (projectName.equals("JacksonCore")) {
+			path.add("/target/classes/");
+			path.add("/target/test-classes/");
+			path.add("/src/main/java/");
+			path.add("/src/test/java/");
+		} else if (projectName.equals("JacksonDatabind")) {
+			path.add("/target/classes/");
+			path.add("/target/test-classes/");
+			path.add("/src/main/java/");
+			path.add("/src/test/java/");
+		} else if (projectName.equals("JacksonXml")) {
+			path.add("/target/classes/");
+			path.add("/target/test-classes/");
+			path.add("/src/main/java/");
+			path.add("/src/test/java/");
+		} else if (projectName.equals("Jsoup")) {
+			path.add("/target/classes/");
+			path.add("/target/test-classes/");
+			path.add("/src/main/java/");
+			path.add("/src/test/java/");
+		} else if (projectName.equals("JxPath")) {
+			path.add("/target/classes/");
+			path.add("/target/test-classes/");
+			path.add("/src/java/");
+			path.add("/src/test/");
+		} 
 		return path;
 	}
 
