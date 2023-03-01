@@ -212,7 +212,8 @@ public class KParFixerExtended extends AbstractFixer {
                     if (pathPrefix == null) {
                         pathPrefix = Configuration.TEMP_PATCHES_FILES_PATH;
                     }
-                    patchLocation = patchLocation.substring((pathPrefix + this.buggyProject).length());
+                    int index=patchLocation.indexOf(pathPrefix);
+                    patchLocation = patchLocation.substring(index+(pathPrefix + this.buggyProject).length());
                 }
             } catch (IllegalArgumentException e) {
                 e.printStackTrace();
@@ -386,9 +387,11 @@ public class KParFixerExtended extends AbstractFixer {
             int startPosition, int endPosition
     ) {
         String javafile = scn.targetJavaFile.getAbsolutePath();
-        javafile = javafile.substring(Configuration.WORK_DIR.length());
+        int index=javafile.indexOf(buggyProject);
+        javafile = javafile.substring(index+buggyProject.length()+1);
         String classFile = scn.targetClassFile.getAbsolutePath();
-        classFile = classFile.substring(Configuration.WORK_DIR.length());
+        index=classFile.indexOf(buggyProject);
+        classFile = classFile.substring(index+buggyProject.length()+1);
         try {
             MethodInfoUtils.MethodBeam beam = MethodInfoUtils.validateMethodLineRange(
                     scn.buggyLine, scn.targetJavaFile.getAbsolutePath()
