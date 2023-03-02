@@ -4,6 +4,11 @@ import os
 
 def run(project):
     os.chdir('../../TBar')
+    if not os.path.exists('buggy'):
+        os.mkdir('buggy')
+    if not os.path.exists('d4j'):
+        os.mkdir('d4j')
+        
     result=subprocess.run(['defects4j','checkout','-p',project.split('_')[0],'-v',project.split('_')[1]+'b',
                         '-w',f'buggy/{project}'],stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
     if result.returncode!=0:
