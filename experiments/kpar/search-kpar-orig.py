@@ -10,7 +10,9 @@ def run(project):
         sys.exit(1)
 
     cur_dirs=cur_dir.split('/')
-    new_cur_dir=os.path.join(cur_dirs[:-2])
+    new_cur_dir=''
+    for dir in cur_dirs[:-2]:
+        new_cur_dir+=dir+'/'
 
     print(f"Run {project}-original")
     result=subprocess.run(['python3',f'{new_cur_dir}/SimAPR/simapr.py','-o',f'result/{project}-orig','-m','tbar',

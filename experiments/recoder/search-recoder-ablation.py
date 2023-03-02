@@ -12,7 +12,9 @@ def run(project,mode,seed):
         sys.exit(1)
 
     cur_dirs=cur_dir.split('/')
-    new_cur_dir=os.path.join(cur_dirs[:-2])
+    new_cur_dir=''
+    for dir in cur_dirs[:-2]:
+        new_cur_dir+=dir+'/'
 
     if mode=='vertical':
         print(f"Run {project}-w/o-vertical")
