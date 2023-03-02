@@ -136,7 +136,7 @@
 							<archive>
 							<manifest>
 								<mainClass>
-									edu.lu.uni.serval.fixminer.main.Main
+									edu.lu.uni.serval.tbar.main.MainPerfectFLPatchSpace
 								</mainClass>
 							</manifest>
 							</archive>
