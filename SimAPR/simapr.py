@@ -18,8 +18,8 @@ from simapr_loop import TBarLoop, RecoderLoop, PraPRLoop
 
 def parse_args(argv: list) -> GlobalState:
   longopts = ["help", "outdir=", "workdir=", "timeout=", "time-limit=", "cycle-limit=",
-              "mode=", 'skip-valid', 'params=', 'tbar-mode', 'recoder-mode', "use-exp-alpha",
-              "use-pass-test", "use-full-validation",'seed=',
+              "mode=", 'skip-valid', 'params=', 'tbar-mode', 'recoder-mode', "no-exp-alpha",
+              "no-pass-test", "use-full-validation",'seed=',
               "use-pattern", "use-simulation-mode=",
               'seapr-mode=','top-fl=','ignore-compile-error',
               'finish-correct-patch','count-compile-fail','not-use-guide','not-use-epsilon',
@@ -47,10 +47,10 @@ def parse_args(argv: list) -> GlobalState:
       state.time_limit = int(a)
     elif o in ['-E', '--cycle-limit']:
       state.cycle_limit = int(a)
-    elif o in ['--use-pass-test']:
-      state.use_pass_test = True
-    elif o in ['--use-exp-alpha']:
-      state.use_exp_alpha=True
+    elif o in ['--no-pass-test']:
+      state.use_pass_test = False
+    elif o in ['--no-exp-alpha']:
+      state.use_exp_alpha=False
     elif o in ['--skip-valid']:
       state.skip_valid=True
     elif o in ['--use-pattern']:

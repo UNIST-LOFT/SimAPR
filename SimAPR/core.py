@@ -546,7 +546,7 @@ class GlobalState:
     self.start_time = time.time()
     self.last_save_time = self.start_time
     self.is_alive = True
-    self.use_pass_test = False
+    self.use_pass_test = True
     self.skip_valid=False
     self.time_limit = -1
     self.cycle_limit = -1
@@ -582,7 +582,7 @@ class GlobalState:
     self.tbar_mode = False
     self.recoder_mode = False
     self.prapr_mode=False
-    self.use_exp_alpha = False
+    self.use_exp_alpha = True
     self.top_fl=0
     self.patch_ranking:List[str] = list()
     self.finish_at_correct_patch=False
