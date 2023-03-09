@@ -64,15 +64,6 @@ def get_test_classpath(work_dir, buggy_project):
   _, test_classpath = get_paths(buggy_project, work_dir)
   return work_dir + test_classpath
 
-def junit_classpath(tbar):
-  return tbar + "/target/dependency/junit-4.12.jar"
-
-def hamcrest_classpath(tbar):
-  return tbar + "/target/dependency/hamcrest-all-1.3.jar"
-
-def tbar_classpath(tbar):
-  return tbar + "/target/dependency/TBar-0.0.1-SNAPSHOT.jar"
-
 def copyfile(original, target):
   shutil.copyfile(original, target)
 
@@ -208,38 +199,6 @@ def test_original_project(work_dir: str, test: Union[str, List[str]], buggy_proj
       print("PASS")
   except Exception as e:
     print(e, file=sys.stderr)
-
-def simple_test():
-  print("test original")
-  test_project(
-    patch_location="original",
-    buggy_location="original",
-    work_dir="/root/project/AVATAR/buggy/Chart_24",
-    test="org.jfree.chart.renderer.junit.GrayPaintScaleTests::testGetPaint",
-    buggy_project="Chart_24",
-    run_original=True
-  )
-  print("Test test")
-  buggy_project = "Chart_24"
-  patch_location = "0/UPMUncalledPrivateMethod/24/GrayPaintScale.java"
-  buggy_location = "source/org/jfree/chart/renderer/GrayPaintScale.java"
-  work_dir = "/root/project/AVATAR/d4j/Chart_24"
-  test_project(
-    patch_location="/root/project/AVATAR/d4j/Chart_24/1/DLSDeadLocalStore/26/GrayPaintScale.java",
-    buggy_location="/root/project/AVATAR/buggy/Chart_24/source/org/jfree/chart/renderer/GrayPaintScale.java",
-    work_dir="/root/project/AVATAR/buggy/Chart_24",
-    test="org.jfree.chart.renderer.junit.GrayPaintScaleTests::testGetPaint",
-    buggy_project="Chart_24",
-    class_file="/root/project/AVATAR/buggy/Chart_24/build/org/jfree/chart/renderer/GrayPaintScale.class"
-  )
-  test_project(
-    patch_location="/root/project/AVATAR/d4j/Chart_24/1/DLSDeadLocalStore/27/GrayPaintScale.java",
-    buggy_location="/root/project/AVATAR/buggy/Chart_24/source/org/jfree/chart/renderer/GrayPaintScale.java",
-    work_dir="/root/project/AVATAR/buggy/Chart_24",
-    test="org.jfree.chart.renderer.junit.GrayPaintScaleTests::testGetPaint",
-    buggy_project="Chart_24",
-    class_file="/root/project/AVATAR/buggy/Chart_24/build/org/jfree/chart/renderer/GrayPaintScale.class"
-  )
 
 def main(argv: List[str]) -> None:
   root_path = argv[1]
