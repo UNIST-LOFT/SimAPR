@@ -25,7 +25,7 @@ def run_d4j_export(d4j_dir: str) -> tuple:
   test_dir = open(test_dir_file).read().strip()
   return class_dir, test_dir
 
-def get_paths(project, buggy_dir):
+def get_src_paths(project, buggy_dir):
   sep = "_"
   if "SIMAPR_RECODER" in os.environ:
     sep = os.environ["SIMAPR_RECODER"]
@@ -33,6 +33,67 @@ def get_paths(project, buggy_dir):
   if len(bug_id)>=4:
     bug_id=bug_id[:-3]
   bug_id = int(bug_id)
+
+  if project_name=='Math':
+    if bug_id < 85:
+      return '/src/main/java/','/src/test/java/'
+    else:
+      return '/src/java/','/src/test/'
+  elif project_name=='Time':
+    return '/src/main/java/','/src/test/java/'
+  elif project_name=='Lang':
+    if bug_id <= 35:
+      return '/src/main/java/','/src/test/java/'
+    else:
+      return '/src/java/','/src/test/'
+  elif project_name=='Chart':
+    return '/source/','/tests/'
+  elif project_name=='Closure':
+    return '/src/','/test/'
+  elif project_name=='Mockito':
+    return '/src/','/test/'
+  
+  # D4J 2.0
+  elif project_name=='Cli':
+    if 30 <= bug_id <= 40:
+      return '/src/main/java/','/src/test/java/'
+    else:
+      return '/src/java/','/src/test/'
+  elif project_name=='Codec':
+    if bug_id <= 10:
+      return '/src/java/','/src/test/'
+    else:
+      return '/src/main/java/','/src/test/java/'
+  elif project_name=='Collections':
+    return '/src/main/java/','/src/test/java/'
+  elif project_name=='Compress':
+    return '/src/main/java/','/src/test/java/'
+  elif project_name=='Csv':
+    return '/src/main/java/','/src/test/java/'
+  elif project_name=='Gson':
+    return '/gosn/src/main/java/','/gson/src/test/java/'
+  elif project_name=='JacksonCore':
+    return '/src/main/java/','/src/test/java/'
+  elif project_name=='JacksonDatabind':
+    return '/src/main/java/','/src/test/java/'
+  elif project_name=='JacksonXml':
+    return '/src/main/java/','/src/test/java/'
+  elif project_name=='Jsoup':
+    return '/src/main/java/','/src/test/java/'
+  elif project_name=='JxPath':
+    return '/src/java/','/src/test/'
+  else:
+    raise Exception("Unknown project: "+project_name)
+
+def get_target_paths(project, buggy_dir):
+  sep = "_"
+  if "SIMAPR_RECODER" in os.environ:
+    sep = os.environ["SIMAPR_RECODER"]
+  project_name, bug_id = project.split(sep)
+  if len(bug_id)>=4:
+    bug_id=bug_id[:-3]
+  bug_id = int(bug_id)
+
   if project_name == "Math":
     return "/target/classes/", "/target/test-classes/"
   elif project_name == "Time":
@@ -52,16 +113,42 @@ def get_paths(project, buggy_dir):
     if 11 <= bug_id or 18 <= bug_id <= 21:
       return "/build/classes/main/", "/build/classes/test/"
     return "/target/classes/", "/target/test-classes/"
+  
+  # D4J 2.0
+  elif project_name == "Cli":
+    return '/target/classes/', '/target/test-classes/'
+  elif project_name == "Codec":
+    if bug_id <=16:
+      return "/target/classes/", "/target/tests/"
+    return "/target/classes/", "/target/test-classes/"
+  elif project_name == "Collections":
+    return '/target/classes/', '/target/tests/'
+  elif project_name == "Compress":
+    return '/target/classes/', '/target/test-classes/'
+  elif project_name == "Csv":
+    return '/target/classes/', '/target/test-classes/'
+  elif project_name == "Gson":
+    return '/target/classes/', '/target/test-classes/'
+  elif project_name == "JacksonCore":
+    return '/target/classes/', '/target/test-classes/'
+  elif project_name == "JacksonDatabind":
+    return '/target/classes/', '/target/test-classes/'
+  elif project_name == "JacksonXml":
+    return '/target/classes/', '/target/test-classes/'
+  elif project_name == "Jsoup":
+    return '/target/classes/', '/target/test-classes/'
+  elif project_name == "JxPath":
+    return '/target/classes/', '/target/test-classes/'
   return run_d4j_export(buggy_dir)
 
 def get_classpath(work_dir, buggy_project):
   # Todo for all defects4j projects
-  classpath, _ = get_paths(buggy_project, work_dir)
+  classpath, _ = get_target_paths(buggy_project, work_dir)
   return work_dir + classpath
 
 def get_test_classpath(work_dir, buggy_project):
   # Todo for all defects4j projects
-  _, test_classpath = get_paths(buggy_project, work_dir)
+  _, test_classpath = get_target_paths(buggy_project, work_dir)
   return work_dir + test_classpath
 
 def copyfile(original, target):
