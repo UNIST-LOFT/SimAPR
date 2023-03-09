@@ -608,32 +608,6 @@ class GlobalState:
 
     self.correct_patch_list:List[str]=[]  # List of correct patch ids
 
-    # Under here is for fixminer sub-template patches.
-    # We will swap both primary- and sub-template data when every primary-patches are tried.
-    self.sub_file_info_map = dict()
-    self.sub_total_methods = 0
-    self.sub_line_list = list()
-    self.sub_func_list = list()
-    self.sub_priority_map = dict()
-    self.sub_patch_ranking = list()
-    self.sub_java_patch_ranking = dict()
-    self.sub_java_remain_patch_ranking = dict()
-    self.sub_max_epsilon_group_size = 0
-    self.fixminer_swapped=False
-
-  def fixminer_swap_info(self):
-    if not self.fixminer_swapped:
-      self.sub_file_info_map,self.file_info_map=self.file_info_map,self.sub_file_info_map
-      self.sub_total_methods,self.total_methods=self.total_methods,self.sub_total_methods
-      self.sub_line_list,self.line_list=self.line_list,self.sub_line_list
-      self.sub_func_list,self.func_list=self.func_list,self.sub_func_list
-      self.sub_priority_map,self.priority_map=self.priority_map,self.sub_priority_map
-      self.sub_patch_ranking,self.patch_ranking=self.patch_ranking,self.sub_patch_ranking
-      self.sub_java_patch_ranking,self.java_patch_ranking=self.java_patch_ranking,self.sub_java_patch_ranking
-      self.sub_java_remain_patch_ranking,self.java_remain_patch_ranking=self.java_remain_patch_ranking,self.sub_java_remain_patch_ranking
-      self.sub_max_epsilon_group_size,self.max_epsilon_group_size=self.max_epsilon_group_size,self.sub_max_epsilon_group_size
-      self.fixminer_swapped=True
-
 def remove_file_or_pass(file:str):
   try:
     if os.path.exists(file):
