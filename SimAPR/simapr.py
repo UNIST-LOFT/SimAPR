@@ -127,7 +127,7 @@ def parse_args(argv: list) -> GlobalState:
 def set_logger(state: GlobalState) -> logging.Logger:
   logger = logging.getLogger('simapr')
   logger.setLevel(logging.DEBUG)
-  fh = logging.FileHandler(os.path.join(state.out_dir, 'simapr.log'))
+  fh = logging.FileHandler(os.path.join(state.out_dir, 'simapr-search.log'))
   fh.setLevel(logging.DEBUG)
   ch = logging.StreamHandler()
   ch.setLevel(logging.INFO)
