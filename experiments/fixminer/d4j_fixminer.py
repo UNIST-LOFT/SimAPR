@@ -1,9 +1,4 @@
 
-"""
-    Top 100: Math_22, Math_30
-    Top 1000: Closure_13
-"""
-
 CHART_SIZE=26
 CLOSURE_SIZE=133
 LANG_SIZE=65

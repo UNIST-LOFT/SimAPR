@@ -1,8 +1,3 @@
-
-"""
-    Top 100: Math_22, Math_30
-"""
-
 CHART_SIZE=26
 CLOSURE_SIZE=133
 LANG_SIZE=65

@@ -54,12 +54,12 @@ class PassFail:
     if alpha+beta==2.0:
       return 1.0
     return (alpha - 1.0) / (alpha + beta - 2.0)
-  def update(self, result: bool, n: float,b_n:float=1.0, exp_alpha: bool = False, use_fixed_beta:bool=False) -> None:
+  def update(self, result: bool, n: float,b_n:float=1.0, exp_alpha: bool = False) -> None:
     if result:
       self.pass_count += n * self.__exp_alpha(exp_alpha)
     else:
       self.fail_count+=b_n
-  def update_with_pf(self, other,b_n:float=1.0,use_fixed_beta:bool=False) -> None:
+  def update_with_pf(self, other,b_n:float=1.0) -> None:
     self.pass_count += other.pass_count
   def expect_probability(self,additional_score:float=0) -> float:
     return self.beta_mode(self.pass_count + 1.5+additional_score, self.fail_count + 2.0)
@@ -341,18 +341,18 @@ class TbarPatchInfo:
     self.file_info = self.func_info.parent
     self.out_dist = -1.0
     self.out_diff = False
-  def update_result(self, result: bool, n: float, b_n:float,exp_alpha: bool, fixed_beta: bool) -> None:
-    self.tbar_case_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
-    self.tbar_type_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
-    self.line_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
-    self.func_info.pf.update(result, n,b_n,exp_alpha, fixed_beta)
-    self.file_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
-  def update_result_positive(self, result: bool, n: float, b_n:float,exp_alpha: bool, fixed_beta: bool) -> None:
-    self.tbar_case_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
-    self.tbar_type_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
-    self.line_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
-    self.func_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
-    self.file_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
+  def update_result(self, result: bool, n: float, b_n:float,exp_alpha: bool) -> None:
+    self.tbar_case_info.pf.update(result, n,b_n, exp_alpha)
+    self.tbar_type_info.pf.update(result, n,b_n, exp_alpha)
+    self.line_info.pf.update(result, n,b_n, exp_alpha)
+    self.func_info.pf.update(result, n,b_n,exp_alpha)
+    self.file_info.pf.update(result, n,b_n, exp_alpha)
+  def update_result_positive(self, result: bool, n: float, b_n:float,exp_alpha: bool) -> None:
+    self.tbar_case_info.positive_pf.update(result, n,b_n, exp_alpha)
+    self.tbar_type_info.positive_pf.update(result, n,b_n, exp_alpha)
+    self.line_info.positive_pf.update(result, n,b_n, exp_alpha)
+    self.func_info.positive_pf.update(result, n,b_n, exp_alpha)
+    self.file_info.positive_pf.update(result, n,b_n, exp_alpha)
   def remove_patch(self, state: 'GlobalState') -> None:
     if self.tbar_case_info.location not in self.tbar_type_info.tbar_case_info_map:
       state.logger.critical(f"{self.tbar_case_info.location} not in {self.tbar_type_info.tbar_case_info_map}")
@@ -417,16 +417,16 @@ class RecoderPatchInfo:
     self.file_info = self.func_info.parent
     self.out_dist = -1.0
     self.out_diff = False
-  def update_result(self, result: bool, n: float, b_n:float,exp_alpha: bool, fixed_beta: bool) -> None:
-    self.recoder_case_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
-    self.line_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
-    self.func_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
-    self.file_info.pf.update(result, n,b_n, exp_alpha, fixed_beta)
-  def update_result_positive(self, result: bool, n: float, b_n:float,exp_alpha: bool, fixed_beta: bool) -> None:
-    self.recoder_case_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
-    self.line_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
-    self.func_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
-    self.file_info.positive_pf.update(result, n,b_n, exp_alpha, fixed_beta)
+  def update_result(self, result: bool, n: float, b_n:float,exp_alpha: bool) -> None:
+    self.recoder_case_info.pf.update(result, n,b_n, exp_alpha)
+    self.line_info.pf.update(result, n,b_n, exp_alpha)
+    self.func_info.pf.update(result, n,b_n, exp_alpha)
+    self.file_info.pf.update(result, n,b_n, exp_alpha)
+  def update_result_positive(self, result: bool, n: float, b_n:float,exp_alpha: bool) -> None:
+    self.recoder_case_info.positive_pf.update(result, n,b_n, exp_alpha)
+    self.line_info.positive_pf.update(result, n,b_n, exp_alpha)
+    self.func_info.positive_pf.update(result, n,b_n, exp_alpha)
+    self.file_info.positive_pf.update(result, n,b_n, exp_alpha)
   def remove_patch(self, state: 'GlobalState') -> None:
     if self.recoder_case_info.case_id not in self.line_info.recoder_case_info_map:
       state.logger.critical(f"{self.recoder_case_info.case_id} not in {self.line_info.recoder_case_info_map}")
