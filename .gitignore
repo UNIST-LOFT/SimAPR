@@ -1,3 +1,5 @@
 .vscode
 **/buggy/
 **/d4j/
+**/result
+**/__pycache__
