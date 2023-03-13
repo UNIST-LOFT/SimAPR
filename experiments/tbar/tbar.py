@@ -25,8 +25,9 @@ def run(project):
 
     result=subprocess.run(['defects4j','test','-w',f'buggy/{project}'],
                     stdout=subprocess.PIPE,stderr=subprocess.PIPE)
-    with open(f'FailedTestCases/{project}.txt','w') as f:
-        f.write(result.stdout.decode('utf-8'))
+    if not ('Chart' in project or 'Closure' in project or 'Lang' in project or 'Math' in project or 'Mockito' in project or 'Time' in project):
+        with open(f'FailedTestCases/{project}.txt','w') as f:
+            f.write(result.stdout.decode('utf-8'))
     
     result=subprocess.run(['./TBarFixRunner.sh',
             'buggy/',project,'/defects4j/',
