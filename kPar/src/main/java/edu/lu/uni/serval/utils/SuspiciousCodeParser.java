@@ -1,14 +1,18 @@
 package edu.lu.uni.serval.utils;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.List;
 
 import org.eclipse.jdt.core.dom.CompilationUnit;
+import org.eclipse.jdt.core.dom.AST;
+import org.eclipse.jdt.core.dom.ASTParser;
 
 import edu.lu.uni.serval.AST.ASTGenerator;
 import edu.lu.uni.serval.AST.ASTGenerator.TokenType;
 import edu.lu.uni.serval.jdt.tree.ITree;
-import edu.lu.uni.serval.parser.JavaFileParser;
 
 /**
  * Parse the suspicious code into an AST.
@@ -27,14 +31,14 @@ public class SuspiciousCodeParser {
 	
 	public void parseSuspiciousCode(File javaFile, int suspLineNum) {
 		this.javaFile = javaFile;
-		unit = new JavaFileParser().new MyUnit().createCompilationUnit(javaFile);
+		unit = new MyUnit().createCompilationUnit(javaFile);
 		ITree rootTree = new ASTGenerator().generateTreeForJavaFile(javaFile, TokenType.EXP_JDT);
 		identifySuspiciousCodeAst(rootTree, suspLineNum);
 	}
 
 	public void parseSuspiciousMethod(File javaFile, int buggyLine) {
 		this.javaFile = javaFile;
-		unit = new JavaFileParser().new MyUnit().createCompilationUnit(javaFile);
+		unit = new MyUnit().createCompilationUnit(javaFile);
 		ITree rootTree = new ASTGenerator().generateTreeForJavaFile(javaFile, TokenType.EXP_JDT);
 		identifySuspiciousMethodAst(rootTree, buggyLine);
 	}
@@ -139,4 +143,55 @@ public class SuspiciousCodeParser {
 		public int endLine;
 	}
 	
+	private class MyUnit {
+		
+		public CompilationUnit createCompilationUnit(File javaFile) {
+			char[] javaCode = readFileToCharArray(javaFile);
+			ASTParser parser = createASTParser(javaCode);
+			parser.setKind(ASTParser.K_COMPILATION_UNIT);
+			CompilationUnit unit = (CompilationUnit) parser.createAST(null);
+			
+			return unit;
+		}
+
+		private ASTParser createASTParser(char[] javaCode) {
+			ASTParser parser = ASTParser.newParser(AST.JLS8);
+			parser.setSource(javaCode);
+
+			return parser;
+		}
+		
+		private char[] readFileToCharArray(File javaFile) {
+			StringBuilder fileData = new StringBuilder();
+			BufferedReader br = null;
+			
+			char[] buf = new char[10];
+			int numRead = 0;
+			try {
+				FileReader fileReader = new FileReader(javaFile);
+				br = new BufferedReader(fileReader);
+				while ((numRead = br.read(buf)) != -1) {
+					String readData = String.valueOf(buf, 0, numRead);
+					fileData.append(readData);
+					buf = new char[1024];
+				}
+			} catch (IOException e) {
+				e.printStackTrace();
+			} finally {
+				try {
+					if (br != null) {
+						br.close();
+						br = null;
+					}
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+			}
+
+			if (fileData.length() > 0)
+				return fileData.toString().toCharArray();
+			else return new char[0];
+		}
+	}
+
 }
