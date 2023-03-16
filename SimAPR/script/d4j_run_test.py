@@ -1,13 +1,8 @@
 import os
 import subprocess
 import shutil
-import re
 import sys
-from unittest.mock import patch
-from typing import List, Dict, Set, Union, Tuple
-from pathlib import Path
-
-from psutil import Popen
+from typing import List, Union, Tuple
 import psutil
 
 def run_d4j_export(d4j_dir: str) -> tuple:

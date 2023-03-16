@@ -1,7 +1,6 @@
-from operator import itemgetter
 from core import *
-from typing import List, Set, Dict, Tuple
-import shutil
+from typing import List
+import json
 
 def get_ochiai(s_h: float, s_l: float, d_h: float, d_l: float) -> float:
   if s_h == 0.0:

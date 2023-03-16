@@ -1,6 +1,6 @@
 from core import *
 import psutil
-import multiprocessing as mp
+import subprocess
 
 # return (compilable, passed, timeout)
 def run_fail_test_d4j(state: GlobalState, new_env: Dict[str, str]) -> Tuple[bool, bool, bool]:

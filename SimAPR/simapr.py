@@ -2,14 +2,9 @@
 import os
 from statistics import mean
 import sys
-import subprocess
 import json
-import time
-import hashlib
 import getopt
-from dataclasses import dataclass
 import logging
-from enum import Enum
 import shutil
 
 from core import *
