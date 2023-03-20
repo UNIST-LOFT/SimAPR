@@ -54,7 +54,6 @@ ENV PATH="/defects4j/framework/bin:${PATH}"
 # Activate openssh server
 RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
 RUN sed -i 's/#force_color_prompt=yes/force_color_prompt=yes/g' /root/.bashrc
-RUN sed '92 aexport PATH=/defects4j/framework/bin:$PATH' /root/.bashrc
 
 # Clone and setup SimAPR
 WORKDIR /root
@@ -91,6 +90,7 @@ RUN wget https://repo.anaconda.com/archive/Anaconda3-2022.10-Linux-x86_64.sh
 RUN chmod 751 Anaconda3-2022.10-Linux-x86_64.sh
 RUN ./Anaconda3-2022.10-Linux-x86_64.sh -b
 ENV PATH="/root/anaconda3/bin:${PATH}"
+RUN sed '92 aexport PATH=/defects4j/framework/bin:/root/anaconda3/bin:$PATH' /root/.bashrc
 
 WORKDIR /root/SimAPR/AlphaRepair
 RUN conda env create -f data/env.yaml
