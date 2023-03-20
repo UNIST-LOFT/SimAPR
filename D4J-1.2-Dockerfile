@@ -51,10 +51,12 @@ RUN ./init.sh
 ENV PATH="/defects4j/framework/bin:${PATH}"  
 #--------------
 
+# Activate openssh server
 RUN sed -i 's/#PermitRootLogin prohibit-password/PermitRootLogin yes/g' /etc/ssh/sshd_config
 RUN sed -i 's/#force_color_prompt=yes/force_color_prompt=yes/g' /root/.bashrc
 RUN sed '92 aexport PATH=/defects4j/framework/bin:$PATH' /root/.bashrc
 
+# Clone and setup SimAPR
 WORKDIR /root
 RUN git clone https://FreddyYJ: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@github.com/FreddyYJ/SimAPR.git
 WORKDIR /root/SimAPR/Avatar
@@ -83,5 +85,15 @@ RUN mkdir result
 
 WORKDIR /root
 RUN update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
+
+# Install learning-based tools
+RUN wget https://repo.anaconda.com/archive/Anaconda3-2022.10-Linux-x86_64.sh
+RUN chmod 751 Anaconda3-2022.10-Linux-x86_64.sh
+RUN ./Anaconda3-2022.10-Linux-x86_64.sh
+
+WORKDIR /root/SimAPR/AlphaRepair
+RUN conda env create -f data/env.yaml
+WORKDIR /root/SimAPR/Recoder
+RUN conda env create -f data/env.yaml
 
 CMD ["/usr/sbin/sshd","-D"]
