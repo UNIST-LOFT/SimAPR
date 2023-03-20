@@ -68,6 +68,20 @@ RUN ./compile.sh
 WORKDIR /root/SimAPR/SimAPR
 RUN python3 -m pip install -r requirements.txt
 
+WORKDIR /root/SimAPR/experiments/alpharepair
+RUN mkdir result
+WORKDIR /root/SimAPR/experiments/avatar
+RUN mkdir result
+WORKDIR /root/SimAPR/experiments/fixminer
+RUN mkdir result
+WORKDIR /root/SimAPR/experiments/kpar
+RUN mkdir result
+WORKDIR /root/SimAPR/experiments/recoder
+RUN mkdir result
+WORKDIR /root/SimAPR/experiments/tbar
+RUN mkdir result
+
 WORKDIR /root
+RUN update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
 
 CMD ["/usr/sbin/sshd","-D"]
