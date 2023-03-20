@@ -89,11 +89,15 @@ RUN update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/jav
 # Install learning-based tools
 RUN wget https://repo.anaconda.com/archive/Anaconda3-2022.10-Linux-x86_64.sh
 RUN chmod 751 Anaconda3-2022.10-Linux-x86_64.sh
-RUN ./Anaconda3-2022.10-Linux-x86_64.sh
+RUN ./Anaconda3-2022.10-Linux-x86_64.sh -b
+ENV PATH="/root/anaconda3/bin:${PATH}"
 
 WORKDIR /root/SimAPR/AlphaRepair
 RUN conda env create -f data/env.yaml
 WORKDIR /root/SimAPR/Recoder
 RUN conda env create -f data/env.yaml
+RUN wget https://www.dropbox.com/s/hu3lwdybaeoygzk/best_model.ckpt
+RUN mkdir checkpointSearch
+RUN mv best_model.ckpt checkpointSearch
 
 CMD ["/usr/sbin/sshd","-D"]
