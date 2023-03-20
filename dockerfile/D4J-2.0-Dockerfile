@@ -91,6 +91,7 @@ RUN chmod 751 Anaconda3-2022.10-Linux-x86_64.sh
 RUN ./Anaconda3-2022.10-Linux-x86_64.sh -b
 ENV PATH="/root/anaconda3/bin:${PATH}"
 RUN echo 'export PATH=/defects4j/framework/bin:/root/anaconda3/bin:$PATH' > /root/.bash_aliases
+RUN conda init bash
 
 WORKDIR /root/SimAPR/AlphaRepair
 RUN conda env create -f data/env.yaml
