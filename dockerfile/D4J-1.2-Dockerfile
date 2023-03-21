@@ -20,7 +20,7 @@ RUN \
 				unzip \
 				cpanminus \
 				make \
-				nano python3-pip python3 screen htop maven
+				nano python3-pip python3 screen htop maven psmisc
 
 # Java version
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
