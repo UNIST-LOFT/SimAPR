@@ -3,21 +3,24 @@ import getopt
 import sys
 import os
 
-def execute_cmd(cmd: list) -> int:
-    print(" ".join(cmd))
-    result = subprocess.run(cmd)
-    return result.returncode
-
 def main(argv):
     if len(argv) < 2:
-        print("Usage: python3 recoder.py <project>")
+        print("Usage: python3 recoder.py <project> [gpu-core]")
         exit(1)
+    
     bugid = argv[1]
     if "_" in bugid:
         bugid = bugid.replace("_", "-")
+    print(f"Run recoder: {bugid}")
     cmd = ["python3", 'testDefect4j.py', bugid]
+
+    new_env=os.environ.copy()
+    if len(argv) > 2:
+        new_env["CUDA_VISIBLE_DEVICES"]=argv[2]
     os.chdir("../../Recoder")
-    execute_cmd(cmd)
+    result=subprocess.run(cmd,env=new_env)
+    print(f"Recoder finished bug {bugid} with return code {result.returncode}")
+    exit(result.returncode)
 
 if __name__ == "__main__":
     main(sys.argv)
