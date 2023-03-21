@@ -17,8 +17,8 @@ def run(project,seed):
         new_cur_dir+=dir+'/'
 
     print(f"Run {project}-simapr")
-    result=subprocess.run(['python3',f'{new_cur_dir}/SimAPR/simapr.py','-o',f'result/{project}-simapr','-m','genprog','--seed',f'{seed}','--use-exp-alpha',
-                '--recoder-mode','-w',f'{new_cur_dir}/AlphaRepair/d4j/{project}','-t','180000','--use-pass-test','--use-simulation-mode',f'result/{project}-cache.json',
+    result=subprocess.run(['python3',f'{new_cur_dir}/SimAPR/simapr.py','-o',f'result/{project}-simapr','-m','genprog','--seed',f'{seed}',
+                '--recoder-mode','-w',f'{new_cur_dir}/AlphaRepair/d4j/{project}','-t','180000','--use-simulation-mode',f'result/{project}-cache.json',
                 '-T','18000', '--','python3',
                 f'{new_cur_dir}/SimAPR/script/d4j_run_test.py',f'{new_cur_dir}/AlphaRepair/buggy'],stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
     
