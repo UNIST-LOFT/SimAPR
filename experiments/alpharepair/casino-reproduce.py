@@ -50,7 +50,7 @@ def main(argv):
             cor_str=cor_str[:-1]
             correct_dict[elem[0]]=cor_str
 
-    default_opts = ["python3", "../casino.py", "--use-exp-alpha", "-t", "180000", "--use-pass-test", "--seed", str(seed)]
+    default_opts = ["python3", "../casino.py",  "-t", "180000",  "--seed", str(seed)]
     if timeout > 0:
         default_opts.extend(["-T", str(timeout)])
     if max_iter > 0:
