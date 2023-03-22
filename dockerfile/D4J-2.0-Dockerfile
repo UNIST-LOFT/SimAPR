@@ -97,7 +97,7 @@ WORKDIR /root/SimAPR/AlphaRepair
 RUN conda env create -f data/env.yaml
 WORKDIR /root/SimAPR/Recoder
 RUN conda env create -f data/env.yaml
-RUN wget https://www.dropbox.com/s/hu3lwdybaeoygzk/best_model.ckpt?dl=0
+RUN wget https://www.dropbox.com/s/hu3lwdybaeoygzk/best_model.ckpt
 RUN mkdir checkpointSearch
 RUN mv best_model.ckpt checkpointSearch
 
