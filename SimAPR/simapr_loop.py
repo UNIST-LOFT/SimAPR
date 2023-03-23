@@ -77,7 +77,8 @@ class TBarLoop():
         for ft in failed_tests:
           if ft in self.state.d4j_negative_test or ft in self.state.failed_positive_test:
             continue
-          self.state.logger.warning(f"FAIL at {ft}!!!!")    
+          self.state.logger.warning(f"FAIL at {ft}!!!!")
+          self.state.d4j_failed_passing_tests.add(ft)
   def run(self) -> None:
     self.initialize()
     if self.state.use_simulation_mode:
@@ -228,6 +229,7 @@ class RecoderLoop(TBarLoop):
       if not run_result:
         for ft in failed_tests:
           self.state.logger.info("Removing {} from positive test".format(ft))
+          self.state.d4j_failed_passing_tests.add(ft)
   def run(self) -> None:
     self.initialize()
     if self.state.use_simulation_mode:
