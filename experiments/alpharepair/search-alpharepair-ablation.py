@@ -20,14 +20,12 @@ def run(project,mode,seed):
         print(f"Run {project}-w/o-vertical")
         result=subprocess.run(['python3',f'{new_cur_dir}/SimAPR/simapr.py','-o',f'result/{project}-wo-vertical','-m','guided','--seed',f'{seed}',
                     '--recoder-mode','-w',f'{new_cur_dir}/AlphaRepair/d4j/{project}','-t','180000','--use-simulation-mode',f'result/cache/{project}-cache.json',
-                    '--instr-cp','../../../JPatchInst','--branch-output',f'result/branch/{project}',
                     '-T','18000','--not-use-guide', '--','python3',
                     f'{new_cur_dir}/SimAPR/script/d4j_run_test.py',f'{new_cur_dir}/AlphaRepair/buggy'],stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
     elif mode=='horizontal':
         print(f"Run {project}-w/o-horizontal")
         result=subprocess.run(['python3',f'{new_cur_dir}/SimAPR/simapr.py','-o',f'result/{project}-wo-horizontal','-m','guided','--seed',f'{seed}',
                     '--recoder-mode','-w',f'{new_cur_dir}/AlphaRepair/d4j/{project}','-t','180000','--use-simulation-mode',f'result/cache/{project}-cache.json',
-                    '--instr-cp','../../../JPatchInst','--branch-output',f'result/branch/{project}',
                     '-T','18000','--not-use-epsilon', '--','python3',
                     f'{new_cur_dir}/SimAPR/script/d4j_run_test.py',f'{new_cur_dir}/AlphaRepair/buggy'],stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
     
@@ -40,12 +38,6 @@ if __name__ == '__main__':
         print('Usage: python3 search-alpharepair-ablation.py <project> <vertical|horizontal> <seed>')
         sys.exit(1)
     
-    if not os.path.exists('result/branch'):
-        os.mkdir('result/branch')
-    if not os.path.exists('result/cache'):
-        os.mkdir('result/cache')
-    if not os.path.exists('result/branch'):
-        os.mkdir('result/branch')
     if not os.path.exists('result/cache'):
         os.mkdir('result/cache')
     run(args[1],args[2],args[3])
