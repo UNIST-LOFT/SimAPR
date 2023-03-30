@@ -17,7 +17,7 @@ def run(project):
     print(f"Run {project}-original")
     result=subprocess.run(['python3',f'{new_cur_dir}/SimAPR/simapr.py','-o',f'result/{project}-orig','-m','tbar',
                 '--tbar-mode','-w',f'{new_cur_dir}/Fixminer/d4j/{project}','-t','180000','--use-simulation-mode',f'result/cache/{project}-cache.json',
-                '-T','18000','--fixminer-mode', '--','python3',
+                '-T','18000', '--','python3',
                 f'{new_cur_dir}/SimAPR/script/d4j_run_test.py',f'{new_cur_dir}/Fixminer/buggy'])
     
     print(f'{project} original finish with return code {result.returncode}')
