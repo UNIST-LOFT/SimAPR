@@ -19,8 +19,16 @@ def main(argv):
         new_env["CUDA_VISIBLE_DEVICES"]=argv[2]
     os.chdir("../../Recoder")
     result=subprocess.run(cmd,env=new_env)
+    if result.returncode != 0:
+        print(f"Recoder failed to run recoder {bugid}")
+        exit(result.returncode)
+
+    result2=subprocess.run(["python3", "repair.py", bugid],env=new_env)
+    if result2.returncode != 0:
+        print(f"Recoder failed to generate actual patches {bugid}")
+        exit(result2.returncode)
     print(f"Recoder finished bug {bugid} with return code {result.returncode}")
     exit(result.returncode)
-
+    
 if __name__ == "__main__":
     main(sys.argv)
