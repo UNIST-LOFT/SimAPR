@@ -24,7 +24,7 @@ python3 simapr.py [options] -- <commands to run tests...>
 
 * `--workdir/-w <path_to_inputs>`: Directory of generated patches. (required)
 
-  It will be `/root/SimAPR/<APR tool>/d4j/<bug_id>` if you use Dockerfile.
+  It will be `SimAPR/<APR tool>/d4j/<bug_id>` if you use experiment scripts.
 
 * `--mode/-m <mode>`: Search algorithm. Described in below. (required)
 
