@@ -71,16 +71,22 @@ RUN python3 -m pip install -r requirements.txt
 
 WORKDIR /root/SimAPR/experiments/alpharepair
 RUN mkdir result
+RUN mkdir result/cache
 WORKDIR /root/SimAPR/experiments/avatar
 RUN mkdir result
+RUN mkdir result/cache
 WORKDIR /root/SimAPR/experiments/fixminer
 RUN mkdir result
+RUN mkdir result/cache
 WORKDIR /root/SimAPR/experiments/kpar
 RUN mkdir result
+RUN mkdir result/cache
 WORKDIR /root/SimAPR/experiments/recoder
 RUN mkdir result
+RUN mkdir result/cache
 WORKDIR /root/SimAPR/experiments/tbar
 RUN mkdir result
+RUN mkdir result/cache
 
 WORKDIR /root
 RUN update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java

@@ -29,6 +29,4 @@ if __name__ == '__main__':
         print('Usage: python3 search-fixminer-seapr.py <project>')
         sys.exit(1)
     
-    if not os.path.exists('result/cache'):
-        os.mkdir('result/cache')
     run(args[1])

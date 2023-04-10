@@ -31,6 +31,4 @@ if __name__ == '__main__':
         print('Usage: python3 search-recoder-genprog.py <project> <seed>')
         sys.exit(1)
     
-    if not os.path.exists('result/cache'):
-        os.mkdir('result/cache')
     run(args[1],args[2])
