@@ -26,7 +26,7 @@ python3 simapr.py [options] -- <commands to run tests...>
 
   It will be `SimAPR/<APR tool>/d4j/<bug_id>` if you use experiment scripts.
 
-* `--mode/-m <mode>`: Search algorithm. Described in below. (required)
+* `--mode/-m <mode>`: Search algorithm. (required)
 
   guided: Casino algorithm\
   seapr: SeAPR algorithm\
