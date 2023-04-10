@@ -14,7 +14,7 @@ from simapr_loop import TBarLoop, RecoderLoop, PraPRLoop
 def parse_args(argv: list) -> GlobalState:
   longopts = ["help", "outdir=", "workdir=", "timeout=", "time-limit=", "cycle-limit=",
               "mode=", 'skip-valid', 'params=', 'tbar-mode', 'recoder-mode', "no-exp-alpha",
-              "no-pass-test", "use-full-validation",'seed=',
+              "no-pass-test", "use-full-validation",'seed=','--correct-patch',
               "use-pattern", "use-simulation-mode=",
               'seapr-mode=','top-fl=','ignore-compile-error',
               'finish-correct-patch','count-compile-fail','not-use-guide','not-use-epsilon',

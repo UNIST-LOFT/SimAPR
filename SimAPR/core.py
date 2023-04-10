@@ -12,11 +12,10 @@ import math
 
 class Mode(Enum):
   guided = 1
-  original = 2
-  seapr = 3
-  tbar = 4
-  recoder = 5
-  genprog = 6
+  seapr = 2
+  tbar = 3
+  recoder = 4
+  genprog = 5
 
 # Parameters
 class PT():

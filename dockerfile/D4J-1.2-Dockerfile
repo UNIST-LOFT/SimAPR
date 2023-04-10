@@ -107,4 +107,5 @@ RUN wget https://www.dropbox.com/s/hu3lwdybaeoygzk/best_model.ckpt
 RUN mkdir checkpointSearch
 RUN mv best_model.ckpt checkpointSearch
 
+WORKDIR /root
 CMD ["/usr/sbin/sshd","-D"]
