@@ -52,7 +52,7 @@ def ranking_ods_learning(result_path:str,patch_path:str,tool_path:str,project:st
                 cwd=coming_dir,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
 
   project_path=tool_path+'/buggy/'+project
-  result=subprocess.run(['python3','parse_msv.py','--simapr_results_path',result_path,
+  result=subprocess.run(['python3','parse_simapr.py','--simapr_results_path',result_path,
             '--patches-path',patch_path,'--buggy_projects_paths',project_path,
             '--output',result_path,'--coming_tool_path',coming_dir],
             cwd=ods_dir,stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
@@ -109,7 +109,7 @@ def ranking_ods_template(result_path:str,patch_path:str,tool_path:str,project:st
                 cwd='/root/project/coming',stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
 
   project_path=tool_path+'/buggy'
-  result=subprocess.run(['python3','parse_msv.py','--simapr_results_path',result_path,
+  result=subprocess.run(['python3','parse_simapr.py','--simapr_results_path',result_path,
             '--patches_path',patch_path,'--buggy_projects_path',project_path,
             '--output',result_path,'--coming_tool_path',coming_tool],
             cwd='/root/project/ods-enhanced',stdout=subprocess.PIPE,stderr=subprocess.STDOUT)

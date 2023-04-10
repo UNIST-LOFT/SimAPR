@@ -8,6 +8,9 @@ python3 -m pip install -r requirements.txt
 
 ## 2. Run
 
+See [Readme in experiments](../experiments/README.md) to reproduce our experiments!
+We prepared scripts to run SimAPR easier.
+
 To run SimAPR, do the following:
 ```
 python3 simapr.py [options] -- <commands to run tests...>
@@ -47,6 +50,13 @@ python3 simapr.py [options] -- <commands to run tests...>
   If boths are specified, SimAPR terminates when one of the limits is reached.\
   These options are optional, but one of these options are strongly recommended.
 
+* `--use-simulation-mode <cache file>`: Cache and simulate the patch validation results. (optional, default: None)
+  
+  Use `<cache file>` as simulation file.\
+  Saves the result of the patch validation results if the patch is not tried before.\
+  If the patch is tried previously, SimAPR do not run the tests and decide the result with cached result.\
+  This option is recommended for multiple executions.
+
 * `--correct-patch/-c <correct_patch_id>`: ID of correct patch. (optional, default: None)
   
   Specify patch ID of correct patch(es).\
@@ -74,6 +84,39 @@ python3 simapr.py [options] -- <commands to run tests...>
   Seeds for our experiments are in [experiments/README.md](experiments/README.md).\
   Seed should be unsigned integer and lower than 2^32 (requirement from NumPy).
   Default seed is an initial value from Python and NumPy.
+
+* `--skip-valid`: Skip validating passing tests before applying patch. (optional, default: false)
+  
+  In default, SimAPR runs all passing tests before applying patch to prune failed passing tests.
+
+* `--params <parameters>`: Change default parameters. (optional, default: default parameters)
+  
+  Parameters are `key=value` pairs, and seperated by semicolon (`;`).\
+  Here are the list of parameters:
+  * ALPHA_INCREASE: Increase factor for alpha for beta-distribution. (default: 1)
+  * BETA_INCREASE: Increase factor for beta for beta-distribution. (default: 0)
+  * ALPHA_INIT: Initial value of alpha for beta-distribution. (default: 2)
+  * BETA_INIT: Initial value of beta for beta-distribution. (default: 2)
+  * EPSILON_A and EPSILON_B: parameter for sigmoid function forepsilon-greedy algorithm. (default: 10 and 3)
+  
+* `--no-exp-alpha`: Increase alpha value of beta-distribution linearly instead of exponentially. (optional, default: false)
+  
+  Only effects for `guided` mode.
+
+* `--no-pass-test`: Do not run passing tests. (optional, default: false)
+  
+  Do not run passing tests and do not decide the patch is valid or not.
+
+* `--seapr-mode <seapr layer>`: Specify the layer that SeAPR is applied. (optional, default: function)
+  
+  Apply SeAPR to specified layer.\
+  Should be one of `file`, `function`, `line`, `type`.\
+  Default for SimAPR or `SeAPR` is `function`.
+
+* `--top-fl <top fl>`: Finish if the top n locations by FL are tried. (optional, default: infinite)
+  
+  Finish SimAPR if the top n locations are tried.\
+  For example, if `--top-fl 10` is specified, SimAPR will terminate if all patch candidates in the top 10 locations are tried.\
 
 * `--ignore-compile-error`: Do not update result for non-compilable patch candidates. (optional, default: false)
   

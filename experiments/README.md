@@ -116,9 +116,9 @@ $ python3 search-avatar-ablation.py Chart_4 vertical 12345678
 ```
 
 ## Output
-Outputs are saved in `<tool>/result/<project>-<algorithm>`. In this directory, logs are saved in `msv-search.log` and final results are saved in `msv-result.json` for each validated patch.
+Outputs are saved in `<tool>/result/<project>-<algorithm>`. In this directory, logs are saved in `simapr-search.log` and final results are saved in `simapr-result.json` for each validated patch.
 
-The following is an example of `msv-result.json`. 
+The following is an example of `simapr-result.json`. 
 ```
 {
   "execution": 0,
