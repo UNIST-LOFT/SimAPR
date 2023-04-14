@@ -762,17 +762,16 @@ def main(argv: list):
       f.write(f'Running time: {state.select_time+state.test_time}\n')
       f.write(f'Select time: {state.select_time}\n')
       f.write(f'Test time: {state.test_time}\n')
-  except:
-    state.logger.error('SimAPR is crashed!!!!!!!!!!!!!!!!')
-    state.logger.exception("Got exception in simapr.run()")
-    raise
+  except KeyboardInterrupt:
+    state.logger.error('SimAPR is interrupted by user')
+  except Exception as e:
+    state.logger.error(f'SimAPR throws exception: {e}')
   state.logger.info('SimAPR is finished')
   # state.select_time/=1000000
   state.logger.info(f'Running time: {state.select_time+state.test_time}')
   state.logger.info(f'Select time: {state.select_time}')
   state.logger.info(f'Test time: {state.test_time}')
   simapr.save_result()
-
 
 if __name__ == "__main__":
   main(sys.argv)
