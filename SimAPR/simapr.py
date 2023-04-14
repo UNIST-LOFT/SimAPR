@@ -70,20 +70,27 @@ def parse_args(argv: list) -> GlobalState:
     elif o in ['--use-full-validation']:
       state.use_partial_validation = False
     elif o in ['--params']:
-      parsed = a.split(";")
+      parsed = a.split(",")
       for param in parsed[0].split(","):
         key, value = param.split('=')
-        k = PT[key.strip()]
-        v = float(value.strip())
-        state.params[k] = v
-        if k in state.c_map:
-          state.c_map[k] = v
-      if len(parsed) > 1:
-        for param in parsed[1].split(","):
-          key, value = param.split('=')
-          k = PT[key.strip()]
-          v = float(value.strip())
-          state.params_decay[k] = v
+        if key.upper()=='ALPHA_INCREASE':
+          PT.ALPHA_INCREASE=int(value)
+        elif key.upper()=='BETA_INCREASE':
+          PT.BETA_INCREASE=int(value)
+        elif key.upper()=='ALPHA_INIT':
+          PT.ALPHA_INIT=int(value)
+        elif key.upper()=='BETA_INIT':
+          PT.BETA_INIT=int(value)
+        elif key.upper()=='EPSILON_THRESHOLD':
+          PT.EPSILON_THRESHOLD=float(value)
+        elif key.upper()=='EPSILON_A':
+          PT.EPSILON_A=int(value)
+        elif key.upper()=='EPSILON_B':
+          PT.EPSILON_B=int(value)
+        elif key.upper()=='FL_WEIGHT':
+          PT.FL_WEIGHT=float(value)
+        else:
+          state.logger.warning(f'Invalid parameter: {key}, just ignore it!')
     elif o in ['-k','--tool-type']:
       if a.lower()=='template':
         state.tool_type = ToolType.TEMPLATE

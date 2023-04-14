@@ -91,7 +91,7 @@ python3 simapr.py [options] -- <commands to run tests...>
 
 * `--params <parameters>`: Change default parameters. (optional, default: default parameters)
   
-  Parameters are `key=value` pairs, and seperated by semicolon (`;`).\
+  Parameters are `key=value` pairs, and seperated by semicolon (`,`).\
   Here are the list of parameters:
   * ALPHA_INCREASE: Increase factor for alpha for beta-distribution. (default: 1)
   * BETA_INCREASE: Increase factor for beta for beta-distribution. (default: 0)
