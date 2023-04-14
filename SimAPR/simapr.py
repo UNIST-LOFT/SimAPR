@@ -723,16 +723,15 @@ def copy_previous_results(state: GlobalState) -> None:
       prefix += 1
     shutil.copy(result_log, os.path.join(state.out_dir, f"bak{prefix}-simapr-search.log"))
     os.remove(result_log)
-  result_files = ["simapr-result.json", "simapr-result.csv", "critical-info.csv", "simapr-sim-data.json", "simapr-original-sim-data.json"]
-  for result_file in result_files:
-    if os.path.exists(os.path.join(state.out_dir, result_file)):
-      shutil.copy(os.path.join(state.out_dir, result_file), os.path.join(state.out_dir, f"bak{prefix}-{result_file}"))
-      os.remove(os.path.join(state.out_dir, result_file))
-  if os.path.exists(os.path.join(state.out_dir, "simapr-finished")):
-    os.remove(os.path.join(state.out_dir, "simapr-finished"))
-  if state.use_simulation_mode:
-    if os.path.exists(state.prev_data):
-      shutil.copy(state.prev_data, os.path.join(state.out_dir, "simapr-original-sim-data.json"))
+  
+  if os.path.exists(result_json):
+    while os.path.exists(os.path.join(state.out_dir, f"bak{prefix}-simapr-result.json")):
+      prefix += 1
+    shutil.copy(result_log, os.path.join(state.out_dir, f"bak{prefix}-simapr-result.json"))
+    os.remove(result_log)
+
+  if os.path.exists(os.path.join(state.out_dir, "simapr-finished.txt")):
+    os.remove(os.path.join(state.out_dir, "simapr-finished.txt"))
 
 def main(argv: list):
   sys.setrecursionlimit(2002) # Reset recursion limit, for preventing RecursionError
@@ -755,7 +754,7 @@ def main(argv: list):
   state.logger.info('SimAPR is started')
   try:
     simapr.run()
-    with open(os.path.join(state.out_dir, "simapr-finished"), "w") as f:
+    with open(os.path.join(state.out_dir, "simapr-finished.txt"), "w") as f:
       f.write(' '.join(state.original_args))
       f.write("\n")
       f.write(state.simapr_version + "\n")
