@@ -50,8 +50,6 @@ def append_result(state: GlobalState, selected_patch: List[TbarPatchInfo], test_
         case_info = patch.recoder_case_info
       append_java_cache_result(state,case_info,test_result,pass_test_result,pass_all_neg_test,compilable,fail_time,pass_time)
   
-  with open(os.path.join(state.out_dir, "simapr-result.csv"), 'a') as f:
-    f.write(json.dumps(obj) + "\n")
   if (tm - state.last_save_time) > save_interval:
     save_result(state)
 

@@ -14,7 +14,7 @@ def run_fail_test_d4j(state: GlobalState, new_env: Dict[str, str]) -> Tuple[bool
   is_timeout = False
   try:
     so, se = test_proc.communicate()
-  except:  # timeout
+  except subprocess.TimeoutExpired:  # timeout
     state.logger.info("Timeout!")
     pid=test_proc.pid
     children=[]
@@ -80,7 +80,7 @@ def run_pass_test_d4j_exec(state: GlobalState, new_env: Dict[str, str], tests: L
   is_timeout = False
   try:
     so, se = test_proc.communicate()
-  except:  # timeout
+  except subprocess.TimeoutExpired:  # timeout
     state.logger.info("Timeout!")
     pid=test_proc.pid
     children=[]

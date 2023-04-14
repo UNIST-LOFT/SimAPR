@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 import os
 from statistics import mean
+import subprocess
 import sys
 import json
 import getopt
@@ -727,8 +728,8 @@ def copy_previous_results(state: GlobalState) -> None:
   if os.path.exists(result_json):
     while os.path.exists(os.path.join(state.out_dir, f"bak{prefix}-simapr-result.json")):
       prefix += 1
-    shutil.copy(result_log, os.path.join(state.out_dir, f"bak{prefix}-simapr-result.json"))
-    os.remove(result_log)
+    shutil.copy(result_json, os.path.join(state.out_dir, f"bak{prefix}-simapr-result.json"))
+    os.remove(result_json)
 
   if os.path.exists(os.path.join(state.out_dir, "simapr-finished.txt")):
     os.remove(os.path.join(state.out_dir, "simapr-finished.txt"))
@@ -763,9 +764,12 @@ def main(argv: list):
       f.write(f'Select time: {state.select_time}\n')
       f.write(f'Test time: {state.test_time}\n')
   except KeyboardInterrupt:
-    state.logger.error('SimAPR is interrupted by user')
+    state.logger.warning('SimAPR is interrupted by user')
   except Exception as e:
-    state.logger.error(f'SimAPR throws exception: {e}')
+    if 'process PID not found' in str(e):
+      state.logger.warning('SimAPR is interrupted by user')
+    else:
+      state.logger.error(f'SimAPR throws exception: {e}')
   state.logger.info('SimAPR is finished')
   # state.select_time/=1000000
   state.logger.info(f'Running time: {state.select_time+state.test_time}')
