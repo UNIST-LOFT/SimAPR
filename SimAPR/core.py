@@ -11,11 +11,15 @@ import uuid
 import math
 
 class Mode(Enum):
-  guided = 1
+  casino = 1
   seapr = 2
-  tbar = 3
-  recoder = 4
-  genprog = 5
+  orig = 3
+  genprog = 4
+
+class ToolType(Enum):
+  TEMPLATE=1
+  LEARNING=2
+  PRAPR=3
 
 # Parameters
 class PT():
@@ -536,7 +540,7 @@ class GlobalState:
   out_dir: str
   def __init__(self) -> None:
     self.simapr_version = "1.0.0"
-    self.mode = Mode.guided
+    self.mode = Mode.casino
     self.cycle = 0
     self.total_basic_patch = 0
     self.start_time = time.time()
@@ -575,9 +579,7 @@ class GlobalState:
     self.total_plausible_patch=0
     self.iteration=0
     self.use_partial_validation = True
-    self.tbar_mode = False
-    self.recoder_mode = False
-    self.prapr_mode=False
+    self.tool_type=ToolType.TEMPLATE
     self.use_exp_alpha = True
     self.top_fl=0
     self.patch_ranking:List[str] = list()

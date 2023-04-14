@@ -13,13 +13,13 @@ from simapr_loop import TBarLoop, RecoderLoop, PraPRLoop
 
 def parse_args(argv: list) -> GlobalState:
   longopts = ["help", "outdir=", "workdir=", "timeout=", "time-limit=", "cycle-limit=",
-              "mode=", 'skip-valid', 'params=', 'tbar-mode', 'recoder-mode', "no-exp-alpha",
+              "mode=", 'skip-valid', 'params=', "no-exp-alpha",'tool-type=',
               "no-pass-test", "use-full-validation",'seed=','--correct-patch',
               "use-pattern", "use-simulation-mode=",
               'seapr-mode=','top-fl=','ignore-compile-error',
               'finish-correct-patch','count-compile-fail','not-use-guide','not-use-epsilon',
               'finish-top-method', 'prapr-mode']
-  opts, args = getopt.getopt(argv[1:], "ho:w:t:m:c:T:E:", longopts)
+  opts, args = getopt.getopt(argv[1:], "ho:w:t:m:c:T:E:k:", longopts)
   state = GlobalState()
   state.original_args = argv
   state.args = args  # After --
@@ -84,12 +84,15 @@ def parse_args(argv: list) -> GlobalState:
           k = PT[key.strip()]
           v = float(value.strip())
           state.params_decay[k] = v
-    elif o in ['--tbar-mode']:
-      state.tbar_mode = True
-    elif o in ['--recoder-mode']:
-      state.recoder_mode = True
-    elif o in ['--prapr-mode']:
-      state.prapr_mode=True
+    elif o in ['-k','--tool-type']:
+      if a.lower()=='template':
+        state.tool_type = ToolType.TEMPLATE
+      elif a.lower()=='learning':
+        state.tool_type = ToolType.LEARNING
+      elif a.lower()=='prapr':
+        state.tool_type = ToolType.PRAPR
+      else:
+        raise ValueError(f'Invalid tool type: {a}')
     elif o in ['--seed']:
       random.seed(int(a))
       np.random.seed(int(a))
@@ -729,16 +732,16 @@ def main(argv: list):
   state = parse_args(argv)
   copy_previous_results(state)
   state.logger = set_logger(state)
-  if state.tbar_mode:
+  if state.tool_type==ToolType.TEMPLATE:
     read_info_tbar(state)
     state.logger.info(f'Total methods: {state.total_methods}')
-    state.logger.info('TBar mode: Initialized!')
+    state.logger.info('Template mode: Initialized!')
     simapr = TBarLoop(state)
-  elif state.recoder_mode:
+  elif state.tool_type==ToolType.LEARNING:
     read_info_recoder(state)
-    state.logger.info('Recoder mode: Initialized!')
+    state.logger.info('Learning mode: Initialized!')
     simapr = RecoderLoop(state)
-  elif state.prapr_mode:
+  elif state.tool_type==ToolType.PRAPR:
     read_info_prapr(state)
     state.logger.info('PraPR mode: Initialized!')
     simapr = PraPRLoop(state)

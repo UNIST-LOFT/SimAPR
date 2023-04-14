@@ -16,14 +16,14 @@ def run(project,mode,seed):
 
     if mode=='vertical':
         print(f"Run {project}-w/o-vertical")
-        result=subprocess.run(['python3',f'{new_cur_dir}/SimAPR/simapr.py','-o',f'result/{project}-wo-vertical','-m','guided','--seed',f'{seed}',
-                    '--tbar-mode','-w',f'{new_cur_dir}/Avatar/d4j/{project}','-t','180000','--use-simulation-mode',f'result/cache/{project}-cache.json',
+        result=subprocess.run(['python3',f'{new_cur_dir}/SimAPR/simapr.py','-o',f'result/{project}-wo-vertical','-m','casino','--seed',f'{seed}',
+                    '-k','template','-w',f'{new_cur_dir}/Avatar/d4j/{project}','-t','180000','--use-simulation-mode',f'result/cache/{project}-cache.json',
                     '-T','18000','--not-use-guide', '--','python3',
                     f'{new_cur_dir}/SimAPR/script/d4j_run_test.py',f'{new_cur_dir}/Avatar/buggy'])
     elif mode=='horizontal':
         print(f"Run {project}-w/o-horizontal")
-        result=subprocess.run(['python3',f'{new_cur_dir}/SimAPR/simapr.py','-o',f'result/{project}-wo-horizontal','-m','guided','--seed',f'{seed}',
-                    '--tbar-mode','-w',f'{new_cur_dir}/Avatar/d4j/{project}','-t','180000','--use-simulation-mode',f'result/cache/{project}-cache.json',
+        result=subprocess.run(['python3',f'{new_cur_dir}/SimAPR/simapr.py','-o',f'result/{project}-wo-horizontal','-m','casino','--seed',f'{seed}',
+                    '-k','template','-w',f'{new_cur_dir}/Avatar/d4j/{project}','-t','180000','--use-simulation-mode',f'result/cache/{project}-cache.json',
                     '-T','18000','--not-use-epsilon', '--','python3',
                     f'{new_cur_dir}/SimAPR/script/d4j_run_test.py',f'{new_cur_dir}/Avatar/buggy'])
     print(f'{project} ablation finish with return code {result.returncode}')

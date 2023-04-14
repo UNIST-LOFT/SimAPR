@@ -28,16 +28,16 @@ python3 simapr.py [options] -- <commands to run tests...>
 
 * `--mode/-m <mode>`: Search algorithm. (required)
 
-  guided: Casino algorithm\
+  casino: Casino algorithm\
   seapr: SeAPR algorithm\
-  tbar: sequence from original APR tools, for template-based APR tools\
-  recoder: sequence from original APR tools, for learning-based APR tools\
+  orig: original sequence from original APR tools\
   genprog: GenProg family algorithm
 
-* `--tbar-mode` or `--recoder-mode`: Specify APR tool is template- or learning-based. (required)
+* `--tool-type/-k <type>`: Type of APR tool. (required)
 
-  Template-based APR tools (`--tbar-mode`): `TBar`, `Avatar`, `kPar`, `Fixminer`\
-  Learning-based APR tools (`--recoder-mode`): `AlphaRepair`, `Recoder`
+  template: Template-based APR tools (`TBar`, `Avatar`, `kPar` or `Fixminer`)\
+  learning: Learning-based APR tools (`AlphaRepair` or `Recoder`)\
+  prapr: `PraPR`
 
 * `--timeout/-t <millisecond>`: Timeout for each single test. (optional, default: 60,000)
   
@@ -101,7 +101,7 @@ python3 simapr.py [options] -- <commands to run tests...>
   
 * `--no-exp-alpha`: Increase alpha value of beta-distribution linearly instead of exponentially. (optional, default: false)
   
-  Only effects for `guided` mode.
+  Only effects for `casino` mode.
 
 * `--no-pass-test`: Do not run passing tests. (optional, default: false)
   

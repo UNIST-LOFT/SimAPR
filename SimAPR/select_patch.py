@@ -20,22 +20,19 @@ def get_ochiai(s_h: float, s_l: float, d_h: float, d_l: float) -> float:
   return s_h / (((s_h + d_h) * (s_h + s_l)) ** 0.5)
 
 def get_static_score(state:GlobalState,element):
-  if state.tbar_mode or state.recoder_mode or state.prapr_mode:
-    if type(element)==FileInfo or type(element)==FuncInfo:
-      return max(element.fl_score_list)
-    elif type(element)==LineInfo:
-      return element.fl_score
-    elif type(element) == RecoderCaseInfo:
-      return element.parent.fl_score
-    elif type(element)==TbarTypeInfo:
-      return element.parent.fl_score
-    elif type(element)==TbarCaseInfo:
-      return element.parent.parent.fl_score
-    elif type(element) == RecoderCaseInfo:
-      return element.prob
-    else: raise ValueError(f'Unknown element type {type(element)}')
-  else:
-    raise ValueError(f'Should be tbar mode, recoder mode or prapr mode')
+  if type(element)==FileInfo or type(element)==FuncInfo:
+    return max(element.fl_score_list)
+  elif type(element)==LineInfo:
+    return element.fl_score
+  elif type(element) == RecoderCaseInfo:
+    return element.parent.fl_score
+  elif type(element)==TbarTypeInfo:
+    return element.parent.fl_score
+  elif type(element)==TbarCaseInfo:
+    return element.parent.parent.fl_score
+  elif type(element) == RecoderCaseInfo:
+    return element.prob
+  else: raise ValueError(f'Unknown element type {type(element)}')
 
 def epsilon_search(state:GlobalState):
   """
@@ -50,25 +47,13 @@ def epsilon_search(state:GlobalState):
 
   start_time=time.time()
   # Get all top fl patches
-  if state.tbar_mode or state.recoder_mode or state.prapr_mode:
-    cur_list=state.java_patch_ranking
-    cur_remain_list=state.java_remain_patch_ranking
-  else:
-    cur_list=state.c_patch_ranking
-    cur_remain_list=state.c_remain_patch_ranking
+  cur_list=state.java_patch_ranking
+  cur_remain_list=state.java_remain_patch_ranking
   cur_remain_list_sorted=sorted(cur_remain_list.keys(),reverse=True)
-  normalized_score=PassFail.normalize(cur_remain_list_sorted)
   for i,score in enumerate(cur_remain_list_sorted):
-    normalized=normalized_score[i]
     if len(cur_remain_list[score])>0 and cur_score==-100.:
-      if state.tbar_mode or state.recoder_mode or state.prapr_mode:
-        cur_score=score
-      else:
-        cur_score=normalized
-      top_fl_patches+=cur_remain_list[score]
-      top_all_patches+=cur_list[score]
-      break
-    elif (cur_score > -100.0) and ((cur_score - (score if state.tbar_mode or state.recoder_mode or state.prapr_mode else normalized)) < (cur_score * PT.EPSILON_THRESHOLD)):
+      cur_score=score
+    elif (cur_score > -100.0) and ((cur_score - score) < (cur_score * PT.EPSILON_THRESHOLD)):
       top_fl_patches+=cur_remain_list[score]
       top_all_patches+=cur_list[score]
 
@@ -93,25 +78,19 @@ def epsilon_search(state:GlobalState):
       lines = set()
       for case_info in top_fl_patches:
         if case_info.parent not in lines:
-          if state.recoder_mode:
+          if state.tool_type==ToolType.LEARNING:
             lines.add(case_info.parent)
-          elif state.tbar_mode or state.prapr_mode:
-            lines.add(case_info.parent.parent)
           else:
-            lines.add(case_info.parent.parent.parent)
+            lines.add(case_info.parent.parent)
       line_list = list(lines)
       index = random.randint(0, len(line_list)-1)
       line_info: LineInfo = line_list[index]
       case_info_list=[]
-      if state.recoder_mode:
+      if state.tool_type==ToolType.LEARNING:
         case_info_list = list(line_info.recoder_case_info_map.values())
-      elif state.tbar_mode or state.prapr_mode:
-        for case_info in top_fl_patches:
-          if case_info.parent.parent==line_info:
-            case_info_list.append(case_info)
       else:
         for case_info in top_fl_patches:
-          if case_info.parent.parent.parent==line_info:
+          if case_info.parent.parent==line_info:
             case_info_list.append(case_info)
 
       index = random.randint(0, len(case_info_list)-1)
@@ -155,25 +134,15 @@ def epsilon_select(state:GlobalState,source=None):
   start_time=time.time()
   # Get all top fl patches
   if source is None:
-    if state.tbar_mode or state.recoder_mode or state.prapr_mode:
-      cur_list=state.java_patch_ranking
-      cur_remain_list=state.java_remain_patch_ranking
-    else:
-      cur_list=state.c_patch_ranking
-      cur_remain_list=state.c_remain_patch_ranking
+    cur_list=state.java_patch_ranking
+    cur_remain_list=state.java_remain_patch_ranking
     cur_remain_list_sorted=sorted(cur_remain_list.keys(),reverse=True)
     normalized_score=PassFail.normalize(cur_remain_list_sorted)
     for i,score in enumerate(cur_remain_list_sorted):
       normalized=normalized_score[i]
       if len(cur_remain_list[score])>0 and cur_score==-100.:
-        if state.tbar_mode or state.recoder_mode or state.prapr_mode:
-          cur_score=score
-        else:
-          cur_score=normalized
-        top_fl_patches+=cur_remain_list[score]
-        top_all_patches+=cur_list[score]
-        break
-      elif (cur_score > -100.0) and ((cur_score - (score if state.tbar_mode or state.recoder_mode or state.prapr_mode else normalized)) < (cur_score * PT.EPSILON_THRESHOLD)):
+        cur_score=score
+      elif (cur_score > -100.0) and ((cur_score - score) < (cur_score * PT.EPSILON_THRESHOLD)):
         top_fl_patches += cur_remain_list[score]
         top_all_patches += cur_list[score]
   else:
@@ -182,14 +151,8 @@ def epsilon_select(state:GlobalState,source=None):
     for i,score in enumerate(cur_remain_list_sorted):
       normalized=normalized_score[i]
       if len(source.remain_patches_by_score[score])>0 and cur_score==-100.:
-        if state.tbar_mode or state.recoder_mode or state.prapr_mode:
-          cur_score=score
-        else:
-          cur_score=normalized
-        top_fl_patches+=source.remain_patches_by_score[score]
-        top_all_patches+=source.patches_by_score[score]
-        break
-      elif (cur_score > -100.0) and ((cur_score - (score if state.tbar_mode or state.recoder_mode or state.prapr_mode else normalized)) < (cur_score * PT.EPSILON_THRESHOLD)):
+        cur_score=score
+      elif (cur_score > -100.0) and ((cur_score - score) < (cur_score * PT.EPSILON_THRESHOLD)):
         top_fl_patches += source.remain_patches_by_score[score]
         top_all_patches += source.patches_by_score[score]
   
@@ -208,7 +171,7 @@ def epsilon_select(state:GlobalState,source=None):
     # Get all top scored data in source
     cur_fl_patches=top_fl_patches
     for case_info in cur_fl_patches:
-      if state.tbar_mode or state.prapr_mode:
+      if state.tool_type in [ToolType.TEMPLATE,ToolType.PRAPR]:
         # For java
         if source is None:
           if case_info.parent.parent.parent.parent in state.file_info_map.values():
@@ -227,7 +190,7 @@ def epsilon_select(state:GlobalState,source=None):
             result.add(case_info)
         else:
           raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
-      elif state.recoder_mode:
+      elif state.tool_type==ToolType.LEARNING:
         if source is None:
           if case_info.parent.parent.parent in state.file_info_map.values():
             result.add(case_info.parent.parent.parent)
@@ -254,7 +217,7 @@ def epsilon_select(state:GlobalState,source=None):
     state.logger.debug(f'Use original order, epsilon: {epsilon}')
     cur_fl_patches=top_fl_patches
     state.select_time+=time.time()-start_time
-    if state.tbar_mode or state.prapr_mode:
+    if state.tool_type in [ToolType.TEMPLATE,ToolType.PRAPR]:
       # For java
       if source is None:
         return cur_fl_patches[0].parent.parent.parent.parent
@@ -268,7 +231,7 @@ def epsilon_select(state:GlobalState,source=None):
         return cur_fl_patches[0]
       else:
         raise ValueError(f'Parameter "source" should be FileInfo|FuncInfo|LineInfo|TbarTypeInfo|None, given: {type(source)}')
-    elif state.recoder_mode:
+    elif state.tool_type==ToolType.LEARNING:
       if source is None:
         return cur_fl_patches[0].parent.parent.parent
       elif type(source) == FileInfo:
@@ -288,10 +251,6 @@ def select_patch_guide_algorithm(state: GlobalState,elements:dict,parent=None):
   selected=[]
   p_p=[]
   p_b=[]
-  if state.tbar_mode or state.recoder_mode or state.prapr_mode:
-    min_score=min(state.java_remain_patch_ranking.keys())
-  else:
-    min_score=min(state.c_remain_patch_ranking.keys())
   if element_type==FileInfo:
     total_basic_patch=state.total_basic_patch
     total_plausible_patch=state.total_plausible_patch
@@ -327,8 +286,8 @@ def select_patch_guide_algorithm(state: GlobalState,elements:dict,parent=None):
         state.logger.debug(f'Try plausible patch with a: {selected[max_index].positive_pf.pass_count}, b: {selected[max_index].positive_pf.fail_count}')
         freq=selected[max_index].children_plausible_patches/state.total_plausible_patch if state.total_plausible_patch > 0 else 0.
         bp_freq=selected[max_index].consecutive_fail_plausible_count
-        cur_score=get_static_score(state,selected[max_index]) if state.tbar_mode or state.recoder_mode or state.prapr_mode else PassFail.normalize(scores)[max_index]
-        prev_score=state.previous_score if state.tbar_mode or state.recoder_mode or state.prapr_mode else PassFail.normalize(scores)[-1]
+        cur_score=get_static_score(state,selected[max_index])
+        prev_score=state.previous_score
         score_rate=min(cur_score/prev_score,1.) if prev_score!=0. else 0.
         if random.random()< (weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq))*(score_rate*PT.FL_WEIGHT if score_rate!=1.0 else 1.0)):
           state.logger.debug(f'Use guidance with plausible patch: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}, {cur_score}/{prev_score}')
@@ -362,8 +321,8 @@ def select_patch_guide_algorithm(state: GlobalState,elements:dict,parent=None):
         state.logger.debug(f'Try basic patch with a: {selected[max_index].pf.pass_count}, b: {selected[max_index].pf.fail_count}')
         freq=selected[max_index].children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0.
         bp_freq=selected[max_index].consecutive_fail_count
-        cur_score=get_static_score(state,selected[max_index]) if state.tbar_mode or state.recoder_mode or state.prapr_mode else PassFail.normalize(scores)[max_index]
-        prev_score=state.previous_score if state.tbar_mode or state.recoder_mode or state.prapr_mode else PassFail.normalize(scores)[-1]
+        cur_score=get_static_score(state,selected[max_index])
+        prev_score=state.previous_score
         score_rate=min(cur_score/prev_score,1.) if prev_score!=0. else 0.
         if random.random()< (weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq))*(score_rate*PT.FL_WEIGHT if score_rate!=1.0 else 1.0)):
           state.logger.debug(f'Use guidance with basic patch: {PassFail.concave_up(freq)}, {PassFail.log_func(bp_freq)}, {cur_score}/{prev_score}')
@@ -383,7 +342,7 @@ def select_patch_guide_algorithm(state: GlobalState,elements:dict,parent=None):
     return epsilon_select(state,parent),False
 
 def select_patch_tbar_mode(state: GlobalState) -> TbarPatchInfo:
-  if state.mode == Mode.tbar:
+  if state.mode == Mode.orig:
     return select_patch_tbar(state)
   elif state.mode==Mode.genprog:
     return select_patch_tbar_genprog(state)
@@ -702,7 +661,7 @@ def select_patch_tbar_genprog(state: GlobalState) -> TbarPatchInfo:
   return TbarPatchInfo(selected_patch)
 
 def select_patch_recoder_mode(state: GlobalState) -> RecoderPatchInfo:
-  if state.mode == Mode.recoder:
+  if state.mode == Mode.orig:
     return select_patch_recoder(state)
   elif state.mode==Mode.genprog:
     return select_patch_recoder_genprog(state)
