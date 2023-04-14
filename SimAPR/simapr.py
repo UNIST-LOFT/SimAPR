@@ -17,7 +17,7 @@ def parse_args(argv: list) -> GlobalState:
               "no-pass-test", "use-full-validation",'seed=','--correct-patch',
               "use-pattern", "use-simulation-mode=",
               'seapr-mode=','top-fl=','ignore-compile-error',
-              'finish-correct-patch','count-compile-fail','not-use-guide','not-use-epsilon',
+              'finish-correct-patch','not-count-compile-fail','not-use-guide','not-use-epsilon',
               'finish-top-method', 'prapr-mode']
   opts, args = getopt.getopt(argv[1:], "ho:w:t:m:c:T:E:k:", longopts)
   state = GlobalState()
@@ -117,7 +117,7 @@ def parse_args(argv: list) -> GlobalState:
         print('Can not use both --not-use-guide and --not-use-epsilon-search!',file=sys.stderr)
         exit(1)
       state.not_use_epsilon_search=True
-    elif o in ['--count-compile-fail']:
+    elif o in ['--not-count-compile-fail']:
       state.count_compile_fail = False
 
   if not os.path.exists(state.out_dir):

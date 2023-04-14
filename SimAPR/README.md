@@ -124,7 +124,7 @@ python3 simapr.py [options] -- <commands to run tests...>
   If this option is not specified, it will be counted as failure.\
   If you want to run default `SeAPR` algorithm, you should specify this option.
 
-* `--count-compile-fail`: Do not count iteration for non-compilable patch candidates. (optional, default: false)
+* `--not-count-compile-fail`: Do not count iteration for non-compilable patch candidates. (optional, default: false)
   
   It this option is true, non-compilable patch candidates are not considered as trial.
   This behavior is also default for `SeAPR`, but we do not use this option.
