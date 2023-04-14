@@ -19,7 +19,7 @@ def get_ochiai(s_h: float, s_l: float, d_h: float, d_l: float) -> float:
     return 0.0
   return s_h / (((s_h + d_h) * (s_h + s_l)) ** 0.5)
 
-def get_static_score(state:GlobalState,element):
+def get_static_score(element):
   if type(element)==FileInfo or type(element)==FuncInfo:
     return max(element.fl_score_list)
   elif type(element)==LineInfo:
@@ -161,7 +161,7 @@ def epsilon_select(state:GlobalState,source=None):
   total_patches=len(top_all_patches)
   total_searched=len(top_all_patches)-len(top_fl_patches)
   epsilon=epsilon_greedy(total_patches,total_searched)
-  is_epsilon_greedy=np.random.random()<epsilon and state.use_epsilon and not state.not_use_epsilon_search
+  is_epsilon_greedy=np.random.random()<epsilon and not state.not_use_epsilon_search
 
   if is_epsilon_greedy:
     # Perform random search in epsilon probability
@@ -276,7 +276,7 @@ def select_patch_guide_algorithm(state: GlobalState,elements:dict,parent=None):
       max_index=-1
       scores=[]
       for i in range(len(selected)):
-        scores.append(get_static_score(state,selected[i]))
+        scores.append(get_static_score(selected[i]))
         if p_p[i]>max_score:
           max_score=p_p[i]
           max_index=i
@@ -286,7 +286,7 @@ def select_patch_guide_algorithm(state: GlobalState,elements:dict,parent=None):
         state.logger.debug(f'Try plausible patch with a: {selected[max_index].positive_pf.pass_count}, b: {selected[max_index].positive_pf.fail_count}')
         freq=selected[max_index].children_plausible_patches/state.total_plausible_patch if state.total_plausible_patch > 0 else 0.
         bp_freq=selected[max_index].consecutive_fail_plausible_count
-        cur_score=get_static_score(state,selected[max_index])
+        cur_score=get_static_score(selected[max_index])
         prev_score=state.previous_score
         score_rate=min(cur_score/prev_score,1.) if prev_score!=0. else 0.
         if random.random()< (weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq))*(score_rate*PT.FL_WEIGHT if score_rate!=1.0 else 1.0)):
@@ -311,7 +311,7 @@ def select_patch_guide_algorithm(state: GlobalState,elements:dict,parent=None):
       max_index=-1
       scores=[]
       for i in range(len(selected)):
-        scores.append(get_static_score(state,selected[i]))
+        scores.append(get_static_score(selected[i]))
         if p_b[i]>max_score:
           max_score=p_b[i]
           max_index=i
@@ -321,7 +321,7 @@ def select_patch_guide_algorithm(state: GlobalState,elements:dict,parent=None):
         state.logger.debug(f'Try basic patch with a: {selected[max_index].pf.pass_count}, b: {selected[max_index].pf.fail_count}')
         freq=selected[max_index].children_basic_patches/state.total_basic_patch if state.total_basic_patch > 0 else 0.
         bp_freq=selected[max_index].consecutive_fail_count
-        cur_score=get_static_score(state,selected[max_index])
+        cur_score=get_static_score(selected[max_index])
         prev_score=state.previous_score
         score_rate=min(cur_score/prev_score,1.) if prev_score!=0. else 0.
         if random.random()< (weighted_mean(PassFail.concave_up(freq),PassFail.log_func(bp_freq))*(score_rate*PT.FL_WEIGHT if score_rate!=1.0 else 1.0)):
