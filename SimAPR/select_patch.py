@@ -50,12 +50,12 @@ def epsilon_search(state:GlobalState):
   cur_list=state.java_patch_ranking
   cur_remain_list=state.java_remain_patch_ranking
   cur_remain_list_sorted=sorted(cur_remain_list.keys(),reverse=True)
-  for i,score in enumerate(cur_remain_list_sorted):
+  for score in cur_remain_list_sorted:
     if len(cur_remain_list[score])>0 and cur_score==-100.:
       cur_score=score
-    elif (cur_score > -100.0) and ((cur_score - score) < (cur_score * PT.EPSILON_THRESHOLD)):
       top_fl_patches+=cur_remain_list[score]
       top_all_patches+=cur_list[score]
+      break
 
   # Get total patches and total searched patches, for epsilon greedy method
   if cur_score not in state.same_consecutive_score:
@@ -137,24 +137,20 @@ def epsilon_select(state:GlobalState,source=None):
     cur_list=state.java_patch_ranking
     cur_remain_list=state.java_remain_patch_ranking
     cur_remain_list_sorted=sorted(cur_remain_list.keys(),reverse=True)
-    normalized_score=PassFail.normalize(cur_remain_list_sorted)
-    for i,score in enumerate(cur_remain_list_sorted):
-      normalized=normalized_score[i]
+    for score in cur_remain_list_sorted:
       if len(cur_remain_list[score])>0 and cur_score==-100.:
         cur_score=score
-      elif (cur_score > -100.0) and ((cur_score - score) < (cur_score * PT.EPSILON_THRESHOLD)):
         top_fl_patches += cur_remain_list[score]
         top_all_patches += cur_list[score]
+        break
   else:
     cur_remain_list_sorted=sorted(source.remain_patches_by_score.keys(),reverse=True)
-    normalized_score=PassFail.normalize(cur_remain_list_sorted)
-    for i,score in enumerate(cur_remain_list_sorted):
-      normalized=normalized_score[i]
+    for score in cur_remain_list_sorted:
       if len(source.remain_patches_by_score[score])>0 and cur_score==-100.:
         cur_score=score
-      elif (cur_score > -100.0) and ((cur_score - score) < (cur_score * PT.EPSILON_THRESHOLD)):
         top_fl_patches += source.remain_patches_by_score[score]
         top_all_patches += source.patches_by_score[score]
+        break
   
 
   # Get total patches and total searched patches, for epsilon greedy method

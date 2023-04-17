@@ -770,6 +770,8 @@ def main(argv: list):
       state.logger.warning('SimAPR is interrupted by user')
     else:
       state.logger.error(f'SimAPR throws exception: {e}')
+      simapr.save_result()
+      raise e
   state.logger.info('SimAPR is finished')
   # state.select_time/=1000000
   state.logger.info(f'Running time: {state.select_time+state.test_time}')
