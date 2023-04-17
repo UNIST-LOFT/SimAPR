@@ -135,3 +135,13 @@ python3 simapr.py [options] -- <commands to run tests...>
     This option is used for ablation study.\
     Using both options is not allowed.\
     No effect for other modes.
+
+## 3. Output
+There are 3 files in output directory: `simapr-search.log`, `simapr-result.json` and `simapr-finished.txt`.
+`simapr-search.log` contains logs from SimAPR.
+`simapr-result.json` contains the results from SimAPR by each patches.
+`simapr-finished.txt` is created when SimAPR finished and it contains total patch selecting, total test execution and overall time.
+
+### simapr-result.json
+`simapr-result.json` contains the results from SimAPR by each patches in JSON format.
+
