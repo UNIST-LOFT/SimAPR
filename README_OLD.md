@@ -11,12 +11,6 @@ Our scripts are prepared in [experiments](./experiments/). Detailed descriptions
 
 We prepared 6 APR tools to run SimAPR: `TBar`, `Avatar`, `kPar` and `Fixminer` as template-based APR and `AlphaRepair` and `Recoder` as learning-based APR.
 
-
-## Getting Started
-
-## Detailed Instruction
-
-
 ## Environments & Setup
 
 ### Environment
