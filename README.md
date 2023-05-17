@@ -35,7 +35,7 @@ $ cd SimAPR
 To build docker image, run the following command:
 ```
 $ cd dockerfile
-$ docker build -t simapr:1.2 -f D4J-1.2-Dockerfile .
+$ docker build -t simapr:1.2 -f D4J-1.2-Dockerfile ..
 ```
 
 After that, create container with the following command:
@@ -123,7 +123,7 @@ Therefore, `execution` in `simapr-result.json` is not incremented.
 ## Detailed Instruction
 
 ### Workflow
-1. [Setup environment using Docker](#environment)
+1. Setup environment using Docker
 2. [Generate patch space]
 3. Run SimAPR, a patch scheduler
 ### Environment
@@ -131,22 +131,33 @@ Therefore, `execution` in `simapr-result.json` is not incremented.
 - JDK 1.8
 - [Defects4j](https://github.com/rjust/defects4j) 1.2.0 or 2.0.0
 - Maven
+- [Anaconda](https://www.anaconda.com/)
 
 IMPORTANT: Defects4j should be installed in `/defects4j/` to use the scripts we already prepared. If you use Dockerfiles that we prepared, Defects4j is already installed in `/defects4j/`.
 
 Original Defects4j v1.2.0 supports JDK 1.7, but we run at JDK 1.8.
 
-To build docker image:
-```bash
-docker build -t simapr:1.2 -f dockerfile/D4J-1.2-Dockerfile .
+#### Using Docker
+To run SimAPR via Docker, install 
+- [docker](https://www.docker.com/)
+
+Plus, you should install the following to utilize GPU for learning-based tools.
+- [NVIDIA driver](https://www.nvidia.com/download/index.aspx)
+- [nvidia-docker](https://github.com/NVIDIA/nvidia-docker)
+
+Then, build the docker image
 ```
-<!-- Or, you can pull pre-built image
-```bash
-docker pull  
-```-->
-```bash
-docker run -n simapr -d simapr:1.2 /usr/sbin/sshd -D
+$ cd dockerfile
+$ docker build -t simapr:<1.2/2.0> -f D4J-<1.2/2.0>-Dockerfile ..
 ```
+
+Next, create and run the docker container
+```
+$ docker run -d --name simapr-<1.2/2.0> -p 1001:22 [--gpus=all] simapr:<1.2/2.0>
+```
+Note that our container uses openssh-server. To use a container, openssh-client should be installed in host system.
+
+`--gpus` option is required for learning-based tools. If you don't want to use GPU, remove `--gpus=all` option.
 
 ### Preparing the patch space
 SimAPR takes as input the patch space to explore and the patch-scheduling algorithm to use. Regarding the patch space, SimAPR currently provides an option to use the patch space of one of the following six program repair tools:
@@ -165,6 +176,13 @@ We provide a Python script that automates patch-space preparation. See [experime
 cd experiments/tbar
 python3 tbar.py Chart_4
 ```
+For `Recoder` and `AlphaRepair`, you can assign GPU core like this.
+
+```bash
+cd experiments/recoder
+python3 recoder.py Chart_4 1
+```
+If you assign same core to multiple processes, GPU can stop and cannot use until you reboot the system. So, assign core to single process at the time.
 
 To construct the patch space without provided scripts, see the README file for each tool. For example, the README file of ```Tbar``` is available at [TBar/README.md](TBar/README.md).
 
