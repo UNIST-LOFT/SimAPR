@@ -23,12 +23,22 @@ The above commands generate the patch space of Avatar for Chart 4.
 
 ### Learning-Based Tools (Recoder, AlphaRepair)
 
-
-```
-cd <tool>
+Before running scripts, check if the conda environments are successfully installed.
+```bash
 conda activate recoder # or alpha
+```
+
+Run the script.
+```bash
+cd <tool>
 python3 <tool>.py <project>
 ```
+This is a concrete example.
+```bash
+cd recoder
+python3 recoder.py Chart_24
+```
+
 
 ## Running SimAPR
 
