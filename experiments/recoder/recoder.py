@@ -12,13 +12,14 @@ def main(argv):
     if "_" in bugid:
         bugid = bugid.replace("_", "-")
     print(f"Run recoder: {bugid}")
-    cmd = ["python3", 'testDefect4j.py', bugid]
+    # cmd = ["python3", 'testDefect4j.py', bugid]
 
     new_env=os.environ.copy()
     if len(argv) > 2:
         new_env["CUDA_VISIBLE_DEVICES"]=argv[2]
     os.chdir("../../Recoder")
-    result=subprocess.run(cmd,env=new_env)
+    cmd = f"conda run -n recoder python3 testDefect4j.py {bugid}"
+    result=subprocess.run(cmd, env=new_env, executable='/bin/bash', shell=True)
     if result.returncode != 0:
         print(f"Recoder failed to run recoder {bugid}")
         exit(result.returncode)
