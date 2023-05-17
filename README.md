@@ -129,13 +129,13 @@ Therefore, `execution` in `simapr-result.json` is not incremented.
 ## Detailed Instruction
 
 ### Workflow
-Workflow is same as [Getting Started](#getting-started), but we will describe more details.
+Workflow is same as Getting Started, but we will describe more details.
 1. Setup environment using Docker
-2. [Generate patch space]
+2. Generate patch space
 3. Run SimAPR, a patch scheduler
    
 ### Environment
-Skip this section and go to (Using Docker)[#using-docker] if you use our Dockerfile.
+Skip this section and go to Using Docker if you use our Dockerfile.
 
 - Python >= 3.8
 - JDK 1.8
@@ -149,16 +149,24 @@ Original Defects4j v1.2.0 supports JDK 1.7, but we run at JDK 1.8.
 
 You should setup conda environment for `Recoder` and `AlphaRepair`. This is also already prepared in Dockerfile.
 ```bash
+apt install build-essential git python3 openjdk-8-jdk maven unzip perl cpanminus
+
+git clone https://github.com/rjust/defects4j.git /defects4j
+pushd /defects4j 
+git checkout v1.2.0 && cpanm --installdeps . && ./init.sh
+popd
+
 wget https://repo.anaconda.com/archive/Anaconda3-2022.10-Linux-x86_64.sh
-chmod 751 Anaconda3-2022.10-Linux-x86_64.sh
-./Anaconda3-2022.10-Linux-x86_64.sh -b
-export PATH="/root/anaconda3/bin:${PATH}"
+sh ./Anaconda3-2022.10-Linux-x86_64.sh -b
+export PATH="/defects4j/framework/bin:/root/anaconda3/bin:$PATH"
 echo 'export PATH=/defects4j/framework/bin:/root/anaconda3/bin:$PATH' > /root/.bash_aliases
 conda init bash
-cd Recoder
+pushd Recoder
 conda env create -f data/env.yaml
-cd ../AlphaRepair
+popd
+pushd AlphaRepair
 conda env create -f data/env.yaml
+popd
 ```
 
 ### Using Docker
