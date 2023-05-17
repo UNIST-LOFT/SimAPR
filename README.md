@@ -13,19 +13,25 @@ We prepared 6 APR tools to run SimAPR: `TBar`, `Avatar`, `kPar` and `Fixminer` a
 
 
 ## Getting Started
-This section describes how to run SimAPR.
+This section describes how to run SimAPR in docker container.
 If you want to reproduce our experiments, we already prepared scripts to reproduce our experiments easily.
 Please see [Detailed Instruction](#detailed-instruction).
 
 To run SimAPR, you should follow these steps:
 1. Build docker image and create container
-2. Generate patch spaces via running APR tools
-3. Run SimAPR engine
-4. Look inside the outputs
-   
+2. Generate patch space via running APR tools modified by us
+3. Run SimAPR
+
 In this section, we will describe how to run SimAPR with TBar and Closure-62 benchmark.
+If you want to run different APR tools and version, change the `tbar` and `TBar` to proper APR tool and `Closure_62` to proper version.
 
 ### 1. Build docker image and create container
+First, clone our repository:
+```
+$ git clone https://github.com/FreddyYJ/SimAPR.git
+$ cd SimAPR
+```
+
 To build docker image, run the following command:
 ```
 $ cd dockerfile
@@ -67,7 +73,7 @@ Set `-m` option as proper scheduling algorithm.
 This command sets overall timeout as 20 minutes (It will take slightly more than 20 minutes).
 If you want to set timeout for each patch candidate, set `-T` option in seconds.
 
-### 4. Look inside the outputs
+### The outputs
 The outputs of SimAPR are stored in `~/SimAPR/experiments/tbar/result/Closure_62-out`.
 This directory contains three files: `simapr-finished.txt`, `simapr-result.json` and `simapr-search.log`.
 #### simapr-finished.txt
