@@ -419,6 +419,8 @@ $ python3 search-tbar-casino.py Chart_4 1812569871
 ```
 This will initialize random library with seed `1812569871`.
 
+Note that we run Casino and GenProg 50 times for each version.
+
 To run ablation study, run following commands:
 ```
 $ cd experiments/<tool>
@@ -428,6 +430,8 @@ In this case, set `vertical` or `horizontal` to specify which ablation study to 
 If it is `vertical`, SimAPR runs without vertical search. If it is `horizontal`, SimAPR runs without horizontal search.
 
 It also needs a seed because it will run SimAPR with Casino algorithm.
+
+Note that we also run ablation study 50 times for each version.
 
 ### SimAPR Output
 Outputs will be stored in `experiments/<tool>/result/<version>-<algorithm>`.
