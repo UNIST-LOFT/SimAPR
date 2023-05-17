@@ -123,10 +123,14 @@ Therefore, `execution` in `simapr-result.json` is not incremented.
 ## Detailed Instruction
 
 ### Workflow
+Workflow is same as [Getting Started](#getting-started), but we will describe more details.
 1. Setup environment using Docker
 2. [Generate patch space]
 3. Run SimAPR, a patch scheduler
+   
 ### Environment
+Skip this section and go to (Using Docker)[#using-docker] if you use our Dockerfile.
+
 - Python >= 3.8
 - JDK 1.8
 - [Defects4j](https://github.com/rjust/defects4j) 1.2.0 or 2.0.0
@@ -137,7 +141,7 @@ IMPORTANT: Defects4j should be installed in `/defects4j/` to use the scripts we 
 
 Original Defects4j v1.2.0 supports JDK 1.7, but we run at JDK 1.8.
 
-You should setup conda environment for `Recoder` and `AlphaRepair`.
+You should setup conda environment for `Recoder` and `AlphaRepair`. This is also already prepared in Dockerfile.
 ```bash
 wget https://repo.anaconda.com/archive/Anaconda3-2022.10-Linux-x86_64.sh
 chmod 751 Anaconda3-2022.10-Linux-x86_64.sh
@@ -151,18 +155,25 @@ cd ../AlphaRepair
 conda env create -f data/env.yaml
 ```
 
-#### Using Docker
+### Using Docker
 To run SimAPR via Docker, install 
 - [docker](https://www.docker.com/)
 
-Plus, you should install the following to utilize GPU for learning-based tools.
+#### GPU for learning-based tools (optional)
+For learning-based tools (`Recoder` and `AlphaRepair`), you should install the following to utilize GPU.
 - [NVIDIA driver](https://www.nvidia.com/download/index.aspx)
 - [nvidia-docker](https://github.com/NVIDIA/nvidia-docker)
+
+Before you build docker image, find proper CUDA image for your CUDA version:
+- [CUDA images](https://hub.docker.com/r/nvidia/cuda/tags)
+
+And change `FROM ubuntu:22.04` in [Dockerfile](./dockerfile/) to proper CUDA image.
 
 Then, build the docker image
 ```
 $ cd dockerfile
-$ docker build -t simapr:<1.2/2.0> -f D4J-<1.2/2.0>-Dockerfile ..
+$ docker build -t simapr:1.2 -f D4J-1.2-Dockerfile ..  # for Defects4j v1.2.0
+$ docker build -t simapr:2.0 -f D4J-2.0-Dockerfile ..  # for Defects4j v2.0
 ```
 
 Next, create and run the docker container
@@ -174,7 +185,7 @@ Note that our container uses openssh-server. To use a container, openssh-client 
 `--gpus` option is required for learning-based tools. If you don't want to use GPU, remove `--gpus=all` option.
 
 ### Preparing the patch space
-SimAPR takes as input the patch space to explore and the patch-scheduling algorithm to use. Regarding the patch space, SimAPR currently provides an option to use the patch space of one of the following six program repair tools:
+SimAPR takes the patch space as input to explore patch space and use different patch search algorithm. Regarding the patch space, SimAPR currently provides an option to use the patch space of one of the following six program repair tools:
 
 1. ```Tbar```
 2. ```Avatar```
@@ -184,32 +195,62 @@ SimAPR takes as input the patch space to explore and the patch-scheduling algori
 6. ```Recoder```
 
 Patch space construction process is tool-specific. 
-We provide a Python script that automates patch-space preparation. See [experiments](./experiments/). 
+We provide a Python script in [experiments](./experiments/) directory that automates patch space preparation.
 
-```bash
-cd experiments/tbar
-python3 tbar.py Chart_4
+Run following commands to prepare patch space for template-based tools (```Tbar```, ```Avatar```, ```kPar``` and ```Fixminer```):
 ```
-For `Recoder` and `AlphaRepair`, you can assign GPU core like this.
+$ cd experiments/<tool>
+$ python3 <tool>.py <version>
+```
+For example, to prepare patch space for ```Tbar``` on ```Chart_4``` version, run the following command:
+```
+$ cd experiments/tbar
+$ python3 tbar.py Chart_4
+```
 
-```bash
-cd experiments/recoder
-python3 recoder.py Chart_4 1
+For learning-based tools (`Recoder` and `AlphaRepair`), we used Conda virtual environment and GPU.
+To run these tools, you should run the following commands:
 ```
+$ cd experiments/<tool>
+$ conda activate <recoder/alpharepair>
+$ python3 <tool>.py <version> <GPU core ID>
+$ conda deactivate
+```
+`<GPU core ID>` is the ID of GPU core to use (starts from 1).
+For example,
+```
+$ cd experiments/recoder
+$ conda activate recoder
+$ python3 recoder.py Chart_4 1
+$ conda deactivate
+```
+This will run `Recoder` on `Chart_4` version with GPU core 1.
+
 If you assign same core to multiple processes, GPU can stop and cannot use until you reboot the system. So, assign core to single process at the time.
+
+#### Outputs
+After this process finished, outputs will be stored in `<tool>/d4j/<version>`.
+For example, if you run `TBar` with `Chart_4`, then outputs are stored in `TBar/d4j/Chart_4`.
+
+In this directory,
+* `switch-info.json` contains the meta-information of patch space in JSON format.
+* The other directories are patch candidates. Path to each patched source file is patch ID.
 
 To construct the patch space without provided scripts, see the README file for each tool. For example, the README file of ```Tbar``` is available at [TBar/README.md](TBar/README.md).
 
 ### Run SimAPR
-SimAPR is implemented in Python3. SimAPR is in the [SimAPR](./SimAPR/) directory. To set up SimAPR, do the following:
+After patch space in prepared, you can run SimAPR.
+SimAPR is implemented in Python3 and stored in the [SimAPR](./SimAPR/) directory.
+
+To set up SimAPR, do the following:
 ```
 $ cd SimAPR
 $ python3 -m pip install -r requirements.txt
 ```
 
-You can check [Readme in experiments](./experiments/README.md) to reproduce our experiments.
+<!-- You can check [Readme in experiments](./experiments/README.md) to reproduce our experiments. -->
 
-To run SimAPR, do the following:
+<!-- To run SimAPR, do the following:
 
 ```
 python3 simapr.py [options] -- <commands to run tests...>
@@ -335,54 +376,59 @@ python3 simapr.py [options] -- <commands to run tests...>
     If this option is specified, SimAPR does not use vertical/horizontal search for Casino algorithm.\
     This option is used for ablation study.\
     Using both options is not allowed.\
-    No effect for other modes.
+    No effect for other modes. -->
 
-#### SimAPR Output
+We prepared scripts to run SimAPR easily. Those scripts are stored in [experiments](./experiments/) directory, same directory as [patch preparation](#preparing-the-patch-space)
+
+We prepared 5 scripts for each tools: 
+* Original order from original APR tools
+* SeAPR algorithm
+* GenProg algorithm
+* Casino algorithm
+* Ablation Study
+
+To run original order and SeAPR algorithm, run following commands:
+```
+$ cd experiments/<tool>
+$ python3 search-<tool>-<orig/seapr>.py <version>
+```
+For example, to run original order with `TBar` and `Chart_4`:
+```
+$ cd expeirments/tbar
+$ python3 search-tbar-orig.py Chart_4
+```
+
+To run GenProg and Casino algorithm, run following commands:
+```
+$ cd experiments/<tool>
+$ python3 search-<tool>-<genprog/casino>.py <version> <seed>
+```
+In this case, we need a seed for random library.
+Seeds used in our experiments are in [experiments/seeds.py](./experiments/seeds.py).
+
+For example, to run Casino algorithm with `TBar` and `Chart_4`:
+```
+$ cd expeirments/tbar
+$ python3 search-tbar-casino.py Chart_4 1812569871
+```
+This will initialize random library with seed `1812569871`.
+
+To run ablation study, run following commands:
+```
+$ cd experiments/<tool>
+$ python3 search-<tool>-ablation.py <version> <vertical/horizontal> <seed>
+```
+In this case, set `vertical` or `horizontal` to specify which ablation study to run.
+If it is `vertical`, SimAPR runs without vertical search. If it is `horizontal`, SimAPR runs without horizontal search.
+
+It also needs a seed because it will run SimAPR with Casino algorithm.
+
+### SimAPR Output
+Outputs will be stored in `experiments/<tool>/result/<version>-<algorithm>`.
+
+For example, if you run Casino algorithm with `TBar` and `Chart_4`, output will be stored in `experiments/tbar/result/Chart_4-casino`.
 
 There are 3 files in output directory: `simapr-search.log`, `simapr-result.json` and `simapr-finished.txt`.
-`simapr-search.log` contains logs from SimAPR.
-`simapr-result.json` contains the results from SimAPR by each patches.
-`simapr-finished.txt` is created when SimAPR finished and it contains total patch selecting, total test execution and overall time.
-
-
-## How to reproduce our experiment
-All reproduction scripts and their descriptions are available in the [experiments](./experiments/) directory.
-
-## Running SimAPR
-The implementation of SimAPR is available in the [SimAPR](./SimAPR) directory. To run SimAPR, do the following:
-```
-$ cd SimAPR
-$ python3 simapr.py [options] -- {test_command}
-```
-More details are available in [Readme in SimAPR](./SimAPR/README.md) directory.
-
-### Running SimAPR via Docker
-To run SimAPR via Docker, install 
-- [docker](https://www.docker.com/)
-
-Plus, you should install the following to utilize GPU for learning-based tools.
-- [NVIDIA driver](https://www.nvidia.com/download/index.aspx)
-- [nvidia-docker](https://github.com/NVIDIA/nvidia-docker)
-
-Then, build the docker image
-```
-$ cd dockerfile
-$ docker build -t simapr:<1.2/2.0> -f D4J-<1.2/2.0>-Dockerfile ..
-```
-
-Next, create and run the docker container
-```
-$ docker run -d --name simapr-<1.2/2.0> -p 1001:22 [--gpus=all] simapr:<1.2/2.0>
-```
-Note that our container uses openssh-server. To use a container, openssh-client should be installed in host system.
-
-`--gpus` option is required for learning-based tools. If you don't want to use GPU, remove `--gpus=all` option.
-
-To use the container, do the following:
-```
-$ ssh -p 1001 root@localhost
-```
-
-## How to Add and Run a New Patch Scheduling Algorithm
-
-With SimAPR, a new patch-scheduling algorithm can be easily added and evaluated as described in [SimAPR](./SimAPR/README.md).
+* `simapr-search.log` contains logs from SimAPR.
+* `simapr-result.json` contains the results from SimAPR by each patches in JSON format.
+* `simapr-finished.txt` is created when SimAPR finished and it contains overhead by scheduler, overall test execution time and overall running time.
