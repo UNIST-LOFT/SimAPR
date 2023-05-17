@@ -137,6 +137,20 @@ IMPORTANT: Defects4j should be installed in `/defects4j/` to use the scripts we 
 
 Original Defects4j v1.2.0 supports JDK 1.7, but we run at JDK 1.8.
 
+You should setup conda environment for `Recoder` and `AlphaRepair`.
+```bash
+wget https://repo.anaconda.com/archive/Anaconda3-2022.10-Linux-x86_64.sh
+chmod 751 Anaconda3-2022.10-Linux-x86_64.sh
+./Anaconda3-2022.10-Linux-x86_64.sh -b
+export PATH="/root/anaconda3/bin:${PATH}"
+echo 'export PATH=/defects4j/framework/bin:/root/anaconda3/bin:$PATH' > /root/.bash_aliases
+conda init bash
+cd Recoder
+conda env create -f data/env.yaml
+cd ../AlphaRepair
+conda env create -f data/env.yaml
+```
+
 #### Using Docker
 To run SimAPR via Docker, install 
 - [docker](https://www.docker.com/)
