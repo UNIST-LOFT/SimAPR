@@ -19,6 +19,7 @@ def main(argv):
         new_env["CUDA_VISIBLE_DEVICES"]=argv[2]
     os.chdir("../../Recoder")
     cmd = f"conda run -n recoder python3 testDefect4j.py {bugid}"
+    os.makedirs("d4j", exist_ok=True)
     result=subprocess.run(cmd, env=new_env, executable='/bin/bash', shell=True)
     if result.returncode != 0:
         print(f"Recoder failed to run recoder {bugid}")

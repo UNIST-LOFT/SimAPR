@@ -18,6 +18,7 @@ def main(argv):
     if len(argv) > 2:
         new_env["CUDA_VISIBLE_DEVICES"]=argv[2]
     os.chdir("../../AlphaRepair")
+    os.makedirs("d4j", exist_ok=True)
     result=subprocess.run(cmd, env=new_env, shell=True, executable='/bin/bash')
     print(f"AlphaRepair finished bug {bugid} with return code {result.returncode}")
     exit(result.returncode)
