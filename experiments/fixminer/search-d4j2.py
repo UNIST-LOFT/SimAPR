@@ -12,12 +12,6 @@ def run(project):
       f.write(result.stdout.decode("utf-8"))
    print(f'Finish {project}-orig with returncode {result.returncode}')
 
-   print(f'Run {project}-seapr')
-   result=subprocess.run(['python3','search-fixminer-seapr.py',project],stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
-   with open(f'result/{project}-seapr.log','w') as f:
-      f.write(result.stdout.decode("utf-8"))
-   print(f'Finish {project}-seapr with returncode {result.returncode}')
-
    for i in range(50):
       print(f'Run {project}-casino-{i}')
       result=subprocess.run(['python3','search-fixminer-casino.py',project,str(seeds.SEEDS[i])],stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
@@ -26,14 +20,6 @@ def run(project):
       shutil.copytree(f'result/{project}-casino',f'result/{project}-casino-{i}')
       shutil.rmtree(f'result/{project}-casino')
       print(f'Finish {project}-casino with returncode {result.returncode}')
-
-      print(f'Run {project}-genprog-{i}')
-      result=subprocess.run(['python3','search-fixminer-genprog.py',project,str(seeds.SEEDS[i])],stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
-      with open(f'result/{project}-genprog-{i}.log','w') as f:
-         f.write(result.stdout.decode("utf-8"))
-      shutil.copytree(f'result/{project}-genprog',f'result/{project}-genprog-{i}')
-      shutil.rmtree(f'result/{project}-genprog')
-      print(f'Finish {project}-genprog with returncode {result.returncode}')
 
 from sys import argv
 

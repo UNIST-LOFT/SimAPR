@@ -172,7 +172,7 @@ Similar with SimAPR for Defects4j v1.2.0, to run SimAPR for Defects4j v2.0 for e
 $ cd experiments/<tool>
 $ python3 search-d4j2.py <# of CPU>
 ```
-This will run same as SimAPR for Defects4j v1.2.0, but with Defects4j v2.0.
+This will run original order from original tools once and Casino algorithm 50 times with Defects4j v2.0.
 
 The results will be stored in `experiments/<tool>/result`, same as SimAPR for Defects4j v1.2.0.
 
