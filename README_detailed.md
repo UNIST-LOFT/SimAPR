@@ -1,13 +1,13 @@
-## Detailed Instruction
+# Detailed Instruction
 
-### Workflow
+## Workflow
 Workflow is same as Getting Started, but we will describe more details.
 1. Setup environment via docker
 2. Generate patch space
 3. Run SimAPR, a patch scheduler
 4. Run scripts to generate plots used in our paper
    
-### 1. Setup environment via docker (~ 10 min)
+## 1. Setup environment via docker (~ 10 min)
 We assumed that you already cloned our repository. If not, look at Getting Started in [README.md](./README.md).
 
 To run SimAPR via Docker, install 
@@ -56,7 +56,7 @@ $ ssh -p 1002 root@localhost
 ```
 for Defects4j v2.0.
 
-### 2. Generating the patch space
+## 2. Generating the patch space
 SimAPR takes the patch space as input to explore patch space and use different patch search algorithm. Regarding the patch space, SimAPR currently provides an option to use the patch space of one of the following six program repair tools:
 
 1. ```Tbar```
@@ -75,7 +75,7 @@ It takes about 5 minutes for each version.
 **NOTE**: This will take a lot of time, memory and disk space. We recommend to make **10TB** for disk space for each tools.
 **NOTE**: We highly recommend to run each tools in different machine and copy only final result after SimAPR to same machine.
 
-#### Template-based APR tools
+### Template-based APR tools
 Run following commands to generate patch spaces for `TBar`, `Avatar`, `kPar` and `Fixminer`:
 ```
 $ cd experiments/<tool>
@@ -89,7 +89,7 @@ $ cd experiments/tbar
 $ python3 gen-patch.py 30
 ```
 
-#### Learning-based APR tools
+### Learning-based APR tools
 Run following commands to generate patch spaces for `AlphaRepair` and `Recoder`:
 ```
 $ cd experiments/<tool>
@@ -103,7 +103,7 @@ $ cd experiments/recoder
 $ python3 gen-patch.py 4
 ```
 
-#### Template-based APR tools for Defects4j v2.0
+### Template-based APR tools for Defects4j v2.0
 Run these commands in simapr-2.0 container to run with Defects4j v2.0.
 
 Run following commands to generate patch spaces for `TBar`, `Avatar`, `kPar` and `Fixminer` with Defects4j v2.0:
@@ -113,7 +113,7 @@ $ python3 gen-patch-d4j2.py <# of CPU>
 ```
 We recommend to use 1/5 of overall CPU cores for parallel run.
 
-#### Learning-based APR tools for Defects4j v2.0
+### Learning-based APR tools for Defects4j v2.0
 Run these commands in simapr-2.0 container to run with Defects4j v2.0.
 
 Run following commands to generate patch spaces for `AlphaRepair` and `Recoder` with Defects4j v2.0:
@@ -123,7 +123,7 @@ $ python3 gen-patch.py <# of GPUs>
 ```
 **NOTE**: For learning-based tools, you should assign **GPU** to each process. So, you should assign *1 GPU to 1 process*.
 
-#### Outputs
+### Outputs
 After this process finished, outputs will be stored in `<tool>/d4j/<version>`.
 For example, if you run `TBar` with `Chart_4`, then outputs are stored in `TBar/d4j/Chart_4`.
 
@@ -132,7 +132,7 @@ In this directory,
 * The other directories are patch candidates. Path to each patched source file is patch ID.
 
 
-### 3. Run SimAPR
+## 3. Run SimAPR
 Before run SimAPR, you should generate every patch spaces for every APR tools.
 
 SimAPR is implemented in Python3 and stored in the [SimAPR](./SimAPR/) directory.
@@ -150,7 +150,7 @@ We prepared 3 scripts for each tools:
 * SimAPR for Defects4j v2.0
 * SimAPR for ablation study
 
-#### SimAPR for Defects4j v1.2.0
+### SimAPR for Defects4j v1.2.0
 To run SimAPR for Defects4j v1.2.0 for each tool, run the following command:
 ```
 $ cd experiments/<tool>
@@ -166,7 +166,7 @@ $ cd experiments/tbar
 $ python3 search.py 30
 ```
 
-#### SimAPR for Defects4j v2.0
+### SimAPR for Defects4j v2.0
 Similar with SimAPR for Defects4j v1.2.0, to run SimAPR for Defects4j v2.0 for each tool, run the following command:
 ```
 $ cd experiments/<tool>
@@ -176,7 +176,7 @@ This will run original order from original tools once and Casino algorithm 50 ti
 
 The results will be stored in `experiments/<tool>/result`, same as SimAPR for Defects4j v1.2.0.
 
-#### SimAPR for ablation study
+### SimAPR for ablation study
 To run SimAPR for ablation study for each tool, run the following command:
 ```
 $ cd experiments/<tool>
@@ -186,7 +186,7 @@ This will run Casino algorithm without Vertical search 50 times and Casino algor
 
 The results will be stored in `experiments/<tool>/result`, same as SimAPR for Defects4j v1.2.0.
 
-#### SimAPR Output
+### SimAPR Output
 Outputs will be stored in `experiments/<tool>/result/<version>-<algorithm>`.
 
 For example, Casino algorithm with `TBar` and `Chart_4`, output will be stored in `experiments/tbar/result/Chart_4-casino-<trial>`.
@@ -200,13 +200,13 @@ There are 3 files in output directory: `simapr-search.log`, `simapr-result.json`
 **NOTE**: If you run SimAPR in multiple machine, copy `experiments/<tool>/result` to same machine.
 
 
-### 4. Run scripts to generate plots used in our paper
+## 4. Run scripts to generate plots used in our paper
 Before this step, you should run every scripts (`search.py`, `search-d4j2.py` and `search-ablation.py`) for every tools and check every results are stored in `experiments/<tool>/result` in same machine.
 
 We prepared scripts to generate plots used in our paper.
 Those scripts are stored in [experiments/scripts](./experiments/scripts) directory.
 
-#### RQ 1: Search Efficiency
+### RQ 1: Search Efficiency
 We prepared a script to generate plots for RQ 1 (Figure 6 in the paper).
 To generate plots for RQ 1, run the following command:
 ```
@@ -215,9 +215,23 @@ To generate plots for RQ 1, run the following command:
 ```
 This will generate plots for each tools in `experiments/rq1-<tool>.pdf`.
 
-#### RQ 2: Recall
+### RQ 2: Recall
+We prepared a script to generate plots for RQ 2 (Figure 7 in the paper).
 
-#### RQ 3: Ablation Study
+Before you run this script, you should run DiffTGen and ODS.
+#### To run DiffTGen
+
+#### To run ODS
+
+#### To generate plots for RQ 2
+To generate plots for RQ 2, run the following command:
+```
+# cd experiments
+# python3 scripts/rq2.py
+```
+This will generate a plot in `experiments/rq2-top-1.pdf` and `experiments/rq2-top-5.pdf`.
+
+### RQ 3: Ablation Study
 We prepared a script to generate a plot for RQ 3 (Figure 8(a) in the paper).
 To generate a plot for RQ 3, run the following command:
 ```
@@ -226,7 +240,7 @@ To generate a plot for RQ 3, run the following command:
 ```
 This will generate a plot in `experiments/rq3.pdf`.
 
-#### RQ 4: Generalizability
+### RQ 4: Generalizability
 We prepared a script to generate a plot for RQ 4 (Figure 8(b) in the paper).
 To generate a plot for RQ 4, run the following command:
 ```
