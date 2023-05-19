@@ -66,6 +66,8 @@ def parse_args(argv: list) -> GlobalState:
         print(f'Invalid seapr mode: {a}',file=sys.stderr)
         exit(1)
     elif o in ['--use-simulation-mode']:
+      if not os.path.exists(a):
+        os.makedirs(os.path.dirname(a), exist_ok=True)
       state.use_simulation_mode = True
       state.prev_data = a
     elif o in ['--use-full-validation']:
