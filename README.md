@@ -6,7 +6,7 @@ It supports sequential algorithm from original APR tools, SeAPR, GenProg family 
 ![Overview of SimAPR](./overview.png)
 Figure: Overview of SimAPR
 
-This repository contains (1) implementation of SimAPR, (2) modified APR tools to generate patch space and (3) scripts to reproduce our experiments. 
+This repository contains (1) implementation of SimAPR, (2) modified APR tools to generate patch space and (3) scripts and tools to reproduce our experiments. 
 
 Implementation of SimAPR is in [SimAPR](./SimAPR/). Detailed descriptions are also in this directory.
 
@@ -14,9 +14,9 @@ Our scripts are prepared in [experiments](./experiments/). Detailed descriptions
 
 We prepared 6 APR tools to run SimAPR: `TBar`, `Avatar`, `kPar` and `Fixminer` as template-based APR and `AlphaRepair` and `Recoder` as learning-based APR.
 
-Note: We already run GZoltar v1.7.3 and put every FL results in this repository.
+**Note**: We already run GZoltar v1.7.3 and put every FL results in this repository.
 
-Note: in our implementation, we provide every locations to APR tool before running SimAPR and APR tool generates every patch candidates for every location.
+**Note**: in our implementation, we provide every locations to APR tool before running SimAPR and APR tool generates every patch candidates for every location.
 
 ## Getting Started
 This section describes how to run SimAPR in docker container.
@@ -24,9 +24,17 @@ If you want to reproduce our experiments, we already prepared scripts to reprodu
 Please see [Detailed Instruction](#detailed-instruction).
 
 To run SimAPR, you should follow these steps:
-1. Build docker image and create container
-2. Generate patch space via running APR tools modified by us
-3. Run SimAPR
+- [SimAPR](#simapr)
+  - [About this repository](#about-this-repository)
+  - [Getting Started](#getting-started)
+    - [1. Build docker image and create container](#1-build-docker-image-and-create-container)
+    - [2. Generate patch spaces via running APR tools](#2-generate-patch-spaces-via-running-apr-tools)
+    - [3. Run SimAPR engine](#3-run-simapr-engine)
+    - [The outputs](#the-outputs)
+      - [simapr-finished.txt](#simapr-finishedtxt)
+      - [simapr-result.json](#simapr-resultjson)
+    - [About simulation mode](#about-simulation-mode)
+  - [Detailed Instruction](#detailed-instruction)
 
 In this section, we will describe how to run SimAPR with TBar and Closure-62 benchmark.
 If you want to run different APR tools and version, change the `tbar` and `TBar` to proper APR tool and `Closure_62` to proper version.
@@ -57,8 +65,8 @@ $ ssh -p 1001 root@localhost
 ### 2. Generate patch spaces via running APR tools
 Before you run SimAPR, every patch space and patch candidates should be created. To do that, run the following command:
 ```
-$ cd SimAPR/experiments/tbar
-$ python3 tbar.py Closure_62
+# cd SimAPR/experiments/tbar
+# python3 tbar.py Closure_62
 ```
 
 This will take about 2-3 minutes.
@@ -69,7 +77,7 @@ Meta-information of patch space is stored in `~/SimAPR/TBar/d4j/Closure_62/switc
 ### 3. Run SimAPR engine
 After generating patch space, run SimAPR. To do that, run the following command:
 ```
-python3 ~/SimAPR/SimAPR/simapr.py -o ~/SimAPR/experiments/tbar/result/Closure_62-out -m <orig/casino/seapr/genprog> -k template -w ~/SimAPR/TBar/d4j/Closure_62 -t 180000 --use-simulation-mode ~/SimAPR/experiments/tbar/result/cache/Closure_62-cache.json -T 1200 -- python3 ~/SimAPR/SimAPR/script/d4j_run_test.py ~/SimAPR/TBar/buggy
+# python3 ~/SimAPR/SimAPR/simapr.py -o ~/SimAPR/experiments/tbar/result/Closure_62-out -m <orig/casino/seapr/genprog> -k template -w ~/SimAPR/TBar/d4j/Closure_62 -t 180000 --use-simulation-mode ~/SimAPR/experiments/tbar/result/cache/Closure_62-cache.json -T 1200 -- python3 ~/SimAPR/SimAPR/script/d4j_run_test.py ~/SimAPR/TBar/buggy
 ```
 
 SimAPR provides various scheduling algorithms: original, Casino, SeAPR and GenProg.

@@ -96,29 +96,29 @@ It takes about 5 minutes for each version.
 ### Template-based APR tools
 Run following commands to generate patch spaces for `TBar`, `Avatar`, `kPar` and `Fixminer`:
 ```
-$ cd experiments/<tool>
-$ python3 gen-patch.py <# of CPU>
+# cd experiments/<tool>
+# python3 gen-patch.py <# of CPU>
 ```
 We recommend to use 1/5 of overall CPU cores for parallel run.
 
 For example, to prepare patch space for ```Tbar``` with 30 cores in parallel, run the following command:
 ```
-$ cd experiments/tbar
-$ python3 gen-patch.py 30
+# cd experiments/tbar
+# python3 gen-patch.py 30
 ```
 
 ### Learning-based APR tools
 Run following commands to generate patch spaces for `AlphaRepair` and `Recoder`:
 ```
-$ cd experiments/<tool>
-$ python3 gen-patch.py <# of GPUs>
+# cd experiments/<tool>
+# python3 gen-patch.py <# of GPUs>
 ```
 **NOTE**: For learning-based tools, you should assign **GPU** to each process. So, you should assign *1 GPU to 1 process*.
 
 For example, to prepare patch space for ```Recoder``` with 4 GPUs in parallel, run the following command:
 ```
-$ cd experiments/recoder
-$ python3 gen-patch.py 4
+# cd experiments/recoder
+# python3 gen-patch.py 4
 ```
 
 ### Template-based APR tools for Defects4j v2.0
@@ -126,8 +126,8 @@ Run these commands in simapr-2.0 container to run with Defects4j v2.0.
 
 Run following commands to generate patch spaces for `TBar`, `Avatar`, `kPar` and `Fixminer` with Defects4j v2.0:
 ```
-$ cd experiments/<tool>
-$ python3 gen-patch-d4j2.py <# of CPU>
+# cd experiments/<tool>
+# python3 gen-patch-d4j2.py <# of CPU>
 ```
 We recommend to use 1/5 of overall CPU cores for parallel run.
 
@@ -136,8 +136,8 @@ Run these commands in simapr-2.0 container to run with Defects4j v2.0.
 
 Run following commands to generate patch spaces for `AlphaRepair` and `Recoder` with Defects4j v2.0:
 ```
-$ cd experiments/<tool>
-$ python3 gen-patch.py <# of GPUs>
+# cd experiments/<tool>
+# python3 gen-patch.py <# of GPUs>
 ```
 **NOTE**: For learning-based tools, you should assign **GPU** to each process. So, you should assign *1 GPU to 1 process*.
 
@@ -157,8 +157,8 @@ SimAPR is implemented in Python3 and stored in the [SimAPR](./SimAPR/) directory
 
 To set up SimAPR, do the following:
 ```
-$ cd SimAPR
-$ python3 -m pip install -r requirements.txt
+# cd SimAPR
+# python3 -m pip install -r requirements.txt
 ```
 
 We prepared scripts to run SimAPR easily. Those scripts are stored in [experiments](./experiments/) directory, same directory as [patch preparation](#generating-the-patch-space). You can check the [SimAPR's README file](./SimAPR/README.md) for more detailed explaination.
@@ -176,8 +176,8 @@ In our experiments, we used 30 CPU cores for each tools and it takes about 3 day
 ### SimAPR for Defects4j v1.2.0
 To run SimAPR for Defects4j v1.2.0 for each tool, run the following command:
 ```
-$ cd experiments/<tool>
-$ python3 search.py <# of CPU>
+# cd experiments/<tool>
+# python3 search.py <# of CPU>
 ```
 This will run original order from original tools once, SeAPR algorithm once, Casino algorithm 50 times and GenProg algorithm 50 times.
 
@@ -185,15 +185,15 @@ The results will be stored in `experiments/<tool>/result`.
 
 For example, for `TBar` with 30 CPU cores, run the following command:
 ```
-$ cd experiments/tbar
-$ python3 search.py 30
+# cd experiments/tbar
+# python3 search.py 30
 ```
 
 ### SimAPR for Defects4j v2.0
 Similar with SimAPR for Defects4j v1.2.0, to run SimAPR for Defects4j v2.0 for each tool, run the following command:
 ```
-$ cd experiments/<tool>
-$ python3 search-d4j2.py <# of CPU>
+# cd experiments/<tool>
+# python3 search-d4j2.py <# of CPU>
 ```
 This will run original order from original tools once and Casino algorithm 50 times with Defects4j v2.0.
 
@@ -202,8 +202,8 @@ The results will be stored in `experiments/<tool>/result`, same as SimAPR for De
 ### SimAPR for ablation study
 To run SimAPR for ablation study for each tool, run the following command:
 ```
-$ cd experiments/<tool>
-$ python3 search-ablation.py <# of CPU>
+# cd experiments/<tool>
+# python3 search-ablation.py <# of CPU>
 ```
 This will run Casino algorithm without Vertical search 50 times and Casino algorithm without Horizontal search 50 times.
 
