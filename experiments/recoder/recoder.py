@@ -25,7 +25,7 @@ def main(argv):
         print(f"Recoder failed to run recoder {bugid}")
         exit(result.returncode)
 
-    result2=subprocess.run(["python3", "repair.py", bugid],env=new_env)
+    result2=subprocess.run(f"conda run -n recoder python3 repair.py {bugid}",env=new_env, shell=True, executable='/bin/bash')
     if result2.returncode != 0:
         print(f"Recoder failed to generate actual patches {bugid}")
         exit(result2.returncode)
