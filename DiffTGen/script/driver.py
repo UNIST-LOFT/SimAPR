@@ -378,6 +378,7 @@ def get_groundtruth(bugid: str, d4j_dir: str) -> list:
   return file, final_line_nums
 
 def prepare(basedir: str, conf_file: str, tool: str) -> List[List[str]]:
+  print(f"prepare")
   if not os.path.exists(conf_file):
     return list()
   with open(conf_file, 'r') as c:
@@ -708,6 +709,7 @@ def main(tool: str, patchdir: str) -> None:
     pool.close()
     pool.join()
   else:
+    print(f"Run {tool}")
     basedir = os.path.abspath(patchdir)
     cmd_list = list()
     for bugid in sort_bugids(os.listdir(basedir)):
