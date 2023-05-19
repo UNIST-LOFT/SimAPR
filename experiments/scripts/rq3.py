@@ -14,6 +14,8 @@ wo_horizontal:List[List[int]]=[[] for _ in range(50)]
 casino_result:List[List[int]]=[[] for _ in range(50)]
 
 def plot_patches_ci_java(mode='tbar'):
+    global orig_result,wo_vertical,wo_horizontal,casino_result
+    
     # Casino
     for i in range(50):
         for result in d4j.D4J_1_2_LIST:
