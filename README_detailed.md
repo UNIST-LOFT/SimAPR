@@ -1,7 +1,12 @@
 # Detailed Instruction
 
 ## Workflow
-Workflow is same as Getting Started, but we will describe more details.
+In detailed instruction, we will explain how to reproduce our experimens in our paper.
+
+Following every steps in here will take a lot of time, resources and disk space.
+We recommend to follow this instruction in powerful machines.
+
+In our case, we use 256-core and 1TB RAM machine *for each tools* except `Fixminer` and 128-core and 1TB RAM machine for `Fixminer`.
 - [Detailed Instruction](#detailed-instruction)
   - [Workflow](#workflow)
   - [1. Setup environment via docker (~ 10 min)](#1-setup-environment-via-docker--10-min)
