@@ -203,4 +203,34 @@ There are 3 files in output directory: `simapr-search.log`, `simapr-result.json`
 ### 4. Run scripts to generate plots used in our paper
 Before this step, you should run every scripts (`search.py`, `search-d4j2.py` and `search-ablation.py`) for every tools and check every results are stored in `experiments/<tool>/result` in same machine.
 
-We prepared scripts to generate plots used in our paper. Those scripts are stored in [experiments](./experiments/) directory, same directory as [patch preparation](#generating-the-patch-space).
+We prepared scripts to generate plots used in our paper.
+Those scripts are stored in [experiments/scripts](./experiments/scripts) directory.
+
+#### RQ 1: Search Efficiency
+We prepared a script to generate plots for RQ 1 (Figure 6 in the paper).
+To generate plots for RQ 1, run the following command:
+```
+# cd experiments
+# python3 scripts/rq1.py
+```
+This will generate plots for each tools in `experiments/rq1-<tool>.pdf`.
+
+#### RQ 2: Recall
+
+#### RQ 3: Ablation Study
+We prepared a script to generate a plot for RQ 3 (Figure 8(a) in the paper).
+To generate a plot for RQ 3, run the following command:
+```
+# cd experiments
+# python3 scripts/rq3.py
+```
+This will generate a plot in `experiments/rq3.pdf`.
+
+#### RQ 4: Generalizability
+We prepared a script to generate a plot for RQ 4 (Figure 8(b) in the paper).
+To generate a plot for RQ 4, run the following command:
+```
+# cd experiments
+# python3 scripts/rq4.py
+```
+This will generate a plot in `experiments/rq4.pdf`.
