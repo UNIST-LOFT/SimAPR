@@ -1,0 +1,67 @@
+{
+  "bugid": "Chart-13",
+  "tool": "recoder",
+  "correct_patch": {},
+  "plausible_patches": [
+    {
+      "id": "0-8",
+      "location": "0/8/Range.java",
+      "file": "source/org/jfree/data/Range.java",
+      "line": 85
+    },
+    {
+      "id": "34-23",
+      "location": "34/23/BorderArrangement.java",
+      "file": "source/org/jfree/chart/block/BorderArrangement.java",
+      "line": 424
+    },
+    {
+      "id": "35-18",
+      "location": "35/18/BorderArrangement.java",
+      "file": "source/org/jfree/chart/block/BorderArrangement.java",
+      "line": 425
+    },
+    {
+      "id": "41-18",
+      "location": "41/18/BorderArrangement.java",
+      "file": "source/org/jfree/chart/block/BorderArrangement.java",
+      "line": 444
+    },
+    {
+      "id": "43-60",
+      "location": "43/60/BorderArrangement.java",
+      "file": "source/org/jfree/chart/block/BorderArrangement.java",
+      "line": 449
+    },
+    {
+      "id": "44-5",
+      "location": "44/5/BorderArrangement.java",
+      "file": "source/org/jfree/chart/block/BorderArrangement.java",
+      "line": 450
+    },
+    {
+      "id": "44-6",
+      "location": "44/6/BorderArrangement.java",
+      "file": "source/org/jfree/chart/block/BorderArrangement.java",
+      "line": 450
+    },
+    {
+      "id": "44-41",
+      "location": "44/41/BorderArrangement.java",
+      "file": "source/org/jfree/chart/block/BorderArrangement.java",
+      "line": 450
+    },
+    {
+      "id": "46-16",
+      "location": "46/16/BorderArrangement.java",
+      "file": "source/org/jfree/chart/block/BorderArrangement.java",
+      "line": 453
+    },
+    {
+      "id": "47-42",
+      "location": "47/42/BorderArrangement.java",
+      "file": "source/org/jfree/chart/block/BorderArrangement.java",
+      "line": 454
+    }
+  ]
+}

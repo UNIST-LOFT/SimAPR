@@ -1,0 +1,14 @@
+.vscode/
+build/
+test/
+patches/
+d4j/
+output/
+patch/
+out/
+out-*/
+ods/
+temp-*/
+log/
+log-*/
+*.tar.gz

@@ -1,0 +1,9 @@
+#!/bin/bash
+
+#To be CUSTOMIZED (in its absolute path)
+proj_dir=/root/DiffTGen 
+
+evosuite_path=${proj_dir}/lib/evosuite-1.0.2.jar
+# Run DiffTGen
+java -cp :${proj_dir}/lib/*:${proj_dir}/build testgen.Main -evosuitejpath ${evosuite_path} -difftgendpath ${proj_dir} $*
+# java -cp :${proj_dir}/lib/*:${proj_dir}/build testgen.Main -difftgendpath ${proj_dir} -evosuitejpath ${evosuite_path} -bugid Chart-3 -repairtool recoder_11_21 -outputdpath ${proj_dir}/out -inputfpath ${proj_dir}/patch/test/Chart-3/delta-11-21.txt -oracleinputfpath ${proj_dir}/patch/test/Chart-3/oracle-4-25.txt -stopifoverfittingfound -dependjpath ${proj_dir}/d4j/Chart-3/build/chart-3.jar
