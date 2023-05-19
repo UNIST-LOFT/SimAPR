@@ -88,6 +88,7 @@ public class ContextReader {
 					String classNameAndPath = readClassNameAndPath(codeAst);
 					List<Field> fields = dic.findFieldsByClassPath(classNameAndPath);
 					addFieldsToVars(fields, allVarNamesMap, varTypesMap, allVarNamesList, classNameAndPath, true);
+					superFieldsToVarsCounter=0;
 					addSuperFieldsToVars(classNameAndPath, allVarNamesMap, varTypesMap, allVarNamesList, dic);
 					addStaticFieldsFromDependencies(allVarNamesMap, varTypesMap, allVarNamesList, classNameAndPath, dic, "");
 				}
@@ -114,13 +115,15 @@ public class ContextReader {
 		}
 	}
 	
+	private static int superFieldsToVarsCounter=0;
 	private static void addSuperFieldsToVars(String classNameAndPath, Map<String, List<String>> allVarNamesMap,
 			Map<String, String> varTypesMap, List<String> allVarNamesList, Dictionary dic) {
 		String superClassNameAndPath = dic.findSuperClassName(classNameAndPath);
-		if (superClassNameAndPath == null) return;
+		if (superClassNameAndPath == null || superFieldsToVarsCounter>20) return;
 		
 		List<Field> fields = dic.findFieldsByClassPath(superClassNameAndPath);
 		addFieldsToVars(fields, allVarNamesMap, varTypesMap, allVarNamesList, superClassNameAndPath, false);
+		superFieldsToVarsCounter++;
 		addSuperFieldsToVars(superClassNameAndPath, allVarNamesMap, varTypesMap, allVarNamesList, dic);
 	}
 

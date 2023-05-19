@@ -137,17 +137,13 @@ public class Dictionary {
 		return this.findConstructors(classPath);
 	}
 	
-	/**
-	 * Find all methods that can be accessed by the current class, including the protected methods and public ones of its super class.
-	 * 
-	 * @param currentClassPath
-	 * @return
-	 */
-	public List<Method> findAllAvailableMethodsOfThisClass(String currentClassPath, boolean needsPrivateMethods, boolean needsProtectedMethods) {
+	private int findAllAvailableMethodsOfThisClassCounter=0;
+	private List<Method> findAllAvailableMethodsOfThisClassImpl(String currentClassPath, boolean needsPrivateMethods, boolean needsProtectedMethods) {
 		List<Method> methods = this.methods.get(currentClassPath);
 		if (methods == null) {
 			methods = new ArrayList<>();
 		}
+		// if (findAllAvailableMethodsOfThisClassCounter>20) return methods;
 		if (!needsProtectedMethods) needsPrivateMethods = false;
 		
 		for (int index = methods.size() - 1; index >= 0; index --) {
@@ -162,11 +158,22 @@ public class Dictionary {
 			}
 		}
 		
+		findAllAvailableMethodsOfThisClassCounter++;
 		String superClass = this.findSuperClassName(currentClassPath);
-		if (superClass != null) {
-			methods.addAll(this.findAllAvailableMethodsOfThisClass(superClass, false, needsProtectedMethods));
+		if (superClass != null && findAllAvailableMethodsOfThisClassCounter<=20) {
+			methods.addAll(this.findAllAvailableMethodsOfThisClassImpl(superClass, false, needsProtectedMethods));
 		}
 		return methods;
+	} 
+	/**
+	 * Find all methods that can be accessed by the current class, including the protected methods and public ones of its super class.
+	 * 
+	 * @param currentClassPath
+	 * @return
+	 */
+	public List<Method> findAllAvailableMethodsOfThisClass(String currentClassPath, boolean needsPrivateMethods, boolean needsProtectedMethods) {
+		findAllAvailableMethodsOfThisClassCounter=0;
+		return findAllAvailableMethodsOfThisClassImpl(currentClassPath, needsPrivateMethods, needsProtectedMethods);
 	}
 
 	public List<String> findDependenciesByClassNames(String currentClassPath, List<String> classNames) {
