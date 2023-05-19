@@ -13,3 +13,6 @@ nltk
 gensim
 pyemd
 pyyaml
+pandas
+seaborn
+scikit-learn
