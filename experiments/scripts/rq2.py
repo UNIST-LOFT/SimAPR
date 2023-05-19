@@ -29,7 +29,10 @@ def get_ranking_info_tbar(mode='tbar'):
     # Casino
     for i in range(50):
         for result in d4j.D4J_1_2_LIST:
-            simapr_result=open(f'{mode}/result/{result}-casino-{i}/simapr-result.json','r')
+            try:
+                simapr_result=open(f'{mode}/result/{result}-casino-{i}/simapr-result.json','r')
+            except:
+                continue
             root=json.load(simapr_result)
             simapr_result.close()
 
@@ -61,7 +64,10 @@ def get_ranking_info_tbar(mode='tbar'):
     # GenProg
     for i in range(50):
         for result in d4j.D4J_1_2_LIST:
-            simapr_result=open(f'{mode}/result/{result}-genprog-{i}/simapr-result.json','r')
+            try:
+                simapr_result=open(f'{mode}/result/{result}-genprog-{i}/simapr-result.json','r')
+            except:
+                continue
             root=json.load(simapr_result)
             simapr_result.close()
 
@@ -92,7 +98,10 @@ def get_ranking_info_tbar(mode='tbar'):
 
     # SeAPR
     for result in d4j.D4J_1_2_LIST:
-        simapr_result=open(f'{mode}/result/{result}-seapr/simapr-result.json','r')
+        try:
+            simapr_result=open(f'{mode}/result/{result}-seapr/simapr-result.json','r')
+        except:
+            continue
         root=json.load(simapr_result)
         simapr_result.close()
 
@@ -123,7 +132,10 @@ def get_ranking_info_tbar(mode='tbar'):
 
     # original
     for result in d4j.D4J_1_2_LIST:
-        simapr_result=open(f'{mode}/result/{result}-orig/simapr-result.json','r')
+        try:
+            simapr_result=open(f'{mode}/result/{result}-orig/simapr-result.json','r')
+        except:
+            continue
         root=json.load(simapr_result)
         simapr_result.close()
 
