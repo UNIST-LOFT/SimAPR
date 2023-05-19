@@ -2,10 +2,28 @@
 
 ## Workflow
 Workflow is same as Getting Started, but we will describe more details.
-1. Setup environment via docker
-2. Generate patch space
-3. Run SimAPR, a patch scheduler
-4. Run scripts to generate plots used in our paper
+- [Detailed Instruction](#detailed-instruction)
+  - [Workflow](#workflow)
+  - [1. Setup environment via docker (~ 10 min)](#1-setup-environment-via-docker--10-min)
+  - [2. Generating the patch space](#2-generating-the-patch-space)
+    - [Template-based APR tools](#template-based-apr-tools)
+    - [Learning-based APR tools](#learning-based-apr-tools)
+    - [Template-based APR tools for Defects4j v2.0](#template-based-apr-tools-for-defects4j-v20)
+    - [Learning-based APR tools for Defects4j v2.0](#learning-based-apr-tools-for-defects4j-v20)
+    - [Outputs](#outputs)
+  - [3. Run SimAPR](#3-run-simapr)
+    - [SimAPR for Defects4j v1.2.0](#simapr-for-defects4j-v120)
+    - [SimAPR for Defects4j v2.0](#simapr-for-defects4j-v20)
+    - [SimAPR for ablation study](#simapr-for-ablation-study)
+    - [SimAPR Output](#simapr-output)
+  - [4. Run scripts to generate plots used in our paper](#4-run-scripts-to-generate-plots-used-in-our-paper)
+    - [RQ 1: Search Efficiency](#rq-1-search-efficiency)
+    - [RQ 2: Recall](#rq-2-recall)
+      - [To run DiffTGen](#to-run-difftgen)
+      - [To run ODS](#to-run-ods)
+      - [To generate plots for RQ 2](#to-generate-plots-for-rq-2)
+    - [RQ 3: Ablation Study](#rq-3-ablation-study)
+    - [RQ 4: Generalizability](#rq-4-generalizability)
    
 ## 1. Setup environment via docker (~ 10 min)
 We assumed that you already cloned our repository. If not, look at Getting Started in [README.md](./README.md).
@@ -149,6 +167,11 @@ We prepared 3 scripts for each tools:
 * SimAPR for Defects4j v1.2.0
 * SimAPR for Defects4j v2.0
 * SimAPR for ablation study
+
+Timeout for each version and each algorithm is 5 hours.
+Thanks for the *simulation* mode in SimAPR, it does not take 5 hours for every version, but it still needs a lot of time.
+
+In our experiments, we used 30 CPU cores for each tools and it takes about 3 days for each tools with Defects4j v1.2.0.
 
 ### SimAPR for Defects4j v1.2.0
 To run SimAPR for Defects4j v1.2.0 for each tool, run the following command:
