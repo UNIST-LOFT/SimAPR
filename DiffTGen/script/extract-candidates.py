@@ -140,7 +140,7 @@ def main_recoder(cmd: str, rootdir: str, outdir: str) -> None:
         os.makedirs(os.path.dirname(target), exist_ok=True)
         os.system(f"cp {original} {target}")
 
-def main_tbar(rootdir,outdir,tool):
+def main_tbar(rootdir,outdir,cmd):
   tool_dir = ""
   sim_dir = os.path.join(rootdir, "experiments", cmd, "result", "cache")
   if cmd == "tbar":
@@ -159,13 +159,14 @@ def main_tbar(rootdir,outdir,tool):
     if not os.path.exists(sim_file):
       continue
     print(f"Processing {bugid}")
+    bid_formatted = bugid.replace("_", "-")
     
     with open(switch_info_file, "r") as swf, open(sim_file, "r") as sf:
       sw = json.load(swf)
       sim = json.load(sf)
       plau_list = get_plausible(sim)
       result = dict()
-      result["bugid"] = sw["project_name"]
+      result["bugid"] = bid_formatted
       result["tool"] = "tbar"
       result["correct_patch"] = dict()
       plau_patches = list()
@@ -187,12 +188,12 @@ def main_tbar(rootdir,outdir,tool):
       if len(plau_list) == 0:
         continue
       print(bugid)
-      os.makedirs(f"{outdir}/{bugid}", exist_ok=True)
-      with open(f"{outdir}/{bugid}/{bugid}.json", "w") as f:
+      os.makedirs(f"{outdir}/{bid_formatted}", exist_ok=True)
+      with open(f"{outdir}/{bid_formatted}/{bid_formatted}.json", "w") as f:
         json.dump(result, f, indent=2)
       for plau in plau_list:
         original = os.path.join(tool_dir, "d4j", bugid, plau)
-        target = os.path.join(outdir, bugid, plau)
+        target = os.path.join(outdir, bid_formatted, plau)
         os.makedirs(os.path.dirname(target), exist_ok=True)
         os.system(f"cp {original} {target}")
 
