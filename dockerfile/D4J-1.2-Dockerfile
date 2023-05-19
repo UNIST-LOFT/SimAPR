@@ -20,7 +20,7 @@ RUN \
 				unzip \
 				cpanminus \
 				make \
-				nano python3-pip python3 screen htop maven psmisc
+				nano python3-pip python3 screen htop maven psmisc ant
 
 # Java version
 ENV JAVA_HOME /usr/lib/jvm/java-8-openjdk-amd64
@@ -107,6 +107,13 @@ RUN conda env create -f data/env.yaml
 RUN wget https://www.dropbox.com/s/hu3lwdybaeoygzk/best_model.ckpt
 RUN mkdir checkpointSearch
 RUN mv best_model.ckpt checkpointSearch
+
+# Install DiffTGen and ODS
+WORKDIR /root/SimAPR/DiffTGen
+RUN ./compile.sh
+WORKDIR /root/SimAPR/ODS/coming
+RUN mvn install -DskipTests
+RUN python3 -m pip install xgboost scikit-learn imblearn matplotlib
 
 WORKDIR /root
 CMD ["/usr/sbin/sshd","-D"]
