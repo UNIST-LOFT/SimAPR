@@ -2,7 +2,7 @@ import os
 import sys
 import json
 
-ROOTDIR = "/root/DiffTGen"
+ROOTDIR = "/root/SimAPR/DiffTGen"
 
 def sort_bugids(bugids):
     proj_dict = dict()

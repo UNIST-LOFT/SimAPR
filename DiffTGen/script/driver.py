@@ -10,7 +10,7 @@ import multiprocessing as mp
 import javalang
 import javalang.tree
 
-ROOTDIR = "/root/DiffTGen"
+ROOTDIR = "/root/SimAPR/DiffTGen"
 manager = mp.Manager()
 global_cmd_queue = manager.Queue()
 tool_name = ""
