@@ -64,33 +64,34 @@ This file contains meta data of plausible patches.
   ]
 }
 ```
+## Run DiffTGen
+Default location of `DiffTGen` is at `/root/SimAPR/DiffTGen`.
 
-#### Extract candidates from result of SimAPR
+If you want to change the location, fix code in `run`, `script/driver.py` and `script/check-results.py`.
+
+### Extract candidates from result of SimAPR
 
 You can use `script/extract-candidates.py` to extract and collect plausible patches.
 ```shell
-python3 script/extract-candidates.py recoder /root/SimAPR/Recoder patches/recoder
+python3 script/extract-candidates.py recoder /root/SimAPR patches/recoder
 ```
+Collected plausible patches are in `patches/recoder`
+
 ### Run DiffTGen
 
 You can use `script/driver.py` to run the `DiffTGen`.
 ```shell
 python3 script/driver.py recoder /root/SimAPR/Recoder patches/recoder
 ```
+The output will be in `out/recoder`.
 
-Default location of `DiffTGen` is at `/root/DiffTGen`.
+### Check results
+After running `DiffTGen` using `driver.py`, you can check and collect the results using `script/check-results.py`
+```shell
+python3 script/check-results.py recoder ./patches/recoder
+```
+This will add `out/recoder/result.csv` file, which contains acceptable patches.
 
-If you want to change the location, fix code in `run` and `script/driver.py`
-
-```
-# run
-proj_dir= <new location>
-```
-
-```
-# script/driver.py
-ROOTDIR = <new location>
-```
 
 ### How to Create an Input File
 

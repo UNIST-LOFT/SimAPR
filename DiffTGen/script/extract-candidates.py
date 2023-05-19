@@ -94,14 +94,20 @@ def get_correct_patch_recoder(correct_patch_file: str) -> List[str]:
       result[bid] = correct_patches
     return result
 
-def collect_plausible_recoder(rootdir: str, outdir: str) -> None:
-  bugids = get_bugids(f"{rootdir}/data/bugid2.txt")
+def main_recoder(cmd: str, rootdir: str, outdir: str) -> None:
+  tool_dir = ""
+  sim_dir = os.path.join(rootdir, "experiments", cmd, "result", "cache")
+  if cmd == "recoder":
+    tool_dir = os.path.join(rootdir, "Recoder")
+  elif cmd == "alpharepair":
+    tool_dir = os.path.join(rootdir, "AlphaRepair")
+  bugids = get_bugids(f"{tool_dir}/data/bugs.csv")
   for bugid in bugids:
-    # os.makedirs(f"{outdir}/{bugid}", exist_ok=True)
-    switch_info_file = os.path.join(rootdir, "d4j", bugid, "switch-info.json")
-    sim_file = os.path.join(rootdir, "sim", bugid, f"{bugid}-sim.json")
-    if os.path.exists(sim_file) == False:
+    switch_info_file = os.path.join(tool_dir, "d4j", bugid, "switch-info.json")
+    sim_file = os.path.join(sim_dir, f"{bugid}-cache.json")
+    if not os.path.exists(sim_file):
       continue
+    print(f"Processing {bugid}")
     with open(switch_info_file, "r") as swf, open(sim_file, "r") as sf:
       sw = json.load(swf)
       sim = json.load(sf)
@@ -129,33 +135,10 @@ def collect_plausible_recoder(rootdir: str, outdir: str) -> None:
       with open(f"{outdir}/{bugid}/{bugid}.json", "w") as f:
         json.dump(result, f, indent=2)
       for plau in plau_list:
-        original = os.path.join(rootdir, "d4j", bugid, plau)
+        original = os.path.join(tool_dir, "d4j", bugid, plau)
         target = os.path.join(outdir, bugid, plau)
         os.makedirs(os.path.dirname(target), exist_ok=True)
         os.system(f"cp {original} {target}")
-        
-def main_recoder(args: List[str]) -> None:
-  rootdir = args[1]
-  outdir = args[2]
-  correct_map = get_correct_patch_recoder(
-      os.path.join(rootdir, "data", "correct_patch.csv"))
-  for bugid in correct_map:
-    os.makedirs(f"{outdir}/{bugid}", exist_ok=True)
-    switch_info_file = os.path.join(rootdir, "d4j", bugid, "switch-info.json")
-    sim_file = os.path.join(rootdir, "sim", bugid, f"{bugid}-sim.json")
-    correct_patches = correct_map[bugid]
-    with open(switch_info_file, "r") as swf, open(sim_file, "r") as sf:
-      sw = json.load(swf)
-      sim = json.load(sf)
-      plau_list = get_plausible(sim)
-      result = get_info_recoder(sw, correct_patches, plau_list)
-      with open(f"{outdir}/{bugid}/{bugid}.json", "w") as f:
-        json.dump(result, f, indent=2)
-    for plau in plau_list:
-      original = os.path.join(rootdir, "d4j", bugid, plau)
-      target = os.path.join(outdir, bugid, plau)
-      os.makedirs(os.path.dirname(target), exist_ok=True)
-      os.system(f"cp {original} {target}")
 
 def main_tbar(rootdir,outdir,tool):
   for bugid in os.listdir(os.path.join(rootdir, "d4j")):
@@ -212,10 +195,10 @@ if __name__ == "__main__":
   # main_recoder(sys.argv)
   if len(sys.argv) < 4:
     print("Usage: python3 extract-candidates.py <tool> <rootdir> <outdir>")
-    print("ex) python3 script/extract-candidates.py recoder /root/Recoder ./patches/recoder")
+    print("ex) python3 script/extract-candidates.py recoder /root/SimAPR ./patches/recoder")
     exit(1)
   cmd = sys.argv[1]
   if cmd in ["recoder", "alpharepair"]:
-    collect_plausible_recoder(sys.argv[2], sys.argv[3])
+    main_recoder(cmd, sys.argv[2], sys.argv[3])
   elif cmd in ["tbar", "avatar", "kpar", "fixminer"]:
     main_tbar(sys.argv[2], sys.argv[3],cmd)

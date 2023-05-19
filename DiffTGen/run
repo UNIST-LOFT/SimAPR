@@ -1,7 +1,7 @@
 #!/bin/bash
 
 #To be CUSTOMIZED (in its absolute path)
-proj_dir=/root/DiffTGen 
+proj_dir=/root/SimAPR/DiffTGen 
 
 evosuite_path=${proj_dir}/lib/evosuite-1.0.2.jar
 # Run DiffTGen
