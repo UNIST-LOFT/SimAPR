@@ -40,18 +40,15 @@ def mkdir(path):
 
 def get_plausible_results(msv_results_path, output):
     mkdir(output)
-    for directory in os.listdir(msv_results_path):
-        if not directory.endswith("50"):
-            continue
-
+    for directory in os.listdir(f'{msv_results_path}/cache'):
         plausibles = []
-        with open(f"{msv_results_path}/{directory}/msv-original-sim-data.json") as f:
+        with open(f"{msv_results_path}/cache/{directory}") as f:
             history = json.load(f)
             for patch in history.keys():
                 if history[patch]["plausible"]:
                     plausibles.append({patch: history[patch]})
 
-        with open(f"{output}/{directory}.json", "w+") as f:
+        with open(f"{output}/{directory}", "w+") as f:
             json.dump(plausibles, f)
 
 def copy_patches(msv_results_path_parsed, patch_results_path, output):
@@ -174,7 +171,7 @@ def fetch_buggy_files(buggy_projects_path, coming_rep):
         shutil.copyfile(buggy_file, f"{coming_rep}/{project}/{src_file}/{project}_{src_file}_s.java")
 
 def parse_msv(msv_results_path, patch_results_path, buggy_projects_path, output):
-    msv_results_path_parsed = output + "/" + msv_results_path + "-parsed"
+    msv_results_path_parsed = msv_results_path + "-parsed"
     get_plausible_results(msv_results_path, msv_results_path_parsed)
     plausible_output = output + "/" + "plausible_patches"
     copy_patches(msv_results_path_parsed, patch_results_path, plausible_output)
@@ -185,15 +182,15 @@ def parse_msv(msv_results_path, patch_results_path, buggy_projects_path, output)
 
 ## Run Coming tool
 def run_coming(coming_path, pairs_path, output):
-    command = f"java -classpath {coming_path}/target/coming-0-SNAPSHOT-jar-with-dependencies.jar fr.inria.coming.main.ComingMain -input files -mode features -location {pairs_path} -output {output}/out_features"
+    command = f"java -classpath {coming_path}/coming-0-SNAPSHOT-jar-with-dependencies.jar fr.inria.coming.main.ComingMain -input files -mode features -location {pairs_path} -output {output}/out_features"
     process = subprocess.Popen(shlex.split(command), stderr=subprocess.PIPE, stdout=subprocess.PIPE)
     stdout, stderr = process.communicate()
 
     if process.returncode != 0:
-        print(stderr)
+        print(stderr.decode('utf-8'))
         print("Something wrong with Coming")
 
-    print(stdout)
+    print(stdout.decode('utf-8'))
 
     shutil.move(f"test.csv", f"{output}/test.csv")
 

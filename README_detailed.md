@@ -250,6 +250,14 @@ Before you run this script, you should run DiffTGen and ODS.
 #### To run DiffTGen
 
 #### To run ODS
+ODS is used for rank between the valid patches. For easier use, we prepared a script to run ODS.
+
+To run ODS, run the following command:
+```
+# cd experiments
+# python3 scripts/ods.py
+```
+This will generate outputs in `scripts/ods-<tool>.csv`.
 
 #### To generate plots for RQ 2
 To generate plots for RQ 2, run the following command:
