@@ -89,6 +89,9 @@ WORKDIR /root/SimAPR/experiments/tbar
 RUN mkdir result
 RUN mkdir result/cache
 
+WORKDIR /root/SimAPR/SimAPR
+RUN python3 -m pip install -r requirements.txt
+
 WORKDIR /root
 RUN update-alternatives --set java /usr/lib/jvm/java-8-openjdk-amd64/jre/bin/java
 
