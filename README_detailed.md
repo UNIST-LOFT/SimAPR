@@ -5,6 +5,7 @@ Workflow is same as Getting Started, but we will describe more details.
 1. Setup environment via docker
 2. Generate patch space
 3. Run SimAPR, a patch scheduler
+4. Run scripts to generate plots used in our paper
    
 ### 1. Setup environment via docker (~ 10 min)
 We assumed that you already cloned our repository. If not, look at Getting Started in [README.md](./README.md).
@@ -21,7 +22,8 @@ Before you build docker image, find proper CUDA image for your CUDA version at:
 
 And change `FROM` in [Dockerfile](./dockerfile/) to proper CUDA image.
 The default is `nvidia/cuda:12.1.1-base-ubuntu22.04`.
-Ubuntu 22.04 is recommended.
+
+**NOTE**: Image should be Ubuntu. Ubuntu 22.04 is recommended.
 
 Then, build the docker image
 ```
@@ -67,11 +69,17 @@ SimAPR takes the patch space as input to explore patch space and use different p
 Patch space construction process is tool-specific. 
 We provide a Python script in [experiments](./experiments/) directory that automates patch space preparation.
 
+Running time will be about 35 hours for each tools without parallel running.
+It takes about 5 minutes for each version.
+
+**NOTE**: This will take a lot of time, memory and disk space. We recommend to make **10TB** for disk space for each tools.
+**NOTE**: We highly recommend to run each tools in different machine and copy only final result after SimAPR to same machine.
+
 #### Template-based APR tools
 Run following commands to generate patch spaces for `TBar`, `Avatar`, `kPar` and `Fixminer`:
 ```
 $ cd experiments/<tool>
-$ python3 gen-patch.py <# of CPU for parallel run>
+$ python3 gen-patch.py <# of CPU>
 ```
 We recommend to use 1/5 of overall CPU cores for parallel run.
 
@@ -85,7 +93,7 @@ $ python3 gen-patch.py 30
 Run following commands to generate patch spaces for `AlphaRepair` and `Recoder`:
 ```
 $ cd experiments/<tool>
-$ python3 gen-patch.py <# of GPUs for parallel run>
+$ python3 gen-patch.py <# of GPUs>
 ```
 **NOTE**: For learning-based tools, you should assign **GPU** to each process. So, you should assign *1 GPU to 1 process*.
 
@@ -95,6 +103,26 @@ $ cd experiments/recoder
 $ python3 gen-patch.py 4
 ```
 
+#### Template-based APR tools for Defects4j v2.0
+Run these commands in simapr-2.0 container to run with Defects4j v2.0.
+
+Run following commands to generate patch spaces for `TBar`, `Avatar`, `kPar` and `Fixminer` with Defects4j v2.0:
+```
+$ cd experiments/<tool>
+$ python3 gen-patch-d4j2.py <# of CPU>
+```
+We recommend to use 1/5 of overall CPU cores for parallel run.
+
+#### Learning-based APR tools for Defects4j v2.0
+Run these commands in simapr-2.0 container to run with Defects4j v2.0.
+
+Run following commands to generate patch spaces for `AlphaRepair` and `Recoder` with Defects4j v2.0:
+```
+$ cd experiments/<tool>
+$ python3 gen-patch.py <# of GPUs>
+```
+**NOTE**: For learning-based tools, you should assign **GPU** to each process. So, you should assign *1 GPU to 1 process*.
+
 #### Outputs
 After this process finished, outputs will be stored in `<tool>/d4j/<version>`.
 For example, if you run `TBar` with `Chart_4`, then outputs are stored in `TBar/d4j/Chart_4`.
@@ -103,8 +131,9 @@ In this directory,
 * `switch-info.json` contains the meta-information of patch space in JSON format.
 * The other directories are patch candidates. Path to each patched source file is patch ID.
 
+
 ### 3. Run SimAPR
-After patch space in prepared, you can run SimAPR.
+Before run SimAPR, you should generate every patch spaces for every APR tools.
 
 SimAPR is implemented in Python3 and stored in the [SimAPR](./SimAPR/) directory.
 
@@ -116,59 +145,62 @@ $ python3 -m pip install -r requirements.txt
 
 We prepared scripts to run SimAPR easily. Those scripts are stored in [experiments](./experiments/) directory, same directory as [patch preparation](#generating-the-patch-space). You can check the [SimAPR's README file](./SimAPR/README.md) for more detailed explaination.
 
-We prepared 5 scripts for each tools: 
-* Original order from original APR tools
-* SeAPR algorithm
-* GenProg algorithm
-* Casino algorithm
-* Ablation Study
+We prepared 3 scripts for each tools: 
+* SimAPR for Defects4j v1.2.0
+* SimAPR for Defects4j v2.0
+* SimAPR for ablation study
 
-To run original order and SeAPR algorithm, run following commands:
+#### SimAPR for Defects4j v1.2.0
+To run SimAPR for Defects4j v1.2.0 for each tool, run the following command:
 ```
 $ cd experiments/<tool>
-$ python3 search-<tool>-<orig/seapr>.py <version>
+$ python3 search.py <# of CPU>
 ```
-For example, to run original order with `TBar` and `Chart_4`:
+This will run original order from original tools once, SeAPR algorithm once, Casino algorithm 50 times and GenProg algorithm 50 times.
+
+The results will be stored in `experiments/<tool>/result`.
+
+For example, for `TBar` with 30 CPU cores, run the following command:
 ```
-$ cd expeirments/tbar
-$ python3 search-tbar-orig.py Chart_4
+$ cd experiments/tbar
+$ python3 search.py 30
 ```
 
-To run GenProg and Casino algorithm, run following commands:
+#### SimAPR for Defects4j v2.0
+Similar with SimAPR for Defects4j v1.2.0, to run SimAPR for Defects4j v2.0 for each tool, run the following command:
 ```
 $ cd experiments/<tool>
-$ python3 search-<tool>-<genprog/casino>.py <version> <seed>
+$ python3 search-d4j2.py <# of CPU>
 ```
-In this case, we need a seed for random library.
-Seeds used in our experiments are in [experiments/seeds.py](./experiments/seeds.py).
+This will run same as SimAPR for Defects4j v1.2.0, but with Defects4j v2.0.
 
-For example, to run Casino algorithm with `TBar` and `Chart_4`:
-```
-$ cd expeirments/tbar
-$ python3 search-tbar-casino.py Chart_4 1812569871
-```
-This will initialize random library with seed `1812569871`.
+The results will be stored in `experiments/<tool>/result`, same as SimAPR for Defects4j v1.2.0.
 
-Note that we run Casino and GenProg 50 times for each version.
-
-To run ablation study, run following commands:
+#### SimAPR for ablation study
+To run SimAPR for ablation study for each tool, run the following command:
 ```
 $ cd experiments/<tool>
-$ python3 search-<tool>-ablation.py <version> <vertical/horizontal> <seed>
+$ python3 search-ablation.py <# of CPU>
 ```
-In this case, set `vertical` or `horizontal` to specify which ablation study to run.
-If it is `vertical`, SimAPR runs without vertical search. If it is `horizontal`, SimAPR runs without horizontal search.
+This will run Casino algorithm without Vertical search 50 times and Casino algorithm without Horizontal search 50 times.
 
-It also needs a seed because it will run SimAPR with Casino algorithm.
+The results will be stored in `experiments/<tool>/result`, same as SimAPR for Defects4j v1.2.0.
 
-Note that we also run ablation study 50 times for each version.
-
-### SimAPR Output
+#### SimAPR Output
 Outputs will be stored in `experiments/<tool>/result/<version>-<algorithm>`.
 
-For example, if you run Casino algorithm with `TBar` and `Chart_4`, output will be stored in `experiments/tbar/result/Chart_4-casino`.
+For example, Casino algorithm with `TBar` and `Chart_4`, output will be stored in `experiments/tbar/result/Chart_4-casino-<trial>`.
+`<trial>` will be 0 to 49 in this case.
 
 There are 3 files in output directory: `simapr-search.log`, `simapr-result.json` and `simapr-finished.txt`.
 * `simapr-search.log` contains logs from SimAPR.
 * `simapr-result.json` contains the results from SimAPR by each patches in JSON format.
 * `simapr-finished.txt` is created when SimAPR finished and it contains overhead by scheduler, overall test execution time and overall running time.
+
+**NOTE**: If you run SimAPR in multiple machine, copy `experiments/<tool>/result` to same machine.
+
+
+### 4. Run scripts to generate plots used in our paper
+Before this step, you should run every scripts (`search.py`, `search-d4j2.py` and `search-ablation.py`) for every tools and check every results are stored in `experiments/<tool>/result` in same machine.
+
+We prepared scripts to generate plots used in our paper. Those scripts are stored in [experiments](./experiments/) directory, same directory as [patch preparation](#generating-the-patch-space).
