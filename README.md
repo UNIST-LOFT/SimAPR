@@ -2,7 +2,9 @@
 SimAPR is patch scheduling framework for patch searching problem.
 It supports sequential algorithm from original APR tools, SeAPR, GenProg family algoritm and Casino.
 
-## About this repository
+## Getting Started
+
+### About this repository
 ![Overview of SimAPR](./overview.png)
 Figure: Overview of SimAPR
 
@@ -18,15 +20,16 @@ We prepared 6 APR tools to run SimAPR: `TBar`, `Avatar`, `kPar` and `Fixminer` a
 
 **Note**: in our implementation, we provide every locations to APR tool before running SimAPR and APR tool generates every patch candidates for every location.
 
-## Getting Started
+### Getting Started
 This section describes how to run SimAPR in docker container.
 If you want to reproduce our experiments, we already prepared scripts to reproduce our experiments easily.
 Please see [Detailed Instruction](#detailed-instruction).
 
 To run SimAPR, you should follow these steps:
 - [SimAPR](#simapr)
-  - [About this repository](#about-this-repository)
   - [Getting Started](#getting-started)
+    - [About this repository](#about-this-repository)
+    - [Getting Started](#getting-started-1)
     - [1. Build docker image and create container](#1-build-docker-image-and-create-container)
     - [2. Generate patch spaces via running APR tools](#2-generate-patch-spaces-via-running-apr-tools)
     - [3. Run SimAPR engine](#3-run-simapr-engine)
