@@ -1,5 +1,8 @@
 .vscode
+**/__pycache__
+
+# Some output files & dirs
 **/buggy/
 **/d4j/
 **/result
-**/__pycache__
+experiments/**/*.csv
