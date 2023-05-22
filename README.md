@@ -38,7 +38,7 @@ Just follow 1-4 steps in [README_detailed.md](./README_detailed.md)!
 Also, we explained how to run SimAPR for single APR tool and single bug in [To run SimAPR](./README_detailed.md#to-run-simapr).
 Just run two scripts!
 
-SimAPR is also extensible. In [SimAPR/README.md](./SimAPR/README.md), we explained how to add new algorithm to SimAPR.
+SimAPR is also extensible. In [SimAPR/README.md](./SimAPR/README.md#How-to-Add-and-Run-a-New-Patch-Scheduling-Algorithm), we explained how to add new algorithm to SimAPR.
 
 ## About this repository
 <!-- <img src="./overview.png" alt="overview" width="600" title="Overview of SimAPR">
