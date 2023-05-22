@@ -2,6 +2,44 @@
 SimAPR is patch scheduling framework for patch searching problem.
 It supports sequential algorithm from original APR tools, SeAPR, GenProg family algoritm and Casino.
 
+## Why this repository is reusable?
+### This repository is highly automated and easy to use
+SimAPR is highly automated--pull docker image, create container, and run two scripts. That's it!
+See [To run SimAPR](./README_detailed.md#to-run-simapr) section for detailed description.
+
+Also, we prepared various scripts in [experiments](./experiments/) directory to help you to run SimAPR easily.
+
+### This repository contains all necessary that others can extend it
+This repository contains every implementations used in SimAPR.
+
+First, we modified 6 APR tools to generate patch space.
+They are in [TBar](./TBar), [Avatar](./Avatar), [kPar](./kPar), [Fixminer](./Fixminer), [AlphaRepair](./AlphaRepair) and [Recoder](./Recoder) directories.
+
+Actual implementation of SimAPR is in [SimAPR](./SimAPR) directory and it is written in Python.
+
+Also, this repository contains tools used in our experiments: [DiffTGen](./DiffTGen/) and [ODS](./ODS/).
+
+For our docker image, build new image with [dockerfile](./dockerfile/) or pull docker image from DockerHub!
+
+### README contains details beyond the scope of the paper
+We prepared detailed READMEs for each tools.
+For example, for TBar, we prepared [README](./TBar/README.md) to describe what we modified and how to compile and run our TBar.
+
+We prepared detailed README of SimAPR in [SimAPR](./SimAPR/) directory.
+This README contains how to run SimAPR, detailed inputs, outputs, and options.
+It also explains how to add new algorithm to SimAPR.
+
+We also prepared READMEs for [DiffTGen](./DiffTGen/README.md) and [ODS](./ODS/README.md), used in our experiments.
+
+### The artifact is comprehensively documented
+First, we explained how to reproduce our experiments in [README_detailed.md](./README_detailed.md).
+Just follow 1-4 steps in [README_detailed.md](./README_detailed.md)!
+
+Also, we explained how to run SimAPR for single APR tool and single bug in [To run SimAPR](./README_detailed.md#to-run-simapr).
+Just run two scripts!
+
+SimAPR is also extensible. In [SimAPR/README.md](./SimAPR/README.md), we explained how to add new algorithm to SimAPR.
+
 ## About this repository
 <!-- <img src="./overview.png" alt="overview" width="600" title="Overview of SimAPR">
 
@@ -16,6 +54,11 @@ Please see [Detailed Instruction](#detailed-instruction).
 
 To run SimAPR, you should follow these steps:
 - [SimAPR](#simapr)
+  - [Why this repository is reusable?](#why-this-repository-is-reusable)
+    - [This repository is highly automated and easy to use](#this-repository-is-highly-automated-and-easy-to-use)
+    - [This repository contains all necessary that others can extend it](#this-repository-contains-all-necessary-that-others-can-extend-it)
+    - [README contains details beyond the scope of the paper](#readme-contains-details-beyond-the-scope-of-the-paper)
+    - [The artifact is comprehensively documented](#the-artifact-is-comprehensively-documented)
   - [About this repository](#about-this-repository)
     - [Getting Started](#getting-started)
     - [1. Build docker image and create container](#1-build-docker-image-and-create-container)
