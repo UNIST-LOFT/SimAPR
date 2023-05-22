@@ -7,15 +7,35 @@ import seaborn
 
 import d4j
 
+def parse_ods(mode='tbar'):
+    ods_result:Dict[str,List[Tuple[int,str]]]=dict()  # {project: [(score, patch id), ...]}
+    with open(f'scripts/ods-{mode}.csv','r') as f:
+        for line in f:
+            _,patch,score=line.split(',')
+            score=float(score.strip())
+            patch=patch.strip()
+
+            project,patch_id=patch.split('#')
+            if mode=='tbar' or mode=='kpar':
+                patch_id='/'+patch_id
+            if project not in ods_result:
+                ods_result[project]=[]
+            ods_result[project].append((score,patch_id))
+
+    for project in ods_result:
+        ods_result[project]=sorted(ods_result[project],reverse=True)
+    
+    return ods_result
+
 casino_result:List[List[Tuple(int,int)]]=[[] for _ in range(50)]
 orig_result:List[Tuple(int,int)]=[]
 seapr_result:List[Tuple(int,int)]=[]
-genprog_result:List[Tuple(int,int)]=[[] for _ in range(50)]
+genprog_result:List[List[Tuple(int,int)]]=[[] for _ in range(50)]
 
 def get_ranking_info_tbar(mode='tbar'):
     with open(f'difftgen-{mode}.csv','r') as f:
         lines=f.readlines()
-        correct=dict()
+        correct:Dict[str,List[str]]=dict()
         for line in lines:
             if line[0]!='#':
                 cur_line=line.split(',')
@@ -25,6 +45,8 @@ def get_ranking_info_tbar(mode='tbar'):
             correct[cur_ver]=[]
             for i in range(1,len(cur_line)):
                 correct[cur_ver].append(cur_line[i].strip())
+
+    ods_result=parse_ods(mode)
 
     # Casino
     for i in range(50):
@@ -36,7 +58,7 @@ def get_ranking_info_tbar(mode='tbar'):
             root=json.load(simapr_result)
             simapr_result.close()
 
-            cur_result=dict()
+            cur_result:Dict[str,int]=dict()
             for res in root:
                 is_plausible=res['pass_result']
                 time=res['time']
@@ -44,22 +66,20 @@ def get_ranking_info_tbar(mode='tbar'):
                 if is_plausible:
                     cur_result[loc]=round(time/60)
 
-            result_file=open(f'{mode}/result/{result}-casino-{i}/ods.csv','r')
+            result_file=ods_result[result]
 
             cur_rank=0
             for res in result_file:
-                cur_rank+=1
-                is_correct=False
-                id=res.split(',')[0]
-                if result in correct:
-                    if id in correct[result]:
-                        is_correct=True
-                
-                if is_correct:
-                    casino_result[i].append((cur_result[id],cur_rank))
-                    break
-
-            result_file.close()
+                if res[1] in cur_result.keys():
+                    cur_rank+=1
+                    is_correct=False
+                    if result in correct:
+                        if res[1] in correct[result]:
+                            is_correct=True
+                    
+                    if is_correct:
+                        casino_result[i].append((cur_result[res[1]],cur_rank))
+                        break
 
     # GenProg
     for i in range(50):
@@ -71,7 +91,7 @@ def get_ranking_info_tbar(mode='tbar'):
             root=json.load(simapr_result)
             simapr_result.close()
 
-            cur_result=dict()
+            cur_result:Dict[str,int]=dict()
             for res in root:
                 is_plausible=res['pass_result']
                 time=res['time']
@@ -79,22 +99,20 @@ def get_ranking_info_tbar(mode='tbar'):
                 if is_plausible:
                     cur_result[loc]=round(time/60)
 
-            result_file=open(f'{mode}/result/{result}-genprog-{i}/ods.csv','r')
+            result_file=ods_result[result]
 
             cur_rank=0
             for res in result_file:
-                cur_rank+=1
-                is_correct=False
-                id=res.split(',')[0]
-                if result in correct:
-                    if id in correct[result]:
-                        is_correct=True
-                
-                if is_correct:
-                    genprog_result[i].append((cur_result[id],cur_rank))
-                    break
-
-            result_file.close()
+                if res[1] in cur_result.keys():
+                    cur_rank+=1
+                    is_correct=False
+                    if result in correct:
+                        if res[1] in correct[result]:
+                            is_correct=True
+                    
+                    if is_correct:
+                        genprog_result[i].append((cur_result[res[1]],cur_rank))
+                        break
 
     # SeAPR
     for result in d4j.D4J_1_2_LIST:
@@ -105,7 +123,7 @@ def get_ranking_info_tbar(mode='tbar'):
         root=json.load(simapr_result)
         simapr_result.close()
 
-        cur_result=dict()
+        cur_result:Dict[str,int]=dict()
         for res in root:
             is_plausible=res['pass_result']
             time=res['time']
@@ -113,22 +131,20 @@ def get_ranking_info_tbar(mode='tbar'):
             if is_plausible:
                 cur_result[loc]=round(time/60)
 
-        result_file=open(f'{mode}/result/{result}-seapr/ods.csv','r')
+        result_file=ods_result[result]
 
         cur_rank=0
         for res in result_file:
-            cur_rank+=1
-            is_correct=False
-            id=res.split(',')[0]
-            if result in correct:
-                if id in correct[result]:
-                    is_correct=True
-            
-            if is_correct:
-                seapr_result.append((cur_result[id],cur_rank))
-                break
-
-        result_file.close()
+            if res[1] in cur_result.keys():
+                cur_rank+=1
+                is_correct=False
+                if result in correct:
+                    if res[1] in correct[result]:
+                        is_correct=True
+                
+                if is_correct:
+                    seapr_result.append((cur_result[res[1]],cur_rank))
+                    break
 
     # original
     for result in d4j.D4J_1_2_LIST:
@@ -139,7 +155,7 @@ def get_ranking_info_tbar(mode='tbar'):
         root=json.load(simapr_result)
         simapr_result.close()
 
-        cur_result=dict()
+        cur_result:Dict[str,int]=dict()
         for res in root:
             is_plausible=res['pass_result']
             time=res['time']
@@ -147,22 +163,20 @@ def get_ranking_info_tbar(mode='tbar'):
             if is_plausible:
                 cur_result[loc]=round(time/60)
 
-        result_file=open(f'{mode}/result/{result}-orig/ods.csv','r')
+        result_file=ods_result[result]
 
         cur_rank=0
         for res in result_file:
-            cur_rank+=1
-            is_correct=False
-            id=res.split(',')[0]
-            if result in correct:
-                if id in correct[result]:
-                    is_correct=True
-            
-            if is_correct:
-                seapr_result.append((cur_result[id],cur_rank))
-                break
-
-        result_file.close()
+            if res[1] in cur_result.keys():
+                cur_rank+=1
+                is_correct=False
+                if result in correct:
+                    if res[1] in correct[result]:
+                        is_correct=True
+                
+                if is_correct:
+                    orig_result.append((cur_result[res[1]],cur_rank))
+                    break
 
 get_ranking_info_tbar('tbar')
 get_ranking_info_tbar('avatar')
