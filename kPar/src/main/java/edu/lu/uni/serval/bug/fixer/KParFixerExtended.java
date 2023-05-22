@@ -413,7 +413,8 @@ public class KParFixerExtended extends AbstractFixer {
                     buggyLine, scn.targetJavaFile.getAbsolutePath());
             if (beam == null) throw new IllegalArgumentException("Method not found");
             String javafile = scn.targetJavaFile.getAbsolutePath();
-            javafile = javafile.substring(Configuration.WORK_DIR.length());
+            int index=javafile.indexOf(Configuration.WORK_DIR);
+            javafile = javafile.substring(index+Configuration.WORK_DIR.length());
             this.jsonLogs.addMethodMutation(
                     javafile,
                     beam.name, beam.desc,

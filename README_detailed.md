@@ -432,7 +432,7 @@ For example, `TBar` with `Closure-62`, `simapr-result.json` file contains this e
     "pass_result": false,
     "output_distance": -1.0,
     "out_diff": false,
-    "pass_all_neg_test": false,
+    "pass_all_neg_test": false,func
     "compilable": true,
     "total_searched": 2,
     "total_passed": 0,
