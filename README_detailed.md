@@ -29,6 +29,10 @@ In our case, we use 256-core and 1TB RAM machine *for each tools* except `Fixmin
       - [To generate plots for RQ 2](#to-generate-plots-for-rq-2)
     - [RQ 3: Ablation Study](#rq-3-ablation-study)
     - [RQ 4: Generalizability](#rq-4-generalizability)
+  - [Details of Directories \& Files](#details-of-directories--files)
+    - [Scripts for our experiments](#scripts-for-our-experiments)
+      - [To run SimAPR](#to-run-simapr)
+    - [Patch Generators](#patch-generators)
    
 ## 1. Setup environment via docker (~ 10 min)
 We assumed that you already cloned our repository. If not, look at Getting Started in [README.md](./README.md).
@@ -89,13 +93,14 @@ SimAPR takes the patch space as input to explore patch space and use different p
 5. ```AlphaRepair```
 6. ```Recoder```
 
-Patch space construction process is tool-specific. 
-We provide a Python script in [experiments](./experiments/) directory that automates patch space preparation.
+Patch space generation is tool-specific. 
+We provide a Python script in [experiments](./experiments/) directory that automates patch space generation.
 
 Running time will be about 35 hours for each tools without parallel running.
 It takes about 5 minutes for each version.
 
 **NOTE**: This will take a lot of time, memory and disk space. We recommend to make **10TB** for disk space for each tools.
+
 **NOTE**: We highly recommend to run each tools in different machine and copy only final result after SimAPR to same machine.
 
 ### Template-based APR tools
@@ -284,3 +289,103 @@ To generate a plot for RQ 4, run the following command:
 # python3 scripts/rq4.py
 ```
 This will generate a plot in `experiments/rq4.pdf`.
+
+## Details of Directories & Files
+Directory structure of this repository is as follows:
+```
+SimAPR
+├── AlphaRepair
+├── Avatar
+├── Fixminer
+├── kPar
+├── Recoder
+├── TBar
+├── experiments
+│   ├── alpharepair
+│   ├── avatar
+│   ├── fixminer
+│   ├── kpar
+│   ├── recoder
+│   ├── tbar
+│   └── scripts
+├── SimAPR
+├── dockerfile
+├── DiffTGen
+└── ODS
+```
+
+* `AlphaRepair` to `TBar` contains each modified APR tools to generate patch space. See [Patch Generators](#patch-generators) for more details.
+* `experiments` contains various scripts to run SimAPR easily. See [Scripts for our experiments](#scripts-for-our-experiments) for more details.
+* `SimAPR` contains SimAPR engine.
+* `dockerfile` contains Dockerfile to build docker image.
+* `DiffTGen` and `ODS` are used for RQ 2 (Recall) in our paper.
+
+### Scripts for our experiments
+We prepared various scripts to run our experiments easily in `experiments/<tool>`.
+In this section, we will explain about each scripts and how to run them.
+
+* `d4j_<tool>.py` contains benchmark lists of Defects4j v1.2.0 and Defects4j v2.0.
+* `seeds.py` contains 50 seeds used in our experiments.
+* `<tool>.py` is for generating patch space by running each APR tools.
+* `search-<tool>-<algorithm>.py` is for running SimAPR with each tools and each algorithm. `<algorithm>` is `original`, `seapr`, `casino` or `genprog`.
+* `search-<tool>-ablation.py` is for running SimAPR with each tools and ablation study for RQ 3 in our paper.
+
+#### To run SimAPR
+To run SimAPR, first run `<tool>.py` to generate patch space:
+```
+# cd experiments/<tool>
+# python3 <tool>.py <version>
+```
+`<version>` is a bug version of Defects4j and should follow `<subject>_<bug>` format.
+For example, to generate patch space of `Closure-62` with `TBar`, run the following command:
+```
+# cd experiments/tbar
+# python3 tbar.py Closure_62
+```
+
+Then, run `search-<tool>-<algorithm>.py` to run SimAPR.
+Directory should be same as `<tool>.py`.
+`<algorithm>` should be one of the following: `orig`, `seapr`, `casino` or `genprog`.
+
+For `orig` and `seapr`, run the following command:
+```
+# python3 search-<tool>-<algorithm>.py <version>
+```
+`<version>` is same as `<tool>.py`.
+For example, to run SimAPR with `TBar` and `Closure-62` with original order, run the following command:
+```
+# python3 search-tbar-orig.py Closure_62
+```
+
+For `casino` and `genprog`, run the following command:
+```
+# python3 search-<tool>-<algorithm>.py <version> <seed>
+```
+`<version>` is same as `<tool>.py`.
+Because `casino` and `genprog` algorithms are stochastic and they contain randomness, you should provide seed to SimAPR.
+Seed should be integer and smaller than 2^32-1 because of the requirements of NumPy.
+Seeds used in our experiments are stored in `seeds.py`.
+
+For example, to run SimAPR with `TBar` and `Closure-62` with Casino algorithm and seed 123, run the following command:
+```
+# python3 search-tbar-casino.py Closure_62 123
+```
+
+### Patch Generators
+Patch generators are stored `SimAPR/<tool>` directory.
+
+We modified each tools to generate patch candidates and meta-information of patch space.
+Also, we removed patch validation part from each tools because SimAPR will run patch validation.
+
+`Avatar`, `TBar`, `kPar` and `Fixminer` are template-based APR tools and they are written in Java with Maven.
+To compile them, just move to each directory and run `./compile.sh`.
+For example, for `TBar`, run the following command:
+```
+# cd TBar
+# ./compile.sh
+```
+
+However, `AlphaRepair` and `Recoder` are learning-based APR tools and they are written in Python.
+You don't need to compile them.
+
+We prepared scripts to generate patch space easily for each tools in `experiments` directory.
