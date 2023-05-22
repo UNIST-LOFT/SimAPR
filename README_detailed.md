@@ -29,9 +29,13 @@ In our case, we use 256-core and 1TB RAM machine *for each tools* except `Fixmin
       - [To generate plots for RQ 2](#to-generate-plots-for-rq-2)
     - [RQ 3: Ablation Study](#rq-3-ablation-study)
     - [RQ 4: Generalizability](#rq-4-generalizability)
-  - [Details of Directories \& Files](#details-of-directories--files)
+  - [Details of SimAPR](#details-of-simapr)
     - [Scripts for our experiments](#scripts-for-our-experiments)
-      - [To run SimAPR](#to-run-simapr)
+    - [To run SimAPR](#to-run-simapr)
+      - [Patch generation](#patch-generation)
+      - [Output of patch generation](#output-of-patch-generation)
+      - [Run SimAPR](#run-simapr)
+      - [Outputs of SimAPR](#outputs-of-simapr)
     - [Patch Generators](#patch-generators)
    
 ## 1. Setup environment via docker (~ 10 min)
@@ -290,7 +294,9 @@ To generate a plot for RQ 4, run the following command:
 ```
 This will generate a plot in `experiments/rq4.pdf`.
 
-## Details of Directories & Files
+## Details of SimAPR
+This section explains how to run SimAPR and the outputs in detail.
+
 Directory structure of this repository is as follows:
 ```
 SimAPR
@@ -330,7 +336,10 @@ In this section, we will explain about each scripts and how to run them.
 * `search-<tool>-<algorithm>.py` is for running SimAPR with each tools and each algorithm. `<algorithm>` is `original`, `seapr`, `casino` or `genprog`.
 * `search-<tool>-ablation.py` is for running SimAPR with each tools and ablation study for RQ 3 in our paper.
 
-#### To run SimAPR
+### To run SimAPR
+Before run SimAPR, you should generate patch space with modified APR tools.
+
+#### Patch generation
 To run SimAPR, first run `<tool>.py` to generate patch space:
 ```
 # cd experiments/<tool>
@@ -343,6 +352,24 @@ For example, to generate patch space of `Closure-62` with `TBar`, run the follow
 # python3 tbar.py Closure_62
 ```
 
+#### Output of patch generation
+Outputs will be stored in `<tool>/d4j/<version>`.
+For example, if you run `TBar` with `Closure_62`, then outputs are stored in `TBar/d4j/Closure_62`.
+
+In this directory, there are a lot of directories and `switch-info.json` file.
+The directories are each patch candidates, and `switch-info.json` contains meta-information of patch space in JSON format.
+
+In `switch-info.json`, there are multiple keys:
+* `project_name`: Defects4j version (e.g. `Closure_62`)
+* `failing_test_cases`: List of failing test cases
+* `passing_test_cases`: List of passing test cases
+* `failed_passing_tests`: List of failed test cases that Defects4j marked as passing tests
+* `priority`: Descending order of FL result
+* `rules`: Patch tree structure
+* `func_locations`: Start line and end line of each methods (for patch tree)
+* `ranking`: Ranking of each patch candidates. SimAPR with `original` algorithm follows this order.
+
+#### Run SimAPR
 Then, run `search-<tool>-<algorithm>.py` to run SimAPR.
 Directory should be same as `<tool>.py`.
 `<algorithm>` should be one of the following: `orig`, `seapr`, `casino` or `genprog`.
@@ -370,6 +397,59 @@ For example, to run SimAPR with `TBar` and `Closure-62` with Casino algorithm an
 ```
 # python3 search-tbar-casino.py Closure_62 123
 ```
+
+#### Outputs of SimAPR
+After SimAPR, outputs will be stored in `experiments/<tool>/result/<version>-<algorithm>`.
+
+There are three files in output directory: `simapr-search.log`, `simapr-result.json` and `simapr-finished.txt`.
+* `simapr-search.log` contains logs from SimAPR.
+* `simapr-result.json` contains the results from SimAPR by each patches in JSON format.
+* `simapr-finished.txt` is created when SimAPR finished and it contains overhead by scheduler, overall test execution time and overall running time.
+
+The result of SimAPR is stored in `simapr-result.json`.
+This file contains a JSON array of the results of each patches.
+
+Each elements contains these keys:
+* `execution`: # of actual test execution. If the patch is cached and tests are not executed, this value does not increment.
+* `iteration`: # of iteration. It always increment.
+* `time`: Time until the patch is tried.
+* `result`: True if the patch passed one or more of the failing test cases. False otherwise.
+* `pass_result`: True if the patch passed all test cases (valid patch). False if failed test case is exist.
+* `pass_all_neg_test`: True if the patch passed all failing tests. False otherwise.
+* `compilable`: True if the patch is compilable.
+* `total_searched`: # of tried patches (same as `iteration`).
+* `total_passed`: # of patches that `result` is true.
+* `total_plausible`: # of valid patches.
+* `config`: Patch ID.
+
+For example, `TBar` with `Closure-62`, `simapr-result.json` file contains this element:
+```
+  {
+    "execution": 2,
+    "iteration": 2,
+    "time": 14.69991660118103,
+    "result": false,
+    "pass_result": false,
+    "output_distance": -1.0,
+    "out_diff": false,
+    "pass_all_neg_test": false,
+    "compilable": true,
+    "total_searched": 2,
+    "total_passed": 0,
+    "total_plausible": 0,
+    "config": [
+      {
+        "location": "/0_0_2_1_VariableReplacer/LightweightMessageFormatter.java"
+      }
+    ]
+  },
+```
+In this case, patch ID is `/0_0_2_1_VariableReplacer/LightweightMessageFormatter.java`.
+This patch is selected and tried in 2nd iteration and it takes about 13.7 seconds until this patch.
+This patch failed all failing tests (`result` is false) and also invalid patch (`pass_result` is false) because SimAPR only tries passing tests if a patch passed all failing tests.
+However, this patch is compilable (`compilable` is true).
+
+Until this patch, there is no valid patch (`total_plausible` is 0).
 
 ### Patch Generators
 Patch generators are stored `SimAPR/<tool>` directory.
