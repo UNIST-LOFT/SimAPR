@@ -11,15 +11,17 @@ In our case, we use 256-core and 1TB RAM machine *for each tools* except `Fixmin
   - [Workflow](#workflow)
   - [1. Setup environment via docker (~ 10 min)](#1-setup-environment-via-docker--10-min)
   - [2. Generating the patch space](#2-generating-the-patch-space)
-    - [Template-based APR tools](#template-based-apr-tools)
-    - [Learning-based APR tools](#learning-based-apr-tools)
-    - [Template-based APR tools for Defects4j v2.0](#template-based-apr-tools-for-defects4j-v20)
-    - [Learning-based APR tools for Defects4j v2.0](#learning-based-apr-tools-for-defects4j-v20)
+    - [Generate patch space for RQ 1, 2 and 3](#generate-patch-space-for-rq-1-2-and-3)
+      - [Template-based APR tools](#template-based-apr-tools)
+      - [Learning-based APR tools](#learning-based-apr-tools)
+    - [Generate patch space for RQ 4](#generate-patch-space-for-rq-4)
+      - [Template-based APR tools for Defects4j v2.0](#template-based-apr-tools-for-defects4j-v20)
+      - [Learning-based APR tools for Defects4j v2.0](#learning-based-apr-tools-for-defects4j-v20)
     - [Outputs](#outputs)
   - [3. Run SimAPR](#3-run-simapr)
-    - [SimAPR for Defects4j v1.2.0](#simapr-for-defects4j-v120)
-    - [SimAPR for Defects4j v2.0](#simapr-for-defects4j-v20)
-    - [SimAPR for ablation study](#simapr-for-ablation-study)
+    - [RQ 1 \& 2: SimAPR for Defects4j v1.2.0](#rq-1--2-simapr-for-defects4j-v120)
+    - [RQ 3: SimAPR for ablation study](#rq-3-simapr-for-ablation-study)
+    - [RQ 4: SimAPR for Defects4j v2.0](#rq-4-simapr-for-defects4j-v20)
     - [SimAPR Output](#simapr-output)
   - [4. Run scripts to generate plots used in our paper](#4-run-scripts-to-generate-plots-used-in-our-paper)
     - [RQ 1: Search Efficiency](#rq-1-search-efficiency)
@@ -107,7 +109,8 @@ It takes about 5 minutes for each version.
 
 **NOTE**: We highly recommend to run each tools in different machine and copy only final result after SimAPR to same machine.
 
-### Template-based APR tools
+### Generate patch space for RQ 1, 2 and 3
+#### Template-based APR tools
 Run following commands to generate patch spaces for `TBar`, `Avatar`, `kPar` and `Fixminer`:
 ```
 # cd experiments/<tool>
@@ -121,7 +124,7 @@ For example, to prepare patch space for ```Tbar``` with 30 cores in parallel, ru
 # python3 gen-patch.py 30
 ```
 
-### Learning-based APR tools
+#### Learning-based APR tools
 Run following commands to generate patch spaces for `AlphaRepair` and `Recoder`:
 ```
 # cd experiments/<tool>
@@ -135,7 +138,8 @@ For example, to prepare patch space for ```Recoder``` with 4 GPUs in parallel, r
 # python3 gen-patch.py 4
 ```
 
-### Template-based APR tools for Defects4j v2.0
+### Generate patch space for RQ 4
+#### Template-based APR tools for Defects4j v2.0
 Run these commands in simapr-2.0 container to run with Defects4j v2.0.
 
 Run following commands to generate patch spaces for `TBar`, `Avatar`, `kPar` and `Fixminer` with Defects4j v2.0:
@@ -145,7 +149,7 @@ Run following commands to generate patch spaces for `TBar`, `Avatar`, `kPar` and
 ```
 We recommend to use 1/5 of overall CPU cores for parallel run.
 
-### Learning-based APR tools for Defects4j v2.0
+#### Learning-based APR tools for Defects4j v2.0
 Run these commands in simapr-2.0 container to run with Defects4j v2.0.
 
 Run following commands to generate patch spaces for `AlphaRepair` and `Recoder` with Defects4j v2.0:
@@ -187,7 +191,7 @@ Thanks for the *simulation* mode in SimAPR, it does not take 5 hours for every v
 
 In our experiments, we used 30 CPU cores for each tools and it takes about 3 days for each tools with Defects4j v1.2.0.
 
-### SimAPR for Defects4j v1.2.0
+### RQ 1 & 2: SimAPR for Defects4j v1.2.0
 To run SimAPR for Defects4j v1.2.0 for each tool, run the following command:
 ```
 # cd experiments/<tool>
@@ -203,23 +207,23 @@ For example, for `TBar` with 30 CPU cores, run the following command:
 # python3 search.py 30
 ```
 
-### SimAPR for Defects4j v2.0
-Similar with SimAPR for Defects4j v1.2.0, to run SimAPR for Defects4j v2.0 for each tool, run the following command:
-```
-# cd experiments/<tool>
-# python3 search-d4j2.py <# of CPU>
-```
-This will run original order from original tools once and Casino algorithm 50 times with Defects4j v2.0.
-
-The results will be stored in `experiments/<tool>/result`, same as SimAPR for Defects4j v1.2.0.
-
-### SimAPR for ablation study
+### RQ 3: SimAPR for ablation study
 To run SimAPR for ablation study for each tool, run the following command:
 ```
 # cd experiments/<tool>
 # python3 search-ablation.py <# of CPU>
 ```
 This will run Casino algorithm without Vertical search 50 times and Casino algorithm without Horizontal search 50 times.
+
+The results will be stored in `experiments/<tool>/result`, same as SimAPR for Defects4j v1.2.0.
+
+### RQ 4: SimAPR for Defects4j v2.0
+Similar with SimAPR for Defects4j v1.2.0, to run SimAPR for Defects4j v2.0 for each tool, run the following command:
+```
+# cd experiments/<tool>
+# python3 search-d4j2.py <# of CPU>
+```
+This will run original order from original tools once and Casino algorithm 50 times with Defects4j v2.0.
 
 The results will be stored in `experiments/<tool>/result`, same as SimAPR for Defects4j v1.2.0.
 
@@ -432,7 +436,7 @@ For example, `TBar` with `Closure-62`, `simapr-result.json` file contains this e
     "pass_result": false,
     "output_distance": -1.0,
     "out_diff": false,
-    "pass_all_neg_test": false,func
+    "pass_all_neg_test": false,
     "compilable": true,
     "total_searched": 2,
     "total_passed": 0,
