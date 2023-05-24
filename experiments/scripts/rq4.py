@@ -12,11 +12,14 @@ casino_result:List[List[int]]=[[] for _ in range(50)]
 
 def plot_patches_ci_java(mode='tbar'):
     global orig_result,casino_result
+    dl = mode in {'recoder', 'alpharepair'}
 
     # Casino
     for i in range(50):
         for result in d4j.D4J_2_LIST:
             try:
+                if dl:
+                    result = result.replace('_', '-')
                 result_file=open(f'{mode}/result/{result}-casino-{i}/simapr-result.json','r')
             except:
                 continue
@@ -40,6 +43,8 @@ def plot_patches_ci_java(mode='tbar'):
     # Original
     for result in d4j.D4J_2_LIST:
         try:
+            if dl:
+                result = result.replace('_', '-')
             result_file=open(f'{mode}/result/{result}-orig/simapr-result.json','r')
         except:
             continue
@@ -64,7 +69,8 @@ plot_patches_ci_java('tbar')
 plot_patches_ci_java('avatar')
 plot_patches_ci_java('kpar')
 plot_patches_ci_java('fixminer')
-
+plot_patches_ci_java('recoder')
+plot_patches_ci_java('alpharepair')
 # Plausible patch plot
 plt.clf()
 fig=plt.figure(figsize=(4,3))
