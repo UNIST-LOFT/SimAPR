@@ -1,6 +1,6 @@
 # SimAPR
 SimAPR is patch scheduling framework for patch searching problem.
-It supports sequential algorithm from original APR tools, SeAPR, GenProg family algoritm and Casino.
+It supports sequential algorithm from original APR tools, SeAPR, GenProg family algorithm and Casino.
 
 ## Why this repository is reusable?
 ### This repository is highly automated and easy to use
@@ -10,7 +10,7 @@ See [To run SimAPR](./README_detailed.md#to-run-simapr) section for detailed des
 Also, we prepared various scripts in [experiments](./experiments/) directory to help you to run SimAPR easily.
 
 ### This repository contains all necessary that others can extend it
-This repository contains every implementations used in SimAPR.
+This repository contains every implementation used in SimAPR.
 
 First, we modified 6 APR tools to generate patch space.
 They are in [TBar](./TBar), [Avatar](./Avatar), [kPar](./kPar), [Fixminer](./Fixminer), [AlphaRepair](./AlphaRepair) and [Recoder](./Recoder) directories.
@@ -137,7 +137,7 @@ Note that `select time` for original algorithm is 0 because original algorithm d
 `simapr-result.json` contains the results of each patch candidate in JSON format.
 It is a JSON array that contains each result of patch candidates.
 
-Each result contains these information:
+Each result contains this information:
 * `execution`: Actual test execution. We will describe this later.
 * `iteration`: The number of iteration. It will increment by each result.
 * `time`: Overall time until this result in second.
@@ -155,7 +155,7 @@ SimAPR provides simulation mode to reduce the overall time.
 After SimAPR finished, cached results are stored in `~/SimAPR/experiments/tbar/result/cache/Closure_62-cache.json` in JSON format.
 It is a JSON object that its key is patch ID and its value is the result of test execution.
 
-Each cached result contains these information:
+Each cached result contains this information:
 * `basic`: True if the patch passes at least one failing test. False if the patch fails all failing tests. Same as `result` in `simapr-result.json`.
 * `plausible`: True if the patch passes all test cases (valid patch). Same as `pass_result` in `simapr-result.json`.
 * `pass_all_fail`: True if the patch passes all failing test cases. Same as `pass_all_neg_test` in `simapr-result.json`.

@@ -1,10 +1,10 @@
 # Detailed Instruction
 
 ## Workflow
-In detailed instruction, we will explain how to reproduce our experimens in our paper.
+In detailed instruction, we will explain how to reproduce our experiments in our paper.
 
-Following every steps in here will take a lot of time, resources and disk space.
-We recommend to follow this instruction in powerful machines.
+Following every step in here will take a lot of time, resources and disk space.
+We recommend following this instruction in powerful machines.
 
 In our case, we use 256-core and 1TB RAM machine *for each tools* except `Fixminer` and 128-core and 1TB RAM machine for `Fixminer`.
 - [Detailed Instruction](#detailed-instruction)
@@ -105,9 +105,9 @@ We provide a Python script in [experiments](./experiments/) directory that autom
 Running time will be about 35 hours for each tools without parallel running.
 It takes about 5 minutes for each version.
 
-**NOTE**: This will take a lot of time, memory and disk space. We recommend to make **10TB** for disk space for each tools.
+**NOTE**: This will take a lot of time, memory and disk space. We recommend to make **10TB** for disk space for each tool.
 
-**NOTE**: We highly recommend to run each tools in different machine and copy only final result after SimAPR to same machine.
+**NOTE**: We highly recommend running each tools in different machine and copy only final result after SimAPR to same machine.
 
 ### Generate patch space for RQ 1, 2 and 3
 #### Template-based APR tools
@@ -179,9 +179,9 @@ To set up SimAPR, do the following:
 # python3 -m pip install -r requirements.txt
 ```
 
-We prepared scripts to run SimAPR easily. Those scripts are stored in [experiments](./experiments/) directory, same directory as [patch preparation](#generating-the-patch-space). You can check the [SimAPR's README file](./SimAPR/README.md) for more detailed explaination.
+We prepared scripts to run SimAPR easily. Those scripts are stored in [experiments](./experiments/) directory, same directory as [patch preparation](#generating-the-patch-space). You can check the [SimAPR's README file](./SimAPR/README.md) for more detailed explanation.
 
-We prepared 3 scripts for each tools: 
+We prepared 3 scripts for each tool: 
 * SimAPR for Defects4j v1.2.0
 * SimAPR for Defects4j v2.0
 * SimAPR for ablation study
@@ -189,7 +189,7 @@ We prepared 3 scripts for each tools:
 Timeout for each version and each algorithm is 5 hours.
 Thanks for the *simulation* mode in SimAPR, it does not take 5 hours for every version, but it still needs a lot of time.
 
-In our experiments, we used 30 CPU cores for each tools and it takes about 3 days for each tools with Defects4j v1.2.0.
+In our experiments, we used 30 CPU cores for each tool and it takes about 3 days for each tools with Defects4j v1.2.0.
 
 ### RQ 1 & 2: SimAPR for Defects4j v1.2.0
 To run SimAPR for Defects4j v1.2.0 for each tool, run the following command:
@@ -228,6 +228,7 @@ This will run original order from original tools once and Casino algorithm 50 ti
 The results will be stored in `experiments/<tool>/result`, same as SimAPR for Defects4j v1.2.0.
 
 ### SimAPR Output
+
 Outputs will be stored in `experiments/<tool>/result/<version>-<algorithm>`.
 
 For example, Casino algorithm with `TBar` and `Chart_4`, output will be stored in `experiments/tbar/result/Chart_4-casino-<trial>`.
@@ -236,13 +237,13 @@ For example, Casino algorithm with `TBar` and `Chart_4`, output will be stored i
 There are 3 files in output directory: `simapr-search.log`, `simapr-result.json` and `simapr-finished.txt`.
 * `simapr-search.log` contains logs from SimAPR.
 * `simapr-result.json` contains the results from SimAPR by each patches in JSON format.
-* `simapr-finished.txt` is created when SimAPR finished and it contains overhead by scheduler, overall test execution time and overall running time.
+* `simapr-finished.txt` is created when SimAPR finished, and it contains overhead by scheduler, overall test execution time and overall running time.
 
 **NOTE**: If you run SimAPR in multiple machine, copy `experiments/<tool>/result` to same machine.
 
 
 ## 4. Run scripts to generate plots used in our paper
-Before this step, you should run every scripts (`search.py`, `search-d4j2.py` and `search-ablation.py`) for every tools and check every results are stored in `experiments/<tool>/result` in same machine.
+Before this step, you should run every script (`search.py`, `search-d4j2.py` and `search-ablation.py`) for every tool and check every result are stored in `experiments/<tool>/result` in same machine.
 
 We prepared scripts to generate plots used in our paper.
 Those scripts are stored in [experiments/scripts](./experiments/scripts) directory.
@@ -332,13 +333,13 @@ SimAPR
 
 ### Scripts for our experiments
 We prepared various scripts to run our experiments easily in `experiments/<tool>`.
-In this section, we will explain about each scripts and how to run them.
+In this section, we will explain about each script and how to run them.
 
 * `d4j_<tool>.py` contains benchmark lists of Defects4j v1.2.0 and Defects4j v2.0.
 * `seeds.py` contains 50 seeds used in our experiments.
 * `<tool>.py` is for generating patch space by running each APR tools.
-* `search-<tool>-<algorithm>.py` is for running SimAPR with each tools and each algorithm. `<algorithm>` is `original`, `seapr`, `casino` or `genprog`.
-* `search-<tool>-ablation.py` is for running SimAPR with each tools and ablation study for RQ 3 in our paper.
+* `search-<tool>-<algorithm>.py` is for running SimAPR with each tool and each algorithm. `<algorithm>` is `original`, `seapr`, `casino` or `genprog`.
+* `search-<tool>-ablation.py` is for running SimAPR with each tool and ablation study for RQ 3 in our paper.
 
 ### To run SimAPR
 Before run SimAPR, you should generate patch space with modified APR tools.
@@ -370,7 +371,7 @@ In `switch-info.json`, there are multiple keys:
 * `failed_passing_tests`: List of failed test cases that Defects4j marked as passing tests
 * `priority`: Descending order of FL result
 * `rules`: Patch tree structure
-* `func_locations`: Start line and end line of each methods (for patch tree)
+* `func_locations`: Start line and end line of each method (for patch tree)
 * `ranking`: Ranking of each patch candidates. SimAPR with `original` algorithm follows this order.
 
 #### Run SimAPR
@@ -393,7 +394,7 @@ For `casino` and `genprog`, run the following command:
 # python3 search-<tool>-<algorithm>.py <version> <seed>
 ```
 `<version>` is same as `<tool>.py`.
-Because `casino` and `genprog` algorithms are stochastic and they contain randomness, you should provide seed to SimAPR.
+Because `casino` and `genprog` algorithms are stochastic, and they contain randomness, you should provide seed to SimAPR.
 Seed should be integer and smaller than 2^32-1 because of the requirements of NumPy.
 Seeds used in our experiments are stored in `seeds.py`.
 
@@ -408,17 +409,17 @@ After SimAPR, outputs will be stored in `experiments/<tool>/result/<version>-<al
 There are three files in output directory: `simapr-search.log`, `simapr-result.json` and `simapr-finished.txt`.
 * `simapr-search.log` contains logs from SimAPR.
 * `simapr-result.json` contains the results from SimAPR by each patches in JSON format.
-* `simapr-finished.txt` is created when SimAPR finished and it contains overhead by scheduler, overall test execution time and overall running time.
+* `simapr-finished.txt` is created when SimAPR finished, and it contains overhead by scheduler, overall test execution time and overall running time.
 
 The result of SimAPR is stored in `simapr-result.json`.
-This file contains a JSON array of the results of each patches.
+This file contains a JSON array of the results of each patch.
 
 Each elements contains these keys:
 * `execution`: # of actual test execution. If the patch is cached and tests are not executed, this value does not increment.
-* `iteration`: # of iteration. It always increment.
+* `iteration`: # of iteration. It always increments.
 * `time`: Time until the patch is tried.
 * `result`: True if the patch passed one or more of the failing test cases. False otherwise.
-* `pass_result`: True if the patch passed all test cases (valid patch). False if failed test case is exist.
+* `pass_result`: True if the patch passed all test cases (valid patch). False if failed test case exist.
 * `pass_all_neg_test`: True if the patch passed all failing tests. False otherwise.
 * `compilable`: True if the patch is compilable.
 * `total_searched`: # of tried patches (same as `iteration`).
@@ -449,19 +450,20 @@ For example, `TBar` with `Closure-62`, `simapr-result.json` file contains this e
   },
 ```
 In this case, patch ID is `/0_0_2_1_VariableReplacer/LightweightMessageFormatter.java`.
-This patch is selected and tried in 2nd iteration and it takes about 13.7 seconds until this patch.
+This patch is selected and tried in 2nd iteration, and it takes about 13.7 seconds until this patch.
 This patch failed all failing tests (`result` is false) and also invalid patch (`pass_result` is false) because SimAPR only tries passing tests if a patch passed all failing tests.
 However, this patch is compilable (`compilable` is true).
 
 Until this patch, there is no valid patch (`total_plausible` is 0).
 
 ### Patch Generators
+
 Patch generators are stored `SimAPR/<tool>` directory.
 
 We modified each tools to generate patch candidates and meta-information of patch space.
-Also, we removed patch validation part from each tools because SimAPR will run patch validation.
+Also, we removed patch validation part from each tool because SimAPR will run patch validation.
 
-`Avatar`, `TBar`, `kPar` and `Fixminer` are template-based APR tools and they are written in Java with Maven.
+`Avatar`, `TBar`, `kPar` and `Fixminer` are template-based APR tools, and they are written in Java with Maven.
 To compile them, just move to each directory and run `./compile.sh`.
 For example, for `TBar`, run the following command:
 ```
@@ -469,7 +471,7 @@ For example, for `TBar`, run the following command:
 # ./compile.sh
 ```
 
-However, `AlphaRepair` and `Recoder` are learning-based APR tools and they are written in Python.
+However, `AlphaRepair` and `Recoder` are learning-based APR tools, and they are written in Python.
 You don't need to compile them.
 
 We prepared scripts to generate patch space easily for each tools in `experiments` directory.
