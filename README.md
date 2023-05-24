@@ -74,7 +74,7 @@ In this section, we will describe how to run SimAPR with `TBar` and `Closure-62`
 If you want to run different APR tools and version, change the `tbar` and `TBar` to proper APR tool and `Closure_62` to proper version.
 
 ### 1. Build docker image and create container
-First, clone our repository:
+<!-- First, clone our repository:
 ```
 $ git clone https://github.com/FreddyYJ/SimAPR.git
 $ cd SimAPR
@@ -84,11 +84,16 @@ To build docker image, run the following command:
 ```
 $ cd dockerfile
 $ docker build -t simapr:1.2 -f D4J-1.2-Dockerfile ..
+``` -->
+
+To pill our docker image, run the following command:
+```
+$ docker pull kyj1411/simapr:0.1
 ```
 
 After that, create container with the following command:
 ```
-$ docker run -d --name simapr-1.2 -p 1001:22 simapr:1.2
+$ docker run -d --name simapr-1.2 -p 1001:22 kyj1411/simapr:0.1-1.2
 ```
 
 Next, access to the container with the following command:

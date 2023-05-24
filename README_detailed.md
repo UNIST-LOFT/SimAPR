@@ -50,25 +50,31 @@ For learning-based tools, install GPU utilities:
 - [NVIDIA driver](https://www.nvidia.com/download/index.aspx)
 - [nvidia-docker](https://github.com/NVIDIA/nvidia-docker)
 
-Before you build docker image, find proper CUDA image for your CUDA version at:
+<!-- Before you build docker image, find proper CUDA image for your CUDA version at:
 - [CUDA images](https://hub.docker.com/r/nvidia/cuda/tags)
 
 And change `FROM` in [Dockerfile](./dockerfile/) to proper CUDA image.
 The default is `nvidia/cuda:12.1.1-base-ubuntu22.04`.
 
-**NOTE**: Image should be Ubuntu. Ubuntu 22.04 is recommended.
+**NOTE**: Image should be Ubuntu. Ubuntu 22.04 is recommended. -->
 
-Then, build the docker image
+<!-- Then, build the docker image
 ```
 $ cd dockerfile
 $ docker build -t simapr:1.2 -f D4J-1.2-Dockerfile ..  # for Defects4j v1.2.0
 $ docker build -t simapr:2.0 -f D4J-2.0-Dockerfile ..  # for Defects4j v2.0
+``` -->
+
+To pull our docker image, run the following command:
+```
+$ docker pull kyj1411/simapr:0.1-1.2  # for Defects4j v1.2.0
+$ docker pull kyj1411/simapr:0.1-2.0  # for Defects4j v2.0
 ```
 
 Next, create and run the docker container
 ```
-$ docker run -d --name simapr-1.2 -p 1001:22 --gpus=all simapr:1.2  # for Defects4j v1.2.0
-$ docker run -d --name simapr-2.0 -p 1002:22 --gpus=all simapr:2.0  # for Defects4j v2.0
+$ docker run -d --name simapr-1.2 -p 1001:22 --gpus=all kyj1411/simapr:0.1-1.2  # for Defects4j v1.2.0
+$ docker run -d --name simapr-2.0 -p 1002:22 --gpus=all kyj1411/simapr:2.0-1.2  # for Defects4j v2.0
 ```
 Note that our container uses openssh-server.
 To use a container, openssh-client should be installed in host system.
