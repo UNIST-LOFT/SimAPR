@@ -54,7 +54,7 @@ for i in range(1,d4j_alpharepair.JSOUP_SIZE+1):
     pool.apply_async(run,(f'Jsoup-{i}',))
 for i in range(1,d4j_alpharepair.JXPATH_SIZE+1):
     pool.apply_async(run,(f'JxPath-{i}',))
-for i in range(1,d4j_alpharepair.CLOSURE_NEW+1):
+for i in d4j_alpharepair.CLOSURE_NEW:
     pool.apply_async(run,(f'Closure-{i}',))
 
 pool.close()

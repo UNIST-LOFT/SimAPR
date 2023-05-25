@@ -68,6 +68,6 @@ for i in range(1,JSOUP_SIZE+1):
     __temp_list.append(f'Jsoup_{i}',)
 for i in range(1,JXPATH_SIZE+1):
     __temp_list.append(f'JxPath_{i}',)
-for i in range(1,CLOSURE_NEW+1):
+for i in CLOSURE_NEW:
     __temp_list.append(f'Closure_{i}',)
 D4J_2_LIST=tuple(__temp_list)

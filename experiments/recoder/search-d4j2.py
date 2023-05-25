@@ -54,7 +54,7 @@ for i in range(1,d4j_recoder.JSOUP_SIZE+1):
     pool.apply_async(run,(f'Jsoup-{i}',))
 for i in range(1,d4j_recoder.JXPATH_SIZE+1):
     pool.apply_async(run,(f'JxPath-{i}',))
-for i in range(1,d4j_recoder.CLOSURE_NEW+1):
+for i in d4j_recoder.CLOSURE_NEW:
     pool.apply_async(run,(f'Closure-{i}',))
 
 pool.close()

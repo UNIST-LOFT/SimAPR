@@ -42,7 +42,7 @@ for i in range(1,d4j_tbar.JSOUP_SIZE+1):
     pool.apply_async(run,(f'Jsoup_{i}',))
 for i in range(1,d4j_tbar.JXPATH_SIZE+1):
     pool.apply_async(run,(f'JxPath_{i}',))
-for i in range(1,d4j_tbar.CLOSURE_NEW+1):
+for i in d4j_tbar.CLOSURE_NEW:
     pool.apply_async(run,(f'Closure_{i}',))
 
 

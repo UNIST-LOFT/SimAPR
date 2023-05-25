@@ -61,7 +61,7 @@ WORKDIR /root
 RUN git clone https://@github.com/UNIST-LOFT/SimAPR.git
 WORKDIR /root/SimAPR/Avatar
 RUN ./compile.sh
-WORKDIR /root/SimAPR/Fixminer
+WORKDIR /root/SimAPR/Fixminer 
 RUN ./compile.sh
 WORKDIR /root/SimAPR/kPar
 RUN ./compile.sh

@@ -38,7 +38,7 @@ for i in range(1,d4j_recoder.JSOUP_SIZE+1):
     queue.put(f'Jsoup-{i}')
 for i in range(1,d4j_recoder.JXPATH_SIZE+1):
     queue.put(f'JxPath-{i}')
-for i in range(1,d4j_recoder.CLOSURE_NEW+1):
+for i in d4j_recoder.CLOSURE_NEW:
     queue.put(f'Closure-{i}')
 
 
