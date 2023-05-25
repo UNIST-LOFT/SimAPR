@@ -38,8 +38,8 @@ def plot_patches_ci_java(mode='tbar'):
                 if is_plausible:
                     casino_result[-1].append(round((time)/60))
 
-                if time>3600:
-                    break
+                # if time>3600:
+                #     break
 
     # GenProg
     for i in range(50):
@@ -65,8 +65,8 @@ def plot_patches_ci_java(mode='tbar'):
                 if is_plausible:
                     genprog_result[-1].append(round((time)/60))
 
-                if time>3600:
-                    break
+                # if time>3600:
+                #     break
 
     # SeAPR
     for result in d4j.D4J_1_2_LIST:
@@ -90,8 +90,8 @@ def plot_patches_ci_java(mode='tbar'):
             if is_plausible:
                 seapr_result.append(round((time)/60))
 
-            if time>3600:
-                break
+            # if time>3600:
+            #     break
 
     # Original
     for result in d4j.D4J_1_2_LIST:
@@ -115,8 +115,8 @@ def plot_patches_ci_java(mode='tbar'):
             if is_plausible:
                 orig_result.append(round((time)/60))
 
-            if time>3600:
-                break
+            # if time>3600:
+            #     break
 
     # Plausible patch plot
     plt.clf()

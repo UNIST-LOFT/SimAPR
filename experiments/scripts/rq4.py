@@ -37,8 +37,8 @@ def plot_patches_ci_java(mode='tbar'):
                 if is_plausible:
                     casino_result[i].append(round((time)/60))
 
-                if time>3600:
-                    break
+                # if time>3600:
+                #     break
 
     # Original
     for result in d4j.D4J_2_LIST:
@@ -62,8 +62,8 @@ def plot_patches_ci_java(mode='tbar'):
             if is_plausible:
                 orig_result.append(round((time)/60))
 
-            if time>3600:
-                break
+            # if time>3600:
+            #     break
 
 plot_patches_ci_java('tbar')
 plot_patches_ci_java('avatar')
