@@ -88,7 +88,7 @@ $ docker build -t simapr:1.2 -f D4J-1.2-Dockerfile ..
 
 To pill our docker image, run the following command:
 ```
-$ docker pull kyj1411/simapr:0.1
+$ docker pull kyj1411/simapr:0.1-1.2
 ```
 
 After that, create container with the following command:

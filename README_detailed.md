@@ -267,20 +267,16 @@ This will generate plots for each tools in `experiments/rq1-<tool>.pdf`.
 We prepared a script to generate plots for RQ 2 (Figure 7 in the paper).
 
 Before you run this script, you should run DiffTGen and ODS.
+
 #### To run DiffTGen
 DiffTGen is used to filter out invalid patches from plausible patches.
 
 To run DiffTGen, run the following command:
-```bash
-cd DiffTGen
-python3 script/extract-candidates.py <tool> /root/SimAPR patches/<tool>
-
-python3 script/driver.py <tool> /root/SimAPR/<tool-dir> patches/<tool>
-
-python3 script/check-results.py <tool> patches/<tool>
 ```
-Result is in `DiffTGen/out/<tool>/<tool>.csv` file. Copy that file to `experiments/difftgen-<tool>.csv`.
-
+# cd experiments
+# python3 scripts/difftgen.py
+```
+Result will be in `experiments/<tool>/difftgen.csv`.
 
 #### To run ODS
 ODS is used for rank between the valid patches. For easier use, we prepared a script to run ODS.
