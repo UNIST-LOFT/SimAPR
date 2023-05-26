@@ -2,6 +2,8 @@
 SimAPR is a patch scheduling framework for the patch searching problem.
 It supports SeAPR, the GenProg family of algorithms, Casino, and the sequential algorithm from the original APR tools.
 
+Our paper is located in [paper.pdf](./paper.pdf) (Automated Program Repair from Fuzzing Perspective).
+
 ## Why this repository is reusable?
 ### This repository is highly automated and easy to use
 SimAPR is highly automated.
