@@ -275,7 +275,9 @@ DiffTGen is used to filter out invalid patches from plausible patches.
 
 To run DiffTGen, run the following command:
 ```
-# cd experiments
+# cd DiffTGen
+# ant compile
+# cd ../experiments
 # python3 scripts/difftgen.py
 ```
 Result will be in `experiments/<tool>/difftgen.csv`.
