@@ -3,10 +3,10 @@
 ## Workflow
 In detailed instruction, we will explain how to reproduce our experiments in our paper.
 
-Following every step in here will take a lot of time, resources and disk space.
+It will take a lot of time, energy, and disk space to complete each step in this guide.
 We recommend following this instruction in powerful machines.
 
-In our case, we use 256-core and 1TB RAM machine *for each tools* except `Fixminer` and 128-core and 1TB RAM machine for `Fixminer`.
+In our situation, we employ 128-core and 1TB RAM machines for 'Fixminer' and 256-core and 1TB RAM machines for all other tools.
 - [Detailed Instruction](#detailed-instruction)
   - [Workflow](#workflow)
   - [1. Setup environment via docker (~ 10 min)](#1-setup-environment-via-docker--10-min)
@@ -41,7 +41,7 @@ In our case, we use 256-core and 1TB RAM machine *for each tools* except `Fixmin
     - [Patch Generators](#patch-generators)
    
 ## 1. Setup environment via docker (~ 10 min)
-We assumed that you already cloned our repository. If not, look at Getting Started in [README.md](./README.md).
+<!-- We assumed that you already cloned our repository. If not, look at Getting Started in [README.md](./README.md). -->
 
 To run SimAPR via Docker, install 
 - [docker](https://www.docker.com/)
@@ -98,8 +98,8 @@ $ ssh -p 1002 root@localhost
 for Defects4j v2.0.
 
 ## 2. Generating the patch space
-SimAPR takes the patch space as input to explore patch space and use different patch search algorithm. Regarding the patch space, SimAPR currently provides an option to use the patch space of one of the following six program repair tools:
-
+SimAPR uses four patch search algorithms and the patch space as its input to explore the patch space.
+The patch space of one of the following six program repair tools can currently be used with SimAPR.
 1. ```Tbar```
 2. ```Avatar```
 3. ```kPar```
@@ -107,15 +107,15 @@ SimAPR takes the patch space as input to explore patch space and use different p
 5. ```AlphaRepair```
 6. ```Recoder```
 
-Patch space generation is tool-specific. 
-We provide a Python script in [experiments](./experiments/) directory that automates patch space generation.
+Patch space generation depends on the tool. 
+In the [experiments](./experiments/) directory, we offer a Python script that automates patch space generation.
 
-Running time will be about 35 hours for each tools without parallel running.
-It takes about 5 minutes for each version.
+Without parallel running, the runtime time for each tool will be around 35 hours.
+Each version takes roughly 5 minutes.
 
-**NOTE**: This will take a lot of time, memory and disk space. We recommend to make **10TB** for disk space for each tool.
+**NOTE**: A lot of time, memory, and disk space will be needed for this. For each tool, we advise creating a disk space of **10TB**.
 
-**NOTE**: We highly recommend running each tools in different machine and copy only final result after SimAPR to same machine.
+**NOTE**: It is highly advised that you run each tool on a different machine and copy just the final results after SimAPR.
 
 ### Generate patch space for RQ 1, 2 and 3
 #### Template-based APR tools
@@ -124,7 +124,7 @@ Run following commands to generate patch spaces for `TBar`, `Avatar`, `kPar` and
 # cd experiments/<tool>
 # python3 gen-patch.py <# of CPU>
 ```
-We recommend to use 1/5 of overall CPU cores for parallel run.
+We advise using 1/5 of the total number of CPU cores for parallel running.
 
 For example, to prepare patch space for ```Tbar``` with 30 cores in parallel, run the following command:
 ```
@@ -163,7 +163,7 @@ Run these commands in simapr-2.0 container to run with Defects4j v2.0.
 Run following commands to generate patch spaces for `AlphaRepair` and `Recoder` with Defects4j v2.0:
 ```
 # cd experiments/<tool>
-# python3 gen-patch.py <# of GPUs>
+# python3 gen-patch-d4j2.py <# of GPUs>
 ```
 **NOTE**: For learning-based tools, you should assign **GPU** to each process. So, you should assign *1 GPU to 1 process*.
 
@@ -177,9 +177,9 @@ In this directory,
 
 
 ## 3. Run SimAPR
-Before run SimAPR, you should generate every patch spaces for every APR tools.
+You should create each patch space for each APR tool before running SimAPR.
 
-SimAPR is implemented in Python3 and stored in the [SimAPR](./SimAPR/) directory.
+Python3 is used to implement SimAPR, which is kept under the [SimAPR](./SimAPR/) directory.
 
 To set up SimAPR, do the following:
 ```
@@ -187,14 +187,16 @@ To set up SimAPR, do the following:
 # python3 -m pip install -r requirements.txt
 ```
 
-We prepared scripts to run SimAPR easily. Those scripts are stored in [experiments](./experiments/) directory, same directory as [patch preparation](#generating-the-patch-space). You can check the [SimAPR's README file](./SimAPR/README.md) for more detailed explanation.
+We created scripts to make it simple to run SimAPR.
+These scripts are kept in the same directory as [patch preparation](#generating-the-patch-space), which is [experiments](./experiments/).
+For a more detailed explanation, look at the [SimAPR's README file](./SimAPR/README.md).
 
 We prepared 3 scripts for each tool: 
 * SimAPR for Defects4j v1.2.0
 * SimAPR for Defects4j v2.0
 * SimAPR for ablation study
 
-Timeout for each version and each algorithm is 5 hours.
+Each version and each algorithm have a 5-hour timeout.
 Thanks for the *simulation* mode in SimAPR, it does not take 5 hours for every version, but it still needs a lot of time.
 
 In our experiments, we used 30 CPU cores for each tool and it takes about 3 days for each tools with Defects4j v1.2.0.
@@ -205,7 +207,8 @@ To run SimAPR for Defects4j v1.2.0 for each tool, run the following command:
 # cd experiments/<tool>
 # python3 search.py <# of CPU>
 ```
-This will run original order from original tools once, SeAPR algorithm once, Casino algorithm 50 times and GenProg algorithm 50 times.
+This will run original order from original tools once, SeAPR algorithm once.
+Then, the Casino algorithm and the GenProg algorithm are performed 50 times each.
 
 The results will be stored in `experiments/<tool>/result`.
 
@@ -268,10 +271,10 @@ This will generate plots for each tools in `experiments/rq1-<tool>.pdf`.
 ### RQ 2: Recall
 We prepared a script to generate plots for RQ 2 (Figure 7 in the paper).
 
-Before you run this script, you should run DiffTGen and ODS.
+For RQ 2, you should run DiffTGen and ODS first.
 
 #### To run DiffTGen
-DiffTGen is used to filter out invalid patches from plausible patches.
+DiffTGen is used to filter out incorrect patches from valid patches.
 
 To run DiffTGen, run the following command:
 ```
@@ -280,10 +283,10 @@ To run DiffTGen, run the following command:
 # cd ../experiments
 # python3 scripts/difftgen.py
 ```
-Result will be in `experiments/<tool>/difftgen.csv`.
+Result will be stored in `experiments/<tool>/difftgen.csv`.
 
 #### To run ODS
-ODS is used for rank between the valid patches. For easier use, we prepared a script to run ODS.
+ODS is used to rank between the valid patches. We prepared a script to run ODS.
 
 To run ODS, run the following command:
 ```
@@ -319,7 +322,7 @@ To generate a plot for RQ 4, run the following command:
 This will generate a plot in `experiments/rq4.pdf`.
 
 ## Details of SimAPR
-This section explains how to run SimAPR and the outputs in detail.
+The detailed instructions for running SimAPR manually are provided in this section.
 
 Directory structure of this repository is as follows:
 ```
@@ -351,8 +354,8 @@ SimAPR
 * `DiffTGen` and `ODS` are used for RQ 2 (Recall) in our paper.
 
 ### Scripts for our experiments
-We prepared various scripts to run our experiments easily in `experiments/<tool>`.
-In this section, we will explain about each script and how to run them.
+We created a number of scripts to help us conveniently execute our tests in `experiments/<tool>`.
+We will describe each script and how to execute it in this part.
 
 * `d4j_<tool>.py` contains benchmark lists of Defects4j v1.2.0 and Defects4j v2.0.
 * `seeds.py` contains 50 seeds used in our experiments.
@@ -361,7 +364,7 @@ In this section, we will explain about each script and how to run them.
 * `search-<tool>-ablation.py` is for running SimAPR with each tool and ablation study for RQ 3 in our paper.
 
 ### To run SimAPR
-Before run SimAPR, you should generate patch space with modified APR tools.
+Before run SimAPR, you should generate patch space with our APR tools.
 
 #### Patch generation
 To run SimAPR, first run `<tool>.py` to generate patch space:
@@ -377,11 +380,11 @@ For example, to generate patch space of `Closure-62` with `TBar`, run the follow
 ```
 
 #### Output of patch generation
-Outputs will be stored in `<tool>/d4j/<version>`.
-For example, if you run `TBar` with `Closure_62`, then outputs are stored in `TBar/d4j/Closure_62`.
+Outputs will be stored in `<tool>/d4j/<version>`
+For instance, results from running `TBar` with `Closure_62` are saved in `TBar/d4j/Closure_62`.
 
-In this directory, there are a lot of directories and `switch-info.json` file.
-The directories are each patch candidates, and `switch-info.json` contains meta-information of patch space in JSON format.
+`switch-info.json` and numerous more directories can be found in this directory.
+Each directory is a patch candidate, and `switch-info.json` contains meta-information about the patch space in JSON format.
 
 In `switch-info.json`, there are multiple keys:
 * `project_name`: Defects4j version (e.g. `Closure_62`)
@@ -413,8 +416,8 @@ For `casino` and `genprog`, run the following command:
 # python3 search-<tool>-<algorithm>.py <version> <seed>
 ```
 `<version>` is same as `<tool>.py`.
-Because `casino` and `genprog` algorithms are stochastic, and they contain randomness, you should provide seed to SimAPR.
-Seed should be integer and smaller than 2^32-1 because of the requirements of NumPy.
+Because `casino` and `genprog` algorithms are stochastic, you should provide seed to SimAPR.
+Seed should be integer and lower than 2^32-1 because of the restrictions of NumPy.
 Seeds used in our experiments are stored in `seeds.py`.
 
 For example, to run SimAPR with `TBar` and `Closure-62` with Casino algorithm and seed 123, run the following command:

@@ -1,6 +1,6 @@
 # SimAPR
 SimAPR is patch scheduling framework for patch searching problem.
-It supports sequential algorithm from original APR tools, SeAPR, GenProg family algorithm and Casino.
+SeAPR, the GenProg family of algorithms, Casino, and the sequential algorithm from the original APR tools are all supported.
 
 ## Why this repository is reusable?
 ### This repository is highly automated and easy to use
@@ -10,35 +10,35 @@ See [To run SimAPR](./README_detailed.md#to-run-simapr) section for detailed des
 Also, we prepared various scripts in [experiments](./experiments/) directory to help you to run SimAPR easily.
 
 ### This repository contains all necessary that others can extend it
-This repository contains every implementation used in SimAPR.
+Each implementation used in SimAPR is contained in this repository.
 
 First, we modified 6 APR tools to generate patch space.
 They are in [TBar](./TBar), [Avatar](./Avatar), [kPar](./kPar), [Fixminer](./Fixminer), [AlphaRepair](./AlphaRepair) and [Recoder](./Recoder) directories.
 
-Actual implementation of SimAPR is in [SimAPR](./SimAPR) directory and it is written in Python.
+SimAPR's actual Python implementation can be found in the [SimAPR](./SimAPR) directory.
 
-Also, this repository contains tools used in our experiments: [DiffTGen](./DiffTGen/) and [ODS](./ODS/).
+Additionally, this repository provides the [DiffTGen](./DiffTGen/) and [ODS](./ODS/) that we used in our experiments.
 
-For our docker image, build new image with [dockerfile](./dockerfile/) or pull docker image from DockerHub!
+Build a new image for our Docker image using [dockerfile](./dockerfile/) or pull it from DockerHub!
 
 ### README contains details beyond the scope of the paper
 We prepared detailed READMEs for each tools.
-For example, for TBar, we prepared [README](./TBar/README.md) to describe what we modified and how to compile and run our TBar.
+For instance, we created a [README](./TBar/README.md) for TBar to explain what we changed and how to build and execute our TBar.
 
-We prepared detailed README of SimAPR in [SimAPR](./SimAPR/) directory.
-This README contains how to run SimAPR, detailed inputs, outputs, and options.
-It also explains how to add new algorithm to SimAPR.
+SimAPR's comprehensive README is located in the [SimAPR](./SimAPR/) directory.
+The detailed inputs, outputs, and parameters for running SimAPR are included in this README.
+It also explains how to upgrade SimAPR with a new algorithm.
 
 We also prepared READMEs for [DiffTGen](./DiffTGen/README.md) and [ODS](./ODS/README.md), used in our experiments.
 
 ### The artifact is comprehensively documented
-First, we explained how to reproduce our experiments in [README_detailed.md](./README_detailed.md).
-Just follow 1-4 steps in [README_detailed.md](./README_detailed.md)!
+First, we provided instructions how to reproduce our experiments in [README_detailed.md](./README_detailed.md).
+Just follow step 1-4 in [README_detailed.md](./README_detailed.md)!
 
 Also, we explained how to run SimAPR for single APR tool and single bug in [To run SimAPR](./README_detailed.md#to-run-simapr).
 Just run two scripts!
 
-SimAPR is also extensible. In [SimAPR/README.md](./SimAPR/README.md#How-to-Add-and-Run-a-New-Patch-Scheduling-Algorithm), we explained how to add new algorithm to SimAPR.
+SimAPR can also be expanded. We described how to add new algorithm to SimAPR in [SimAPR/README.md](./SimAPR/README.md#How-to-Add-and-Run-a-New-Patch-Scheduling-Algorithm).
 
 ## About this repository
 <!-- <img src="./overview.png" alt="overview" width="600" title="Overview of SimAPR">
@@ -48,11 +48,10 @@ Figure: Overview of SimAPR -->
 This repository contains (1) implementation of SimAPR, (2) modified APR tools to generate patch space and (3) scripts and tools to reproduce our experiments. 
 
 ### Getting Started
-This section describes how to run SimAPR in docker container.
-If you want to reproduce our experiments, we already prepared scripts to reproduce our experiments easily.
+How to run SimAPR in a Docker container is explained in this section.
+We have already written scripts to make it simple for you to replicate our experiments.
 Please see [Detailed Instruction](#detailed-instruction).
 
-To run SimAPR, you should follow these steps:
 - [SimAPR](#simapr)
   - [Why this repository is reusable?](#why-this-repository-is-reusable)
     - [This repository is highly automated and easy to use](#this-repository-is-highly-automated-and-easy-to-use)
@@ -70,8 +69,8 @@ To run SimAPR, you should follow these steps:
     - [About simulation mode](#about-simulation-mode)
   - [Detailed Instruction](#detailed-instruction)
 
-In this section, we will describe how to run SimAPR with `TBar` and `Closure-62` benchmark.
-If you want to run different APR tools and version, change the `tbar` and `TBar` to proper APR tool and `Closure_62` to proper version.
+In this section, we'll go over how to use the 'TBar' and 'Closure-62' benchmarks with SimAPR.
+Change the 'tbar' and 'TBar' to the appropriate APR tool and 'Closure_62' to the appropriate version if you want to run various APR tools and versions.
 
 ### 1. Build docker image and create container
 <!-- First, clone our repository:
@@ -120,11 +119,11 @@ After generating patch space, run SimAPR. To do that, run the following command:
 ```
 
 SimAPR provides various scheduling algorithms: original, Casino, SeAPR and GenProg.
-Original algorithm follows the order generated by the original APR tool.
-Set `-m` option as proper scheduling algorithm.
+'Original' algorithm follows the order generated by the original APR tool.
+Set `-m` option as appropriate scheduling algorithm.
 
 This command sets overall timeout as 10 minutes (It will take slightly more than 10 minutes).
-If you want to set timeout for each patch candidate, set `-T` option in seconds.
+If you want to change timeout, set `-T` option in seconds.
 
 ### The outputs of SimAPR
 The outputs of SimAPR are stored in `~/SimAPR/experiments/tbar/result/Closure_62-out`.
@@ -156,9 +155,9 @@ Each result contains this information:
 * `config`: Patch ID.
 
 ### About simulation mode
-SimAPR provides simulation mode to reduce the overall time.
-After SimAPR finished, cached results are stored in `~/SimAPR/experiments/tbar/result/cache/Closure_62-cache.json` in JSON format.
-It is a JSON object that its key is patch ID and its value is the result of test execution.
+SimAPR provides simulation mode to reduce the running time.
+Cached results are kept in '/SimAPR/experiments/tbar/result/cache/Closure_62-cache.json' in JSON format after SimAPR has finished.
+It is a JSON object, where the patch ID serves as the key and the test execution result serves as the value.
 
 Each cached result contains this information:
 * `basic`: True if the patch passes at least one failing test. False if the patch fails all failing tests. Same as `result` in `simapr-result.json`.
@@ -168,10 +167,10 @@ Each cached result contains this information:
 * `fail_time`: The time to execute failing tests.
 * `pass_time`: The time to execute passing tests.
 
-Note that `pass_time` is 0 if the patch fails failing tests.
+Keep in mind that 'pass_time' is 0 if the patch fails the failing tests.
 
-If selected patch candidate is already cached, SimAPR does not execute test cases and use cached result.
-Therefore, `execution` in `simapr-result.json` is not incremented.
+SimAPR does not run test cases and instead uses the cached result if the chosen patch candidate has already been cached.
+As a result, the value "execution" in "simapr-result.json" is not increased.
 
 ## Detailed Instruction
 Detailed instructions are in [README_detailed.md](./README_detailed.md).
