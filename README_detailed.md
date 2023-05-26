@@ -50,6 +50,8 @@ For learning-based tools, install GPU utilities:
 - [NVIDIA driver](https://www.nvidia.com/download/index.aspx)
 - [nvidia-docker](https://github.com/NVIDIA/nvidia-docker)
 
+**Note**: Our docker images are based on CUDA 12.0.1, Ubuntu 22.04.
+
 <!-- Before you build docker image, find proper CUDA image for your CUDA version at:
 - [CUDA images](https://hub.docker.com/r/nvidia/cuda/tags)
 
