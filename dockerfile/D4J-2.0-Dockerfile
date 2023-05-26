@@ -114,8 +114,6 @@ RUN mv best_model.ckpt checkpointSearch
 # Install DiffTGen and ODS
 WORKDIR /root/SimAPR/DiffTGen
 RUN ./compile.sh
-WORKDIR /root/SimAPR/ODS/coming
-RUN mvn install -DskipTests
 RUN python3 -m pip install xgboost scikit-learn imblearn matplotlib
 
 WORKDIR /root
