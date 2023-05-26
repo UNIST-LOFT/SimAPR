@@ -58,7 +58,7 @@ RUN sed -i 's/#force_color_prompt=yes/force_color_prompt=yes/g' /root/.bashrc
 # Clone and setup SimAPR
 WORKDIR /root
 # COPY . /root/SimAPR
-RUN git clone https://@github.com/UNIST-LOFT/SimAPR.git
+RUN git clone https://github.com/UNIST-LOFT/SimAPR.git
 WORKDIR /root/SimAPR/Avatar
 RUN ./compile.sh
 WORKDIR /root/SimAPR/Fixminer
