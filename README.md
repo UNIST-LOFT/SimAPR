@@ -89,6 +89,7 @@ Next, access the container with the following command:
 ```bash
 $ ssh -p 1001 root@localhost
 ```
+The password is `root`.
 
 ### 2. Generate patch spaces via running APR tools
 Before running SimAPR, you need to create patch spaces and patch candidates. To do that, run the following command:

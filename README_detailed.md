@@ -79,6 +79,7 @@ For Defects4j v2.0 (RQ 4):
 ```
 $ ssh -p 1002 root@localhost
 ```
+The password is `root` for both container.
 
 ## 2. Generating the patch space
 SimAPR requires the patch space as input, which is generated using different program repair tools.
