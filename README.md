@@ -1,48 +1,10 @@
 # SimAPR
-SimAPR is a patch scheduling framework for the patch searching problem.
-It supports SeAPR, the GenProg family of algorithms, Casino, and the sequential algorithm from the original APR tools.
+SimAPR is a patch scheduling framework for the patch searching problem. It supports various patch-scheduling algorithm including
 
-Our paper is located in [paper.pdf](./paper.pdf) (Automated Program Repair from Fuzzing Perspective).
-
-## Why this repository is reusable?
-### This repository is highly automated and easy to use
-SimAPR is highly automated.
-You only need to pull the Docker image, create a container, and run two scripts. That's it!
-For a detailed description, see the [To run SimAPR](./README_detailed.md#to-run-simapr) section.
-
-Additionally, we have provided various scripts in the [experiments](./experiments/) directory to help you run SimAPR easily.
-
-### This repository contains all the necessary components for others to extend it
-This repository contains all the implementations used in SimAPR.
-
-First, we have modified six APR tools to generate the patch space.
-You can find them in the following directories: [TBar](./TBar), [Avatar](./Avatar), [kPar](./kPar), [Fixminer](./Fixminer), [AlphaRepair](./AlphaRepair) and [Recoder](./Recoder).
-
-The actual Python implementation of SimAPR can be found in the [SimAPR](./SimAPR) directory.
-If you want to add your own algorithm, refer to [SimAPR/README.md](./SimAPR/README.md#How-to-Add-and-Run-a-New-Patch-Scheduling-Algorithm) for instructions.
-
-Additionally, this repository provides the [DiffTGen](./DiffTGen/) and [ODS](./ODS/) that we used in our experiments.
-
-You can build a new image for our Docker image using the [dockerfile](./dockerfile/) or pull it from DockerHub.
-
-### README contains details beyond the scope of the paper
-We have prepared detailed READMEs for each tool.
-For example, we created a [TBar/README](./TBar/README.md) for TBar that explains what we changed and how to build and execute our version of TBar.
-
-A comprehensive [README](./SimAPR/README.md) for SimAPR can be found in the SimAPR directory.
-It includes detailed information on inputs, outputs, and parameters for running SimAPR.
-It also explains how to upgrade SimAPR with a new algorithm.
-
-We have also provided READMEs for [DiffTGen](./DiffTGen/README.md) and [ODS](./ODS/README.md), which were used in our experiments.
-
-### The artifact is comprehensively documented
-We have provided instructions on how to reproduce our experiments in [README_detailed.md](./README_detailed.md).
-Simply follow steps 1-4 outlined in [README_detailed.md](./README_detailed.md)!
-
-We have also explained how to run SimAPR for a single APR tool and a single bug in the [To run SimAPR](./README_detailed.md#to-run-simapr) section.
-It only requires running two scripts.
-
-SimAPR can also be expanded to include new algorithms. We have described how to add a new algorithm to SimAPR in [SimAPR/README.md](./SimAPR/README.md#How-to-Add-and-Run-a-New-Patch-Scheduling-Algorithm).
+- Casino, our own patch-scheduling algorithm described in [our ISSTA'23 paper](./paper.pdf)
+- The original algorithm of the six APR tools (AlphaRepair, Recoder, TBar, Avatar, FixMiner, and kPar)
+- SeAPR, an existing deterministic patch scheduling algorithm
+- Our implementation of the GenProg algorithm
 
 ## About this repository
 This repository contains the implementation of SimAPR, modified APR tools to generate patch space, and scripts and tools to reproduce our experiments.
@@ -55,11 +17,6 @@ We have already provided scripts to simplify the replication of our experiments.
 Please refer to the [Detailed Instruction](./README_detailed.md).
 
 - [SimAPR](#simapr)
-  - [Why this repository is reusable?](#why-this-repository-is-reusable)
-    - [This repository is highly automated and easy to use](#this-repository-is-highly-automated-and-easy-to-use)
-    - [This repository contains all the necessary components for others to extend it](#this-repository-contains-all-the-necessary-components-for-others-to-extend-it)
-    - [README contains details beyond the scope of the paper](#readme-contains-details-beyond-the-scope-of-the-paper)
-    - [The artifact is comprehensively documented](#the-artifact-is-comprehensively-documented)
   - [About this repository](#about-this-repository)
     - [Getting Started](#getting-started)
     - [1. Pull docker image and create container](#1-pull-docker-image-and-create-container)
