@@ -1,4 +1,4 @@
-package anonymous;
+package kr.ac.unist.apr;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -15,10 +15,18 @@ public class SwitchInfo {
     static public class FileInfo{
         public String fileName;
         public String className;
-        public List<LineInfo> lineInfos=new ArrayList<>();
+        public List<FuncInfo> funcInfos=new ArrayList<>();
         public FileInfo(String fileName,String className){
             this.fileName=fileName;
             this.className=className;
+        }
+    }
+
+    static public class FuncInfo {
+        public String funcName;
+        public List<LineInfo> lineInfos=new ArrayList<>();
+        public FuncInfo(String funcName){
+            this.funcName=funcName;
         }
     }
     /**

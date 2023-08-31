@@ -1,19 +1,11 @@
-package anonymous;
+package kr.ac.unist.apr;
 
-import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
-
-import edu.lu.uni.serval.utils.FileUtils;
 
 public class CacheInfo {
     public static class Cache{

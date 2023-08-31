@@ -19,13 +19,14 @@ import org.apache.commons.lang3.math.NumberUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import anonymous.CacheInfo;
-import anonymous.JsonInfo;
-import anonymous.SwitchInfo;
-import anonymous.TestValidator;
-import anonymous.MethodLineFinder.FunctionLocation;
-import anonymous.SwitchInfo.FileInfo;
-import anonymous.SwitchInfo.LineInfo;
+import kr.ac.unist.apr.CacheInfo;
+import kr.ac.unist.apr.JsonInfo;
+import kr.ac.unist.apr.MethodFinder;
+import kr.ac.unist.apr.SwitchInfo;
+import kr.ac.unist.apr.TestValidator;
+import kr.ac.unist.apr.SwitchInfo.FileInfo;
+import kr.ac.unist.apr.SwitchInfo.FuncInfo;
+import kr.ac.unist.apr.SwitchInfo.LineInfo;
 import edu.lu.uni.serval.config.Configuration;
 import edu.lu.uni.serval.dataprepare.DataPreparer;
 import edu.lu.uni.serval.jdt.tree.ITree;
@@ -88,7 +89,6 @@ public abstract class AbstractFixer implements IFixer {
 	// Patch space tree
 	protected List<FileInfo> switchInfos=new ArrayList<>();
 	// Method lists
-	protected Map<String, List<FunctionLocation>> methodLists = new HashMap<>();
 	public boolean useSubTemplate = false;
 
 	protected List<String> actualFailedTests;
@@ -205,6 +205,7 @@ public abstract class AbstractFixer implements IFixer {
 		if (!suspiciousFile.exists()) suspiciousFile = new File(suspiciousFileBackup.getPath() + "/" + this.buggyProject + "/All.txt");
 		if (!suspiciousFile.exists()) return null;
 		List<SuspiciousPosition> suspiciousCodeList = new ArrayList<>();
+
 		try {
 			FileReader fileReader = new FileReader(suspiciousFile);
             BufferedReader reader = new BufferedReader(fileReader);
@@ -324,6 +325,7 @@ public abstract class AbstractFixer implements IFixer {
 			double score=scn.flScore;
 
 			FileInfo fileInfo=null;
+			// Find current file
 			for (FileInfo tempFileInfo:switchInfos){
 				if (tempFileInfo.fileName.equals(file)){
 					fileInfo=tempFileInfo;
@@ -336,8 +338,29 @@ public abstract class AbstractFixer implements IFixer {
 				switchInfos.add(fileInfo);
 			}
 
+			// Find current function
+			Map<String,Integer[]> lines=MethodFinder.infos.get(file);
+			String function="no_function:"+Integer.toString(line);
+			for (String funcName:lines.keySet()){
+				if (lines.get(funcName)[0]<=line && lines.get(funcName)[1]>=line){
+					function=funcName;
+					break;
+				}
+			}
+			FuncInfo funcInfo=null;
+			for (FuncInfo tempFuncInfo:fileInfo.funcInfos){
+				if (tempFuncInfo.funcName.equals(function)){
+					funcInfo=tempFuncInfo;
+					break;
+				}
+			}
+			if (funcInfo==null){
+				funcInfo=new FuncInfo(function);
+				fileInfo.funcInfos.add(funcInfo);
+			}
+
 			LineInfo lineInfo=null;
-			for (LineInfo tempLineInfo:fileInfo.lineInfos){
+			for (LineInfo tempLineInfo:funcInfo.lineInfos){
 				if (tempLineInfo.line==line){
 					lineInfo=tempLineInfo;
 					break;
@@ -346,7 +369,7 @@ public abstract class AbstractFixer implements IFixer {
 			if (lineInfo==null){
 				lineInfo=new LineInfo(line);
 				lineInfo.id=scn.rank;
-				fileInfo.lineInfos.add(lineInfo);
+				funcInfo.lineInfos.add(lineInfo);
 			}
 
 			List<String> dirs=Arrays.asList(fixedPath.split("/"));

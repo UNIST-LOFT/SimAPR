@@ -1,6 +1,8 @@
 package edu.lu.uni.serval.bug.fixer;
 
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -9,9 +11,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import anonymous.JsonInfo;
-import anonymous.MethodLineFinder;
-import anonymous.TestValidator;
+import kr.ac.unist.apr.JsonInfo;
+import kr.ac.unist.apr.MethodFinder;
+import kr.ac.unist.apr.TestValidator;
 import edu.lu.uni.serval.config.Configuration;
 import edu.lu.uni.serval.fixminer.ProjectLiteral;
 import edu.lu.uni.serval.fixminer.insertTemplate.InsertIfNonNullCheck;
@@ -76,6 +78,7 @@ public class FixMinerFixer extends AbstractFixer {
 		if (!dp.validPaths) return;
 		
 		// Read suspicious positions.
+		MethodFinder.parseFiles(fullBuggyProjectPath+PathUtils.getSrcPath(buggyProject).get(2),buggyProject);
 		List<SuspiciousPosition> suspiciousCodeList = readSuspiciousCodeFromFile(metric, path, buggyProject, dp);
 		if (suspiciousCodeList == null) return;
 		
@@ -85,11 +88,6 @@ public class FixMinerFixer extends AbstractFixer {
 		for (SuspiciousPosition suspiciousCode : suspiciousCodeList) {
 			SuspCodeNode scn = parseSuspiciousCode(suspiciousCode);
 			if (scn == null) continue;
-			if (!methodLists.keySet().contains(scn.suspiciousJavaFile)){
-				log.debug("Traverse AST for get all method lists: "+scn.suspiciousJavaFile);
-				MethodLineFinder lineFinder=new MethodLineFinder(fullBuggyProjectPath+PathUtils.getSrcPath(buggyProject).get(2)+scn.suspiciousJavaFile);
-				methodLists.put(PathUtils.getSrcPath(buggyProject).get(2).substring(1)+scn.suspiciousJavaFile, lineFinder.getFunctionLocations());
-			}
 			
 //			System.err.println(scn.suspCodeStr);
 	        // Match fix templates for this suspicious code with its context information.
@@ -103,7 +101,6 @@ public class FixMinerFixer extends AbstractFixer {
 			}
         }
 		jsonInfo.setSwitchInfos(switchInfos);
-		jsonInfo.setMethodInfo(methodLists);
 		jsonInfo.saveToFile(buggyProject);
 		
 		if (useSubTemplate) {
@@ -138,7 +135,6 @@ public class FixMinerFixer extends AbstractFixer {
 			subFixTemplates(scns,maxLocation);
 
 			jsonInfo.setSwitchInfos(switchInfos);
-			jsonInfo.setMethodInfo(methodLists);
 			jsonInfo.saveToFile(buggyProject);	
 			cacheInfo.saveCache(cachePath);
 		}

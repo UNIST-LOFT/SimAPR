@@ -1,25 +1,22 @@
-package anonymous;
+package kr.ac.unist.apr;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.List;
-import java.util.Map;
-import java.util.Map.Entry;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import anonymous.MethodLineFinder.FunctionLocation;
-import anonymous.SwitchInfo.FileInfo;
-import anonymous.SwitchInfo.LineInfo;
+import kr.ac.unist.apr.SwitchInfo.FileInfo;
+import kr.ac.unist.apr.SwitchInfo.FuncInfo;
+import kr.ac.unist.apr.SwitchInfo.LineInfo;
 
 import org.apache.commons.io.FileUtils;
 
 import edu.lu.uni.serval.utils.FileHelper;
-import edu.lu.uni.serval.utils.PathUtils;
 
 /**
  * Casino information generator.
@@ -134,69 +131,39 @@ public class JsonInfo {
             fileObject.addProperty("file_name", info.fileName);
             fileObject.addProperty("class_name", info.className);
 
-            JsonArray lineArray=new JsonArray();
-            for (LineInfo lineInfo:info.lineInfos){
-                JsonObject lineObject=new JsonObject();
-                lineObject.addProperty("line", lineInfo.line);
-                lineObject.addProperty("fl_score", lineInfo.switchInfos.get(0).score);
-                lineObject.addProperty("id", lineInfo.id);
+            JsonArray funcArray=new JsonArray();
+            for (FuncInfo funcInfo:info.funcInfos){
+                JsonObject funcObject=new JsonObject();
+                funcObject.addProperty("function", funcInfo.funcName);
 
-                JsonArray switchArray=new JsonArray();
-                for (SwitchInfo switchInfo:lineInfo.switchInfos){
-                    JsonObject switchObject=new JsonObject();
-                    switchObject.addProperty("mutation", switchInfo.mutator.getSimpleName());
-                    switchObject.addProperty("location", switchInfo.fixedSourcePath);
-                    switchObject.addProperty("patch_id", switchInfo.id);
+                JsonArray lineArray=new JsonArray();
+                for (LineInfo lineInfo:funcInfo.lineInfos){
+                    JsonObject lineObject=new JsonObject();
+                    lineObject.addProperty("line", lineInfo.line);
+                    lineObject.addProperty("fl_score", lineInfo.switchInfos.get(0).score);
+                    lineObject.addProperty("id", lineInfo.id);
 
-                    switchArray.add(switchObject);
+                    JsonArray switchArray=new JsonArray();
+                    for (SwitchInfo switchInfo:lineInfo.switchInfos){
+                        JsonObject switchObject=new JsonObject();
+                        switchObject.addProperty("mutation", switchInfo.mutator.getSimpleName());
+                        switchObject.addProperty("location", switchInfo.fixedSourcePath);
+                        switchObject.addProperty("patch_id", switchInfo.id);
+
+                        switchArray.add(switchObject);
+                    }
+                    lineObject.add("cases", switchArray);
+                    lineArray.add(lineObject);
                 }
-                lineObject.add("cases", switchArray);
-                lineArray.add(lineObject);
+                funcObject.add("lines", lineArray);
+                funcArray.add(funcObject);
             }
-            fileObject.add("lines", lineArray);
+            fileObject.add("functions", funcArray);
             fileArray.add(fileObject);
         }
 
         root.remove("rules");
         root.add("rules",fileArray);
-    }
-
-    /**
-     * Set method information.
-     * @param infos file name-method location paired map
-     */
-    public void setMethodInfo(Map<String,List<FunctionLocation>> infos){
-        JsonArray fileArray=new JsonArray();
-        for (Entry<String,List<FunctionLocation>> entry:infos.entrySet()){
-            JsonObject fileObject=new JsonObject();
-            fileObject.addProperty("file", entry.getKey());
-
-            JsonArray methodArray=new JsonArray();
-            for (FunctionLocation location:entry.getValue()){
-                JsonObject methodObject=new JsonObject();
-                String functionDesc=location.funcName;
-                methodObject.addProperty("begin", location.startLine);
-                methodObject.addProperty("end", location.endLine);
-
-                String descriptor="[";
-                for (String param:location.params){
-                    descriptor+=param+", ";
-                }
-                if (location.params.size()>0)
-                    descriptor=descriptor.substring(0,descriptor.length()-2)+"]";
-                else descriptor+="]";
-                functionDesc+=descriptor;
-                methodObject.addProperty("function", functionDesc);
-
-                methodArray.add(methodObject);
-            }
-            fileObject.add("functions", methodArray);
-
-            fileArray.add(fileObject);
-        }
-
-        root.remove("func_locations");
-        root.add("func_locations", fileArray);
     }
 
     /**
