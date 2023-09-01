@@ -25,4 +25,5 @@ public class Configuration {
 
 	public static String OUTPUT_DIR = null;
 	public static String WORK_DIR = null;
+	public static String cacheFile="/root/project/experiment/.cache-tbar/";
 }

@@ -29,7 +29,9 @@ import edu.lu.uni.serval.fixpattern.pmd.EP9;
 import edu.lu.uni.serval.jdt.tree.ITree;
 import edu.lu.uni.serval.utils.Checker;
 import edu.lu.uni.serval.utils.FileHelper;
+import edu.lu.uni.serval.utils.PathUtils;
 import edu.lu.uni.serval.utils.SuspiciousPosition;
+import kr.ac.unist.apr.MethodFinder;
 
 /**
  * AVATAR. 
@@ -56,22 +58,16 @@ public class Avatar extends AbstractFixer {
 		
 		// Localize suspicious code positions.
 		// Read suspicious positions.
+		MethodFinder.parseFiles(fullBuggyProjectPath+PathUtils.getSrcPath(buggyProject).get(2),buggyProject);
 		List<SuspiciousPosition> suspiciousCodeList = readSuspiciousCodeFromFile();
 		if (suspiciousCodeList == null) return;
 		
 		List<SuspCodeNode> triedSuspNode = new ArrayList<>();
         log.info("=======StaticBugFixer: Start to fix suspicious code======");
-        int rank = 0;
         for (SuspiciousPosition suspiciousCode : suspiciousCodeList) {
 			SuspCodeNode scn = parseSuspiciousCode(suspiciousCode);
 			if (scn == null) continue;
             scn.projectId = this.buggyProject;
-            scn.flScore = suspiciousCode.flScore;
-            scn.flScoreRank = rank;
-            rank++;
-            if (this.topFL > 0 && rank > this.topFL)
-                break;
-//			log.debug(scn.suspCodeStr);
 			if (triedSuspNode.contains(scn)) continue;
 			triedSuspNode.add(scn);
 	        // Match fix templates for this suspicious code with its context information.
@@ -81,6 +77,8 @@ public class Avatar extends AbstractFixer {
 			if (minErrorTest == 0) break;
         }
 		log.info("=======StaticBugFixer: Finish off fixing======");
+		jsonInfo.setSwitchInfos(switchInfos);
+        jsonInfo.saveToFile(buggyProject);
 		FileHelper.deleteDirectory(Configuration.TEMP_FILES_PATH + this.dataType + "/" + this.buggyProject);
 	}
 	
@@ -194,7 +192,7 @@ public class Avatar extends AbstractFixer {
 		
 		// Test generated patches.
 		if (patchCandidates.isEmpty()) return;
-		testGeneratedPatches(patchCandidates, scn);
+		addPatchesToInfo(patchCandidates, scn);
 		ft.clearPatches();
 	}
 

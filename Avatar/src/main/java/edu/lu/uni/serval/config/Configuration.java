@@ -15,5 +15,5 @@ public class Configuration {
 	public static String failedTestCasesFilePath = "FailedTestCases/";
 	public static String faultLocalizationMetric = "Ochiai";
 	public static String outputPath = "OUTPUT/";
-	public static int topFL=0;
+	public static String cacheFile="/root/project/experiment/.cache-avatar/";
 }

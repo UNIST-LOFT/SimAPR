@@ -31,8 +31,8 @@ def run(project):
             f.write(result.stdout.decode('utf-8'))
     
     result=subprocess.run(['./KParFixRunner.sh',
-            'buggy/',project,'/defects4j/',
-            'd4j/'])
+            '/root/project/SimAPR/kPar/buggy/',project,'/defects4j/',
+            '/root/project/SimAPR/kPar/d4j/'])
     print(f'{project} finish with return code {result.returncode}')
     exit(result.returncode)
 

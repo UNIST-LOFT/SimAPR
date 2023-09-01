@@ -35,6 +35,7 @@ public abstract class FixTemplate implements IFixTemplate {
 		log.debug("Patch Candiate: " + fixedCodeStr1);
 		Patch patch = new Patch();
 		patch.setFixedCodeStr1(fixedCodeStr1);
+		patch.mutator=getClass();
 		this.patchesList.add(patch);
 	}
 	
@@ -43,6 +44,7 @@ public abstract class FixTemplate implements IFixTemplate {
 		Patch patch = new Patch();
 		patch.setBuggyCodeEndPos(suspCodeEndPos);
 		patch.setFixedCodeStr1(fixedCodeStr1);
+		patch.mutator=getClass();
 		this.patchesList.add(patch);
 	}
 	
@@ -53,6 +55,7 @@ public abstract class FixTemplate implements IFixTemplate {
 		patch.setBuggyCodeEndPos(suspCodeEndPos);
 		patch.setFixedCodeStr1(fixedCodeStr1);
 		patch.setFixedCodeStr2(fixedCodeStr2);
+		patch.mutator=getClass();
 		this.patchesList.add(patch);
 	}
 	

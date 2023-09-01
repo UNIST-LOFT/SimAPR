@@ -10,6 +10,6 @@ public class SuspiciousPosition {
 
 	public String classPath;
 	public int lineNumber;
-	public double flScore;
-	
+	public double score;
+	public int rank;
 }

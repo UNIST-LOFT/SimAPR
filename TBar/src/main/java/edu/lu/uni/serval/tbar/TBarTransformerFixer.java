@@ -10,8 +10,6 @@ import edu.lu.uni.serval.tbar.dataprepare.DataPreparerExtended;
 import edu.lu.uni.serval.tbar.fixpatterns.*;
 import edu.lu.uni.serval.tbar.fixtemplate.FixTemplate;
 import edu.lu.uni.serval.tbar.info.Patch;
-import edu.lu.uni.serval.tbar.json.PatchesLogs;
-import edu.lu.uni.serval.tbar.json.util.PatchSpaceUtils;
 import edu.lu.uni.serval.tbar.utils.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,7 +41,6 @@ public class TBarTransformerFixer implements IFixer {
 	private final String targetProjectName; // test
 
 	private final DataPreparerExtended dataPreparer;
-	private final PatchesLogs jsonLogs = new PatchesLogs();
 
     public TBarTransformerFixer(String bugFileLocation, int bugLine, String projectPath, String projectName) {
         this.bugJavaPath = bugFileLocation;
@@ -83,15 +80,10 @@ public class TBarTransformerFixer implements IFixer {
 					}
 				}
                 fixWithMatchedFixTemplates(scn, distinctContextInfo, i);
-
-				// Json logs
-				this.jsonLogs.addPriority(scn.targetJavaFile.getName(), scn.buggyLine);
 			}
         }
         log.info("======= TBarTransformer: Finish off transforming ======");
 
-		// Json logs
-		createJsonLogs();
     }
 
     /*
@@ -127,10 +119,7 @@ public class TBarTransformerFixer implements IFixer {
 
         log.info("Parsing suspicious file: " + suspClassPath + "@" + suspLine);
 
-        String suspiciousJavaFile = MiniUtils.getJavaFileFromClassPath(suspClassPath);
-		suspClassPath = MiniUtils.getClassPathFromJavaPath(suspiciousJavaFile);
-
-		String filePath = dataPreparer.srcPath + suspiciousJavaFile;
+		String filePath = dataPreparer.srcPath;
         File suspCodeFile = new File(filePath);
         if (!suspCodeFile.exists()) {
             log.error("File " + suspClassPath +" does not exist");
@@ -140,7 +129,7 @@ public class TBarTransformerFixer implements IFixer {
 		scp.parseSuspiciousCode(suspCodeFile, suspLine);
         List<Pair<ITree, String>> suspiciousCodePairs = scp.getSuspiciousCode();
         if (suspiciousCodePairs.isEmpty()) {
-			log.error("Failed to identify the buggy statement in: " + suspiciousJavaFile + "@" + suspLine);
+			log.error("Failed to identify the buggy statement in: " + "@" + suspLine);
 			return null;
 		}
 		String targetJavaFilePath = FileUtils.getFileAddressOfJava(dataPreparer.srcPath, suspClassPath);
@@ -189,8 +178,10 @@ public class TBarTransformerFixer implements IFixer {
                 endPos,
                 suspCodeAstNode,
                 suspCodeStr,
-                suspiciousJavaFile,
-                suspLine
+                "",
+                suspLine,
+				0.1,
+				0
             );
 			scns.add(scn);
 		}
@@ -371,8 +362,6 @@ public class TBarTransformerFixer implements IFixer {
 			int startPosition = patch.getBuggyCodeStartPos();
 			int endPosition = patch.getBuggyCodeEndPos();
 			String javafile = scn.targetJavaFile.getAbsolutePath().substring(0, scn.targetJavaFile.getAbsolutePath().length() - 5);
-			int lineNumber = PatchSpaceUtils.getLineNumberOnPosition(javafile, startPosition);
-			jsonLogs.addLine(javafile, lineNumber, fixname, location, startPosition, endPosition, scn.score);
 		}
     }
 
@@ -462,53 +451,4 @@ public class TBarTransformerFixer implements IFixer {
 		return tempNewFile.getAbsolutePath();
 	}
 
-	private void compilePatch(String cmd) {
-		log.info("Attempt to compile using command: " + cmd);
-		Runtime run = Runtime.getRuntime();
-		try {
-			Process pr = run.exec(cmd);
-			pr.waitFor();
-		} catch (Exception e) {
-			log.debug("Compile error", e);
-		}
-	}
-
-	private void createJsonLogs() {
-		try {
-			File logs = new File(Configuration.JSON_LOG_PATH);
-			if (!logs.createNewFile()) {
-				log.error("Couldn't create json logs ;(");
-			}
-			FileWriter writer = new FileWriter(logs);
-			BufferedWriter buffer = new BufferedWriter(writer);
-			buffer.write(this.jsonLogs.createJsonObject());
-			buffer.flush();
-			writer.close();
-			buffer.close();
-		} catch (IOException e) {
-			log.error(e.getMessage());
-		}
-	}
-}
-
-class MiniUtils {
-
-    private static final String SLASH = System.getProperty("file.separator");
-    private static final String DOT = ".";
-
-    public static String getClassNameFromFilePath(String path) {
-        return path.substring(0, path.length() - 5).replace(SLASH, DOT);
-    }
-
-    public static String getClassFromFilePath(String path) {
-        return path.substring(0, path.length() - 5) + ".class";
-    }
-
-	public static String getJavaFileFromClassPath(String classpath) {
-		return classpath.replace(DOT, SLASH) + ".java";
-	}
-
-	public static String getClassPathFromJavaPath(String javaPath) {
-		return javaPath.substring(0, javaPath.length() - 5).replace(SLASH, DOT);
-	}
 }

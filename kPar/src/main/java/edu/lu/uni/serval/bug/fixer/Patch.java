@@ -1,5 +1,7 @@
 package edu.lu.uni.serval.bug.fixer;
 
+import edu.lu.uni.serval.par.templates.FixTemplate;
+
 /**
  * Store the information of generated patches.
  * 
@@ -12,6 +14,10 @@ public class Patch {
 	private String fixedCodeStr1 = "";
 	private String fixedCodeStr2 = "";
 	private int buggyCodeStartPos = -1;
+
+	public String buggyFileName;
+	public Class<? extends FixTemplate> mutator;
+	public int id=-1;
 	/*
 	 * if (buggyCodeEndPos == buggyCodeStartPos) then
 	 * 		replace buggyCodeStr with fixedCodeStr1;
@@ -21,8 +27,6 @@ public class Patch {
 	 * 		fixedCodeStr1 + buggCodeStr + fixedCodeStr2;
 	 */
 	private int buggyCodeEndPos = -1;
-
-	public String buggyFileName;
 
 	public String getBuggyCodeStr() {
 		return buggyCodeStr;

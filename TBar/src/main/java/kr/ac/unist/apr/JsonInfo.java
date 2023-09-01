@@ -16,7 +16,7 @@ import kr.ac.unist.apr.SwitchInfo.LineInfo;
 
 import org.apache.commons.io.FileUtils;
 
-import edu.lu.uni.serval.utils.FileHelper;
+import edu.lu.uni.serval.tbar.utils.FileHelper;
 
 /**
  * Casino information generator.

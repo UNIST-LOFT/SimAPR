@@ -17,10 +17,11 @@ public class SuspCodeNode {
     public String suspiciousJavaFile;
     public int buggyLine;
 
-    public float score;
+    public double flScore;
+    public int rank;
 
     public SuspCodeNode(File javaBackup, File classBackup, File targetJavaFile, File targetClassFile, int startPos,
-            int endPos, ITree suspCodeAstNode, String suspCodeStr, String suspiciousJavaFile, int buggyLine) {
+            int endPos, ITree suspCodeAstNode, String suspCodeStr, String suspiciousJavaFile, int buggyLine,double flScore,int rank) {
         this.javaBackup = javaBackup;
         this.classBackup = classBackup;
         this.targetJavaFile = targetJavaFile;
@@ -31,6 +32,9 @@ public class SuspCodeNode {
         this.suspCodeStr = suspCodeStr;
         this.suspiciousJavaFile = suspiciousJavaFile;
         this.buggyLine = buggyLine;
+
+        this.flScore=flScore;
+        this.rank=rank;
     }
 
     @Override

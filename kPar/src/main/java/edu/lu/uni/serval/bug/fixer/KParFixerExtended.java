@@ -11,9 +11,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.Calendar;
 
-import edu.lu.uni.serval.json.MethodInfoUtils;
-import edu.lu.uni.serval.json.PatchesLogs;
-import edu.lu.uni.serval.json.util.PatchSpaceUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +30,9 @@ import edu.lu.uni.serval.par.templates.fix.ParameterReplacer;
 import edu.lu.uni.serval.par.templates.fix.RangeChecker;
 import edu.lu.uni.serval.utils.Checker;
 import edu.lu.uni.serval.utils.FileHelper;
+import edu.lu.uni.serval.utils.PathUtils;
 import edu.lu.uni.serval.utils.SuspiciousPosition;
+import kr.ac.unist.apr.MethodFinder;
 
 /**
  * Automated Program Repair Tool: kPAR.
@@ -47,18 +46,15 @@ import edu.lu.uni.serval.utils.SuspiciousPosition;
 public class KParFixerExtended extends AbstractFixer {
 
     private static Logger log = LoggerFactory.getLogger(KParFixerExtended.class);
-    private final PatchesLogs jsonLogs = new PatchesLogs();
     private int totalPatches = 0;
     private final ArrayList<String> failedMethods = new ArrayList<>();
 
     public KParFixerExtended(String path, String projectName, int bugId, String defects4jPath) {
         super(path, projectName, bugId, defects4jPath);
-        this.jsonLogs.setProjectName(projectName + "_" + bugId);
     }
 
     public KParFixerExtended(String path, String metric, String projectName, int bugId, String defects4jPath) {
         super(path, metric, projectName, bugId, defects4jPath);
-        this.jsonLogs.setProjectName(projectName + "_" + bugId);
     }
 
     @Override
@@ -66,6 +62,7 @@ public class KParFixerExtended extends AbstractFixer {
         // Read paths of the buggy project.
         if (!dp.validPaths) return;
 
+        MethodFinder.parseFiles(fullBuggyProjectPath+PathUtils.getSrcPath(buggyProject).get(2),buggyProject);
         // Read suspicious positions.
         List<SuspiciousPosition> suspiciousCodeList = readSuspiciousCodeFromFile(metric, buggyProject, dp);
         if (suspiciousCodeList == null) return;
@@ -76,9 +73,6 @@ public class KParFixerExtended extends AbstractFixer {
         for (SuspiciousPosition suspiciousCode : suspiciousCodeList) {
             SuspCodeNode scn = parseSuspiciousCode(suspiciousCode);
             if (scn == null) continue;
-            // Json logs
-            this.jsonLogs.addPriority(suspiciousCode.classPath, suspiciousCode.lineNumber, suspiciousCode.score);
-            scn.score = suspiciousCode.score;
 
 //			log.debug(scn.suspCodeStr);
             if (triedSuspNode.contains(scn)) continue;
@@ -89,8 +83,9 @@ public class KParFixerExtended extends AbstractFixer {
             log.info("Generation time: "+Long.toString(Calendar.getInstance().getTimeInMillis()-startTime));
         }
         log.info("=======kPARFixer: Finish off fixing======");
-        // Json logs
-        createJsonLogs();
+        jsonInfo.setSwitchInfos(switchInfos);
+        jsonInfo.saveToFile(buggyProject);
+
         log.debug("Not function level for JSON:");
         for (String fail: failedMethods) {
             System.out.println(fail);
@@ -196,98 +191,7 @@ public class KParFixerExtended extends AbstractFixer {
 
         // Test generated patches.
         if (patchCandidates.isEmpty()) return;
-        saveGeneratedPatches(patchCandidates, scn, ft.getClass().getSimpleName());
-    }
-
-    private void saveGeneratedPatches(List<Patch> patches, SuspCodeNode scn, String fixname) {
-        for (Patch patch: patches) {
-            patch.buggyFileName = scn.suspiciousJavaFile;
-            totalPatches++;
-
-            String patchLocation = null;
-            try {
-                patchLocation = savePatch(scn, patch, fixname);
-                if (patchLocation != null) {
-                    String pathPrefix = Configuration.OUTPUT_DIR;
-                    if (pathPrefix == null) {
-                        pathPrefix = Configuration.TEMP_PATCHES_FILES_PATH;
-                    }
-                    int index=patchLocation.indexOf(pathPrefix);
-                    patchLocation = patchLocation.substring(index+(pathPrefix + this.buggyProject).length());
-                }
-            } catch (IllegalArgumentException e) {
-                e.printStackTrace();
-            }
-            if (patchLocation == null) {
-                log.error("SKIPPING the patch " + fixname + " " + totalPatches);
-                totalPatches--;
-                // rollbackFiles(scn);
-                continue;
-            }
-
-            // Json logs
-            int startPosition = patch.getBuggyCodeStartPos();
-            int endPosition = patch.getBuggyCodeEndPos();
-            String javafile = scn.targetJavaFile.getAbsolutePath();
-            int startLine = PatchSpaceUtils.getLineNumberOnPosition(javafile, startPosition);
-            int endLine = PatchSpaceUtils.getLineNumberOnPosition(javafile, endPosition);
-            addLineJsonLogs(scn, fixname, patchLocation, startLine, endLine, startPosition, endPosition);
-            addMutationRank(patchLocation, totalPatches);
-        }
-    }
-
-    private String savePatch(SuspCodeNode scn, Patch patch, String fixname) throws IllegalArgumentException {
-        String fixedCodeStr1 = patch.getFixedCodeStr1();
-        String fixedCodeStr2 = patch.getFixedCodeStr2();
-        int exactBuggyCodeStartPos = patch.getBuggyCodeStartPos();
-        int exactBuggyCodeEndPos = patch.getBuggyCodeEndPos();
-        String patchCode = fixedCodeStr1;
-        boolean needBuggyCode = false;
-        if (exactBuggyCodeEndPos > exactBuggyCodeStartPos) {
-            needBuggyCode = true;
-            if (exactBuggyCodeStartPos < 0 ) {
-                exactBuggyCodeStartPos = scn.startPos;
-                exactBuggyCodeEndPos = scn.endPos;
-            }
-        } else if (exactBuggyCodeStartPos == -1 && exactBuggyCodeEndPos == -1) {
-            exactBuggyCodeStartPos = scn.startPos;
-            exactBuggyCodeEndPos = scn.endPos;
-        } else if (exactBuggyCodeStartPos == exactBuggyCodeEndPos) {
-            exactBuggyCodeStartPos = scn.startPos;
-        }
-        String javaCode = FileHelper.readFile(scn.javaBackup);
-        String buggyCode;
-        File newFile = null;
-        patch.setBuggyCodeStartPos(exactBuggyCodeStartPos);
-        patch.setBuggyCodeEndPos(exactBuggyCodeEndPos);
-        try {
-            buggyCode = javaCode.substring(exactBuggyCodeStartPos, exactBuggyCodeEndPos);
-            if (needBuggyCode) {
-                patchCode += buggyCode;
-                if (fixedCodeStr2 != null) {
-                    patchCode += fixedCodeStr2;
-                }
-            }
-
-            String pathPrefix = Configuration.OUTPUT_DIR;
-            if (pathPrefix == null) {
-                pathPrefix = Configuration.TEMP_PATCHES_FILES_PATH;
-            }
-
-            newFile = new File(pathPrefix + this.buggyProject + "/" + this.totalPatches + "_" + fixname + "/" + scn.targetJavaFile.getName());
-            String patchedJavaFile = javaCode.substring(0, exactBuggyCodeStartPos) + patchCode + javaCode.substring(exactBuggyCodeEndPos);
-            FileHelper.outputToFile(newFile, patchedJavaFile, false);
-        } catch (StringIndexOutOfBoundsException e) {
-            log.debug(exactBuggyCodeStartPos + " ==> " + exactBuggyCodeEndPos + " : " + javaCode.length());
-            e.printStackTrace();
-            buggyCode = "===StringIndexOutOfBoundsException===";
-        }
-
-        patch.setBuggyCodeStr(buggyCode);
-        patch.setFixedCodeStr1(patchCode);
-
-        if (newFile == null) return null;
-        return newFile.getAbsolutePath();
+        addPatchesToInfo(patchCandidates, scn);
     }
 
     private List<Integer> readAllNodeTypes(ITree suspCodeAstNode) {
@@ -348,85 +252,5 @@ public class KParFixerExtended extends AbstractFixer {
             }
         }
 
-        this.jsonLogs.addPassingTestCases(new ArrayList<>(passingTests));
-        this.jsonLogs.addFailingTestCases(new ArrayList<>(failingTests));
-        this.jsonLogs.addFailedPassingTests(new ArrayList<>(failedPassingTests));
     }
-
-    private void createJsonLogs() {
-        try {
-            String pathPrefix = Configuration.OUTPUT_DIR;
-            if (pathPrefix == null) {
-                pathPrefix = fullBuggyProjectPath;
-            } else {
-                pathPrefix = Configuration.OUTPUT_DIR + this.buggyProject;
-            }
-            File logs = new File(pathPrefix + "/" + Configuration.JSON_LOG_PATH);
-            if (!logs.getParentFile().exists()) {
-                logs.getParentFile().mkdirs();
-            }
-            if (!logs.createNewFile()) {
-                log.info("Couldn't create json logs ;(, changing existing logs file " + logs.getAbsolutePath());
-            }
-            FileWriter writer = new FileWriter(logs);
-            BufferedWriter buffer = new BufferedWriter(writer);
-            buffer.write(this.jsonLogs.createJsonObject());
-            buffer.flush();
-            writer.close();
-            buffer.close();
-        } catch (IOException e) {
-            log.error(e.getMessage());
-        }
-    }
-
-    private void addLineJsonLogs(
-            SuspCodeNode scn,
-            String fixname,
-            String patchLocation,
-            int startLine, int endLine,
-            int startPosition, int endPosition
-    ) {
-        String javafile = scn.targetJavaFile.getAbsolutePath();
-        int index=javafile.indexOf(buggyProject);
-        javafile = javafile.substring(index+buggyProject.length()+1);
-        String classFile = scn.targetClassFile.getAbsolutePath();
-        index=classFile.indexOf(buggyProject);
-        classFile = classFile.substring(index+buggyProject.length()+1);
-        try {
-            MethodInfoUtils.MethodBeam beam = MethodInfoUtils.validateMethodLineRange(
-                    scn.buggyLine, scn.targetJavaFile.getAbsolutePath()
-            );
-            jsonLogs.addLine(javafile, scn.buggyLine, fixname, patchLocation, startPosition, endPosition, scn.score);
-            jsonLogs.addJavaToClassfile(javafile, classFile);
-            if (beam == null) throw new IllegalArgumentException("Method not found");
-            addFunctionJsonLogs(scn, beam.start);
-        } catch (Exception e) {
-            System.out.println(scn.targetJavaFile.getAbsolutePath());
-            e.printStackTrace();
-            failedMethods.add(fixname + " " + startLine + ":" + endLine + " " + scn.targetJavaFile.getPath());
-        }
-    }
-
-    private void addFunctionJsonLogs(SuspCodeNode scn, int buggyLine) {
-        try {
-            MethodInfoUtils.MethodBeam beam = MethodInfoUtils.getMethodFromLine(
-                    buggyLine, scn.targetJavaFile.getAbsolutePath());
-            if (beam == null) throw new IllegalArgumentException("Method not found");
-            String javafile = scn.targetJavaFile.getAbsolutePath();
-            int index=javafile.indexOf(Configuration.WORK_DIR);
-            javafile = javafile.substring(index+Configuration.WORK_DIR.length());
-            this.jsonLogs.addMethodMutation(
-                    javafile,
-                    beam.name, beam.desc,
-                    beam.start, beam.end
-            );
-        } catch (Exception e) {
-            // Todo
-        }
-    }
-
-    private void addMutationRank(String location, int rank) {
-        this.jsonLogs.addRanking(location, rank);
-    }
-
 }

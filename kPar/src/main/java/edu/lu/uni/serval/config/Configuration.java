@@ -17,7 +17,8 @@ public class Configuration {
 
 	public static String OUTPUT_DIR = null;
 	public static String WORK_DIR = null;
-	public static String TEMP_FILES_PATH = "temp/Original/";
-	public static String TEMP_PATCHES_FILES_PATH = "temp/Patches/";
+	public static String TEMP_FILES_PATH = "/tmp/";
+	public static String TEMP_PATCHES_FILES_PATH = "/tmp/Patches/";
 	public static final String JSON_LOG_PATH = "switch-info.json";
+	public static String cacheFile="/root/project/experiment/.cache-kpar/";
 }

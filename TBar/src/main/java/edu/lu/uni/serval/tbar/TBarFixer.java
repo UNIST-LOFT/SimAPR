@@ -33,6 +33,7 @@ import edu.lu.uni.serval.tbar.info.Patch;
 import edu.lu.uni.serval.tbar.utils.Checker;
 import edu.lu.uni.serval.tbar.utils.FileHelper;
 import edu.lu.uni.serval.tbar.utils.SuspiciousPosition;
+import kr.ac.unist.apr.JsonInfo;
 
 /**
  * 
@@ -240,16 +241,22 @@ public class TBarFixer extends AbstractFixer {
 		}
 		if (!suspiciousFile.exists()) return null;
 		List<SuspiciousPosition> suspiciousCodeList = new ArrayList<>();
+
 		try {
 			FileReader fileReader = new FileReader(suspiciousFile);
             BufferedReader reader = new BufferedReader(fileReader);
             String line = null;
+			int rank=0;
             while ((line = reader.readLine()) != null) {
             	String[] elements = line.split("@");
             	SuspiciousPosition sp = new SuspiciousPosition();
             	sp.classPath = elements[0];
             	sp.lineNumber = Integer.valueOf(elements[1]);
-				sp.score = Float.parseFloat(elements[2]);
+				sp.score=Double.valueOf(elements[2]);
+				sp.rank=rank++;
+				JsonInfo.Location newLoc=new JsonInfo.Location(sp.classPath, sp.lineNumber, Double.valueOf(elements[2]));
+				jsonInfo.addFaultLocation(newLoc);
+				this.flList.add(newLoc);
             	suspiciousCodeList.add(sp);
             }
             reader.close();

@@ -34,28 +34,28 @@ public abstract class FixTemplate implements IFixTemplate {
 	protected void generatePatch(String fixedCodeStr1) {
 		// log.debug("Patch Candiate: " + fixedCodeStr1);
 		Patch patch = new Patch();
-		patch.mutation = this.getClass().getSimpleName();
 		patch.setFixedCodeStr1(fixedCodeStr1);
+		patch.mutator=getClass();
 		this.patchesList.add(patch);
 	}
 	
 	protected void generatePatch(int suspCodeEndPos, String fixedCodeStr1) {
 		// log.debug("Patch Candiate: " + fixedCodeStr1);
 		Patch patch = new Patch();
-		patch.mutation = this.getClass().getSimpleName();
 		patch.setBuggyCodeEndPos(suspCodeEndPos);
 		patch.setFixedCodeStr1(fixedCodeStr1);
+		patch.mutator=getClass();
 		this.patchesList.add(patch);
 	}
 	
 	protected void generatePatch(int suspCodeStartPos, int suspCodeEndPos, String fixedCodeStr1, String fixedCodeStr2) {
 		// log.debug("Patch Candiate: " + fixedCodeStr1 + "\n" + fixedCodeStr2);
 		Patch patch = new Patch();
-		patch.mutation = this.getClass().getSimpleName();
 		patch.setBuggyCodeStartPos(suspCodeStartPos);
 		patch.setBuggyCodeEndPos(suspCodeEndPos);
 		patch.setFixedCodeStr1(fixedCodeStr1);
 		patch.setFixedCodeStr2(fixedCodeStr2);
+		patch.mutator=getClass();
 		this.patchesList.add(patch);
 	}
 	
