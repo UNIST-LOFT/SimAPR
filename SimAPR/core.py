@@ -158,12 +158,11 @@ class FileInfo:
     return self.file_name == other.file_name
 
 class FuncInfo:
-  def __init__(self, parent: FileInfo, func_name: str, begin: int, end: int) -> None:
+  def __init__(self, parent: FileInfo, func_name: str) -> None:
     self.parent = parent
     self.func_name = func_name
-    self.begin = begin
-    self.end = end
-    self.id = f"{self.func_name}:{self.begin}-{self.end}"
+
+    self.id = self.func_name
     self.line_info_map: Dict[uuid.UUID, LineInfo] = dict()
     self.pf = PassFail()
     self.positive_pf = PassFail()
@@ -240,11 +239,9 @@ class TbarTypeInfo:
     return self.mutation == other.mutation and self.parent==other.parent
 
 class TbarCaseInfo:
-  def __init__(self, parent: TbarTypeInfo, location: str, start: int, end: int) -> None:
+  def __init__(self, parent: TbarTypeInfo, location: str) -> None:
     self.parent = parent
     self.location = location
-    self.start = start
-    self.end = end
     self.pf = PassFail()
     self.positive_pf = PassFail()
     self.update_count: int = 0
@@ -539,7 +536,7 @@ class GlobalState:
   work_dir: str
   out_dir: str
   def __init__(self) -> None:
-    self.simapr_version = "1.0.0"
+    self.simapr_version = "1.1.0"
     self.mode = Mode.casino
     self.cycle = 0
     self.total_basic_patch = 0

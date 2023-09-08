@@ -1,0 +1,11 @@
+{
+    "exclude": [
+        "AlphaRepair",
+        "Avatar",
+        "experiments",
+        "Fixminer",
+        "kPar",
+        "Recoder",
+        "TBar"
+    ]
+}
