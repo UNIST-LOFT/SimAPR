@@ -1,5 +1,3 @@
-import os
-import shutil
 import d4j_fixminer
 import subprocess
 import multiprocessing as mp
@@ -8,20 +6,18 @@ import seeds
 def run(project):
    for i in range(50):
       print(f'Run {project}-w/o-vertical-{i}')
-      result=subprocess.run(['python3','search-fixminer-ablation.py',project,'vertical',str(seeds.SEEDS[i])],stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+      result=subprocess.run(['python3','search-fixminer-ablation.py',project,'vertical',str(seeds.SEEDS[i]),str(i)],
+                            stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
       with open(f'result/{project}-wo-vertical-{i}.log','w') as f:
          f.write(result.stdout.decode("utf-8"))
-      shutil.copytree(f'result/{project}-wo-vertical',f'result/{project}-wo-vertical-{i}')
-      shutil.rmtree(f'result/{project}-wo-vertical')
-      print(f'Finish {project}-w/o-vertical with returncode {result.returncode}')
+      print(f'Finish {project}-w/o-vertical-{i} with returncode {result.returncode}')
 
       print(f'Run {project}-w/o-horizontal-{i}')
-      result=subprocess.run(['python3','search-fixminer-ablation.py',project,'horizontal',str(seeds.SEEDS[i])],stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+      result=subprocess.run(['python3','search-fixminer-ablation.py',project,'horizontal',str(seeds.SEEDS[i]),str(i)],
+                            stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
       with open(f'result/{project}-wo-horizontal-{i}.log','w') as f:
          f.write(result.stdout.decode("utf-8"))
-      shutil.copytree(f'result/{project}-wo-horizontal',f'result/{project}-wo-horizontal-{i}')
-      shutil.rmtree(f'result/{project}-wo-horizontal')
-      print(f'Finish {project}-w/o-horizontal with returncode {result.returncode}')
+      print(f'Finish {project}-w/o-horizontal-{i} with returncode {result.returncode}')
 
 from sys import argv
 

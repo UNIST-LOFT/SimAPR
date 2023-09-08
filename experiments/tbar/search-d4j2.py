@@ -1,5 +1,3 @@
-import os
-import shutil
 import d4j_tbar
 import subprocess
 import multiprocessing as mp
@@ -14,12 +12,11 @@ def run(project):
 
    for i in range(50):
       print(f'Run {project}-casino-{i}')
-      result=subprocess.run(['python3','search-tbar-casino.py',project,str(seeds.SEEDS[i])],stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+      result=subprocess.run(['python3','search-tbar-casino.py',project,str(seeds.SEEDS[i]),str(i)],
+                            stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
       with open(f'result/{project}-casino-{i}.log','w') as f:
          f.write(result.stdout.decode("utf-8"))
-      shutil.copytree(f'result/{project}-casino',f'result/{project}-casino-{i}')
-      shutil.rmtree(f'result/{project}-casino')
-      print(f'Finish {project}-casino with returncode {result.returncode}')
+      print(f'Finish {project}-casino-{i} with returncode {result.returncode}')
 
 from sys import argv
 
