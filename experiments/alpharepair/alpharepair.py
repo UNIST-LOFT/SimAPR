@@ -9,10 +9,7 @@ def main(argv):
         exit(1)
 
     bugid = argv[1]
-    if "_" in bugid:
-        bugid = bugid.replace("_", "-")
     print(f"Run AlphaRepair: {bugid}")
-    # cmd = ["python3", 'experiment.py', '--bug_id', bugid, '--output_folder', 'd4j', '--skip_v', '--re_rank', '--beam_width', '5', '--top_n_locations', '40']
     cmd = f"conda run -n alpha python3 experiment.py --bug_id {bugid} --output_folder d4j --skip_v --re_rank --beam_width 5 --top_n_locations 40"
     new_env=os.environ.copy()
     if len(argv) > 2:

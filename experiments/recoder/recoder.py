@@ -9,10 +9,7 @@ def main(argv):
         exit(1)
     
     bugid = argv[1]
-    if "_" in bugid:
-        bugid = bugid.replace("_", "-")
     print(f"Run recoder: {bugid}")
-    # cmd = ["python3", 'testDefect4j.py', bugid]
 
     new_env=os.environ.copy()
     if len(argv) > 2:

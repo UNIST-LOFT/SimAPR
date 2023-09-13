@@ -273,8 +273,6 @@ class RecoderCaseInfo:
     return hash(self.location)
   def __eq__(self, other) -> bool:
     return self.location == other.location
-  def to_str(self) -> str:
-    return f"{self.parent.line_id}-{self.case_id}"
 
 # Find with f"{file_name}:{line_number}"
 class FileLine:
@@ -322,7 +320,6 @@ class EnvGenerator:
     new_env["SIMAPR_BUGGY_PROJECT"] = state.d4j_buggy_project
     new_env["SIMAPR_OUTPUT_DISTANCE_FILE"] = f"/tmp/{uuid.uuid4()}.out"
     new_env["SIMAPR_TIMEOUT"] = str(state.timeout)
-    new_env["SIMAPR_RECODER"] = "-"
     return new_env
   @staticmethod
   def get_new_env_d4j_positive_tests(state: 'GlobalState', tests: List[str], new_env: Dict[str, str]) -> Dict[str, str]:
@@ -425,9 +422,9 @@ class RecoderPatchInfo:
     self.func_info.positive_pf.update(result, n,b_n, exp_alpha)
     self.file_info.positive_pf.update(result, n,b_n, exp_alpha)
   def remove_patch(self, state: 'GlobalState') -> None:
-    if self.recoder_case_info.case_id not in self.line_info.recoder_case_info_map:
-      state.logger.critical(f"{self.recoder_case_info.case_id} not in {self.line_info.recoder_case_info_map}")
-    del self.line_info.recoder_case_info_map[self.recoder_case_info.case_id]
+    if self.recoder_case_info.location not in self.line_info.recoder_case_info_map:
+      state.logger.critical(f"{self.recoder_case_info.location} not in {self.line_info.recoder_case_info_map}")
+    del self.line_info.recoder_case_info_map[self.recoder_case_info.location]
 
     if len(self.line_info.recoder_case_info_map) == 0:
       score = self.line_info.fl_score
@@ -477,7 +474,7 @@ class RecoderPatchInfo:
   def __str__(self) -> str:
     return self.to_str()
   def to_str_sw_cs(self) -> str:
-    return f"{self.line_info.line_id}-{self.recoder_case_info.case_id}"
+    return self.to_str()
   @staticmethod
   def list_to_str(selected_patch: list) -> str:
     result = list()

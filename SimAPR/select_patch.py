@@ -681,7 +681,7 @@ def select_patch_recoder_guided(state: GlobalState) -> RecoderPatchInfo:
 
   if state.total_basic_patch == 0 or state.not_use_guided_search:
     selected_switch_info = epsilon_search(state)
-    state.patch_ranking.remove(selected_switch_info.to_str())
+    state.patch_ranking.remove(selected_switch_info.location)
     result = RecoderPatchInfo(selected_switch_info)
     return result
   
@@ -769,7 +769,7 @@ def select_patch_recoder_guided(state: GlobalState) -> RecoderPatchInfo:
       state.logger.debug(f'Misguide at line')
 
   selected_case_info: RecoderCaseInfo = epsilon_select(state, selected_line_info)
-  state.patch_ranking.remove(selected_case_info.to_str())
+  state.patch_ranking.remove(selected_case_info.location)
   result = RecoderPatchInfo(selected_case_info)
   return result
 
@@ -808,7 +808,7 @@ def select_patch_recoder_seapr(state: GlobalState) -> RecoderPatchInfo:
   else:
     for loc in state.patch_ranking:
       recoder_case_info: RecoderCaseInfo = state.switch_case_map[loc]
-      if recoder_case_info.case_id not in recoder_case_info.parent.recoder_case_info_map:
+      if recoder_case_info.location not in recoder_case_info.parent.recoder_case_info_map:
         continue
       cur_score = get_ochiai(recoder_case_info.same_seapr_pf.pass_count, recoder_case_info.same_seapr_pf.fail_count,
         recoder_case_info.diff_seapr_pf.pass_count, recoder_case_info.diff_seapr_pf.fail_count)
@@ -838,8 +838,8 @@ def select_patch_recoder_seapr(state: GlobalState) -> RecoderPatchInfo:
     state.logger.debug('Every top-30 methods are searched, follow original order!')
     state.select_time+=time.time()-start_time
     return select_patch_recoder(state)
-  state.patch_ranking.remove(selected_patch.to_str())
-  state.logger.debug(f"Selected patch: {selected_patch.to_str()}, seapr score: {max_score}")
+  state.patch_ranking.remove(selected_patch.location)
+  state.logger.debug(f"Selected patch: {selected_patch.location}, seapr score: {max_score}")
   if not state.use_pattern and state.seapr_layer == SeAPRMode.FUNCTION:
     selected_patch.parent.parent.case_rank_list.pop(0)
   state.select_time+=time.time()-start_time
@@ -885,6 +885,6 @@ def select_patch_recoder_genprog(state: GlobalState) -> TbarPatchInfo:
   selected_patch=patch_list[selected_patch_index]
 
   state.select_time+=time.time()-start_time
-  state.logger.debug(f'{selected_patch.to_str()} selected')
-  state.patch_ranking.remove(selected_patch.to_str())
+  state.logger.debug(f'{selected_patch.location} selected')
+  state.patch_ranking.remove(selected_patch.location)
   return RecoderPatchInfo(selected_patch)

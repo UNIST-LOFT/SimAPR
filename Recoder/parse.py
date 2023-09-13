@@ -99,8 +99,8 @@ def parse_package(pkg_name,ver_tag):
 
     print(' saving and cleaning up')
 
-    pathlib.Path('result').mkdir(exist_ok=True)
-    with pathlib.Path('result/%s-%s.json'%(pkg_name,ver_tag)).open('w',encoding='utf-8') as f:
+    pathlib.Path('Result').mkdir(exist_ok=True)
+    with pathlib.Path('Result/%s_%s.json'%(pkg_name,ver_tag)).open('w',encoding='utf-8') as f:
         json.dump(ret,f,indent=1)
 
     shutil.rmtree('var')

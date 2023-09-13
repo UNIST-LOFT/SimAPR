@@ -10,8 +10,7 @@ import time
 import signal
 import traceback
 from typing import Dict, List, Set, Tuple
-#lst = ['Chart-1', 'Chart-8', 'Chart-9', 'Chart-11', 'Chart-12', 'Chart-13', 'Chart-20', 'Chart-24', 'Chart-26', 'Closure-1', 'Closure-10', 'Closure-14', 'Closure-15', 'Closure-18', 'Closure-31', 'Closure-33', 'Closure-38', 'Closure-51', 'Closure-62', 'Closure-63', 'Closure-70', 'Closure-73', 'Closure-86', 'Closure-92', 'Closure-93', 'Closure-107', 'Closure-118', 'Closure-113', 'Closure-124', 'Closure-125', 'Closure-129', 'Lang-6', 'Lang-16', 'Lang-26', 'Lang-29', 'Lang-33', 'Lang-38', 'Lang-39', 'Lang-43', 'Lang-45', 'Lang-51', 'Lang-55', 'Lang-57', 'Lang-59', 'Lang-61', 'Math-2', 'Math-5', 'Math-25', 'Math-30', 'Math-33', 'Math-34', 'Math-41', 'Math-57', 'Math-58', 'Math-59', 'Math-69', 'Math-70', 'Math-75', 'Math-80', 'Math-82', 'Math-85', 'Math-94', 'Math-105', 'Time-4', 'Time-15', 'Time-16', 'Time-19', 'Lang-43', 'Math-50', 'Math-98', 'Time-7', 'Mockito-38', 'Mockito-22', 'Mockito-29', 'Mockito-34', 'Closure-104', 'Math-27']
-lst = ['Lang-39', 'Lang-63', 'Math-88', 'Math-82', 'Math-20', 'Math-28', 'Math-6', 'Math-72', 'Math-79', 'Math-8', 'Math-98']#['Closure-38', 'Closure-123', 'Closure-124', 'Lang-61', 'Math-3', 'Math-11', 'Math-48', 'Math-53', 'Math-63', 'Math-73', 'Math-101', 'Math-98', 'Lang-16']
+
 def convert_time_to_str(time):
     #时间数字转化成字符串，不够10的前面补个0
     if (time < 10):
@@ -47,8 +46,8 @@ def getroottree2(tokens, isex=False):
     return root
 
 def add_tests(recoder_path: str, outdir: str, bugid: str, switch_info: dict) -> None:
-    proj = bugid.split("-")[0]
-    bid = bugid.split("-")[1]
+    proj = bugid.split("_")[0]
+    bid = bugid.split("_")[1]
     build_dir = os.path.join(recoder_path, "buggy", bugid)
     os.makedirs(build_dir, exist_ok=True)
     os.makedirs(outdir + "/" + bugid, exist_ok=True)
@@ -110,8 +109,8 @@ def save_code_as_file(outdir: str, bugid: str, patches: dict, func_map: Dict[str
         recoder_path = os.environ["RECODER_HOME"]
     switch_info = dict()
     switch_info["project_name"] = bugid
-    proj = bugid.split("-")[0]
-    bid = bugid.split("-")[1]
+    proj = bugid.split("_")[0]
+    bid = bugid.split("_")[1]
     add_tests(recoder_path, outdir, bugid, switch_info)
     rankings = list()
     # fl_scores = list()
@@ -128,6 +127,7 @@ def save_code_as_file(outdir: str, bugid: str, patches: dict, func_map: Dict[str
     rules = list()
     file_dict = dict()
     id_dict = dict()
+    case_id=0
     file_line_id = dict()
     for i, p in enumerate(patches):
         if i < 0:
@@ -137,14 +137,45 @@ def save_code_as_file(outdir: str, bugid: str, patches: dict, func_map: Dict[str
         if id not in id_dict:
             id_dict[id] = 0
         id_dict[id] += 1
+        case_id+=1
         filename = p["filename"].replace(f"buggy/{bugid}/", "", 1)
         fl_score = p["fl_score"]
         if filename not in file_dict:
             file_dict[filename] = dict()
-        line_dict = file_dict[filename]
+        
+        # Init functions
+        func_dict= file_dict[filename]
+        if len(func_dict) == 0:
+            for func in func_map[filename]:
+                func_dict[func['function']+":"+str(func['begin'])+"-"+str(func['end'])]={
+                    'function': func['function']+":"+str(func['begin'])+"-"+str(func['end']),
+                    'lines': dict()
+                }
+
+        # Find function
+        func_info = None
+        for func in func_map[filename]:
+            if func['begin'] <= int(p['line']) <= func['end']:
+                func_info= func_dict[func['function']+":"+str(func['begin'])+"-"+str(func['end'])]
+                break
+        if func_info is None:
+            func_dict[f'no_function:{p["line"]}-{p["line"]}']={
+                "function": f'no_function:{p["line"]}-{p["line"]}',
+                "lines": dict()
+            }
+            func_info = func_dict[f'no_function:{p["line"]}-{p["line"]}']
+
+        # Init lines
+        if p["line"] not in func_info['lines']:
+            func_info['lines'][p["line"]]={
+                "line": p["line"],
+                "id": id,
+                "fl_score": fl_score,
+                "cases": []
+            }
+
+        line_dict = func_info['lines']
         line_num = int(p["line"])
-        if line_num not in line_dict:
-            line_dict[line_num] = {"line": line_num, "id": id, "fl_score": fl_score, "cases": []}
         file_line = f"{filename}:{line_num}"
         if file_line not in file_line_id:
             file_line_id[file_line] = id
@@ -153,9 +184,9 @@ def save_code_as_file(outdir: str, bugid: str, patches: dict, func_map: Dict[str
                 print("Not correct id!!!")
                 print(f"{file_line} -> {file_line_id[file_line]} != {id}")
         case_dict = dict()
-        case_dict["case"] = id_dict[id]
-        save_file = os.path.join(outdir, bugid, str(id), str(id_dict[id]), os.path.basename(filename))
-        case_dict["location"] = os.path.join(str(id), str(id_dict[id]), os.path.basename(filename))
+        case_dict["case"] = case_id #id_dict[id]
+        save_file = os.path.join(outdir, bugid, str(id), str(case_id), os.path.basename(filename))
+        case_dict["location"] = os.path.join(str(id), str(case_id), os.path.basename(filename))
         case_dict["prob"] = p["prob"]
         case_dict["edit"] = p["code"]
         case_dict["mode"] = p["mode"]
@@ -275,34 +306,44 @@ def save_code_as_file(outdir: str, bugid: str, patches: dict, func_map: Dict[str
         case_dict["code"] = code
         case_dict["oldcode"] = oldcode
         line_dict[line_num]["cases"].append(case_dict)
-        rankings.append(f"{id}-{case_dict['case']}")
+        rankings.append(case_dict['location'])
         os.makedirs(os.path.dirname(save_file), exist_ok=True)
         with open(save_file, "w") as sf:
             sf.write(tmpcode)
     switch_info_file = os.path.join(outdir, bugid, "switch-info.json")
     file_list = list()
     for file in file_dict:
-        line_list = list()
-        line_dict = file_dict[file]
-        file_list.append({"file": file, "lines": line_list})
-        for line in line_dict:
-            line_list.append(line_dict[line])
+        func_list=[]
+        for func in file_dict[file]:
+            line_list = list()
+            line_dict = file_dict[file][func]['lines']
+            for line in line_dict:
+                if isinstance(line_dict[line], str):
+                    continue
+                line_list.append(line_dict[line])
+                print(line_dict[line])
+            func_list.append({"function": func, "lines": line_list})
+
+        file_list.append({"file": file, "functions": func_list})
+        # for line in line_dict:
+        #     line_list.append(line_dict[line])
+
     switch_info["rules"] = file_list
     switch_info["ranking"] = rankings
-    func_locations = list()
-    for file in func_map:
-        func_filter = dict()
-        tmp_file_level = dict()
-        tmp_file_level["file"] = file.replace(f"buggy/{bugid}/", "", 1)
-        functions = list()
-        tmp_file_level["functions"] = functions
-        for func in func_map[file]:
-            func_id = f"{func['function']}:{func['begin']}-{func['end']}"
-            if func_id not in func_filter:
-                func_filter[func_id] = func
-                functions.append(func)
-        func_locations.append(tmp_file_level)
-    switch_info["func_locations"] = func_locations
+    # func_locations = list()
+    # for file in func_map:
+    #     func_filter = dict()
+    #     tmp_file_level = dict()
+    #     tmp_file_level["file"] = file.replace(f"buggy/{bugid}/", "", 1)
+    #     functions = list()
+    #     tmp_file_level["functions"] = functions
+    #     for func in func_map[file]:
+    #         func_id = f"{func['function']}:{func['begin']}-{func['end']}"
+    #         if func_id not in func_filter:
+    #             func_filter[func_id] = func
+    #             functions.append(func)
+    #     func_locations.append(tmp_file_level)
+    # switch_info["func_locations"] = func_locations
     with open(switch_info_file, "w") as sif:
         json.dump(switch_info, sif, indent=2)
     

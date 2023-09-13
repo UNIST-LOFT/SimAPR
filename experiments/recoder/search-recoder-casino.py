@@ -4,8 +4,6 @@ import subprocess
 
 
 def run(project,seed,trial):
-    if "_" in project:
-        project = project.replace("_", "-")
     cur_dir=os.getcwd()
     if not cur_dir.endswith('experiments/recoder'):
         print('Please run this script in experiments/recoder',file=sys.stderr)
@@ -20,9 +18,10 @@ def run(project,seed,trial):
     result=subprocess.run(['python3',f'{new_cur_dir}/SimAPR/simapr.py','-o',f'result/{project}-casino-{trial}','-m','casino','--seed',f'{seed}',
                 '-k','learning','-w',f'{new_cur_dir}/Recoder/d4j/{project}','-t','180000','--use-simulation-mode',f'result/cache/{project}-cache.json',
                 '-T','18000', '--','python3',
-                f'{new_cur_dir}/SimAPR/script/d4j_run_test.py',f'{new_cur_dir}/Recoder/buggy'],stdout=subprocess.PIPE,stderr=subprocess.STDOUT)
+                f'{new_cur_dir}/SimAPR/script/d4j_run_test.py',f'{new_cur_dir}/Recoder/buggy'])
     
     print(f'{project} casino-{trial} finish with return code {result.returncode}')
+    exit(result.returncode)
 
 if __name__ == '__main__':
     args=sys.argv

@@ -189,8 +189,8 @@ def process_file(file, line_loc, tokenizer, model, beam_width, re_rank=True, top
         return pre_code, old_code, ret[:top_n_patches], post_code
 
 def add_tests(recoder_path: str, outdir: str, bugid: str, switch_info: dict) -> None:
-    proj = bugid.split("-")[0]
-    bid = bugid.split("-")[1]
+    proj = bugid.split("_")[0]
+    bid = bugid.split("_")[1]
     build_dir = os.path.join(recoder_path, "buggy", bugid)
     os.makedirs(build_dir, exist_ok=True)
     os.makedirs(outdir + "/" + bugid, exist_ok=True)
@@ -259,15 +259,20 @@ def main(bug_ids, output_folder, skip_validation, uniapr, beam_width, re_rank, p
         add_tests(".", output_folder, bug_id, info)
         subprocess.run('rm -rf ' + '/tmp/' + bug_id, shell=True)
         subprocess.run("defects4j checkout -p %s -v %s -w %s" % (
-            bug_id.split('-')[0], bug_id.split('-')[1] + 'b', ('/tmp/' + bug_id)), shell=True)
+            bug_id.split('_')[0], bug_id.split('_')[1] + 'b', ('/tmp/' + bug_id)), shell=True)
+        
+        # Get FL result
         location = get_location(bug_id, perfect=perfect)
+        loc_infos=[]
+        for loc in location:
+            loc_infos.append({"file": loc[0], "line": loc[1], "score": loc[2]})
+        info['priority'] = loc_infos
         if top_n_locations != -1:
             location = location[:top_n_locations]
-        # location = get_location_tbar(bug_id)
+
+        # Get test lists and init
         outdir = os.path.join(output_folder, bug_id)
         patch_pool_folder = outdir
-        # if perfect:
-        #     patch_pool_folder = "pfl-patches-pool-temp"
         result_files = ["time.csv", "alpha-repair.log"]
         for result_file in result_files:
             if os.path.exists(os.path.join(outdir, result_file)):
@@ -284,6 +289,7 @@ def main(bug_ids, output_folder, skip_validation, uniapr, beam_width, re_rank, p
             validator = GVpatches(bug_id, testmethods, logger, patch_pool_folder=patch_pool_folder,
                                   skip_validation=skip_validation)
 
+        # Parse function info
         func_map: Dict[str, List[dict]] = dict()
         for file, line_number, fl_score in location:
             real_file = '/tmp/' + bug_id + '/' + file
@@ -305,7 +311,21 @@ def main(bug_ids, output_folder, skip_validation, uniapr, beam_width, re_rank, p
                     func_filter[func_id] = func
                     functions.append(func)
             func_locations.append(tmp_file_level)
-        info["func_locations"] = func_locations
+        """
+            func_locations = [
+                {
+                    "file": "file_name",
+                    "functions": [
+                        {
+                            "function": "function_name:begin-end",
+                            "begin": int,
+                            "end": int
+                        }
+                    ]
+                }, ...
+            ]
+        """
+
         print("==========START ALPHA REPAIR==========")
         loc_id = 0
         with open(os.path.join(outdir, "time.csv"), "w") as tm:
@@ -328,7 +348,7 @@ def main(bug_ids, output_folder, skip_validation, uniapr, beam_width, re_rank, p
                                                end_time - start_time, file, fl_score, loc_id)
             loc_id += 1
 
-        validator.validate(info)
+        validator.validate(info,func_locations)
         with open(os.path.join(outdir, "switch-info.json"), "w") as j:
             json.dump(info, j, indent=2)
         subprocess.run('rm -rf ' + '/tmp/' + bug_id, shell=True)

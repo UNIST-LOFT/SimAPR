@@ -496,11 +496,11 @@ lst = ['Chart-1', 'Chart-8', 'Chart-9', 'Chart-11', 'Chart-12', 'Chart-20', 'Cha
 model = test()
 import sys
 bugid = sys.argv[1]
-prlist = [bugid.split("-")[0]]
-ids = [[int(bugid.split("-")[1])]]
+prlist = [bugid.split("_")[0]]
+ids = [[int(bugid.split("_")[1])]]
 for i, xss in enumerate(prlist):
     for idx in ids[i]:
-        idss = xss + "-" + str(idx)
+        idss = xss + "_" + str(idx)
         #if idss not in lst:
         #    continue
         if idss != bugid:
@@ -540,7 +540,7 @@ for i, xss in enumerate(prlist):
         wf.close()'''
         data = []
         func_map: Dict[str, List[dict]] = dict()
-        for j in range(500):
+        for j in range(5):
             if j >= len(location):
                 break
             patchdict = {}
@@ -572,9 +572,11 @@ for i, xss in enumerate(prlist):
             if mnode is None:
                 continue
             funcname, startline, endline = get_method_range(tree, mnode, lineid)
-            if filepath not in func_map:
-                func_map[filepath] = list()
-            func_map[filepath].append({"function": funcname, "begin": startline, "end": endline})
+
+            filepath_wo_bugid=f'{dirs}/{s.replace(".", "/")}.java'
+            if filepath_wo_bugid not in func_map:
+                func_map[filepath_wo_bugid] = list()
+            func_map[filepath_wo_bugid].append({"function": funcname, "begin": startline, "end": endline})
             oldcode = liness[ac[2] - 1]
             isIf = True
             subroot = lnode     # line root

@@ -1106,11 +1106,11 @@ def solveone(data, model: Decoder) -> list:# data: (treestr, prob, model, subroo
             if "fl_score" not in data[currid]:
                 data[currid]["fl_score"] = -1.0
             subroot = data[currid]['subroot']
-            if os.path.exists("result/%s.json" % idss):
-                classcontent = json.load(open("result/%s.json" % idss, 'r') )
+            if os.path.exists("Result/%s.json" % idss):
+                classcontent = json.load(open("Result/%s.json" % idss, 'r') )
             else:
                 classcontent = []
-            classcontent.extend(json.load(open("temp.json", 'r')))
+            classcontent.extend(json.load(open("Result/others.json", 'r')))
             rrdicts = {}
             for x in classcontent:
                 rrdicts[x['filename']] = x
@@ -1118,7 +1118,7 @@ def solveone(data, model: Decoder) -> list:# data: (treestr, prob, model, subroo
                     rrdicts[x['package_name'] + "." + x['filename']] = x
             vardic = data[currid]['vardic']
             typedic = data[currid]['typedic']
-            classname = data[currid]['classname']#data[currid]['classname'].split(".")[-1]
+            classname = data[currid]['classname'] #data[currid]['classname'].split(".")[-1]
             #print(classname)
             #assert(0)
             mode = data[currid]['mode']

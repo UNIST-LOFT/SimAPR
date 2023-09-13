@@ -156,106 +156,67 @@ def read_info_recoder(state: GlobalState) -> None:
     state.d4j_positive_test = info['passing_test_cases']
     state.d4j_failed_passing_tests = set(info['failed_passing_tests'])
     file_map = state.file_info_map
-    ff_map: Dict[str, Dict[str, Tuple[int, int]]] = dict()
-    check_func: Set[FuncInfo] = set()
-    for file in info["func_locations"]:
-      file_name = file["file"]
-      ff_map[file_name] = dict()
-      for func in file["functions"]:
-        func_name = func["function"]
-        begin = func["begin"]
-        end = func["end"]
-        func_id = f"{func_name}:{begin}-{end}"
-        ff_map[file_name][func_id] = (begin, end)
-        state.function_to_location_map[func_name] = (file_name, begin, end)
+    
     for file in info['rules']:
-      if len(file['lines']) == 0:
+      if len(file['functions']) == 0:
         continue
       file_info = FileInfo(file['file'])
       file_name = file['file']
       file_map[file['file']] = file_info
-      for line in file['lines']:
-        func_info = None
-        line_info = None
-        if len(line['cases']) == 0:
-          continue
-        for func_id in ff_map[file_name]:
-          fn_range = ff_map[file_name][func_id]
-          line_num = int(line['line'])
-          if fn_range[0] <= line_num <= fn_range[1]:
-            if func_id not in file_info.func_info_map:
-              func_info = FuncInfo(file_info, func_id.split(":")[0], fn_range[0], fn_range[1])
-              file_info.func_info_map[func_info.id] = func_info
-            else:
-              func_info = file_info.func_info_map[func_id]
-            line_info = LineInfo(func_info, int(line['line']))
-            line_info.line_id = line['id']
-            func_info.line_info_map[line_info.uuid] = line_info
-            break
-        if line_info is None:
-          # No function found for this line!!!
-          # Use default...
-          func_info = FuncInfo(file_info, "no_function_found", int(line['line']), int(line['line']))
-          file_info.func_info_map[func_info.id] = func_info
-          ff_map[file_name][func_info.id] = (int(line['line']), int(line['line']))
-          line_info = LineInfo(func_info, int(line['line']))
-          line_info.line_id = line['id']
-          func_info.line_info_map[line_info.uuid] = line_info
-        fl_score = line["fl_score"]
-        state.line_list.append(line_info)
-        if func_info not in check_func:
-          check_func.add(func_info)
-          state.func_list.append(func_info)
-        line_info.fl_score = fl_score
-        func_info.fl_score_list.append(fl_score)
-        file_info.fl_score_list.append(fl_score)
-        if fl_score not in state.score_remain_line_map:
-          state.score_remain_line_map[fl_score]=[]
-        state.score_remain_line_map[fl_score].append(line_info)
-        if fl_score not in file_info.remain_lines_by_score:
-          file_info.remain_lines_by_score[fl_score]=[]
-        file_info.remain_lines_by_score[fl_score].append(line_info)
-        if fl_score not in func_info.remain_lines_by_score:
-          func_info.remain_lines_by_score[fl_score]=[]
-        func_info.remain_lines_by_score[fl_score].append(line_info)
-        file_line = FileLine(file_info, line_info, 0)
-        state.priority_map[f"{file_info.file_name}:{line_info.line_number}"] = file_line
-        for cs in line["cases"]:
-          case_id = cs["case"]
-          location = cs["location"]
-          prob = cs["prob"]
 
-          recoder_case_info = RecoderCaseInfo(line_info, location, case_id)
-          line_info.recoder_case_info_map[case_id] = recoder_case_info
-          state.switch_case_map[f"{line_info.line_id}-{case_id}"] = recoder_case_info
-          state.patch_location_map[location] = recoder_case_info
-          recoder_case_info.prob = prob
-          line_info.score_list.append(prob)
-          func_info.score_list.append(prob)
-          file_info.score_list.append(prob)
-          line_info.total_case_info += 1
-          func_info.total_case_info += 1
-          file_info.total_case_info += 1
-          if line_info.fl_score not in func_info.total_patches_by_score:
-            func_info.total_patches_by_score[line_info.fl_score] = 0
-            func_info.searched_patches_by_score[line_info.fl_score] = 0
-          func_info.total_patches_by_score[line_info.fl_score] += 1
-        if len(line_info.recoder_case_info_map)==0:
-          del func_info.line_info_map[line_info.uuid]
-          state.score_remain_line_map[line_info.fl_score].remove(line_info)
-          if len(state.score_remain_line_map[line_info.fl_score])==0:
-            state.score_remain_line_map.pop(line_info.fl_score)
-          func_info.remain_lines_by_score[line_info.fl_score].remove(line_info)
-          if len(func_info.remain_lines_by_score[line_info.fl_score])==0:
-            func_info.remain_lines_by_score.pop(line_info.fl_score)
-          file_info.remain_lines_by_score[line_info.fl_score].remove(line_info)
-          if len(file_info.remain_lines_by_score[line_info.fl_score])==0:
-            file_info.remain_lines_by_score.pop(line_info.fl_score)
-      for func in file_info.func_info_map.copy().values():
-        if len(func.line_info_map)==0:
-          del file_info.func_info_map[func.id]
-      if len(file_info.func_info_map)==0:
-        del state.file_info_map[file_info.file_name]
+      for func in file['functions']:
+        if len(func['lines'])==0:
+          continue
+        func_info = FuncInfo(file_info, func['function'])
+        file_info.func_info_map[func['function']] = func_info
+        state.func_list.append(func_info)
+
+        for line in func['lines']:
+          line_info = None
+          if len(line['cases']) == 0:
+            continue
+          line_info=LineInfo(func_info, int(line['line']))
+          func_info.line_info_map[line_info.uuid] = line_info
+
+          fl_score = line["fl_score"]
+          state.line_list.append(line_info)
+          line_info.fl_score = fl_score
+          func_info.fl_score_list.append(fl_score)
+          file_info.fl_score_list.append(fl_score)
+
+          if fl_score not in state.score_remain_line_map:
+            state.score_remain_line_map[fl_score]=[]
+          state.score_remain_line_map[fl_score].append(line_info)
+          if fl_score not in file_info.remain_lines_by_score:
+            file_info.remain_lines_by_score[fl_score]=[]
+          file_info.remain_lines_by_score[fl_score].append(line_info)
+          if fl_score not in func_info.remain_lines_by_score:
+            func_info.remain_lines_by_score[fl_score]=[]
+          func_info.remain_lines_by_score[fl_score].append(line_info)
+          file_line = FileLine(file_info, line_info, 0)
+          state.priority_map[f"{file_info.file_name}:{line_info.line_number}"] = file_line
+
+          for cs in line["cases"]:
+            case_id = cs["case"]
+            location = cs["location"]
+            prob = cs["prob"]
+
+            recoder_case_info = RecoderCaseInfo(line_info, location, case_id)
+            line_info.recoder_case_info_map[location] = recoder_case_info
+            state.switch_case_map[location] = recoder_case_info
+            state.patch_location_map[location] = recoder_case_info
+            recoder_case_info.prob = prob
+            line_info.score_list.append(prob)
+            func_info.score_list.append(prob)
+            file_info.score_list.append(prob)
+            line_info.total_case_info += 1
+            func_info.total_case_info += 1
+            file_info.total_case_info += 1
+            if line_info.fl_score not in func_info.total_patches_by_score:
+              func_info.total_patches_by_score[line_info.fl_score] = 0
+              func_info.searched_patches_by_score[line_info.fl_score] = 0
+            func_info.total_patches_by_score[line_info.fl_score] += 1
+
   state.d4j_buggy_project = info["project_name"]
   state.patch_ranking = info["ranking"]
   func_rank_checker: Set[FuncInfo] = set()
@@ -304,11 +265,11 @@ def read_info_recoder(state: GlobalState) -> None:
 
   #Add original to switch_case_map
   temp_file: FileInfo = FileInfo('original')
-  temp_func = FuncInfo(temp_file, "original_fn", 0, 0)
+  temp_func = FuncInfo(temp_file, "original_fn")
   temp_file.func_info_map["original_fn:0-0"] = temp_func
   temp_line: LineInfo = LineInfo(temp_func, 0)
   temp_recoder_case = RecoderCaseInfo(temp_line, "original", 0)
-  state.switch_case_map["0-0"] = temp_recoder_case
+  state.switch_case_map["original"] = temp_recoder_case
   state.patch_location_map["original"] = temp_recoder_case
   if state.use_simulation_mode:
     if os.path.exists(state.prev_data):

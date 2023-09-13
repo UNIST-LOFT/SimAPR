@@ -28,31 +28,31 @@ pool=mp.Pool(int(argv[1]))
 
 for i in range(1,d4j_alpharepair.CLI_SIZE+1):
     if i in d4j_alpharepair.CLI_SKIP: continue
-    pool.apply_async(run,(f'Cli-{i}',))
+    pool.apply_async(run,(f'Cli_{i}',))
 for i in range(1,d4j_alpharepair.CODEC_SIZE+1):
-    pool.apply_async(run,(f'Codec-{i}',))
+    pool.apply_async(run,(f'Codec_{i}',))
 for i in range(1,d4j_alpharepair.COLLECTIONS_SIZE+1):
     if i in d4j_alpharepair.COLLECTIONS_SKIP: continue
-    pool.apply_async(run,(f'Collections-{i}',))
+    pool.apply_async(run,(f'Collections_{i}',))
 for i in range(1,d4j_alpharepair.COMPRESS_SIZE+1):
-    pool.apply_async(run,(f'Compress-{i}',))
+    pool.apply_async(run,(f'Compress_{i}',))
 for i in range(1,d4j_alpharepair.CSV_SIZE+1):
-    pool.apply_async(run,(f'Csv-{i}',))
+    pool.apply_async(run,(f'Csv_{i}',))
 for i in range(1,d4j_alpharepair.GSON_SIZE+1):
-    pool.apply_async(run,(f'Gson-{i}',))
+    pool.apply_async(run,(f'Gson_{i}',))
 for i in range(1,d4j_alpharepair.JACKSON_CORE_SIZE+1):
-    pool.apply_async(run,(f'JacksonCore-{i}',))
+    pool.apply_async(run,(f'JacksonCore_{i}',))
 for i in range(1,d4j_alpharepair.JACKSON_DATABIND_SIZE+1):
     if i in d4j_alpharepair.JACKSON_DATABIND_SKIP: continue
-    pool.apply_async(run,(f'JacksonDatabind-{i}',))
+    pool.apply_async(run,(f'JacksonDatabind_{i}',))
 for i in range(1,d4j_alpharepair.JACKSON_XML_SIZE+1):
-    pool.apply_async(run,(f'JacksonXml-{i}',))
+    pool.apply_async(run,(f'JacksonXml_{i}',))
 for i in range(1,d4j_alpharepair.JSOUP_SIZE+1):
-    pool.apply_async(run,(f'Jsoup-{i}',))
+    pool.apply_async(run,(f'Jsoup_{i}',))
 for i in range(1,d4j_alpharepair.JXPATH_SIZE+1):
-    pool.apply_async(run,(f'JxPath-{i}',))
+    pool.apply_async(run,(f'JxPath_{i}',))
 for i in d4j_alpharepair.CLOSURE_NEW:
-    pool.apply_async(run,(f'Closure-{i}',))
+    pool.apply_async(run,(f'Closure_{i}',))
 
 pool.close()
 pool.join()

@@ -286,8 +286,6 @@ def main(argv: List[str]) -> None:
   root_path = argv[1]
   buggy_project = os.environ["SIMAPR_BUGGY_PROJECT"]
   sep = "_"
-  if "SIMAPR_RECODER" in os.environ:
-    sep = os.environ["SIMAPR_RECODER"]
   proj, pid = buggy_project.split(sep)
   buggy_dir = os.path.join(root_path, buggy_project)
   patch_location = os.environ["SIMAPR_LOCATION"]

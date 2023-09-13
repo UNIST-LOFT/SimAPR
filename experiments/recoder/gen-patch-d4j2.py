@@ -15,31 +15,31 @@ queue=mp.Manager().Queue()
 
 for i in range(1,d4j_recoder.CLI_SIZE+1):
     if i in d4j_recoder.CLI_SKIP: continue
-    queue.put(f'Cli-{i}')
+    queue.put(f'Cli_{i}')
 for i in range(1,d4j_recoder.CODEC_SIZE+1):
-    queue.put(f'Codec-{i}')
+    queue.put(f'Codec_{i}')
 for i in range(1,d4j_recoder.COLLECTIONS_SIZE+1):
     if i in d4j_recoder.COLLECTIONS_SKIP: continue
-    queue.put(f'Collections-{i}')
+    queue.put(f'Collections_{i}')
 for i in range(1,d4j_recoder.COMPRESS_SIZE+1):
-    queue.put(f'Compress-{i}')
+    queue.put(f'Compress_{i}')
 for i in range(1,d4j_recoder.CSV_SIZE+1):
-    queue.put(f'Csv-{i}')
+    queue.put(f'Csv_{i}')
 for i in range(1,d4j_recoder.GSON_SIZE+1):
-    queue.put(f'Gson-{i}')
+    queue.put(f'Gson_{i}')
 for i in range(1,d4j_recoder.JACKSON_CORE_SIZE+1):
-    queue.put(f'JacksonCore-{i}')
+    queue.put(f'JacksonCore_{i}')
 for i in range(1,d4j_recoder.JACKSON_DATABIND_SIZE+1):
     if i in d4j_recoder.JACKSON_DATABIND_SKIP: continue
-    queue.put(f'JacksonDatabind-{i}')
+    queue.put(f'JacksonDatabind_{i}')
 for i in range(1,d4j_recoder.JACKSON_XML_SIZE+1):
-    queue.put(f'JacksonXml-{i}')
+    queue.put(f'JacksonXml_{i}')
 for i in range(1,d4j_recoder.JSOUP_SIZE+1):
-    queue.put(f'Jsoup-{i}')
+    queue.put(f'Jsoup_{i}')
 for i in range(1,d4j_recoder.JXPATH_SIZE+1):
-    queue.put(f'JxPath-{i}')
+    queue.put(f'JxPath_{i}')
 for i in d4j_recoder.CLOSURE_NEW:
-    queue.put(f'Closure-{i}')
+    queue.put(f'Closure_{i}')
 
 
 from sys import argv

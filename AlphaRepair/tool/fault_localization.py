@@ -60,14 +60,14 @@ def get_method_range(filename: str, lineid: int) -> dict:
 def get_loc_file(bug_id, perfect):
     dirname = os.path.dirname(__file__)
     d4j_1 = {"Chart", "Closure", "Lang", "Math", "Mockito", "Time"}
-    proj = bug_id.split("-")[0]
+    proj = bug_id.split("_")[0]
     if proj in d4j_1:
         if perfect:
-            loc_file = '../location/groundtruth/%s/%s' % (bug_id.split("-")[0].lower(), bug_id.split("-")[1])
+            loc_file = '../location/groundtruth/%s/%s' % (bug_id.split("_")[0].lower(), bug_id.split("_")[1])
         else:
-            loc_file = '../location/ochiai/%s/%s.txt' % (bug_id.split("-")[0].lower(), bug_id.split("-")[1])
+            loc_file = '../location/ochiai/%s/%s.txt' % (bug_id.split("_")[0].lower(), bug_id.split("_")[1])
     else:
-        loc_file = f"../SuspiciousCodePositions-ochiai/{proj}_{bug_id.split('-')[1]}/ochiai.txt"
+        loc_file = f"../SuspiciousCodePositions-ochiai/{proj}_{bug_id.split('_')[1]}/ochiai.txt"
     loc_file = os.path.join(dirname, loc_file)
     if os.path.isfile(loc_file):
         return loc_file
@@ -83,8 +83,8 @@ def get_location(bug_id, perfect=True, top_n=40):
     location = []
     location_dict = {}
     d4j_1 = {"Chart", "Closure", "Lang", "Math", "Mockito", "Time"}
-    proj = bug_id.split("-")[0]
-    bid = bug_id.split("-")[1]
+    proj = bug_id.split("_")[0]
+    bid = bug_id.split("_")[1]
     loc_file = get_loc_file(bug_id, perfect)
     if loc_file == "":
         return location
