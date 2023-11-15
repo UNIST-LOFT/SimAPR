@@ -15,10 +15,11 @@ def run(project):
         new_cur_dir+=dir+'/'
 
     print(f"Run {project}-seapr")
-    result=subprocess.run(['python3',f'{new_cur_dir}/SimAPR/simapr.py','-o',f'result/{project}-seapr','-m','seapr','--ignore-compile-error',
-                '-k','learning','-w',f'{new_cur_dir}/AlphaRepair/d4j/{project}','-t','180000','--use-simulation-mode',f'result/cache/{project}-cache.json','-T','18000',
-                '--','python3',
-                f'{new_cur_dir}/SimAPR/script/d4j_run_test.py',f'{new_cur_dir}/AlphaRepair/buggy'])
+    result=subprocess.run(['python3',f'{new_cur_dir}/SimAPR/simapr.py','-o',f'result/{project}-seapr','-m','seapr',
+                           '--skip-valid','--ignore-compile-error','-k','learning',
+                           '-w',f'{new_cur_dir}/AlphaRepair/d4j/{project}','-t','180000',
+                           '--use-simulation-mode',f'result/cache/{project}-cache.json','-T','18000',
+                           '--','python3',f'{new_cur_dir}/SimAPR/script/d4j_run_test.py',f'{new_cur_dir}/AlphaRepair/buggy'])
     
     print(f'{project} seapr finish with return code {result.returncode}')
     exit(result.returncode)
