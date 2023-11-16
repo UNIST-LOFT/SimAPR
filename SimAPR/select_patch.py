@@ -1,5 +1,6 @@
 from core import *
 import numpy as np
+import random
 
 def epsilon_greedy(total:int,x:int):
   """
