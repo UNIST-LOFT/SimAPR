@@ -8,6 +8,7 @@ def run_fail_test_d4j(state: GlobalState, new_env: Dict[str, str]) -> Tuple[bool
   state.logger.info(f"@{state.cycle} Run tbar test {new_env['SIMAPR_TEST']} with {new_env['SIMAPR_LOCATION']}")
   args = state.args
   state.logger.debug(' '.join(args))
+  # state.logger.info(f"@This is {args} and {new_env}")
   test_proc = subprocess.Popen(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE, env=new_env)
   so: bytes
   se: bytes
@@ -30,7 +31,7 @@ def run_fail_test_d4j(state: GlobalState, new_env: Dict[str, str]) -> Tuple[bool
   error_str = se.decode('utf-8').strip()
   if result_str == "":
     state.logger.info("Result: FAIL - output is empty")
-    # state.logger.debug("STDERR: " + error_str)
+    state.logger.debug("STDERR: " + error_str)
     return False, False, is_timeout
   state.logger.debug(result_str.replace("\n", " "))
 
@@ -50,8 +51,12 @@ def run_fail_test_d4j(state: GlobalState, new_env: Dict[str, str]) -> Tuple[bool
       continue
     if line.startswith("---"):
       ft = line.replace("---", "").strip()
-      if ft == "COMPILATION_FAILED":
+      if ft == "COMPILATION_FAILED" or ft=='INSTRUMENTATION_FAILED':
         compilable = False
+        if ft=='INSTRUMENTATION_FAILED':
+          state.logger.info("Instrumentation failed!")
+          state.logger.debug("STDERR: " + error_str)
+          raise RuntimeError("Instrumentation failed!")
         break
       failed_tests.add(ft)
       continue

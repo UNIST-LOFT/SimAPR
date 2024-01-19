@@ -20,7 +20,7 @@ def save_result(state: GlobalState) -> None:
       json.dump(state.simulation_data, f, indent=2)
 
 # Append result list, save result to file periodically
-def append_result(state: GlobalState, selected_patch: List[TbarPatchInfo], test_result: bool,pass_test_result:bool=False, pass_all_neg_test: bool = False,compilable: bool = True,fail_time:float=0.0,pass_time:float=0.0) -> None:
+def append_result(state: GlobalState, selected_patch: List[Union[TbarPatchInfo,RecoderPatchInfo]], test_result: Dict[str,bool],pass_test_result:bool=False,compilable: bool = True,fail_time:float=0.0,pass_time:float=0.0) -> None:
   """
     fail_time: second
     pass_time: second
@@ -29,7 +29,7 @@ def append_result(state: GlobalState, selected_patch: List[TbarPatchInfo], test_
   tm = time.time()
   tm_interval=state.select_time+state.test_time
   result = Result(state.cycle,state.iteration,tm_interval, selected_patch, 
-          test_result, pass_test_result, selected_patch[0].out_dist, pass_all_neg_test, compilable=compilable)
+          True in test_result.values(), pass_test_result, selected_patch[0].out_dist, False not in test_result.values(), compilable=compilable)
   
   if result.result:
     state.total_passed_patch+=1
@@ -48,7 +48,7 @@ def append_result(state: GlobalState, selected_patch: List[TbarPatchInfo], test_
         case_info = patch.tbar_case_info
       else:
         case_info = patch.recoder_case_info
-      append_java_cache_result(state,case_info,test_result,pass_test_result,pass_all_neg_test,compilable,fail_time,pass_time)
+      append_java_cache_result(state,case_info,test_result,pass_test_result,compilable,fail_time,pass_time)
   
   if (tm - state.last_save_time) > save_interval:
     save_result(state)

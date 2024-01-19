@@ -104,7 +104,6 @@ def parse_args(argv: list) -> GlobalState:
       else:
         raise ValueError(f'Invalid tool type: {a}')
     elif o in ['--seed']:
-      random.seed(int(a))
       np.random.seed(int(a))
     elif o in ['--ignore-compile-error']:
       state.ignore_compile_error = False
@@ -278,12 +277,14 @@ def read_info_recoder(state: GlobalState) -> None:
         for key in prev_info:
           data=prev_info[key]
           state.simulation_data[key] = data
-  
+            
 def read_info_tbar(state: GlobalState) -> None:
   with open(os.path.join(state.work_dir, 'switch-info.json'), 'r') as f:
     info = json.load(f)
     # Read test informations (which tests to run, which of them are failing test or passing test)
     state.d4j_negative_test = info["failing_test_cases"]
+    if len(state.d4j_negative_test)==0:
+      raise ValueError("No failing test case found, abort!")
     state.d4j_positive_test = info["passing_test_cases"]
     state.d4j_failed_passing_tests = set(info["failed_passing_tests"])
 
@@ -671,7 +672,7 @@ def main(argv: list):
     if 'process PID not found' in str(e):
       state.logger.warning('SimAPR is interrupted by user')
     else:
-      state.logger.error(f'SimAPR throws exception: {e}')
+      state.logger.error(f'SimAPR throws exception: {e}',exc_info=True)
       simapr.save_result()
       raise e
   state.logger.info('SimAPR is finished')

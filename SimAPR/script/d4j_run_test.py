@@ -20,10 +20,8 @@ def run_d4j_export(d4j_dir: str) -> tuple:
   test_dir = open(test_dir_file).read().strip()
   return class_dir, test_dir
 
-def get_src_paths(project, buggy_dir):
+def get_src_paths(project):
   sep = "_"
-  if "SIMAPR_RECODER" in os.environ:
-    sep = os.environ["SIMAPR_RECODER"]
   project_name, bug_id = project.split(sep)
   if len(bug_id)>=4:
     bug_id=bug_id[:-3]
@@ -80,10 +78,8 @@ def get_src_paths(project, buggy_dir):
   else:
     raise Exception("Unknown project: "+project_name)
 
-def get_target_paths(project, buggy_dir):
+def get_target_paths(project):
   sep = "_"
-  if "SIMAPR_RECODER" in os.environ:
-    sep = os.environ["SIMAPR_RECODER"]
   project_name, bug_id = project.split(sep)
   if len(bug_id)>=4:
     bug_id=bug_id[:-3]
@@ -105,7 +101,7 @@ def get_target_paths(project, buggy_dir):
   elif project_name == "Closure":
     return "/build/classes/", "/build/test/"
   elif project_name == "Mockito":
-    if 11 <= bug_id or 18 <= bug_id <= 21:
+    if 11 >= bug_id or 18 <= bug_id <= 21:
       return "/build/classes/main/", "/build/classes/test/"
     return "/target/classes/", "/target/test-classes/"
   
@@ -134,16 +130,16 @@ def get_target_paths(project, buggy_dir):
     return '/target/classes/', '/target/test-classes/'
   elif project_name == "JxPath":
     return '/target/classes/', '/target/test-classes/'
-  return run_d4j_export(buggy_dir)
+  raise Exception("Unknown project: "+project_name)
 
 def get_classpath(work_dir, buggy_project):
   # Todo for all defects4j projects
-  classpath, _ = get_target_paths(buggy_project, work_dir)
+  classpath, _ = get_target_paths(buggy_project)
   return work_dir + classpath
 
 def get_test_classpath(work_dir, buggy_project):
   # Todo for all defects4j projects
-  _, test_classpath = get_target_paths(buggy_project, work_dir)
+  _, test_classpath = get_target_paths(buggy_project)
   return work_dir + test_classpath
 
 def copyfile(original, target):
@@ -158,7 +154,7 @@ def deleteTempLocation(temp_location):
 def deleteDirectory(dir):
   if os.path.exists(dir):
     shutil.rmtree(dir)
-
+  
 def compile_project_updated(work_dir, buggy_project):
   compile_proc = subprocess.Popen(["defects4j", "compile", "-w", work_dir], stdout=subprocess.PIPE, stderr=subprocess.PIPE)
   result = True
@@ -252,6 +248,7 @@ def test_patched_project(patch_location: str, buggy_location: str, work_dir: str
       print("FAIL")
       print("---COMPILATION_FAILED")
       raise ValueError("Patch is not compiled")
+          
     error_num, failed_test = run_single_test(work_dir, buggy_project, test)
     if error_num != 0:
       print("FAIL")
@@ -267,11 +264,11 @@ def test_patched_project(patch_location: str, buggy_location: str, work_dir: str
     deleteTempLocation(temp_location)
 
 def test_original_project(work_dir: str, test: Union[str, List[str]], buggy_project: str):
-
   deleteDirectory(get_classpath(work_dir, buggy_project))
-  try:
+  try:        
     if not compile_project_updated(work_dir, buggy_project):
       raise ValueError("Original is not compilable")
+    
     error_num, failed_test = run_single_test(work_dir, buggy_project, test)
     if error_num != 0:
       print("FAIL")
@@ -304,9 +301,18 @@ def main(argv: List[str]) -> None:
   if not os.path.exists(buggy_location): # when original
     os.system(f"rm -rf {buggy_dir}")
     os.makedirs(buggy_dir, exist_ok=True)
+    os.system(f"rm -rf {buggy_dir}b")
+    os.makedirs(f'{buggy_dir}b', exist_ok=True)
     if len(pid)>=4:
       pid=pid[:-3]
-    subprocess.run(f"defects4j checkout -p {proj} -v {pid}b -w {buggy_dir}", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    _temp=subprocess.run(f"defects4j checkout -p {proj} -v {pid}b -w {buggy_dir}", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+    subprocess.run(f"defects4j checkout -p {proj} -v {pid}b -w {buggy_dir}b", stdout=subprocess.PIPE, stderr=subprocess.PIPE, shell=True)
+
+    if not compile_project_updated(f'{buggy_dir}b', buggy_project):
+      print("FAIL")
+      print("---COMPILATION_FAILED")
+      raise ValueError("Original is not compiled")
+    
   workdir = buggy_dir
   test = os.environ["SIMAPR_TEST"]
   if test == "ALL":

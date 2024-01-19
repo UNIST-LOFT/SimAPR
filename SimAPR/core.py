@@ -3,7 +3,6 @@ import os
 import time
 from dataclasses import dataclass
 import logging
-import random
 import numpy as np
 from enum import Enum
 from typing import List, Dict, Tuple, Set, Union
@@ -104,7 +103,7 @@ class PassFail:
     for p in probability:
       if p > 0:
         total += p
-    rand = random.random() * total
+    rand=np.random.random()*total
     for i in range(len(probability)):
       if probability[i] < 0:
         continue
@@ -132,19 +131,14 @@ class PassFail:
     else:
       return max(np.log(a - x) / np.log(a), 0.)
 
-
-class FileInfo:
-  def __init__(self, file_name: str) -> None:
-    self.file_name = file_name
-    self.func_info_map: Dict[str, FuncInfo] = dict() # f"{func_name}:{func_line_begin}-{func_line_end}"
+class PatchTreeNode:
+  def __init__(self):
+    self.parent=None
     self.pf = PassFail()
     self.positive_pf = PassFail()
-    self.fl_score=-1
-    self.fl_score_list: List[float] = list()
     self.total_case_info: int = 0
     self.case_update_count: int = 0
-    self.score_list: List[float] = list()
-    self.class_name: str = ""
+    self.update_count: int = 0
     self.children_basic_patches:int=0
     self.children_plausible_patches:int=0
     self.consecutive_fail_count:int=0
@@ -152,101 +146,77 @@ class FileInfo:
     self.patches_by_score:Dict[float,List[TbarCaseInfo]]=dict()
     self.remain_patches_by_score:Dict[float,List[TbarCaseInfo]]=dict()
     self.remain_lines_by_score:Dict[float,List[LineInfo]]=dict()
+
+class LocationNode(PatchTreeNode):
+  def __init__(self):
+    super().__init__()
+    self.fl_score=-1
+    self.fl_score_list: List[float] = list()
+    self.score_list: List[float] = list()
+
+class FileInfo(LocationNode):
+  def __init__(self, file_name: str) -> None:
+    super().__init__()
+    self.file_name = file_name
+    self.func_info_map: Dict[str, FuncInfo] = dict() # f"{func_name}:{func_line_begin}-{func_line_end}"
+    self.class_name: str = ""
+    
   def __hash__(self) -> int:
     return hash(self.file_name)
   def __eq__(self, other) -> bool:
     return self.file_name == other.file_name
 
-class FuncInfo:
+class FuncInfo(LocationNode):
   def __init__(self, parent: FileInfo, func_name: str) -> None:
+    super().__init__()
     self.parent = parent
     self.func_name = func_name
-
     self.id = self.func_name
     self.line_info_map: Dict[uuid.UUID, LineInfo] = dict()
-    self.pf = PassFail()
-    self.positive_pf = PassFail()
-    self.fl_score: float = -1.0
-    self.fl_score_list: List[float] = list()
-    self.update_count: int = 0
-    self.total_case_info: int = 0
-    self.case_update_count: int = 0
-    self.score_list: List[float] = list()
     self.func_rank: int = -1
-    self.children_basic_patches:int=0
-    self.children_plausible_patches:int=0
-    self.consecutive_fail_count:int=0
-    self.consecutive_fail_plausible_count:int=0
-    self.patches_by_score:Dict[float,List[TbarCaseInfo]]=dict()
-    self.remain_patches_by_score:Dict[float,List[TbarCaseInfo]]=dict()
-    self.remain_lines_by_score:Dict[float,List[LineInfo]]=dict()
 
     self.total_patches_by_score:Dict[float,int]=dict() # Total patches grouped by score
     self.searched_patches_by_score:Dict[float,int]=dict() # Total searched patches grouped by score
     self.same_seapr_pf = PassFail(1, 1)
     self.diff_seapr_pf = PassFail(1, 1)
-    self.case_rank_list: List[str] = list()
+    self.case_rank_list: List[str] = list()    
+  
   def __hash__(self) -> int:
     return hash(self.id)
   def __eq__(self, other) -> bool:
     return self.id == other.id and self.parent.file_name == other.parent.file_name
 
-class LineInfo:
+class LineInfo(LocationNode):
   def __init__(self, parent: FuncInfo, line_number: int) -> None:
+    super().__init__()
     self.uuid = uuid.uuid4()
     self.line_number = line_number
     self.parent = parent
-    self.pf = PassFail()
-    self.positive_pf = PassFail()
-    self.fl_score=0.
-    self.update_count: int = 0
-    self.total_case_info: int = 0
-    self.case_update_count: int = 0
     self.tbar_type_info_map: Dict[str, TbarTypeInfo] = dict()
     self.line_id = -1
     self.recoder_case_info_map: Dict[int, RecoderCaseInfo] = dict()
-    self.score_list: List[float] = list()
-    self.children_basic_patches:int=0
-    self.children_plausible_patches:int=0
-    self.consecutive_fail_count:int=0
-    self.consecutive_fail_plausible_count:int=0
-    self.patches_by_score:Dict[float,List[TbarCaseInfo]]=dict()
-    self.remain_patches_by_score:Dict[float,List[TbarCaseInfo]]=dict()
+  
   def __hash__(self) -> int:
     return hash(self.uuid)
   def __eq__(self, other) -> bool:
     return self.uuid == other.uuid
 
-class TbarTypeInfo:
+class TbarTypeInfo(PatchTreeNode):
   def __init__(self, parent: LineInfo, mutation: str) -> None:
+    super().__init__()
     self.parent = parent
     self.mutation = mutation
-    self.pf = PassFail()
-    self.positive_pf = PassFail()
-    self.update_count: int = 0
-    self.total_case_info: int = 0
-    self.case_update_count: int = 0
     self.tbar_case_info_map: Dict[str, TbarCaseInfo] = dict()
-    self.children_basic_patches:int=0
-    self.children_plausible_patches:int=0
-    self.consecutive_fail_count:int=0
-    self.consecutive_fail_plausible_count:int=0
-    self.patches_by_score:Dict[float,List[TbarCaseInfo]]=dict()
-    self.remain_patches_by_score:Dict[float,List[TbarCaseInfo]]=dict()
   def __hash__(self) -> int:
     return hash(self.mutation)
   def __eq__(self, other) -> bool:
     return self.mutation == other.mutation and self.parent==other.parent
 
-class TbarCaseInfo:
+class TbarCaseInfo(PatchTreeNode):
   def __init__(self, parent: TbarTypeInfo, location: str) -> None:
+    super().__init__()
     self.parent = parent
     self.location = location
-    self.pf = PassFail()
-    self.positive_pf = PassFail()
-    self.update_count: int = 0
-    self.total_case_info: int = 0
-    self.case_update_count: int = 0
     self.same_seapr_pf = PassFail(1, 1)
     self.diff_seapr_pf = PassFail(1, 1)
     self.patch_rank: int = -1
@@ -255,16 +225,12 @@ class TbarCaseInfo:
   def __eq__(self, other) -> bool:
     return self.location == other.location
 
-class RecoderCaseInfo:
+class RecoderCaseInfo(PatchTreeNode):
   def __init__(self, parent: LineInfo, location: str, case_id: int) -> None:
+    super().__init__()
     self.parent = parent
     self.location = location
     self.case_id = case_id
-    self.pf = PassFail()
-    self.positive_pf = PassFail()
-    self.update_count: int = 0
-    self.total_case_info: int = 0
-    self.case_update_count: int = 0
     self.prob: float = 0
     self.same_seapr_pf = PassFail(1, 1)
     self.diff_seapr_pf = PassFail(1, 1)
@@ -308,7 +274,9 @@ class EnvGenerator:
     new_env["SIMAPR_TIMEOUT"] = str(state.timeout)
     if patch.file_info.class_name != "":
       new_env["SIMAPR_CLASS_NAME"] = patch.file_info.class_name
+
     return new_env
+  
   @staticmethod
   def get_new_env_recoder(state: 'GlobalState', patch: 'RecoderPatchInfo', test: str) -> Dict[str, str]:
     new_env = os.environ.copy()
@@ -320,7 +288,9 @@ class EnvGenerator:
     new_env["SIMAPR_BUGGY_PROJECT"] = state.d4j_buggy_project
     new_env["SIMAPR_OUTPUT_DISTANCE_FILE"] = f"/tmp/{uuid.uuid4()}.out"
     new_env["SIMAPR_TIMEOUT"] = str(state.timeout)
+
     return new_env
+  
   @staticmethod
   def get_new_env_d4j_positive_tests(state: 'GlobalState', tests: List[str], new_env: Dict[str, str]) -> Dict[str, str]:
     new_env["SIMAPR_TEST"] = "ALL"
@@ -334,7 +304,8 @@ class TbarPatchInfo:
     self.func_info = self.line_info.parent
     self.file_info = self.func_info.parent
     self.out_dist = -1.0
-    self.out_diff = False
+    self.out_diff = False    
+    
   def update_result(self, result: bool, n: float, b_n:float,exp_alpha: bool) -> None:
     self.tbar_case_info.pf.update(result, n,b_n, exp_alpha)
     self.tbar_type_info.pf.update(result, n,b_n, exp_alpha)
@@ -599,7 +570,7 @@ class GlobalState:
     self.total_methods=0  # Total methods
 
     self.correct_patch_list:List[str]=[]  # List of correct patch ids
-
+          
 def remove_file_or_pass(file:str):
   try:
     if os.path.exists(file):
@@ -607,7 +578,7 @@ def remove_file_or_pass(file:str):
   except:
     pass
 
-def append_java_cache_result(state:GlobalState,case:TbarCaseInfo,fail_result:bool,pass_result:bool,pass_all_fail:bool,compilable:bool,
+def append_java_cache_result(state:GlobalState,case:Union[TbarCaseInfo,RecoderCaseInfo],fail_result:Dict[str,bool],pass_result:bool,compilable:bool,
       fail_time:float, pass_time:float):
   """
     Append result to cache file, if not exist. Otherwise, do nothing.
@@ -621,10 +592,13 @@ def append_java_cache_result(state:GlobalState,case:TbarCaseInfo,fail_result:boo
   """
   id=case.location
   if id not in state.simulation_data:
-    current=dict()
+    if id not in state.simulation_data:
+      current=dict()
+    else:
+      current=state.simulation_data[id]
     current['basic']=fail_result
     current['plausible']=pass_result
-    current['pass_all_fail']=pass_all_fail
+    current['pass_all_fail']=False not in fail_result.values()
     current['compilable']=compilable
     current['fail_time']=fail_time
     current['pass_time']=pass_time

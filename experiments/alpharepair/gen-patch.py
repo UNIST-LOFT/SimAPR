@@ -14,18 +14,18 @@ def run(project_queue,core):
 queue=mp.Manager().Queue()
 
 for i in range(1,d4j_alpharepair.CHART_SIZE+1):
-    queue.put(f'Chart-{i}')
+    queue.put(f'Chart_{i}')
 for i in range(1,d4j_alpharepair.CLOSURE_SIZE+1):
-    queue.put(f'Closure-{i}')
+    queue.put(f'Closure_{i}')
 for i in range(1,d4j_alpharepair.LANG_SIZE+1):
-    queue.put(f'Lang-{i}')
+    queue.put(f'Lang_{i}')
 for i in range(1,d4j_alpharepair.MATH_SIZE+1):
-    queue.put(f'Math-{i}')
+    queue.put(f'Math_{i}')
 for i in range(1,d4j_alpharepair.MOCKITO_SIZE+1):
     if i in d4j_alpharepair.MOCKITO_SKIP: continue
-    queue.put(f'Mockito-{i}')
+    queue.put(f'Mockito_{i}')
 for i in range(1,d4j_alpharepair.TIME_SIZE+1):
-    queue.put(f'Time-{i}')
+    queue.put(f'Time_{i}')
 
 from sys import argv
 
