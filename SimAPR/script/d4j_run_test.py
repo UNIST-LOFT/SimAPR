@@ -64,7 +64,7 @@ def get_src_paths(project):
   elif project_name=='Csv':
     return '/src/main/java/','/src/test/java/'
   elif project_name=='Gson':
-    return '/gosn/src/main/java/','/gson/src/test/java/'
+    return '/gson/src/main/java/','/gson/src/test/java/'
   elif project_name=='JacksonCore':
     return '/src/main/java/','/src/test/java/'
   elif project_name=='JacksonDatabind':
