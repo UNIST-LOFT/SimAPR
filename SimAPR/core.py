@@ -58,14 +58,8 @@ class PassFail:
       self.pass_count += n * self.__exp_alpha(exp_alpha)
     else:
       self.fail_count+=b_n
-  def update_with_pf(self, other,b_n:float=1.0) -> None:
-    self.pass_count += other.pass_count
-  def expect_probability(self,additional_score:float=0) -> float:
-    return self.beta_mode(self.pass_count + 1.5+additional_score, self.fail_count + 2.0)
   def select_value(self,a_init:float=1.0,b_init:float=1.0) -> float: # select a value randomly from the beta distribution
     return np.random.beta(self.pass_count + a_init, self.fail_count + b_init)
-  def copy(self) -> 'PassFail':
-    return PassFail(self.pass_count, self.fail_count)
   @staticmethod
   def normalize(x: List[float]) -> List[float]:
     npx = np.array(x)
@@ -77,26 +71,6 @@ class PassFail:
     else:
       x_norm = (npx - x_min) / x_diff
     return x_norm.tolist()
-  @staticmethod
-  def softmax(x: List[float]) -> List[float]:
-    npx = np.array(x)
-    y = np.exp(npx)
-    f_x = y / np.sum(y)
-    return f_x.tolist()
-  @staticmethod
-  def argmax(x: List[float]) -> int:
-    m = max(x)
-    tmp = list()
-    for i in range(len(x)):
-      if x[i] == m:
-        tmp.append(i)
-    return np.random.choice(tmp)
-  @staticmethod
-  def select_value_normal(x: List[float], sigma: float) -> List[float]:
-    for i in range(len(x)):
-      val = x[i]
-      x[i] = np.random.normal(val, sigma)
-    return x
   @staticmethod
   def select_by_probability(probability: List[float]) -> int:   # pf_list: list of PassFail
     total = 0
@@ -111,9 +85,6 @@ class PassFail:
       if rand <= 0:
         return i
     return 0
-  @staticmethod
-  def concave_up_exp(x: float, base: float = math.e) -> float:
-    return (np.power(base, x) - 1) / (base - 1)
   @staticmethod
   def concave_up(x: float, base: float = math.e) -> float:
     # unique function
@@ -367,12 +338,6 @@ class TbarPatchInfo:
     return self.to_str()
   def to_str_sw_cs(self) -> str:
     return self.to_str()
-  @staticmethod
-  def list_to_str(selected_patch: list) -> str:
-    result = list()
-    for patch in selected_patch:
-      result.append(patch.to_str())
-    return ",".join(result)
   
 class RecoderPatchInfo:
   def __init__(self, recoder_case_info: RecoderCaseInfo) -> None:
@@ -446,12 +411,6 @@ class RecoderPatchInfo:
     return self.to_str()
   def to_str_sw_cs(self) -> str:
     return self.to_str()
-  @staticmethod
-  def list_to_str(selected_patch: list) -> str:
-    result = list()
-    for patch in selected_patch:
-      result.append(patch.to_str())
-    return ",".join(result)
 
 @dataclass
 class Result:
@@ -461,8 +420,7 @@ class Result:
   result: bool
   pass_result: bool
   pass_all_neg_test: bool
-  output_distance: float
-  def __init__(self, execution: int, iteration:int,time: float, config: List[TbarPatchInfo], result: bool,pass_test_result:bool=False, output_distance: float = 100.0, pass_all_neg_test: bool = False, compilable: bool = True) -> None:
+  def __init__(self, execution: int, iteration:int,time: float, config: List[TbarPatchInfo], result: bool,pass_test_result:bool=False,pass_all_neg_test: bool = False, compilable: bool = True) -> None:
     self.execution = execution
     self.iteration=iteration
     self.time = time
@@ -471,8 +429,6 @@ class Result:
     self.pass_result=pass_test_result
     self.pass_all_neg_test = pass_all_neg_test
     self.compilable = compilable
-    self.output_distance = output_distance
-    self.out_diff = config[0].out_diff
   def to_json_object(self,total_searched_patch:int=0,total_passed_patch:int=0,total_plausible_patch:int=0) -> dict:
     object = dict()
     object["execution"] = self.execution
@@ -480,8 +436,6 @@ class Result:
     object["time"] = self.time
     object["result"] = self.result
     object['pass_result']=self.pass_result
-    object["output_distance"] = self.output_distance
-    object["out_diff"] = self.out_diff
     object["pass_all_neg_test"] = self.pass_all_neg_test
     object["compilable"] = self.compilable
 
