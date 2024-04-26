@@ -1,5 +1,4 @@
 from core import *
-from typing import List
 import json
 
 def get_ochiai(s_h: float, s_l: float, d_h: float, d_l: float) -> float:
@@ -20,7 +19,8 @@ def save_result(state: GlobalState) -> None:
       json.dump(state.simulation_data, f, indent=2)
 
 # Append result list, save result to file periodically
-def append_result(state: GlobalState, selected_patch: List[Union[TbarPatchInfo,RecoderPatchInfo]], test_result: Dict[str,bool],pass_test_result:bool=False,compilable: bool = True,fail_time:float=0.0,pass_time:float=0.0) -> None:
+def append_result(state: GlobalState, selected_patch: PatchInfo, test_result: Dict[str,bool],pass_test_result:bool=False,
+                  compilable: bool = True,fail_time:float=0.0,pass_time:float=0.0) -> None:
   """
     fail_time: second
     pass_time: second
@@ -29,7 +29,7 @@ def append_result(state: GlobalState, selected_patch: List[Union[TbarPatchInfo,R
   tm = time.time()
   tm_interval=state.select_time+state.test_time
   result = Result(state.cycle,state.iteration,tm_interval, selected_patch, 
-          True in test_result.values(), pass_test_result, selected_patch[0].out_dist, False not in test_result.values(), compilable=compilable)
+          True in test_result.values(), pass_test_result, False not in test_result.values(), compilable=compilable)
   
   if result.result:
     state.total_passed_patch+=1
@@ -40,15 +40,16 @@ def append_result(state: GlobalState, selected_patch: List[Union[TbarPatchInfo,R
   state.simapr_result.append(obj)
   state.used_patch.append(result)
 
-  if state.use_simulation_mode and state.tool_type!=ToolType.PRAPR:
+  if state.use_simulation_mode:
     # Cache test result if option used
-    for patch in selected_patch:
-      # For Java, case_info is tbar_case_info
-      if state.tool_type==ToolType.TEMPLATE:
-        case_info = patch.tbar_case_info
-      else:
-        case_info = patch.recoder_case_info
-      append_java_cache_result(state,case_info,test_result,pass_test_result,compilable,fail_time,pass_time)
+    # For Java, case_info is tbar_case_info
+    if state.tool_type==ToolType.TEMPLATE:
+      assert isinstance(selected_patch, TbarPatchInfo)
+      case_info = selected_patch.tbar_case_info
+    else:
+      assert isinstance(selected_patch, RecoderPatchInfo)
+      case_info = selected_patch.recoder_case_info
+    append_java_cache_result(state,case_info,test_result,pass_test_result,compilable,fail_time,pass_time)
   
   if (tm - state.last_save_time) > save_interval:
     save_result(state)
@@ -120,7 +121,7 @@ def update_result_tbar(state: GlobalState, selected_patch: TbarPatchInfo, result
     # Sort seapr list, for debugging
     cor_set=set()
     for cor_str in state.correct_patch_list:
-      if type(state.switch_case_map[cor_str])==TbarCaseInfo:
+      if isinstance(state.switch_case_map[cor_str],TbarCaseInfo):
         cor_set.add(state.switch_case_map[cor_str].parent.parent.parent)
       else:
         cor_set.add(state.switch_case_map[cor_str].parent.parent.parent.parent)

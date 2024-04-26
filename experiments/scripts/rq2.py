@@ -7,10 +7,10 @@ import seaborn
 
 import d4j
 
-casino_result:List[List[Tuple(int,int)]]=[[] for _ in range(50)]
-orig_result:List[Tuple(int,int)]=[]
-seapr_result:List[Tuple(int,int)]=[]
-genprog_result:List[Tuple(int,int)]=[[] for _ in range(50)]
+casino_result:List[List[Tuple[int,int]]]=[[] for _ in range(50)]
+orig_result:List[Tuple[int,int]]=[]
+seapr_result:List[Tuple[int,int]]=[]
+genprog_result:List[Tuple[int,int]]=[[] for _ in range(50)]
 
 def get_ranking_info_tbar(mode='tbar'):
     with open(f'{mode}/difftgen.csv','r') as f:
@@ -26,12 +26,9 @@ def get_ranking_info_tbar(mode='tbar'):
             for i in range(1,len(cur_line)):
                 correct[cur_ver].append(cur_line[i].strip())
 
-    dl = mode in {'recoder', 'alpharepair'}
     # Casino
     for i in range(50):
         for result in d4j.D4J_1_2_LIST:
-            if dl:
-                result = result.replace('_', '-')
             try:
                 simapr_result=open(f'{mode}/result/{result}-casino-{i}/simapr-result.json','r')
             except:
@@ -71,8 +68,6 @@ def get_ranking_info_tbar(mode='tbar'):
     # GenProg
     for i in range(50):
         for result in d4j.D4J_1_2_LIST:
-            if dl:
-                result = result.replace('_', '-')
             try:
                 simapr_result=open(f'{mode}/result/{result}-genprog-{i}/simapr-result.json','r')
             except:
@@ -111,8 +106,6 @@ def get_ranking_info_tbar(mode='tbar'):
 
     # SeAPR
     for result in d4j.D4J_1_2_LIST:
-        if dl:
-            result = result.replace('_', '-')
         try:
             simapr_result=open(f'{mode}/result/{result}-seapr/simapr-result.json','r')
         except:
@@ -151,8 +144,6 @@ def get_ranking_info_tbar(mode='tbar'):
 
     # original
     for result in d4j.D4J_1_2_LIST:
-        if dl:
-            result = result.replace('_', '-')
         try:
             simapr_result=open(f'{mode}/result/{result}-orig/simapr-result.json','r')
         except:

@@ -1,6 +1,5 @@
 from core import *
 import numpy as np
-import random
 
 def epsilon_greedy(total:int,x:int):
   """
@@ -63,7 +62,6 @@ def epsilon_select(state:GlobalState,source:PatchTreeNode=None):
         top_fl_patches += source.remain_patches_by_score[score]
         top_all_patches += source.patches_by_score[score]
         break
-  
 
   # Get total patches and total searched patches, for epsilon greedy method
   total_patches=len(top_all_patches)
@@ -685,7 +683,7 @@ def select_patch_recoder_seapr(state: GlobalState) -> RecoderPatchInfo:
 
   return RecoderPatchInfo(selected_patch)
 
-def select_patch_recoder_genprog(state: GlobalState) -> TbarPatchInfo:
+def select_patch_recoder_genprog(state: GlobalState) -> RecoderPatchInfo:
   start_time = time.time()
   # Select file
   state.logger.debug(f'Select with simple stochastic')

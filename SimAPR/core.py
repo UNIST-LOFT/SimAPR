@@ -18,7 +18,6 @@ class Mode(Enum):
 class ToolType(Enum):
   TEMPLATE=1
   LEARNING=2
-  PRAPR=3
 
 # Parameters
 class PT():
@@ -41,6 +40,7 @@ class PassFail:
   def __init__(self, p: float = 0., f: float = 0.) -> None:
     self.pass_count = p
     self.fail_count = f
+
   def __exp_alpha(self, exp_alpha:bool) -> float:
     if exp_alpha:
       if self.pass_count==0:
@@ -49,17 +49,21 @@ class PassFail:
         return min(1024.,self.pass_count)
     else:
       return 1.
+    
   def beta_mode(self, alpha: float, beta: float) -> float:
     if alpha+beta==2.0:
       return 1.0
     return (alpha - 1.0) / (alpha + beta - 2.0)
+  
   def update(self, result: bool, n: float,b_n:float=1.0, exp_alpha: bool = False) -> None:
     if result:
       self.pass_count += n * self.__exp_alpha(exp_alpha)
     else:
       self.fail_count+=b_n
+
   def select_value(self,a_init:float=1.0,b_init:float=1.0) -> float: # select a value randomly from the beta distribution
     return np.random.beta(self.pass_count + a_init, self.fail_count + b_init)
+  
   @staticmethod
   def normalize(x: List[float]) -> List[float]:
     npx = np.array(x)
@@ -71,6 +75,7 @@ class PassFail:
     else:
       x_norm = (npx - x_min) / x_diff
     return x_norm.tolist()
+  
   @staticmethod
   def select_by_probability(probability: List[float]) -> int:   # pf_list: list of PassFail
     total = 0
@@ -85,14 +90,17 @@ class PassFail:
       if rand <= 0:
         return i
     return 0
+  
   @staticmethod
   def concave_up(x: float, base: float = math.e) -> float:
     # unique function
     return x * x
+  
   @staticmethod
   def concave_down(x: float, base: float = math.e) -> float:
     atzero = PassFail.concave_up(0, base)
     return 2 * ((1 - atzero) * x + atzero) - PassFail.concave_up(x, base)
+  
   @staticmethod
   # fail function
   def log_func(x: float, half: float = 51) -> float:
@@ -211,24 +219,6 @@ class RecoderCaseInfo(PatchTreeNode):
   def __eq__(self, other) -> bool:
     return self.location == other.location
 
-# Find with f"{file_name}:{line_number}"
-class FileLine:
-  def __init__(self, fi: FileInfo, li: LineInfo, score: float) -> None:
-    self.file_info = fi
-    self.line_info = li
-    self.score = score
-    self.case_map: Dict[str, TbarCaseInfo] = dict() # switch_number-case_number -> TbarCaseInfo
-    self.seapr_e_pf: PassFail = PassFail()
-    self.seapr_n_pf: PassFail = PassFail()
-  def to_str(self) -> str:
-    return f"{self.file_info.file_name}:{self.line_info.line_number}"
-  def __str__(self) -> str:
-    return self.to_str()
-  def __hash__(self) -> int:
-    return hash(self.to_str())
-  def __eq__(self, other) -> bool:
-    return self.file_info == other.file_info and self.line_info == other.line_info
-
 class EnvGenerator:
   def __init__(self) -> None:
     pass
@@ -241,7 +231,6 @@ class EnvGenerator:
     new_env["SIMAPR_WORKDIR"] = state.work_dir
     new_env["SIMAPR_BUGGY_LOCATION"] = patch.file_info.file_name
     new_env["SIMAPR_BUGGY_PROJECT"] = state.d4j_buggy_project
-    new_env["SIMAPR_OUTPUT_DISTANCE_FILE"] = f"/tmp/{uuid.uuid4()}.out"
     new_env["SIMAPR_TIMEOUT"] = str(state.timeout)
     if patch.file_info.class_name != "":
       new_env["SIMAPR_CLASS_NAME"] = patch.file_info.class_name
@@ -257,7 +246,6 @@ class EnvGenerator:
     new_env["SIMAPR_WORKDIR"] = state.work_dir
     new_env["SIMAPR_BUGGY_LOCATION"] = patch.file_info.file_name
     new_env["SIMAPR_BUGGY_PROJECT"] = state.d4j_buggy_project
-    new_env["SIMAPR_OUTPUT_DISTANCE_FILE"] = f"/tmp/{uuid.uuid4()}.out"
     new_env["SIMAPR_TIMEOUT"] = str(state.timeout)
 
     return new_env
@@ -267,28 +255,47 @@ class EnvGenerator:
     new_env["SIMAPR_TEST"] = "ALL"
     return new_env
 
-class TbarPatchInfo:
-  def __init__(self, tbar_case_info: TbarCaseInfo) -> None:
-    self.tbar_case_info = tbar_case_info
-    self.tbar_type_info = tbar_case_info.parent
-    self.line_info = self.tbar_type_info.parent
-    self.func_info = self.line_info.parent
-    self.file_info = self.func_info.parent
-    self.out_dist = -1.0
-    self.out_diff = False    
-    
-  def update_result(self, result: bool, n: float, b_n:float,exp_alpha: bool) -> None:
-    self.tbar_case_info.pf.update(result, n,b_n, exp_alpha)
-    self.tbar_type_info.pf.update(result, n,b_n, exp_alpha)
+class PatchInfo:
+  def __init__(self,line_info:LineInfo) -> None:
+    self.line_info=line_info
+    self.func_info=line_info.parent
+    self.file_info=self.func_info.parent
+
+  def update_result(self,result: bool, n: float, b_n:float,exp_alpha: bool) -> None:
     self.line_info.pf.update(result, n,b_n, exp_alpha)
     self.func_info.pf.update(result, n,b_n,exp_alpha)
     self.file_info.pf.update(result, n,b_n, exp_alpha)
+
   def update_result_positive(self, result: bool, n: float, b_n:float,exp_alpha: bool) -> None:
-    self.tbar_case_info.positive_pf.update(result, n,b_n, exp_alpha)
-    self.tbar_type_info.positive_pf.update(result, n,b_n, exp_alpha)
     self.line_info.positive_pf.update(result, n,b_n, exp_alpha)
     self.func_info.positive_pf.update(result, n,b_n, exp_alpha)
     self.file_info.positive_pf.update(result, n,b_n, exp_alpha)
+  
+  def remove_patch(self,state:'GlobalState'):
+    pass
+
+  def __str__(self) -> str:
+    pass
+
+  def to_json_object(self) -> str:
+    return self.__str__()
+  
+class TbarPatchInfo(PatchInfo):
+  def __init__(self, tbar_case_info: TbarCaseInfo) -> None:
+    super().__init__(tbar_case_info.parent.parent)
+    self.tbar_case_info = tbar_case_info
+    self.tbar_type_info = tbar_case_info.parent
+    
+  def update_result(self, result: bool, n: float, b_n:float,exp_alpha: bool) -> None:
+    super().update_result(result, n,b_n, exp_alpha)
+    self.tbar_case_info.pf.update(result, n,b_n, exp_alpha)
+    self.tbar_type_info.pf.update(result, n,b_n, exp_alpha)
+
+  def update_result_positive(self, result: bool, n: float, b_n:float,exp_alpha: bool) -> None:
+    super().update_result_positive(result, n,b_n, exp_alpha)
+    self.tbar_case_info.positive_pf.update(result, n,b_n, exp_alpha)
+    self.tbar_type_info.positive_pf.update(result, n,b_n, exp_alpha)
+
   def remove_patch(self, state: 'GlobalState') -> None:
     if self.tbar_case_info.location not in self.tbar_type_info.tbar_case_info_map:
       state.logger.critical(f"{self.tbar_case_info.location} not in {self.tbar_type_info.tbar_case_info_map}")
@@ -327,36 +334,23 @@ class TbarPatchInfo:
     if len(state.java_remain_patch_ranking[self.line_info.fl_score])==0:
       state.java_remain_patch_ranking.pop(self.line_info.fl_score)
     self.func_info.searched_patches_by_score[self.line_info.fl_score]+=1
-
-  def to_json_object(self) -> dict:
-    conf = dict()
-    conf["location"] = self.tbar_case_info.location
-    return conf
-  def to_str(self) -> str:
-    return f"{self.tbar_case_info.location}"
+    
   def __str__(self) -> str:
-    return self.to_str()
-  def to_str_sw_cs(self) -> str:
-    return self.to_str()
-  
-class RecoderPatchInfo:
+    return str(self.tbar_case_info.location)
+    
+class RecoderPatchInfo(PatchInfo):
   def __init__(self, recoder_case_info: RecoderCaseInfo) -> None:
     self.recoder_case_info = recoder_case_info
-    self.line_info = self.recoder_case_info.parent
-    self.func_info = self.line_info.parent
-    self.file_info = self.func_info.parent
-    self.out_dist = -1.0
-    self.out_diff = False
+    super().__init__(recoder_case_info.parent)
+
   def update_result(self, result: bool, n: float, b_n:float,exp_alpha: bool) -> None:
     self.recoder_case_info.pf.update(result, n,b_n, exp_alpha)
-    self.line_info.pf.update(result, n,b_n, exp_alpha)
-    self.func_info.pf.update(result, n,b_n, exp_alpha)
-    self.file_info.pf.update(result, n,b_n, exp_alpha)
+    super().update_result(result, n,b_n, exp_alpha)
+
   def update_result_positive(self, result: bool, n: float, b_n:float,exp_alpha: bool) -> None:
     self.recoder_case_info.positive_pf.update(result, n,b_n, exp_alpha)
-    self.line_info.positive_pf.update(result, n,b_n, exp_alpha)
-    self.func_info.positive_pf.update(result, n,b_n, exp_alpha)
-    self.file_info.positive_pf.update(result, n,b_n, exp_alpha)
+    super().update_result_positive(result, n,b_n, exp_alpha)
+
   def remove_patch(self, state: 'GlobalState') -> None:
     if self.recoder_case_info.location not in self.line_info.recoder_case_info_map:
       state.logger.critical(f"{self.recoder_case_info.location} not in {self.line_info.recoder_case_info_map}")
@@ -399,36 +393,29 @@ class RecoderPatchInfo:
     if len(state.java_remain_patch_ranking[self.line_info.fl_score])==0:
       state.java_remain_patch_ranking.pop(self.line_info.fl_score)
     self.func_info.searched_patches_by_score[fl_score] += 1
-  def to_json_object(self) -> dict:
-    conf = dict()
-    conf["location"] = self.recoder_case_info.location
-    conf["id"] = self.line_info.line_id
-    conf["case_id"] = self.recoder_case_info.case_id
-    return conf
-  def to_str(self) -> str:
-    return f"{self.recoder_case_info.location}"
+  
   def __str__(self) -> str:
-    return self.to_str()
-  def to_str_sw_cs(self) -> str:
-    return self.to_str()
+    return str(self.recoder_case_info.location)
 
 @dataclass
 class Result:
   iteration: int
   time: float
-  config: List[TbarPatchInfo]
+  patch: PatchInfo
   result: bool
   pass_result: bool
   pass_all_neg_test: bool
-  def __init__(self, execution: int, iteration:int,time: float, config: List[TbarPatchInfo], result: bool,pass_test_result:bool=False,pass_all_neg_test: bool = False, compilable: bool = True) -> None:
+  def __init__(self, execution: int, iteration:int,time: float, patch: PatchInfo, result: bool,
+               pass_test_result:bool=False,pass_all_neg_test: bool = False, compilable: bool = True) -> None:
     self.execution = execution
     self.iteration=iteration
     self.time = time
-    self.config = config
+    self.patch = patch
     self.result = result
     self.pass_result=pass_test_result
     self.pass_all_neg_test = pass_all_neg_test
     self.compilable = compilable
+
   def to_json_object(self,total_searched_patch:int=0,total_passed_patch:int=0,total_plausible_patch:int=0) -> dict:
     object = dict()
     object["execution"] = self.execution
@@ -443,11 +430,7 @@ class Result:
     object['total_searched']=total_searched_patch
     object['total_passed']=total_passed_patch
     object['total_plausible']=total_plausible_patch
-    conf_list = list()
-    for patch in self.config:
-      conf = patch.to_json_object()
-      conf_list.append(conf)
-    object["config"] = conf_list
+    object["id"] = self.patch.to_json_object()
     return object
 
 @dataclass()
@@ -476,11 +459,9 @@ class GlobalState:
     self.d4j_failed_passing_tests:Set[str] = set()
     self.d4j_buggy_project: str = ""
     self.patch_location_map: Dict[str, Union[TbarCaseInfo, RecoderCaseInfo]] = dict()
-    self.priority_list: List[Tuple[str, int, float]] = list()
     self.line_list:List[LineInfo]=list()
     self.simapr_result:List[dict] = list()
     self.failed_positive_test:Set[str] = set()
-    self.priority_map: Dict[str, FileLine] = dict()
     self.used_patch:List[Result] = list()
     self.timeout = 60000
     self.uuid=uuid.uuid1()
@@ -509,8 +490,8 @@ class GlobalState:
 
     self.seapr_layer:SeAPRMode=SeAPRMode.FUNCTION
 
-    self.java_patch_ranking:Dict[float,List[TbarCaseInfo]]=dict()
-    self.java_remain_patch_ranking:Dict[float,List[TbarCaseInfo]]=dict()
+    self.java_patch_ranking:Dict[float,List[Union[TbarCaseInfo,RecoderCaseInfo]]]=dict()
+    self.java_remain_patch_ranking:Dict[float,List[Union[TbarCaseInfo,RecoderCaseInfo]]]=dict()
     self.score_remain_line_map:Dict[float,List[LineInfo]]=dict()  # Remaining lines by each scores(FL, prophet score, ...)
 
     self.previous_score:float=0.0
@@ -546,10 +527,7 @@ def append_java_cache_result(state:GlobalState,case:Union[TbarCaseInfo,RecoderCa
   """
   id=case.location
   if id not in state.simulation_data:
-    if id not in state.simulation_data:
-      current=dict()
-    else:
-      current=state.simulation_data[id]
+    current=dict()
     current['basic']=fail_result
     current['plausible']=pass_result
     current['pass_all_fail']=False not in fail_result.values()

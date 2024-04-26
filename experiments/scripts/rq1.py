@@ -12,14 +12,11 @@ def plot_patches_ci_java(mode='tbar'):
     seapr_result:List[int]=[]
     genprog_result:List[List[int]]=[]
     casino_result:List[List[int]]=[]
-    dl = mode in {'recoder', 'alpharepair'}
 
     # Casino
     for i in range(50):
         casino_result.append([])
         for result in d4j.D4J_1_2_LIST:
-            if dl:
-                result = result.replace('_', '-')
             try:
                 result_file=open(f'{mode}/result/{result}-casino-{i}/simapr-result.json','r')
             except:
@@ -45,8 +42,6 @@ def plot_patches_ci_java(mode='tbar'):
     for i in range(50):
         genprog_result.append([])
         for result in d4j.D4J_1_2_LIST:
-            if dl:
-                result = result.replace('_', '-')
             try:
                 result_file=open(f'{mode}/result/{result}-genprog-{i}/simapr-result.json','r')
             except:
@@ -70,8 +65,6 @@ def plot_patches_ci_java(mode='tbar'):
 
     # SeAPR
     for result in d4j.D4J_1_2_LIST:
-        if dl:
-            result = result.replace('_', '-')
         try:
             result_file=open(f'{mode}/result/{result}-seapr/simapr-result.json','r')
         except:
@@ -95,8 +88,6 @@ def plot_patches_ci_java(mode='tbar'):
 
     # Original
     for result in d4j.D4J_1_2_LIST:
-        if dl:
-            result = result.replace('_', '-')
         try:
             result_file=open(f'{mode}/result/{result}-orig/simapr-result.json','r')
         except:
