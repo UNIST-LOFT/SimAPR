@@ -40,12 +40,8 @@ def get_ranking_info_tbar(mode='tbar'):
             for res in root:
                 is_plausible=res['pass_result']
                 time=res['time']
-                loc=res['config'][0]['location']
+                loc=res['id']
                 if is_plausible:
-                    if dl:
-                        id = res['config'][0]['id']
-                        case_id = res['config'][0]['case_id']
-                        loc = f'{id}-{case_id}'
                     cur_result[loc]=round(time/60)
 
             result_file=open(f'{mode}/result/{result}-casino-{i}/ods.csv','r')
@@ -79,12 +75,8 @@ def get_ranking_info_tbar(mode='tbar'):
             for res in root:
                 is_plausible=res['pass_result']
                 time=res['time']
-                loc=res['config'][0]['location']
+                loc=res['id']
                 if is_plausible:
-                    if dl:
-                        id = res['config'][0]['id']
-                        case_id = res['config'][0]['case_id']
-                        loc = f'{id}-{case_id}'
                     cur_result[loc]=round(time/60)
 
             result_file=open(f'{mode}/result/{result}-genprog-{i}/ods.csv','r')
@@ -117,12 +109,8 @@ def get_ranking_info_tbar(mode='tbar'):
         for res in root:
             is_plausible=res['pass_result']
             time=res['time']
-            loc=res['config'][0]['location']
+            loc=res['id']
             if is_plausible:
-                if dl:
-                    id = res['config'][0]['id']
-                    case_id = res['config'][0]['case_id']
-                    loc = f'{id}-{case_id}'
                 cur_result[loc]=round(time/60)
 
         result_file=open(f'{mode}/result/{result}-seapr/ods.csv','r')
@@ -155,12 +143,8 @@ def get_ranking_info_tbar(mode='tbar'):
         for res in root:
             is_plausible=res['pass_result']
             time=res['time']
-            loc=res['config'][0]['location']
+            loc=res['id']
             if is_plausible:
-                if dl:
-                    id = res['config'][0]['id']
-                    case_id = res['config'][0]['case_id']
-                    loc = f'{id}-{case_id}'
                 cur_result[loc]=round(time/60)
 
         result_file=open(f'{mode}/result/{result}-orig/ods.csv','r')

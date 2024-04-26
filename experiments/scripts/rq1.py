@@ -30,7 +30,7 @@ def plot_patches_ci_java(mode='tbar'):
                 is_plausible=res['pass_result']
                 iteration=res['iteration']
                 time=res['time']
-                loc=res['config'][0]['location']
+                loc=res['id']
 
                 if is_plausible:
                     casino_result[-1].append(round((time)/60))
@@ -55,7 +55,7 @@ def plot_patches_ci_java(mode='tbar'):
                 is_plausible=res['pass_result']
                 iteration=res['iteration']
                 time=res['time']
-                loc=res['config'][0]['location']
+                loc=res['id']
 
                 if is_plausible:
                     genprog_result[-1].append(round((time)/60))
@@ -78,7 +78,7 @@ def plot_patches_ci_java(mode='tbar'):
             is_plausible=res['pass_result']
             iteration=res['iteration']
             time=res['time']
-            loc=res['config'][0]['location']
+            loc=res['id']
 
             if is_plausible:
                 seapr_result.append(round((time)/60))
@@ -101,7 +101,7 @@ def plot_patches_ci_java(mode='tbar'):
             is_plausible=res['pass_result']
             iteration=res['iteration']
             time=res['time']
-            loc=res['config'][0]['location']
+            loc=res['id']
 
             if is_plausible:
                 orig_result.append(round((time)/60))
